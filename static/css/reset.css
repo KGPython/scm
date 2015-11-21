@@ -1,0 +1,95 @@
+html,body,h1,h2,h3,h4,h5,h6,div,dl,dt,dd,ul,ol,li,p,blockquote,pre,hr,figure,table,caption,th,td,form,fieldset,legend,input,button,textarea,menu{margin:0;padding:0;}
+header,footer,section,article,aside,nav,hgroup,address,figure,figcaption,menu,details{display:block;}
+html {
+	font-size: 10px;
+	height: 100%;
+}
+body {
+	font-family: "Helvetica Neue", Helvetica, sans-serif,"Microsoft YaHei","微软雅黑", Arial, Verdana, "宋体";
+	font-size: 14px;
+	line-height: 1.42857143;
+	color: #333;
+	background-color: #fff;
+	overflow:scroll;
+	height: 100%
+}
+a {	
+	cursor:pointer;
+	color: #333;
+	text-decoration: none;
+}
+a:hover,
+a:focus {
+  color: #337AB7;
+  text-decoration: underline;
+}
+a:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+
+img{
+	vertical-align:middle;
+	border:none;
+	display: block;
+}
+.text-right {
+  text-align: right;
+}
+.text-center {
+  text-align: center;
+}
+li{
+	list-style:none;
+}
+caption,th{
+	text-align:left;
+	font-weight:normal;
+} 
+input,textarea{
+	outline:none;
+	background:none;
+	border: 1px solid #CCC;
+	border-radius: 5px;
+}
+input[type="button"],
+input[type="submit"]{
+	cursor: pointer;
+}
+select{
+	outline:none;
+}
+textarea{
+	resize:none;
+}
+input:focus,
+select:focus,
+textarea:focus{
+    border: 1px solid #66AFE9;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+}
+input:hover,
+select:hover,
+textarea:hover{
+    border: 1px solid #66AFE9;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+}
+
+h1,h2,h3,h4,h5,h6{
+	font-weight: normal;
+}
+
+/*清除浮动*/
+.clearfix:after{content:” ”;display:block;clear:both;}
+.clearfix{zoom:1;}
+.clear{float:none;}
+
+/*共用*/
+.comWidth{width:1510px;margin-left: auto;margin-right: auto;overflow: hidden;}
+.right{float:right;}
+.left{float:left;}
+.hide{display:none;}
+.show{display:block;}
+.gray{background: #ededed;}
+.red{color: red}

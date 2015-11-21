@@ -1,0 +1,420 @@
+/*
+***************************************用户登录页****************************************
+*/
+body{
+	background:#efefef;
+}
+.login-main{
+	margin:200px auto 0;
+	width: 800px;
+	overflow: hidden;
+	text-align: center;
+}
+.l-main-title{
+	margin-bottom: 50px;
+}
+.l-main-content p{
+	margin-bottom:10px; 
+	font-size: 16px;
+}
+.l-main-content p input{
+	padding: 6px 12px;
+	margin-left:20px;     
+	width: 500px;
+	height: 34px;
+	text-indent: 10px;
+	border-radius:5px ;
+
+} 
+.l-main-content .validate img{
+	display: inline-block;
+	width: 400px;
+	height: 46px;
+	margin-left: 40px;
+	margin-right:50px; 
+}
+.l-main-content .validate a{
+	color: red;
+	font-size: 18px;
+}
+.l-main-content p .enter{
+	margin-top:10px;
+	margin-left:70px; 
+	width: 524px;
+	height: 46px;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	color:#fff;
+	font-size: 16px
+}   
+/*
+***************************************头部导航****************************************
+*/ 
+.header{
+	height: 50px;
+	line-height: 50px;
+	background: #efefef;
+	margin-bottom:30px;
+	box-shadow: 0px 1px 5px #000; 
+}
+.nav .nav-list .nav-list-item{
+	float: left;
+	margin-right:15px; 
+	width: 100px;
+	font-size: 16px;
+}
+.nav-list{
+	display: none;
+}
+.nav-list .nav-list-item a{
+	display: block;
+	padding:0px 10px;
+	margin-top:10px; 
+	width: 80px;
+	height: 30px;
+	line-height: 30px;	
+	text-align: center;	
+}
+.nav-list .nav-list-item .active{
+	border-radius:20px;
+	background: #aaa;
+	color: #fff;
+}
+
+/*
+***************************************查询表单模块****************************************
+*/
+/*.query{
+	position: relative;
+}
+*/
+.query-list{
+	display: block;
+	margin: 0 auto;
+	overflow: hidden;
+}
+.query .query-list p{
+	float: left;
+	margin-left: 20px;
+}
+.query .query-list p label{
+	display: block;
+	margin-bottom:5px; 
+}
+.query .query-list p select,
+.query .query-list p input[type="text"]{
+	height: 30px;
+	width: 120px;
+	text-indent: 10px;
+}
+.query .query-list p input[type="text"]{
+	background-color: #fff
+}
+.query-enter,
+.query-print,
+.printBtn{
+	padding: 6px 12px;
+	margin-top: 19px;
+	color: #FFF;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 16px; 
+}
+.printBtn{
+	display: block;
+	margin: 50px auto;
+	width: 300px;
+	height: 50px;
+	line-height: 50px;
+	border: 10px;
+}
+.shopList .shopList-icon{
+	display: inline-block;
+	width: 20px;
+	height: 20px;
+	background: transparent url("../image/plus.gif") no-repeat center;
+	cursor: pointer;
+}
+.shopList-cnt{
+	display: none;
+	position: absolute;
+	width: 400px;
+	background: #efefef;
+	overflow: hidden;
+	border: 1px solid #ccc
+}
+.shopList-cnt-tit{
+	height: 45px;
+	background: #ddd;
+	line-height: 45px;
+}
+.shopList-cnt-tit span{
+	margin-right:100px; 
+	margin-left:10px; 
+}
+.shopList-cnt-tit label{
+	margin-right:30px; 
+}
+.shopList-cnt-tit input{
+	display: inline-block;
+	margin-right:10px; 
+	margin-top: 10px;
+}
+.shopList-cnt-tit input[type="submit"],
+.shopList-cnt-tit input[type="button"]
+{
+	background: #337AB7;
+	color:#fff;
+	padding: 2px 4px;
+}
+
+.shopList-cnt th{
+	font-size: 14px
+}
+/*
+***************************************表格模块****************************************
+*/
+.tTitle{
+	margin-top:10px; 
+	margin-bottom:15px;
+	text-align: center;
+}
+.tTitle p b{
+	margin-left:20px; 
+}
+thead th{
+	background:#ccc;
+	text-align:center;
+	height:35px;
+	line-height:35px;
+	font-size:16px;
+	font-weight:bold;
+}
+.thead{
+	background:#ccc;
+	font-size: 14px
+}
+tbody{
+	background:#e5e5e5;
+	text-align:center;
+	height:35px;
+	line-height:35px;
+	font-size:12px;
+}
+tbody a{
+	color: #337AB7
+}
+/*
+***************************************首页****************************************
+*/
+.noticeHome{
+	width: 1150px;
+}
+.mainHome .sideNav{
+	padding-left: 20px;
+	padding-right: 20px;
+	margin-right:10px; 
+	margin-top:100px; 
+	margin-bottom:500px; 
+	width: 260px;	
+	overflow: hidden;
+}
+.sideNav .sideNav-list .sideNav-list-item a{
+	display: block;
+	padding:6px 12px;
+	margin-top:25px; 
+	height: 34px;
+	line-height: 34px;
+	color: #FFF;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 16px;
+}
+/*
+***************************************协同信息****************************************
+*/
+.retail_notice .query-list p label{
+	display: inline-block;
+}
+.retail_notice .query-list p input[type="button"]{
+	padding:0 10px;
+	height: 35px;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 16px; 
+	color: #fff;
+}
+.tTitle input{
+	padding:3px 6px;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 16px; 
+	color: #fff;
+}
+.tTitle .back{
+	margin-left:50px;
+	margin-right:20px  
+}
+.mainNotice{
+	width: 50%;
+	padding: 20px;
+	background: #ccc
+}
+.mainNotice h3{
+	text-align: center;
+	line-height: 50px;
+	border-bottom:2px solid #fff 
+}
+/*
+***************************************打印页面****************************************
+*/
+.mainPri{
+	margin-top:50px; 
+}
+.mainPri .tablaTop th,
+.mainPri .tablaTop td{
+	background: #efefef
+}
+
+/*
+***************************************权限设置****************************************
+*/
+.mainConf{
+	height: 100%;
+	margin-top:-25px 
+}
+/******************左侧******************/
+.confSide{
+	width: 20%;
+	min-width: 300px;
+	height: 100%;
+	background:#ddd;
+	text-align: center;
+}
+.confSide h3{
+	height: 50px;
+	line-height: 50px;
+	position: relative;
+	border-bottom:2px solid #aaa;
+}
+.confSide .icon{
+	position: absolute;
+	top:0;
+	margin-left:10px; 
+	font-size: 30px;
+	font-weight: bold;
+	color: #337AB7;
+	cursor: pointer;
+}
+.confSide-cnt .confSide-page select{
+	margin:10px;
+	width: 50px; 
+}
+
+/**************右侧*****************/
+.confCnt{
+	width: 70%;
+	min-width: 1100px;
+	padding-right: 5%;
+	margin-left: 50px;
+}
+.confCnt-box{
+	border: 1px solid #aaa;
+	overflow: hidden;
+}
+.confCnt-form{
+	overflow: hidden
+}
+.confCnt-form .conf{
+	overflow: hidden;
+}
+.confCnt-form .conf h3{
+	text-indent: 20px;
+	background: #ddd;
+	height: 45px;
+	line-height: 45px;
+	border-bottom:  1px solid #aaa;
+	font-weight: bold;
+}
+.confCnt-form .conf h3 input{
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	color: #fff;
+	margin-right:15px; 
+}
+.confCnt-form .baseInfo-box{
+	padding:15px 25px;
+}
+.confCnt-form p{
+/*	display: inline-block;*/
+	float: left;
+	margin-bottom:15px; 
+	width: 45%;
+}
+.confCnt-form p input{
+	padding: 6px 12px;
+	margin-left:5px; 
+}
+.confCnt-form .btn{
+	width: auto;
+	clear: both;
+	float: right;
+}
+.confCnt-form .btn input{
+	padding: 6px 12px;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	color: #fff;
+	margin:10px; 
+}
+/*
+***************************************分页按钮****************************************
+*/
+.page{
+	text-align: center;
+	margin-bottom: 20px;
+	margin-top: 20px;
+}
+.page a{
+	display: inline-block;
+	height: 24px;
+	line-height: 24px;
+	padding:0 12px;
+	margin:0 2px;
+}
+.page span{
+	display: inline-block;
+	height: 24px;
+	line-height: 24px;
+	_line-height: 20px;
+	padding:0 12px;
+	margin:0 2px;
+}
+.page .pageTxt{
+	width:29px;
+	padding:0 3px;
+	height: 24px;
+	line-height: 24px\9;
+	_line-height: 28px\9;
+	color:#ccc;
+}
+.page #pageEnter{
+	width:44px;
+	height: 24px;
+	line-height: 24px\9;
+	padding:0 3px;
+	margin-right: 7px;
+	border: 1px solid #ccc;
+	background: #eee;
+	cursor: pointer;
+}
