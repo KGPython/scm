@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>基本资料</title>
+	<link rel="stylesheet" href="css/reset.css"/>
+  <link rel="stylesheet" href="css/main.css"/>
+  <script type="text/javascript" src="../js/laydate.js"></script>
+</head>
+<body>
+  <div class="header">
+    <div class="logo"></div>
+    <div class="nav comWidth">
+      <ul class="nav-list" style="display:block">
+        <li class="nav-list-item"><a href="index.html">首页</a></li>
+        <li class="nav-list-item"><a class="active" href="user_base.html">基本资料</a></li>
+        <li class="nav-list-item"><a href="user_order.html">订货</a></li>
+        <li class="nav-list-item"><a href="user_saile.html">销售</a></li>
+        <li class="nav-list-item"><a href="user_stock.html">库存</a></li>
+        <li class="nav-list-item"><a href="user_bill.html">单据</a></li>
+        <li class="nav-list-item"><a href="user_settle.html">结算</a></li>
+        <li class="nav-list-item"><a href="user_notice.html">通知</a></li>
+        <li class="nav-list-item"><a href="/">退出</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="query comWidth">
+    <form class="query-list">
+      <p class="shopList">
+        <label>门店：</label><input type="text"><span class="shopList-icon"></span>
+      </p>
+      <p class=""></p>
+      <p><label>商品条码：</label><input type="text"></p>
+      <p><label>商品名称：</label><input type="text"></p>
+      <p>
+        <label>商品状态：</label>
+        <select type="text" name="status" value="">
+          <option value="" selected="selected">全部</option>
+          <option value="">正常</option>
+          <option value="">暂停订货</option>
+        </select>
+      </p>
+      <p>
+        <label>排序条件：</label>
+        <select name="orderstyle" class="input" value="">
+          <option value="spercode">供应商编码</option>
+          <option selected="selected" value="checkdate">审核日期</option>
+          <option value="ordercode">订单编码</option>
+          <option value="shopcode">交货门店</option>          
+        </select>
+      </p>
+      <p><input class="query-enter" type="submit" value="查询" ></p>
+      <p><input class="query-enter" type="bttton" value="导出到excel" ></p>
+    </form>
+    <form class="shopList-cnt" action="">
+      <p class="shopList-cnt-tit">
+        <span>门店：</span>
+        <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
+        <input type="submit" value="确定">
+        <input class="close" type="button" value="放弃">
+      </p>
+      <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+        <thead>
+          <tr>
+            <th>选择</th>
+            <th>门店编码</th>
+            <th>门店名称</th>
+            <th>经营方式</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><input type="checkbox" name="" id=""></td>
+            <td>门店编码</td>
+            <td>门店名称</td>
+            <td>经营方式</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" name="" id=""></td>
+            <td>门店编码</td>
+            <td>门店名称</td>
+            <td>经营方式</td>
+          </tr>
+          <tr>
+            <td><input type="checkbox" name="" id=""></td>
+            <td>门店编码</td>
+            <td>门店名称</td>
+            <td>经营方式</td>
+          </tr>
+        </tbody>
+      </table>
+    </form>   
+  </div>
+  <div class="notice noticeOrder comWidth">
+      <div class="tTitle">
+        <h1>商品资料一览表</h1>
+        <h3>单位：<span>宽广超市</span></h3>
+        <p>
+          <b>经营方式：</b><span>经销-代销-联营</span> 
+          <b>时间：</b><span>2015-11-01至2015-11-03</span>
+          <b>单位：</b><span>元</span>
+          <b>含税进价金额合计：</b><span>6114710.51</span>
+        </p> 
+      </div> 
+  	  <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+  		  <thead>
+  			<tr>
+  			  <th class="col1">序号</th>
+  				<th class="col1">门店</th>
+  				<th class="col1">门店名称</th>
+  				<th class="col1">商品条码</th>
+  				<th class="col1">商品名称</th>
+  				<th class="col1">规格</th>
+  				<th class="col2_4">进价</th>
+  				<th class="col1">执行售价</th>
+  				<th class="col2_4">销售状态</th>
+  				<th class="col1">供应商</th>
+  				<th class="col1">税率</th>
+  				<th class="col1">单位</th>
+          <th class="col1">小类</th>
+          <th class="col2_4">商品编码</th>
+          <th class="col1">促销标志</th>
+          <th class="col1">开始日期</th>
+          <th class="col1">结束日期</th>
+  			</tr>
+  		  </thead>
+  		  <tbody>
+  			<tr>
+  				<td class="col1">序号</td>
+          <td class="col1">门店</td>
+          <td class="col1">门店名称</td>
+          <td class="col1">商品条码</td>
+          <td class="col1">商品名称</td>
+          <td class="col1">规格</td>
+          <td class="col2_4">进价</td>
+          <td class="col1">执行售价</td>
+          <td class="col2_4">销售状态</td>
+          <td class="col1">供应商</td>
+          <td class="col1">税率</td>
+          <td class="col1">单位</td>
+          <td class="col1">小类</td>
+          <td class="col2_4">商品编码</td>
+          <td class="col1">促销标志</td>
+          <td class="col1">开始日期</td>
+          <td class="col1">结束日期</td>
+  			</tr>
+  		  </tbody>
+  	  </table>
+      <div class="page">
+        <span>每页</span>
+        <input class="pageTxt" id="pageNum" name="pageNum" type="text">
+        <span>条记录</span>
+        <span>共<b>200</b>页/<b>200</b>条记录</span>
+        <a href="#">首页</a>
+        <a href="#">上一页</a>
+        <a href="#">下一页</a>
+        <a href="#">尾页</a>
+        <span class="totalPage">到第</span>
+        <input  class="pageTxt" id="pageIndex" name="pageIndex" type="text">
+        <span>页</span>
+        <input value="确定" id="pageEnter" type="button">
+      </div>  
+  </div>
+<!--[if IE]> <script type="text/javascript" src="js/jquery-1.9.1.js"></script><![endif]--> 
+<![if !IE]><script type="text/javascript" src="js/jquery-2.1.4.min.js"></script><![endif]> 
+<script type="text/javascript" src="js/main.js"></script>
+</body>
+</html>

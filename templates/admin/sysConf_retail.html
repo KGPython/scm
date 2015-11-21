@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>供应商权限</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+  <div class="header">
+  	<div class="logo"></div>
+  	<div class="nav comWidth">
+  		<ul class="nav-list" style="display:block">
+  			<li class="nav-list-item"><a href="index.html">首页</a></li>
+  			<li class="nav-list-item"><a href="sysConf_supply.html">供应商权限</a></li>
+        <li class="nav-list-item"><a class="active" href="sysConf_retail.html">零售商权限</a></li>
+  			<li class="nav-list-item"><a href="login.html">退出</a></li>
+  		</ul>
+  	</div>
+  </div>
+  <div class="mainConf">
+  	<div class="confSide left">
+  		<h3>角色列表<b class="icon">+</b></h3>
+      <div class="confSide-cnt">
+        <div class="confSide-page">
+          <a href="/" id="">&lt;&lt;&lt;</a>
+          <span>第</span>
+          <select class="page" name="" id="">
+            <option value="1" selected="selected">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+          </select>
+          <a href="/" id="">&gt;&gt;&gt;</a>
+        </div>
+        <div class="sideBox">
+          <div class="retailBox">
+            <h4><a href="javascript:;">集团管理员</a></h4>
+            <h4><a href="javascript:;">集团维护员</a></h4>
+          </div>
+        </div>      
+      </div>
+  	</div>
+  	<div class="confCnt left">
+      <div class="tTitle">
+  		  <h2>角色信息管理（红色字段为必填选项）</h2>
+      </div>
+  	  <div class="confCnt-box"> 
+        <form class="confCnt-form" action="adf.html">
+          <div class="conf baseInfo">
+            <h3>基本信息&nbsp;--&nbsp;编号：<span>001</span></h3>
+            <div class="baseInfo-box">
+              <p class="red"><label for="uName">名称：</label><input type="text" name="uName" id="uName"><span class="uName-notice" style="display:none;margin-left:15px;">必填</span></p>
+              <p><label for="uId">ID：</label><input type="text" name="uId" id="uId"></p>
+              <p><label for="uStatus">状态：</label><input type="text" name="uStatus" id="uStatus"></p>
+              <p><label for="uRemark">备注：</label><input type="text" name="uRemark" id="uRemark"></p>
+              <p><label for="uCompany">集团：</label><input type="text" name="uCompany" id="uCompany"></p>
+          <p class="btn">
+            </div>
+          </div>
+          <div class="conf powerInfo">
+            <h3>
+              权限设置：
+              <input type="button" class="all" id="powerAll" value="全选">
+              <input type="button" class="none" id="powerNone" value="全不选">
+            </h3>
+            <div class="powerInfo-box">
+              <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center">
+                <thead>
+                  <tr>
+                    <th>选择</th>
+                    <th>功能代码</th>
+                    <th>功能名称</th>
+                    <th>子项</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox" name="" value="002"></td>
+                    <td>002</td>
+                    <td>角色管理</td>   
+                    <td>察看</td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="" value="004"></td>
+                    <td>004</td>
+                    <td>用户管理</td>   
+                    <td>察看</td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="" value="004"></td>
+                    <td>004</td>
+                    <td>用户管理</td>   
+                    <td>察看</td>
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="" value="004"></td>
+                    <td>004</td>
+                    <td>用户管理</td>   
+                    <td>察看</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="conf shopInfo">
+            <h3>
+              门店：
+              <input type="button" class="all" id="shopAll" value="全选">
+              <input type="button" class="none" id="shopNone" value="全不选">
+            </h3>
+            <div class="shopInfo-box">
+              <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center">
+                <thead>
+                  <tr>
+                    <th>选择</th>
+                    <th>类别代码</th>
+                    <th>类别名称</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><input type="checkbox" name="" value="002"></td>
+                    <td>A002</td>
+                    <td>宽广超市商城店</td> 
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="" value="004"></td>
+                    <td>004</td>
+                    <td>宽广超市德汇店</td>   
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="" value="004"></td>
+                    <td>004</td>
+                    <td>用户管理</td>   
+                  </tr>
+                  <tr>
+                    <td><input type="checkbox" name="" value="004"></td>
+                    <td>004</td>
+                    <td>用户管理</td>   
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="btn">
+            <input id="save" type="submit" value="保存" >
+            <input type="button" value="删除">
+          </div>
+        </form>
+      </div>
+  	</div>
+  </div>
+
+
+
+
+<!--[if IE]> <script type="text/javascript" src="../js/jquery-1.9.1.js"></script><![endif]--> 
+<![if !IE]><script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script><![endif]> 
+<script type="text/javascript" src="../js/main.js"></script>
+
+</body>
+</html>

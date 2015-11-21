@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商业供应链系统</title>
+	<link rel="stylesheet" href="../css/reset.css"/>
+	<link rel="stylesheet" href="../css/main.css"/>
+</head>
+<body>
+  <div class="header">
+  	<div class="logo"></div>
+  	<div class="nav comWidth">
+  		<ul class="nav-list" style="display:block">
+  			<li class="nav-list-item"><a class="active" href="index.html">首页</a></li>
+  			<li class="nav-list-item"><a href="retail_order.html">订货</a></li>
+        <li class="nav-list-item"><a href="retail_settle.html">结算</a></li>
+  			<li class="nav-list-item"><a href="retail_notice.html">通知</a></li>
+  			<li class="nav-list-item"><a href="/">退出</a></li>
+  		</ul>
+      <ul class="nav-list">
+        <li class="nav-list-item"><a class="active" href="index.html">首页</a></li>
+        <li class="nav-list-item"><a href="sysConf_supply.html">供应商权限</a></li>
+        <li class="nav-list-item"><a href="sysConf_retail.html">零售商权限</a></li>
+        <li class="nav-list-item"><a href="login.html">退出</a></li>
+      </ul>
+      <ul class="nav-list">
+        <li class="nav-list-item"><a class="active" href="index.html">首页</a></li>
+        <li class="nav-list-item"><a href="/">退出</a></li>
+      </ul>
+  	</div>
+  </div>
+    <h1 class="tTitle">系统公告<input class="back" type="button" value="返回"><input type="button" value="下载附件"></h1>
+    <div class="mainNotice comWidth">    	
+      <h3>关于超市集团统采统配统结统付通知</h3>
+      <p class="notice-ctn">关于超市集团统采统配统结统付通知</p>
+    </div>
+<!--[if IE]> <script type="text/javascript" src="../js/jquery-1.9.1.js"></script><![endif]--> 
+<![if !IE]><script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script><![endif]> 
+<script type="text/javascript">
+  $(".sideNav-list-item").click(function(){
+    var i_sideNav=$(this).index();
+    $(".nav").find(".nav-list").eq(i_sideNav).show().siblings().hide();
+  })
+</script>
+</body>
+</html>
