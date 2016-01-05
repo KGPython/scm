@@ -83,10 +83,10 @@ DATABASES = {
     # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kgscm',
+        'NAME': 'scm',
         'USER': 'root',
-        'PASSWORD': '10233201sn',
-        'HOST': '192.168.122.198',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
@@ -116,7 +116,7 @@ STATICFILES_DIRS = [
     'E:/scm/static',
 ]
 
-# ***自定义日志输出信息***
+# ***脳脭露篓脪氓脠脮脰戮脢盲鲁枚脨脜脧垄***
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -136,7 +136,7 @@ LOGGING = {
             'level':'DEBUG',
             'class':'logging.handlers.RotatingFileHandler',
             'filename': 'log/all.log',     #  ?    ?
-            'maxBytes': 1024*1024*5,                  # ?   С
+            'maxBytes': 1024*1024*5,                  # ?   搂鲁
             'backupCount': 5,                         #   ?
             'formatter':'standard',                   #?      formatters  ?  ?
         },
