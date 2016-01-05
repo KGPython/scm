@@ -37,7 +37,8 @@ SECRET_KEY = '959pnv02y=9dyry1k0mypr8&m)a^pv7-x7cx3rtogleb4w*ty5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
 
 # Application definition
 
@@ -101,7 +102,7 @@ DATABASES = {
         'NAME': 'kgscm',
         'USER': 'root',
         'PASSWORD': '10233201sn',
-        'HOST': '192.168.122.146',
+        'HOST': '192.168.122.198',
         'PORT': '3306',
     }
 }
