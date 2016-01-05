@@ -99,10 +99,10 @@ DATABASES = {
     # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kgscm',
+        'NAME': 'scm',
         'USER': 'root',
-        'PASSWORD': '10233201sn',
-        'HOST': '192.168.122.198',
+        'PASSWORD': '123456',
+        'HOST': '127.0.0.1',
         'PORT': '3306',
     }
 }
@@ -136,11 +136,11 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-#ÉÏ´«ÎÄ¼ş
+#ä¸Šä¼ æ–‡ä»¶
 MEDIA_URL = '/upload/'
 MEDIA_ROOT = 'upload'
 
-# ***ÅäÖÃ£º¾²Ì¬ÎÄ¼ş£¨CSS¡¢JS£©Â·¾¶***
+# ***é…ç½®ï¼šé™æ€æ–‡ä»¶ï¼ˆCSSã€JSï¼‰è·¯å¾„***
 STATIC_URL = '/static/'
 STATIC_ROOT="comm_static"
 
@@ -152,14 +152,14 @@ LOGIN_URL ="/scm/base/loginpage"
 LOGIN_EXEMPT_URLS=["scm/base/login","scm/base/logout","scm/base/vcode/","favicon.ico"]
 
 
-#linuxÅäÖÃstatic
+#linuxé…ç½®static
 # STATICFILES_DIRS = [
 #    os.path.join(BASE_DIR, "static"),
 #    '/var/www/scm/static',
 # ]
 # STATIC_ROOT = os.path.join(BASE_DIR, "scm_static/")
 
-# ***×Ô¶¨ÒåÈÕÖ¾Êä³öĞÅÏ¢***
+# ***è‡ªå®šä¹‰æ—¥å¿—è¾“å‡ºä¿¡æ¯***
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': True,
