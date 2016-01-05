@@ -1,0 +1,249 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统
+        </title>
+
+    </head>
+    <style>
+    	.pwNotice{
+			margin:0 auto;
+			width: 320px;
+			height: 80px;
+			clear: both;
+			text-align: center;
+    	}
+		.pwNotice li{
+			float: left;
+			width:70px;
+			margin-left: 30px;
+		}
+		.pwNotice li span{
+			display: block;
+			margin-bottom: 10px;
+		}
+
+    </style>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="setPwd comWidth">
+            <div class="tTitle">
+                <h2>
+                    修改用户登录密码
+                </h2>
+            </div>
+            <div class="confCnt-box">
+                <form id="saveform" class="confCnt-form" action="/scm/base/updatepwd/" method="post">
+                    <div class="conf baseInfo">
+                        <li class="baseInfo-box">
+                            <p ><span style="font-size: 12px;margin-left: 50px;color: dodgerblue;">密码由6-16位字母（区分大小写）、数字、符号组成</span></p>
+                            <p class="newpwd" >
+                                <label>新密码：</label>
+                                <input type="password" name="newPwd" value="" id="newPwd" maxlength="16">
+                                <span id="error_newPwd" style="color: red;font-size: 12px;">&nbsp;</span>
+                            </p>
+                            <p class="repwd" >
+                                <label>确认密码：</label>
+                                <input type="password" name="rePwd" value="" id="rePwd" maxlength="16">
+                                <br/><span id="error_rePwd" style="color: red;font-size: 12px;"></span>
+                            </p>
+                            <ul class="pwNotice" >
+                                <li>
+                                    <span class="color_gray" id='pwdLevel_1'> </span>
+                                    <span class="color_gray_label"> 弱</span>
+                                </li>
+                                <li>
+                                    <span class="color_gray" id='pwdLevel_2'> </span>
+                                    <span class="color_gray_label"> 中</span>
+
+                                </li>
+                                <li>
+
+                                    <span class="color_gray" id='pwdLevel_3'> </span>
+                                    <span class="color_gray_label"> 强</span>
+                                </li>
+                            </ul>
+
+                        </div>
+                    <div class="btn">
+                        <input type="hidden" name="flag" value="1">
+                        <input id="cancel" type="button" value="返回" onclick="javascript:window.history.go(-1)">
+                        <input id="saveBtn" type="button" value="保存">
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+              current="lingshoushangquanxian"
+              $(function(){
+                  $('#saveBtn').bind("click",function(){
+                       var ajax_option= {
+                            url: "/scm/base/updatepwd/",
+                            data:$('#saveform').serialize(),
+                            type:'post',
+                            dataType:'json',
+                            async:false,
+                            cache: false,
+                            beforeSubmit:function(a,f,o){
+                                $("#saveBtn").attr({ disabled: "disabled" });
+                            },
+                            success: function (data) {
+                                $("#saveBtn").attr({ disabled: "none" });
+                                if(data.result=='0'){
+                                    alert("修改成功");
+                                    window.location.href="/scm/base/logout/";
+                                }else{
+                                    alert("修改失败");
+                                }
+                            }
+                        }
+
+                       if(checkForm()){
+                            $('#saveform').ajaxSubmit(ajax_option);
+                       }
+                   });
+                  //验证表单
+                  function checkForm(){
+                      var newPwd = $('#newPwd');
+                      var rePwd = $('#rePwd');
+
+                      if(typeof(newPwd.val())=="undefined" || newPwd.val()=='' ){
+                          newPwd.focus();
+                          $("#error_newPwd").html("新密码不能为空");
+                          return false;
+                      }
+
+                      newPwdLen = newPwd.val().length
+                      if(newPwdLen<6){
+                          newPwd.focus();
+                          $("#error_newPwd").html("密码长度不能小于6位");
+                          return false;
+                      }
+
+                      if(typeof(rePwd.val())=="undefined" || rePwd.val()=='' ){
+                          rePwd.focus();
+                          $("#error_rePwd").html("确认密码不能为空");
+                          return false;
+                      }
+
+                      if(newPwd.val() !== rePwd.val()){
+                          rePwd.focus();
+                          $("#error_rePwd").html("确认密码与新密码不一致");
+                          return false;
+                      }
+                      return true;
+                  }
+                  //验证密码强度
+                  $('#newPwd').keyup(function () {
+                        var __th = $(this);
+                        if (!__th.val()) {
+                            Primary();
+                            return;
+                        }
+                        if (__th.val().length < 6) {
+                            Weak();
+                            return;
+                        }
+                        var _r = checkPassword(__th);
+                        if (_r < 1) {
+                            Primary();
+                            return;
+                        }
+
+                        if (_r > 0 && _r < 2) {
+                            Weak();
+                        } else if (_r >= 2 && _r < 4) {
+                            Medium();
+                        } else if (_r >= 4) {
+                            Tough();
+                        }
+                    });
+              });
+              function Primary() {
+                    $('#pwdLevel_1').attr('class', 'color_gray');
+                    $('#pwdLevel_2').attr('class', 'color_gray');
+                    $('#pwdLevel_3').attr('class', 'color_gray');
+              }
+
+              function Weak() {
+                    $('#pwdLevel_1').attr('class', 'color_red');
+                    $('#pwdLevel_2').attr('class', 'color_gray');
+                    $('#pwdLevel_3').attr('class', 'color_gray');
+              }
+
+              function Medium() {
+                    $('#pwdLevel_1').attr('class', 'color_red');
+                    $('#pwdLevel_2').attr('class', 'color_red2');
+                    $('#pwdLevel_3').attr('class', 'color_gray');
+              }
+
+              function Tough() {
+                    $('#pwdLevel_1').attr('class', 'color_red');
+                    $('#pwdLevel_2').attr('class', 'color_red2');
+                    $('#pwdLevel_3').attr('class', 'color_red3');
+              }
+
+              function checkPassword(pwdinput) {
+                    var maths, smalls, bigs, corps, cat, num;
+                    var str = $(pwdinput).val()
+                    var len = str.length;
+
+                    var cat = /.{16}/g
+                    if (len == 0) return 1;
+                    if (len > 16) { $(pwdinput).val(str.match(cat)[0]); }
+                    cat = /.*[\u4e00-\u9fa5]+.*$/
+                    if (cat.test(str)) {
+                        return -1;
+                    }
+                    cat = /\d/;
+                    var maths = cat.test(str);
+                    cat = /[a-z]/;
+                    var smalls = cat.test(str);
+                    cat = /[A-Z]/;
+                    var bigs = cat.test(str);
+                    var corps = corpses(pwdinput);
+                    var num = maths + smalls + bigs + corps;
+
+                    if (len < 6) { return 1; }
+
+                    if (len >= 6 && len <= 8) {
+                        if (num == 1) return 1;
+                        if (num == 2 || num == 3) return 2;
+                        if (num == 4) return 3;
+                    }
+
+                    if (len > 8 && len <= 11) {
+                        if (num == 1) return 2;
+                        if (num == 2) return 3;
+                        if (num == 3) return 4;
+                        if (num == 4) return 5;
+                    }
+
+                    if (len > 11) {
+                        if (num == 1) return 3;
+                        if (num == 2) return 4;
+                        if (num > 2) return 5;
+                    }
+              }
+
+              function corpses(pwdinput) {
+                    var cat = /./g
+                    var str = $(pwdinput).val();
+                    var sz = str.match(cat)
+                    for (var i = 0; i < sz.length; i++) {
+                        cat = /\d/;
+                        maths_01 = cat.test(sz[i]);
+                        cat = /[a-z]/;
+                        smalls_01 = cat.test(sz[i]);
+                        cat = /[A-Z]/;
+                        bigs_01 = cat.test(sz[i]);
+                        if (!maths_01 && !smalls_01 && !bigs_01) { return true; }
+                    }
+                    return false;
+              }
+
+    </script>
+    </body>
+</html>

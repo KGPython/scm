@@ -1,0 +1,126 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统
+        </title>
+
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="supply_admin comWidth">
+            <h2 class="tTitle">
+                维护供应商系统管理员
+            </h2>
+            <div class="query comWidth">
+                <form action="" class="query-list" id="changePasswdForm" name="changePasswdForm" method="post">
+                    <p>
+                        <label>供应商编码：</label>{{ form.grpcode }}{{ form.grpcode.errors }}
+                    </p>
+                    <p>
+                        <label>用户：</label>{{ form.ucode }}
+                    </p>
+                    <p>
+                        <label>新密码：</label>{{ form.passwd }}
+                    </p>
+                    <p>
+                        <label>确认密码：</label>{{ form.confirmpass }}
+                    </p>
+                    <p class="btn">
+                        <input class="query-enter" type="button" id="btnQuery" name="btnQuery" value="查询管理员" onclick="queryUser()">
+                    </p>
+                    <p class="btn">
+                        <input class="query-enter" type="button" id="btnSave" name="btnSave" value="重新生成密码" onclick="updatePwd()">
+                    </p>
+                    <input type="hidden" id="action" name="action">
+                </form>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>
+                            选择
+                        </th>
+                        <th>
+                            姓名
+                        </th>
+                        <th>
+                            登录名
+                        </th>
+                        <th>
+                            单位
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rows in posts %}
+                    <tr>
+                        <td>
+                            <a href="javascript:void(0);" id="addUcode" name="addUcode" onclick="addUcode('{{ rows.ucode }}')">+</a>
+                        </td>
+                        <td>
+                            {{ rows.gnm }}
+                        </td>
+                        <td>
+                            {{ rows.ucode }}
+                        </td>
+                        <td></td>
+                    </tr>
+                    {% empty %}
+                        <tr><td colspan="4">无此条数据</td></tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+    </body>
+<script type="text/javascript">
+     current="gongyingshangquanxian";
+    function queryUser(){
+        $("#changePasswdForm").attr("action", '/scm/base/admin/suppmanager/');
+        $("#action").attr("value","btnQuery");
+        $("#changePasswdForm").submit();
+    }
+    function updatePwd() {
+        var ucode = $("#uCode");
+        var pwd = $("#id_passwd");
+        var repwd = $("#id_confirmpass");
+
+        if(ucode.val()==''){
+             alert("用户不能为空，请选择用户");
+             ucode.focus();
+             return false;
+        }
+
+        if(pwd.val()==''){
+             alert("新密码不能为空");
+             pwd.focus();
+             return false;
+        }
+        if(repwd.val()==''){
+            alert("确认密码不能为空");
+            repwd.focus();
+            return false;
+        }
+
+        if(pwd.val()!==repwd.val()){
+            alert("确认密码与新密码不一致");
+            repwd.focus();
+            return false;
+        }
+
+        $("#changePasswdForm").attr("action", '/scm/base/admin/suppmanager/');
+        $("#action").attr("value","btnSave");
+        $("#changePasswdForm").submit();
+    }
+    function addUcode(ucode) {
+        $("#uCode").attr("value", ucode);
+    }
+</script>
+    <script>
+        $(function(){
+            $(".errorlist").css({"margin-top":"30px","margin-left":"-150px"})
+        });
+
+    </script>
+</html>

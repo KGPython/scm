@@ -1,0 +1,102 @@
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="query comWidth">
+            <form class="query comWidth" style="width: 100%;text-align: right;"  method="post" id="queryForm" action="/scm/base/supp/sale/analysis/detail1/">
+                <input type="hidden" name="sdate" value="{{ sdate }}">
+                <input type="hidden" name="start" value="{{ start }}">
+                <input type="hidden" name="end" value="{{ end }}">
+                <input type="hidden" id="qtype" name="qtype" value="{{ qtype }}">
+                <input type="hidden" name="shopCode" value="{{ shopCode }}">
+                <p>
+                    <input class="query-enter" type="button" value="返回" onclick="closeFun()">
+                    <input class="query-enter" type="button" value="导出到excel" onclick="queryForm(2)">
+                </p>
+            </form>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    销售汇总―柜组{% if type %}{{ type }}{% endif %}销售汇总
+                </h1>
+                <h3>
+                    单位：<span>{{ grpname }}</span>
+                </h3>
+                <h3>
+                    门店：<span>{{ shops }}</span>
+                </h3>
+                <p>
+                    <b>经营方式：</b><span>全部</span> <b>时间：</b><span>{% if not sdate %}{{ start }}至{{ end }}{% else %} {{ sdate }} {% endif %}</span>  <b>单位：</b><span>元</span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>
+                           门店编号
+                        </th>
+                        <th>
+                            门店名称
+                        </th>
+                        <th>
+                            销售数量
+                        </th>
+                        <th>
+                            实际销售
+                        </th>
+                        <th>
+                            销售成本
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in list %}
+                        <tr>
+                            <th>
+                               {{ row.3 }}
+                            </th>
+                            <th>
+                                {{ row.4 }}
+                            </th>
+                            <th>
+                               {{ row.2 }}
+                            </th>
+                            <th>
+                               {{ row.1 }}
+                            </th>
+                            <th>
+                                {{ row.0 }}
+                            </th>
+                        </tr>
+                    {% endfor %}
+                     <tr style="background-color: lightskyblue">
+                        <th>合计</th>
+                        <th></th>
+                        <th>{{ sum1 }}</th>
+                        <th>{{ sum2 }}</th>
+                        <th>{{ sum3 }}</th>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current = "xiaoshou";
+            function queryForm(val){
+                $("#qtype").attr("value",val);
+                $("#queryForm").submit();
+            };
+            //关闭窗口
+            function closeFun(){
+                //window.opener.location.reload();
+                self.close();
+            }
+        </script>
+    </body>
+</html>

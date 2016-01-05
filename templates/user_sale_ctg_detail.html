@@ -1,0 +1,135 @@
+
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="query comWidth">
+            <form class="query comWidth" style="width: 100%;text-align: right;" method="post" id="queryForm" action="/scm/base/supp/sale/category/detail/">
+                <p>
+                    <input class="query-enter" type="button" value="返回" onclick="closeFun()">
+                    <input class="query-enter" type="button" value="导出到excel" onclick="queryForm(2)">
+                    <input type="hidden" name="sccode" value="{{ sccode }}">
+                    <input type="hidden" id="qtype" name="qtype" value="{{ qtype }}">
+                </p>
+            </form>
+        </div>
+         <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    类别销售汇总
+                </h1>
+                <h3>
+                    单位：<span>{{ grpname }}</span>
+                </h3>
+                <h3>
+                    门店：<span>{{ shops }}</span>
+                </h3>
+                <p>
+                    <b>经营方式：</b><span>全部</span> <b>时间：</b><span>{{ start }}至{{ end }}</span> <b>单位：</b><span>元</span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th class="col1">
+                            日期
+                        </th>
+                        <th class="col1">
+                            小类编码
+                        </th>
+                        <th class="col1">
+                            小类名称
+                        </th>
+                        <th class="col1">
+                            销售数量
+                        </th>
+                        <th class="col1">
+                            实际销售
+                        </th>
+                        <th class="col1">
+                            销售成本
+                        </th>
+                        <th class="col1">
+                            占比(%)
+                        </th>
+                        <th class="col1">
+                            累计占比(%)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rslist %}
+                        <tr>
+                             <td class="col1">
+                                {{ row.0|date:"Y-m-d"  }}
+                            </td>
+                            <td class="col1">
+                                {{ row.1 }}
+                            </td>
+                            <td class="col1">
+                               {{ row.2 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.3 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.4|floatformat:1 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.5|floatformat:1 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.6|floatformat:2 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.7|floatformat:1 }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr style="background-color: lightskyblue">
+                        <td class="col1">
+                            合计
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                         <td class="col1">
+
+                        </td>
+                        <td class="col1">
+                            {{ sum1}}
+                        </td>
+                        <td class="col1">
+                            {{ sum2}}
+                        </td>
+                        <td class="col1">
+                            {{ sum3}}
+                        </td>
+                        <td class="col1">
+                            100.00
+                        </td>
+                        <td class="col1">
+                             100.00
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current = "xiaoshou";
+
+            function queryForm(val){
+                $("#qtype").attr("value",val);
+                $("#queryForm").submit();
+            };
+            function closeFun(){
+                //window.opener.location.reload();
+                self.close();
+            }
+        </script>
+    </body>
+</html>

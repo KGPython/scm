@@ -18,8 +18,7 @@ a {
 	color: #333;
 	text-decoration: none;
 }
-a:hover,
-a:focus {
+a:hover{
   color: #337AB7;
   text-decoration: underline;
 }
@@ -49,7 +48,7 @@ caption,th{
 } 
 input,textarea{
 	outline:none;
-	background:none;
+	background:#fff;
 	border: 1px solid #CCC;
 	border-radius: 5px;
 }

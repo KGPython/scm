@@ -1,182 +1,191 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>通知</title>
-	<link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/main.css"/>
-  <script type="text/javascript" src="js/laydate.js"></script>
-	<!--[if IE 6]>
-	<script type="text/javascript" src="js/DD_belatedPNG_0.0.8a-min.js"></script>
-	<script type="text/javascript" src="js/ie6fixpng.js"></script>
-	<![endif]-->
-  <style type="text/css">
-    
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div class="logo"></div>
-    <div class="nav comWidth">
-      <ul class="nav-list" style="display:block">
-        <li class="nav-list-item"><a href="index.html">首页</a></li>
-        <li class="nav-list-item"><a href="user_base.html">基本资料</a></li>
-        <li class="nav-list-item"><a href="user_order.html">订货</a></li>
-        <li class="nav-list-item"><a href="user_saile.html">销售</a></li>
-        <li class="nav-list-item"><a href="user_stock.html">库存</a></li>
-        <li class="nav-list-item"><a href="user_bill.html">单据</a></li>
-        <li class="nav-list-item"><a href="user_settle.html">结算</a></li>
-        <li class="nav-list-item"><a class="active" href="user_notice.html">通知</a></li>
-        <li class="nav-list-item"><a href="/">退出</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="query retail_notice comWidth">
-    <form class="query-list">
-      <p><label>编号：</label><input type="text"></p>
-      <p class="date">
-          <label for="start">提交日期：</label>
-          <input class="inline laydate-icon" id="start" name="start" type="text" style="width:180px; margin-right:10px;">    
-      </p>
-      <p class="date">
-          <label for="start">结束日期：</label>
-          <input class="inline laydate-icon" id="end" name="end" type="text" style="width:180px; margin-right:10px;">    
-      </p>
-      <p><input type="button" value="查询收到的信息"></p>
-      <p><input type="button" value="查询发出的信息"></p>
-      <p><input type="button" value="新建"></p>
-    </form>
-    <form class="shopList-cnt" action="">
-      <p class="shopList-cnt-tit">
-        <span>门店：</span>
-        <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
-        <input type="submit" value="确定">
-        <input class="close" type="button" value="放弃">
-      </p>
-      <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-        <thead>
-          <tr>
-            <th>选择</th>
-            <th>门店编码</th>
-            <th>门店名称</th>
-            <th>经营方式</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>     
-  </div>
-  <div class="mainNotice comWidth" style="margin-top:20px">
-	   <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-		  <thead>
-			<tr>
-			  <th>编号</th>
-				<th>标题</th>
-				<th>接收人</th>
-				<th>提交时间</th>
-				<th>单位</th>
-				<th>发送人</th>
-				<th>内容</th>
-			</tr>
-		  </thead>
-		  <tbody>
-			<tr>
-				<td>编号</td>
-				<td>标题</td>
-				<td>接收人</td>
-				<td>提交时间</td>
-				<td>单位</td>
-				<td>发送人</td>
-				<td>内容</td>
-			</tr>
-		  </tbody>
-	  </table>
-      <div class="page">
-        <span>每页</span>
-        <input class="pageTxt" id="pageNum" name="pageNum" type="text">
-        <span>条记录</span>
-        <span>共<b>200</b>页/<b>200</b>条记录</span>
-        <a href="#">首页</a>
-        <a href="#">上一页</a>
-        <a href="#">下一页</a>
-        <a href="#">尾页</a>
-        <span class="totalPage">到第</span>
-        <input  class="pageTxt" id="pageIndex" name="pageIndex" type="text">
-        <span>页</span>
-        <input value="确定" id="pageEnter" type="button">
-      </div>  
-  </div>
-<!--[if IE]> <script type="text/javascript" src="js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="js/jquery-2.1.4.min.js"></script><![endif]> 
-<script type="text/javascript">
-  !function(){
-    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
-    laydate({elem: '#demo'});//绑定元素
-  }();
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统
+        </title>
+    </head>
+    <body>       
+        {% include "common/nav.html" %}
+        <div class="query retail_notice comWidth">
+            <form class="query-list" action="{% url 'msglist' %}" method="post">
+                {% csrf_token %}
+                <p>
+                    <label>编号：</label>
+                    {{ form.infocode }}
+                </p>
+                <p class="date">
+                    <label for="start">提交日期：</label>
+                    {{ form.start }}
+                    {{ form.start.errors }}
+                </p>
+                <p class="date">
+                    <label for="start">结束日期：</label>
+                    {{ form.end }}
+                    {{ form.start.errors }}
+                </p>
+                <input type="hidden" id="flag" name="flag" value="">
+                <p>
+                    <input type="submit" value="查询收到的信息" onclick="flagFun('msgIn')">
+                </p>
+                <p>
+                    <input type="submit" value="查询发出的信息" onclick="flagFun('msgOut')">
+                </p>
+                <p>
+                    {% if userType == "2" %}
+                        <a class="button" href="{% url 'msgCreate' %}?infotype=1">新建</a>
+                    {% elif userType == "1" %}
+                        <a class="button" href="{% url 'msgCreate' %}?infotype=0">新建</a>
+                    {% endif %}
+                </p>
+            </form>
+        </div>
+        <div class="mainNotice comWidth" style="margin-top:20px">
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>
+                            编号
+                        </th>
+                        <th>
+                            标题
+                        </th>
+                        <th>
+                            接收人
+                        </th>
+                        <th>
+                            提交时间
+                        </th>
+                        <th>
+                            单位
+                        </th>
+                        <th>
+                            发送人
+                        </th>
+                        <th>
+                            内容
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for info in infoList %}
+                    <tr>
+                        <td>{{ info.infocode }}</td>
+                        <td>{{ info.title }}</td>
+                        <td>{{ info.depart }}</td>
+                        <td>{{ info.subtime|date:"Y-m-d" }}</td>
+                        <td>{{ info.usergrpname }}</td>
+                        <td>{{ info.username }}</td>
+                        <td>
+                            <a href="{% url 'msgPreview' %}?infocode={{ info.infocode }}">浏览</a>
+                            {% if userCode == info.checker %}
+                            <a href="{% url 'msgCreate' %}?infocode={{ info.infocode }}&infotype=1">修改</a>
+                            <a href="{% url 'msglist' %}?action=del&infocode={{ info.infocode }}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}{% if flag %}&flag={{ flag }}{% endif %}" onclick="return confirmFun()">删除</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="page">
+               <span>第<b>{{ page }}</b>页/共<b>{{ infoList.paginator.num_pages }}</b>页</span>
+                <a href="?page=1{% if infoCode %}&infocode={{ infoCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}{% if flag %}&flag={{ flag }}{% endif %}">首页</a>
 
-  //日期范围限制
-  var start = {
-      elem: '#start',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(), //设定最小日期为当前日期
-      max: '2099-06-16', //最大日期
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-           end.min = datas; //开始日选好后，重置结束日的最小日期
-           end.start = datas //将结束日的初始值设定为开始日
-      }
-  };
+                {% if infoList.has_previous %}
+                <a href="?page={{ infoList.previous_page_number }}{% if infoCode %}&infocode={{ infoCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}{% if flag %}&flag={{ flag }}{% endif %}">上一页</a>
+                {% else %}
+                <a href="javascript:;">上一页</a>
+                {% endif %}
 
-  var end = {
-      elem: '#end',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(),
-      max: '2099-06-16',
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-          start.max = datas; //结束日选好后，充值开始日的最大日期
-      }
-  };
-  laydate(start);
-  laydate(end);
+                {% if infoList.has_next %}
+                <a href="?page={{ infoList.next_page_number }}{% if infoCode %}&infocode={{ infoCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}{% if flag %}&flag={{ flag }}{% endif %}">下一页</a>
+                {% else %}
+                <a href="javascript:;">下一页</a>
+                {% endif %}
 
-  //自定义日期格式
-  laydate({
-      elem: '#test1',
-      format: 'YYYY年MM月DD日',
-      festival: true, //显示节日
-      choose: function(datas){ //选择日期完毕的回调
-          alert('得到：'+datas);
-      }
-  });
+                <a href="?page={{ infoList.paginator.num_pages }}{% if infoCode %}&infocode={{ infoCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}{% if flag %}&flag={{ flag }}{% endif %}">尾页</a>
+                <form id="pageForm" name="pageForm" method="get">
+                    <input name="flag" type="hidden" value="{{ flag }}">
+                    <input name="infocode" type="hidden" value="{{ infoCode }}">
+                    <input name="start" type="hidden" value="{{ start }}">
+                    <input name="end" type="hidden" value="{{ end }}">
+                    <span class="totalPage">到第</span>
+                    <input class="pageTxt" id="page" name="page" type="text" value="1">
+                    <span>页</span>
+                    <input value="确定" id="pageEnter" type="button">
+                </form>
+            </div>
 
-  //日期范围限定在昨天到明天
-  laydate({
-      elem: '#hello3',
-      min: laydate.now(-1), //-1代表昨天，-2代表前天，以此类推
-      max: laydate.now(+1) //+1代表明天，+2代表后天，以此类推
-  });
-  </script>
-</body>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current = "tongzhi"
+            $(function(){
+                $("#pageEnter").on("click",function(){
+
+                    var pageNum = $("#page").val();
+
+                    if(!isNaN(pageNum) && pageNum!=''){
+                        var num = parseInt(pageNum);
+                        var maxNum = parseInt('{{ infoList.paginator.num_pages }}');
+
+                        if(num<1){
+                             $("#page").val(1);
+                        }
+                        if(num>maxNum){
+                            $("#page").val(maxNum);
+                        }
+                    }else{
+                         $("#page").val(1);
+                    }
+                    $("#pageForm").submit();
+                });
+            });
+            !function(){
+                laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+            }();
+
+            //日期范围限制
+            var start = {
+                elem: '#start',
+                format: 'YYYY-MM-DD',
+                //min: laydate.now(), //设定最小日期为当前日期
+                max: '2099-06-16', //最大日期
+                istime: true,
+                istoday: false,
+                choose: function(datas){
+                   end.min = datas; //开始日选好后，重置结束日的最小日期
+                   end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+
+            var end = {
+                elem: '#end',
+                format: 'YYYY-MM-DD',
+                //min: laydate.now(),
+                max: '2099-06-16',
+                istime: true,
+                istoday: false,
+                choose: function(datas){
+                    start.max = datas; //结束日选好后，充值开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+
+        </script>
+        <script>
+            function flagFun(flag){
+                $("#flag").attr("value",flag);
+            }
+
+            function confirmFun(){
+                if(confirm('确认要删除此条记录？')){
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        </script>
+    </body>
 </html>

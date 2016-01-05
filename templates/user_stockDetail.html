@@ -1,0 +1,122 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="query comWidth">
+            <form class="query-list" id="queryForm" name="queryForm" method="post">
+                {% csrf_token %}
+                <p class="shopList">
+                    <label>门店：</label>
+                    {{ form.shopCode }}
+                    <span class="shopList-icon"></span>
+                </p>
+                <p>
+                    <label>商品编码：</label>{{ form.proCode }}
+                </p>
+                <p>
+                    <label>库存范围：</label> {{ form.num1 }} <span>&lt;=库存数量&lt;=</span> {{ form.num2 }}
+                </p>
+                <p>
+                    <label>商品类别：</label>{{ form.scCode }}
+                </p>
+                <p>
+                    <label>商品名称：</label>{{ form.proName }}
+                </p>
+                <p>
+                    <label>查询条件：</label>
+                    {{ form.orderStyle }}
+                </p>
+                <p>
+                    <input class="query-enter" id="queryOut" type="submit" value="查询" onclick="outQuery()">
+                </p>
+                <p>
+                    <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
+                </p>
+            </form>
+            <div class="shopList-cnt">
+                <p class="shopList-cnt-tit">
+                    <span>门店：</span>
+                    <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
+                    <input class="enter" type="button" value="确定">
+                    <input class="close" type="button" value="放弃">
+                </p>
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                    <thead>
+                        <tr>
+                            <th>选择</th>
+                            <th>门店编码</th>
+                            <th>门店名称</th>
+                            <th>经营方式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for shop in shopList %}
+                        <tr>
+                            <td><input type="checkbox" name="" id="" value="{{ shop.shopcode }}" title="{{ shop.shopnm }}"></td>
+                            <td >{{ shop.shopcode }}</td>
+                            <td class="shopNm">{{ shop.shopnm }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>全部库存明细列表</h1>
+                <p>单位：{{ grpName }} 单位：元</p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+{#                        <th>门店编码</th>#}
+                        <th>商品编码</th>
+                        <th>商品名称</th>
+                        <th>商品条码</th>
+                        <th>小类编码</th>
+                        <th>小类名称</th>
+                        <th>规格</th>
+                        <th>单位</th>
+                        <th>数量</th>
+                        <th>含税进价金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for stcok in stockList %}
+                    <tr>
+                        <td><a href="{% url 'detailArticle' %}?{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if stcok.procode %}&procode={{ stcok.procode }}{% endif %}{% if stcok.proname %}&proname={{ stcok.proname }}{% endif %}{% if num1 %}&num1={{ num1 }}{% endif %}{% if num2 %}&num2={{ num2 }}{% endif %}">{{ stcok.procode }}</a></td>
+                        <td>{{ stcok.proname }}</td>
+                        <td>{{ stcok.barcode }}</td>
+                        <td>{{ stcok.sccode }}</td>
+                        <td>{{ stcok.scname }}</td>
+                        <td></td>
+                        <td>{{ stcok.unit }}</td>
+                        <td>{{ stcok.num }}</td>
+                        <td>{{ stcok.sums_intax }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                        <td colspan="8">合计：</td>
+                        <td>{{ total_sums_intax }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script>
+            current ="kucun";
+
+            function outQuery(){
+                document.queryForm.action ="{% url 'stockDetail' %}?action=outQuery";
+            }
+            function outQxcel(){
+                document.queryForm.action ="{% url 'stockDetail' %}?action=outExcel";
+            }
+        </script>
+    </body>
+</html>

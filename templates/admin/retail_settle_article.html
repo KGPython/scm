@@ -1,0 +1,173 @@
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+
+        <style type="text/css" media="print">
+            .noprint{display : none }
+            .tTitle{
+                text-align: center;
+            }
+            table{
+                font-family: verdana,arial,sans-serif;
+                font-size:11px;
+                color:#333333;
+                border-width: 1px;
+                border-color: #666666;
+                border-collapse: collapse;
+            }
+            table th {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #dedede;
+                font-weight: normal;
+            }
+            table td {
+                border-width: 1px;
+                padding: 8px;
+                border-style: solid;
+                border-color: #666666;
+                background-color: #ffffff;
+            }
+        </style>
+    </head>
+    <body>        
+       {% include "common/nav.html" %}
+        <div class="query comWidth noprint">
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
+            <input class="query-print right" type="button" onclick=" javascript:print()" value="打印当前页" style="margin-right: 20px"/>
+        </div>
+        <div class="mainSettle comWidth" id="printBox">
+            <div class="tTitle">
+                <h1>
+                    {{ grpName }}
+                </h1>
+                <h2>
+                    结算通知单汇总
+                </h2>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <tbody>
+                    <tr>
+                        <td>单据编号</td><td>{{ balanceList.sheetid }}</td>
+                        <td>分店号</td><td>{{ balanceList.shopid }}|{{ shopDict | key:balanceList.shopid }}</td>
+                        <td>支付方式</td><td>{{ payTypeDict | key:balanceList.paytype }}</td>
+                    </tr>
+                    <tr>
+                        <td>供应商编号</td><td colspan="2">{{ balanceList.venderid}}|{{ balanceList.vendername}}</td>
+                        <td>结算日期范围</td>
+                        <td colspan="2">{{ balanceList.begindate | date:'Y-m-d' }} 至 {{ balanceList.enddate | date:'Y-m-d' }}</td>
+                    </tr>
+                    <tr>
+                        <td>本期应付金额</td><td>{% if balanceList.curdxvalue == 0 %}{{ balanceList.payablemoney | floatformat:2 }}{% else %}{{ balanceList.curdxvalue  | floatformat:2 }}{% endif %}</td>
+{#                        <td>应开票金额</td><td>{% if balanceList.curdxvalue == 0 %}{{ balanceList.payablemoney | floatformat:2 }}{% else %}{{ balanceList.curdxvalue  | floatformat:2 }}{% endif %}</td>#}
+                        <td>应开票金额</td><td>{{ invoicePay }}</td>
+                        {% if balanceList.contracttype == 2%}
+                            备注：此处功能源码中有，但目前尚未使用，待开发
+                            <td>
+                                <a class="red" href="#" onclick="">
+                                    勾单金额
+                                </a>
+                            </td>
+                            <td></td>
+                        {% else %}
+                            <td>本期实付金额</td><td>{{ realPay }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <td>帐扣扣项</td><td colspan="2">{% if zkkx < 0 %}-{{ zkkx }}{% else %}{{ zkkx }}{% endif %}</td>
+                        <td>预付款</td><td colspan="2">{% if balanceList.premoney %}{{ balanceList.premoney}}{% else %}0{% endif %}</td>
+                    </tr>
+                </tbody>
+            </table>
+            <div class="tTitle">
+                <h2>
+                    结算通知单明细
+                </h2>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>
+                            序号
+                        </th>
+                        <th>
+                            结算位置
+                        </th>
+                        <th>
+                            单据名称
+                        </th>
+                        <th>
+                            单据编号
+                        </th>
+                        <th>
+                            类别
+                        </th>
+                        <th>
+                            应付日期
+                        </th>
+                        <th>
+                            应结金额
+                        </th>
+                        <th>
+                            税金
+                        </th>
+                        <th>
+                            税率
+                        </th>
+                    </tr>
+                </thead>
+                {% for item in balanceItems %}
+                <tr>
+                    <td>{{ item.lineIndex }}</td>
+                    <td>
+                        {{ shopDict | key:item.inshopid }}
+                    </td>
+                    <td>
+                        {{ billTypeDict | key:item.refsheettype }}
+                    </td>
+                    <td>{{ item.refsheetid }}</td>
+                    <td>
+                        {% for org in orgList %}
+                            {% if org.orgcode == item.managedeptid %}
+                                {{ org.orgname }}
+                            {% endif %}
+                        {% endfor %}
+                    </td>
+                    <td>{{ item.payabledate | date:'Y-m-d' }}</td>
+                    <td>{{ item.costvalue }}</td>
+                    <td>{{ item.costtaxvalue }}</td>
+                    <td>{{ item.costtaxrate }}</td>
+                </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="6">合计</td>
+                    <td>{{ totalCostValue }}</td>
+                    <td>{{ totalCostTax }}</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td colspan="2">制单人</td><td>{% if balanceList.editor %}{{ balanceList.editor}}{% else %}{% endif %}</td>
+                    <td>制单日期</td><td>{{ balanceList.editdate | date:'Y-m-d'}}</td>
+                    <td>审核人</td><td>{% if balanceList.checker %}{{ balanceList.checker}}{% else %}{% endif %}</td>
+                    <td>付款审批</td><td>{% if balanceList.paychecker %}{{ balanceList.paychecker}}{% else %}{% endif %}</td>
+                </tr>
+                <tr>
+                    <td colspan="2">收款人</td>
+                    <td></td>
+                    <td>收款日期</td>
+                    <td></td>
+                    <td>备注</td>
+                    <td colspan="3"></td>
+                </tr>
+            </table>
+        </div>
+       {% include "common/footer.html" %}
+       <script>
+           current="jiesuan";
+       </script>
+    </body>
+</html>

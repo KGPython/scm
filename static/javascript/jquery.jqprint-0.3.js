@@ -70,6 +70,7 @@
 
     // Thanks to 9__, found at http://users.livejournal.com/9__/380664.html
     jQuery.fn.outer = function() {
-      return $($('<div></div>').html(this.clone())).html();
+        alert($($('<div></div>').html(this.clone())).html());
+        return $($('<div></div>').html(this.clone())).html();
     } 
 })(jQuery);

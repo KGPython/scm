@@ -1,3 +1,26 @@
+input[type="button"],
+input[type="submit"],
+.button{
+	padding:0 10px;
+	height: 35px;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	text-align: center;
+	font-size: 16px;
+	color: #fff;
+}
+.button{
+	min-width: 80px;
+	min-height: 35px;
+	line-height: 35px;
+	display: inline-block;
+	color: #fff;
+}
+.button:hover{
+	color: #fff;
+	text-decoration:none ;
+}
 /*
 ***************************************用户登录页****************************************
 */
@@ -5,42 +28,43 @@ body{
 	background:#efefef;
 }
 .login-main{
-	margin:200px auto 0;
+	margin:150px auto 0;
 	width: 800px;
 	overflow: hidden;
 	text-align: center;
+	background: #fff;
 }
 .l-main-title{
-	margin-bottom: 50px;
+	margin-bottom: 30px;
 }
 .l-main-content p{
 	margin-bottom:10px; 
 	font-size: 16px;
 }
 .l-main-content p input{
-	padding: 6px 12px;
-	margin-left:20px;     
-	width: 500px;
+	padding: 6px 5px;
+	margin-left:20px;
+	width: 250px;
 	height: 34px;
-	text-indent: 10px;
+	text-indent: 5px;
 	border-radius:5px ;
 
 } 
 .l-main-content .validate img{
 	display: inline-block;
-	width: 400px;
-	height: 46px;
-	margin-left: 40px;
-	margin-right:50px; 
+	width: 90px;
+	height: 30px;
+	margin-left: 10px;
+	margin-right:10px;
 }
 .l-main-content .validate a{
-	color: red;
+	color: cornflowerblue;
 	font-size: 18px;
 }
 .l-main-content p .enter{
 	margin-top:10px;
 	margin-left:70px; 
-	width: 524px;
+	width: 250px;
 	height: 46px;
 	background-color: #337AB7;
 	border-color: #2E6DA4;
@@ -51,68 +75,101 @@ body{
 ***************************************头部导航****************************************
 */ 
 .header{
-	height: 50px;
 	line-height: 50px;
 	background: #efefef;
 	margin-bottom:30px;
 	box-shadow: 0px 1px 5px #000; 
+	height: 60px;
+}
+.nav{
+	width:1510px;
+	margin-left: auto;
+	margin-right: auto;
+	height: 100%;
+}
+.nav .nav-list{
+	height: 100%;
 }
 .nav .nav-list .nav-list-item{
+	position: relative;
 	float: left;
-	margin-right:15px; 
-	width: 100px;
+	width: 120px;
 	font-size: 16px;
 }
-.nav-list{
-	display: none;
+.nav-item-icon{
+	color: #337AB7;
+	margin-left: 10px;
+	font-size:10px;
 }
-.nav-list .nav-list-item a{
+.nav-list a{
 	display: block;
 	padding:0px 10px;
-	margin-top:10px; 
-	width: 80px;
-	height: 30px;
-	line-height: 30px;	
+	height: inherit;
+	line-height: 58px;
 	text-align: center;	
 }
-.nav-list .nav-list-item .active{
-	border-radius:20px;
-	background: #aaa;
-	color: #fff;
+.nav-list a:hover{
+	text-decoration: none;
+}
+.nav-list2{
+	position: absolute;
+	top:60px;
+	display: none;
+	width: 118px;
+	clear: both;
+	background: #FFF ;
+	border:1px solid #EFEFEF;
+	border-top:none;
+	z-index: 1000;
+}
+.nav-list2 li{
+	height: 45px;
+	text-align: center;
+	border-bottom:1px dotted #fff; 
+	border-top: 1px dotted #ddd; 
+}
+.nav-list2 li a{
+	line-height: 45px;
+	font-size: 14px;
 }
 
 /*
 ***************************************查询表单模块****************************************
 */
-/*.query{
-	position: relative;
+.query{
+	margin-bottom:20px; 
 }
-*/
+
 .query-list{
 	display: block;
 	margin: 0 auto;
 	overflow: hidden;
+	float: left;
 }
 .query .query-list p{
 	float: left;
-	margin-left: 20px;
+	margin-right: 20px;
 }
 .query .query-list p label{
 	display: block;
 	margin-bottom:5px; 
 }
 .query .query-list p select,
-.query .query-list p input[type="text"]{
+.query .query-list p input[type="text"],
+.query .query-list p input[type="password"]{
 	height: 30px;
 	width: 120px;
 	text-indent: 10px;
 }
-.query .query-list p input[type="text"]{
+.query .query-list p input[type="text"],
+.query .query-list p input[type="password"]{
 	background-color: #fff
 }
 .query-enter,
 .query-print,
-.printBtn{
+.printBtn,
+.outPut{
+	display: inline-block;
 	padding: 6px 12px;
 	margin-top: 19px;
 	color: #FFF;
@@ -121,6 +178,16 @@ body{
 	border-radius: 5px;
 	text-align: center;
 	font-size: 16px; 
+}
+.laydate-icon
+.outPut{
+	border: 1px solid #337AB7;
+}
+.outPut:hover{
+	color: #fff;
+	text-decoration: none;
+	border: 1px solid #66AFE9;
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
 }
 .printBtn{
 	display: block;
@@ -140,12 +207,15 @@ body{
 .shopList-cnt{
 	display: none;
 	position: absolute;
-	width: 400px;
+	width: 450px;
+	height: 450px;
 	background: #efefef;
-	overflow: hidden;
+	overflow: auto;
 	border: 1px solid #ccc
 }
 .shopList-cnt-tit{
+	/*position: fixed;*/
+	width: 450px;
 	height: 45px;
 	background: #ddd;
 	line-height: 45px;
@@ -169,13 +239,29 @@ body{
 	color:#fff;
 	padding: 2px 4px;
 }
-
+.shopList-cnt table{
+	/*margin-top: 45px;*/
+}
 .shopList-cnt th{
 	font-size: 14px
+}
+.errorlist{
+	display:block;
+	float: left;
+	margin-top: 55px;
+	margin-left: -190px;
+	height: 25px;
+	color: darkred;
+}
+.query-list #end,.query-list #start{
+	width: 200px;
 }
 /*
 ***************************************表格模块****************************************
 */
+.shopListTxt{
+	display: inline-block;
+}
 .tTitle{
 	margin-top:10px; 
 	margin-bottom:15px;
@@ -184,28 +270,37 @@ body{
 .tTitle p b{
 	margin-left:20px; 
 }
-thead th{
-	background:#ccc;
-	text-align:center;
-	height:35px;
-	line-height:35px;
+table{
+	width: 100%;
+	font-family: verdana,arial,sans-serif;
+	font-size:11px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+	background: #999;
+}
+table th {
 	font-size:16px;
-	font-weight:bold;
+	font-weight: bold;
+	text-align: center;
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #ccc;
 }
-.thead{
-	background:#ccc;
-	font-size: 14px
-}
-tbody{
-	background:#e5e5e5;
-	text-align:center;
-	height:35px;
-	line-height:35px;
-	font-size:12px;
+table td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #e5e5e5;
+	text-align: center;
 }
 tbody a{
-	color: #337AB7
-}
+			color: #337AB7
+		}
 /*
 ***************************************首页****************************************
 */
@@ -215,16 +310,16 @@ tbody a{
 .mainHome .sideNav{
 	padding-left: 20px;
 	padding-right: 20px;
-	margin-right:10px; 
-	margin-top:100px; 
-	margin-bottom:500px; 
-	width: 260px;	
+	margin-right:10px;
+	margin-top:100px;
+	margin-bottom:500px;
+	width: 260px;
 	overflow: hidden;
 }
 .sideNav .sideNav-list .sideNav-list-item a{
 	display: block;
 	padding:6px 12px;
-	margin-top:25px; 
+	margin-top:25px;
 	height: 34px;
 	line-height: 34px;
 	color: #FFF;
@@ -263,16 +358,36 @@ tbody a{
 	margin-left:50px;
 	margin-right:20px  
 }
-.mainNotice{
+/*
+***************************************通知内容页****************************************
+*/
+.articleNotice{
 	width: 50%;
-	padding: 20px;
+	padding:10px 20px;
 	background: #ccc
 }
-.mainNotice h3{
+.articleNotice h3,
+.articleNotice h2{
 	text-align: center;
 	line-height: 50px;
-	border-bottom:2px solid #fff 
+	border-bottom:2px solid #fff
 }
+.articleNotice .notice-ctn{
+	height: 500px;
+	padding: 10px;
+	text-indent: 14px;
+	overflow: auto;
+}
+.noticeBottom{
+	border-bottom:2px solid #fff
+}
+.noticeBottom p{
+	padding: 0;
+	width: 210px;
+	line-height: 35px;
+	color: #337AB7
+}
+
 /*
 ***************************************打印页面****************************************
 */
@@ -285,11 +400,12 @@ tbody a{
 }
 
 /*
-***************************************权限设置****************************************
+***************************************权限设置(供应商角色、角色管理)****************************************
 */
 .mainConf{
 	height: 100%;
-	margin-top:-25px 
+	margin-top:-25px ;
+	min-width: 1610px;
 }
 /******************左侧******************/
 .confSide{
@@ -345,6 +461,9 @@ tbody a{
 	font-weight: bold;
 }
 .confCnt-form .conf h3 input{
+	float: right;
+	padding: 3px 6px;
+	margin-top:10px;
 	background-color: #337AB7;
 	border-color: #2E6DA4;
 	border-radius: 5px;
@@ -360,9 +479,15 @@ tbody a{
 	margin-bottom:15px; 
 	width: 45%;
 }
+.confCnt-form p label{
+	display: block;
+}
 .confCnt-form p input{
-	padding: 6px 12px;
-	margin-left:5px; 
+	padding: 6px 12px; 
+}
+.confCnt-form p select{
+	width: 161px;
+	height: 30px;
 }
 .confCnt-form .btn{
 	width: auto;
@@ -376,6 +501,105 @@ tbody a{
 	border-radius: 5px;
 	color: #fff;
 	margin:10px; 
+}
+.powerSet-box,
+.roles-box{
+	display: none;
+	position: absolute;	
+	padding:20px;
+	clear: both;
+	background:#eee;	
+	color: #333;
+	border: 1px solid #999
+}
+.powerSet-box{
+	overflow: hidden;
+	top:300px;
+	right: 100px;
+	height: 500px;
+	overflow-y: auto;
+}
+
+.powerSet-box p,
+.roles-box p{
+	margin-bottom:15px; 
+}
+.powerSet-box .btn{
+	text-align: center;
+}
+.powerSet-box .btn input,
+.roles-box .btn input,
+.powerSet-box .title input{
+	padding: 3px 6px;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	border-radius: 5px;
+	color: #fff;
+}
+.roles-box{
+	top:300px;
+	right: 100px;
+	overflow: hidden;
+}
+
+.roles-box .checkbox input{
+	margin-right:10px; 
+}
+.mainConf .shopList-cnt{
+	top:300px;
+	right: 100px;
+}
+.pwNotice li{float: left}
+/*
+***************************************供应商管理****************************************
+*/
+.supply_admin .query-list p label{
+	display: inline
+}
+.supply_admin .query-list p label{
+	display: inline
+}
+.supply_admin .query-list .btn{
+	float: right;
+}
+.supply_admin .query-enter{
+	margin-top: 0px;
+}
+.supply_admin table a{
+	font-size: 25px
+}
+.supply_admin table .click{
+	cursor: pointer;
+	color: #337AB7
+}
+
+.supply_admin input{
+	margin-right:10px; 
+}
+.setPwd .confCnt-form p{
+	display: block;
+	width: 100%;
+	text-align: center;
+}
+.setPwd .confCnt-form .newpwd{
+	text-indent: 25px;
+}
+.setPwd .confCnt-form p label{
+	display:inline
+}
+.setPwd .confCnt-form .btn input{
+	width: 100px;
+}
+.setPwd .btn{
+	clear:both;
+	width: 100%;
+	text-align: center;
+}
+.retail-log .query .query-list p label{
+	display: inline;
+}
+.retail-log .query .query-list p .query-enter{
+	margin-top: 0
 }
 /*
 ***************************************分页按钮****************************************
@@ -406,7 +630,8 @@ tbody a{
 	height: 24px;
 	line-height: 24px\9;
 	_line-height: 28px\9;
-	color:#ccc;
+	color:#333;
+	text-align: center;
 }
 .page #pageEnter{
 	width:44px;
@@ -415,6 +640,10 @@ tbody a{
 	padding:0 3px;
 	margin-right: 7px;
 	border: 1px solid #ccc;
-	background: #eee;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
 	cursor: pointer;
+}
+.page #pageForm{
+	display: inline-block;
 }

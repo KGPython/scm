@@ -1,103 +1,119 @@
-<!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>商业供应链系统</title>
-	<link rel="stylesheet" href="../css/reset.css"/>
-	<link rel="stylesheet" href="../css/main.css"/>
-</head>
-<body>
-  <div class="header">
-  	<div class="logo"></div>
-  	<div class="nav comWidth">
-  		<ul class="nav-list" style="display:block">
-  			<li class="nav-list-item"><a class="active" href="index.html">首页</a></li>
-  			<li class="nav-list-item"><a href="retail_order.html">订货</a></li>
-        <li class="nav-list-item"><a href="retail_settle.html">结算</a></li>
-  			<li class="nav-list-item"><a href="retail_notice.html">通知</a></li>
-  			<li class="nav-list-item"><a href="/">退出</a></li>
-  		</ul>
-      <ul class="nav-list">
-        <li class="nav-list-item"><a class="active" href="index.html">首页</a></li>
-        <li class="nav-list-item"><a href="sysConf_supply.html">供应商权限</a></li>
-        <li class="nav-list-item"><a href="sysConf_retail.html">零售商权限</a></li>
-        <li class="nav-list-item"><a href="login.html">退出</a></li>
-      </ul>
-      <ul class="nav-list">
-        <li class="nav-list-item"><a class="active" href="index.html">首页</a></li>
-        <li class="nav-list-item"><a href="/">退出</a></li>
-      </ul>
-  	</div>
-  </div>
-  <div class="mainHome comWidth">
-  	<div class="sideNav left">
-  		<ul class="sideNav-list">
-  			<li class="sideNav-list-item"><a href="/" title="retail">零售商数据</a></li>
-  			<li class="sideNav-list-item"><a href="/" title="sysConf">系统配置</a></li>
-  			<li class="sideNav-list-item"><a href="/" title="synNotice">协同信息</a></li>
-  		</ul>
-  	</div>
-  	<div class="noticeHome right">
-      <div class="tTitle">
-  		  <h2>供应商通知</h2>
-      </div>
-  	  <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-  		  <thead>
-  			<tr>
-  			  <th>编号</th>
-  			  <th>标题</th>
-  			  <th>发布时间</th>
-  			  <th>发布单位</th>
-  			  <th>发布人</th>
-  			</tr>
-  		  </thead>
-  		  <tbody>
-  			<tr>
-  				<td>编号</td>
-  				<td><a href="notice_article.html">标题001标题001标题001</a></td>
-  				<td>发布时间</td>
-  				<td>发布单位</td>
-  				<td>发布人</td>
-  			</tr>
-  			<tr>
-  				<td>编号</td>
-  				<td><a href="">标题001标题001标题001</a></td>
-  				<td>发布时间</td>
-  				<td>发布单位</td>
-  				<td>发布人</td>
-  			</tr>
-  			<tr>
-  				<td>编号</td>
-  				<td><a href="">标题001标题001标题001</a></td>
-  				<td>发布时间</td>
-  				<td>发布单位</td>
-  				<td>发布人</td>
-  			</tr>
-  		  </tbody>
-  	  </table>
-  		<div class="page">
-        <span>每页</span>
-        <input class="pageTxt" id="pageNum" name="pageNum" type="text">
-        <span>条记录</span>
-        <span>共<b>200</b>页/<b>200</b>条记录</span>
-        <a href="#">首页</a>
-        <a href="#">上一页</a>
-        <a href="#">下一页</a>
-        <a href="#">尾页</a>
-        <span class="totalPage">到第</span>
-        <input  class="pageTxt" id="pageIndex" name="pageIndex" type="text">
-        <span>页</span>
-        <input value="确定" id="pageEnter" type="button">
-      </div>  
-  	</div>
-  </div>
-<!--[if IE]> <script type="text/javascript" src="../js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script><![endif]> 
-<script type="text/javascript">
-  $(".sideNav-list-item").click(function(){
-    var i_sideNav=$(this).index();
-    $(".nav").find(".nav-list").eq(i_sideNav).show().siblings().hide();
-  })
-</script>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统
+        </title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="mainHome comWidth">
+            <div class="sideNav left">
+                <ul class="sideNav-list">
+                    <li class="sideNav-list-item">
+                        <a href="/scm/base/menu/?mtype=0" title="sysConf">系统配置</a>
+                    </li>
+                    <li class="sideNav-list-item">
+                        <a href="/scm/base/menu/?mtype=1" title="retail">零售商数据</a>
+                    </li>
+                    <li class="sideNav-list-item">
+                        <a href="/scm/base/menu/?mtype=3" title="synNotice">协同信息</a>
+                    </li>
+                </ul>
+            </div>
+            <div class="noticeHome right">
+                <div class="tTitle">
+                    <h2>
+                        供应商通知
+                    </h2>
+                </div>
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                    <thead>
+                        <tr>
+                            <th>
+                                编号
+                            </th>
+                            <th>
+                                标题
+                            </th>
+                            <th>
+                                发布时间
+                            </th>
+                            <th>
+                                发布单位
+                            </th>
+                            <th>
+                                发布人
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                          {% for row in page.object_list %}
+                            <tr>
+                                <td>{{ row.infocode }}</td>
+                                <td>
+                                    <a href="/scm/base/msg/info/?infocode={{ row.infocode }}" >{{ row.title }}</a>
+                                </td>
+                                <td>{{ row.subtime | date:'Y-m-d H:i'}}</td>
+                                <td>{{ row.usergrpname }}</td>
+                                <td>{{ row.username }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <div class="page">
+                    <span>第<b>{{ pageNum }}</b>页/共<b>{{ page.paginator.num_pages }}</b>页</span>
+                    <a href="/scm/base/admin/index/?pageNum=1">首页</a>
+                    {% if page.has_previous %}
+                        <a href="/scm/base/admin/index/?pageNum={{ page.previous_page_number }}">上一页</a>
+                    {% else %}
+                        <a href="javascript:void(0)" >上一页</a>
+                    {% endif %}
+
+                    {% if page.has_next %}
+                         <a href="/scm/base/admin/index/?pageNum={{ page.next_page_number }}">下一页</a>
+                    {% else %}
+                        <a href="javascript:void(0)" >下一页</a>
+                    {% endif %}
+
+                    <a href="/scm/base/admin/index/?pageNum={{ page.paginator.num_pages }}">尾页</a>
+
+                    <form method="get" id="codeForm" action="/scm/base/admin/index/" style="display: inline-block">
+                        <span class="totalPage">到第</span> <input type="text" class="pageTxt"  id="pageNum" name="pageNum"  value="{{ pageNum }}"> <span>页</span>
+                        <input type="button" id="pageEnter" value="确定" />
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current="shouye"
+
+            $(".sideNav-list-item").click(function(){
+                var i_sideNav=$(this).index();
+                $(".nav").find(".nav-list").eq(i_sideNav).show().siblings().hide();
+            })
+            $(function(){
+                $("#pageEnter").on("click",function(){
+
+                    var pageNum = $("#pageNum").val();
+
+                    if(!isNaN(pageNum) && pageNum!=''){
+                        var num = parseInt(pageNum);
+                        var maxNum = parseInt('{{ page.paginator.num_pages }}');
+
+                        if(num<1){
+                             $("#pageNum").val(1);
+                        }
+                        if(num>maxNum){
+                            $("#pageNum").val(maxNum);
+                        }
+                    }else{
+                         $("#pageNum").val(1);
+                    }
+                    $("#codeForm").submit();
+                });
+            });
+        </script>
+    </body>
 </html>

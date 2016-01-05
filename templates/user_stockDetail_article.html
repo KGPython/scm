@@ -1,0 +1,69 @@
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="query comWidth">
+             <form class="query-list" id="queryForm" name="queryForm" method="post" style="float: right;">
+                 {% csrf_token %}
+                 <input type="hidden" name="shopcode" value="{{ shopCode }}">
+                 <input type="hidden" name="procode" value="{{ proCode }}">
+                 <input type="hidden" name="proname" value="{{ proName }}">
+                 <input type="hidden" name="num1" value="{{ num1 }}">
+                 <input type="hidden" name="num2" value="{{ num2 }}">
+                 <p>
+                     <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
+                 </p>
+                 <p>
+                    <input class="query-enter" type="button" value="返回" onclick="window.history.back();return false;">
+                </p>
+             </form>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h2>
+                    单品: {{ proName }} &nbsp;&nbsp;&nbsp;&nbsp;库存单明细
+                </h2>
+                <p>单位：{{ grpName }} 单位：元</p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>门店</th>
+                        <th>数量</th>
+                        <th>含税进价</th>
+                        <th>商品该门店状态</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for stcok in stockList %}
+                    <tr>
+                        <td>{{ stcok.shopnm }}</td>
+                        <td>{{ stcok.num | floatformat:2}}</td>
+                        <td>{{ stcok.sums_intax | floatformat:2 }}</td>
+                        <td>{{ flagDict | key:stcok.clearflag }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                        <td colspan="1">合计：</td>
+                        <td>{{ total_num | floatformat:2 }}</td>
+                        <td>{{ total_sums_intax | floatformat:2 }}</td><td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script>
+            current ="kucun";
+            function outQuery(){
+                document.queryForm.action ="{% url 'detailArticle' %}?action=outQuery";
+            }
+            function outQxcel(){
+                document.queryForm.action ="{% url 'detailArticle' %}?action=outExcel";
+            }
+        </script>
+    </body>
+</html>

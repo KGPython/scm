@@ -1,235 +1,327 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>订货</title>
-	<link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/main.css"/>
-  <script type="text/javascript" src="js/laydate.js"></script>
-</head>
-<body>
-  <div class="header">
-    <div class="logo"></div>
-    <div class="nav comWidth">
-      <ul class="nav-list" style="display:block">
-        <li class="nav-list-item"><a href="index.html">首页</a></li>
-        <li class="nav-list-item"><a href="user_base.html">基本资料</a></li>
-        <li class="nav-list-item"><a class="active" href="user_order.html">订货</a></li>
-        <li class="nav-list-item"><a href="user_saile.html">销售</a></li>
-        <li class="nav-list-item"><a href="user_stock.html">库存</a></li>
-        <li class="nav-list-item"><a href="user_bill.html">单据</a></li>
-        <li class="nav-list-item"><a href="user_settle.html">结算</a></li>
-        <li class="nav-list-item"><a href="user_notice.html">通知</a></li>
-        <li class="nav-list-item"><a href="/">退出</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="query comWidth">
-    <form class="query-list">
-      <p>
-        <label>确认状态：</label>
-        <select type="text" name="status" value="">
-          <option value="" selected="selected"></option>
-          <option value="Y">已确认</option>
-          <option value="N">未确认</option>
-        </select>
-      </p>
-      <p>
-        <label>过期状态：</label>
-        <select>
-          <option value="" selected="selected"></option>
-          <option value ="Y">已过期</option>
-          <option value ="N">未过期</option>
-        </select>
-      </p>
-      <p>
-        <label>订单类型：</label>
-        <select>
-          <option value="" selected="selected"></option>
-          <option value ="Y">直接订单</option>
-          <option value ="N">配送订单</option>
-        </select>
-      </p>
-      <p><label>订单号：</label><input type="text"></p>
-      <p class="date">
-        <p>
-          <label for="start">开始日：</label>
-          <input class="inline laydate-icon" id="start" name="start" type="text" style="width:180px; margin-right:10px;">
-        </p>
-        <p>
-          <label for="end">结束日：</label>
-          <input class="inline laydate-icon" id="end" name="end" type="text" style="width:180px;">
-        </p>      
-      </p>
-      <p class="shopList">
-        <label>门店：</label><input type="text"><span class="shopList-icon"></span>
-      </p>
-      <p>
-        <label>查询条件：</label>
-        <select name="orderstyle" class="input" value="">
-          <option value="spercode">供应商编码</option>
-          <option selected="selected" value="checkdate">审核日期</option>
-          <option value="ordercode">订单编码</option>
-          <option value="shopcode">交货门店</option>          
-        </select>
-      </p>
-      <p><input class="query-enter" type="submit" value="查询" ></p>
-    </form> 
-    <form class="shopList-cnt" action="">
-      <p class="shopList-cnt-tit">
-        <span>门店：</span>
-        <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
-        <input type="submit" value="确定">
-        <input class="close" type="button" value="放弃">
-      </p>
-      <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-        <thead>
-          <tr>
-            <th>选择</th>
-            <th>门店编码</th>
-            <th>门店名称</th>
-            <th>经营方式</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>    
-  </div>
-  <div class="notice noticeOrder comWidth">
-      <div class="tTitle">
-        <h1>订单列表</h1>
-        <h3>单位：<span>宽广超市</span></h3>
-        <p>
-          <b>经营方式：</b><span>经销-代销-联营</span> 
-          <b>时间：</b><span>2015-11-01至2015-11-03</span>
-          <b>单位：</b><span>元</span>
-          <b>含税进价金额合计：</b><span>6114710.51</span>
-        </p> 
-      </div> 
-  	  <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-  		  <thead>
-  			<tr>
-  			  <th class="col1">订单单据编号</th>
-  				<th class="col1">审核日期</th>
-  				<th class="col1">过期状态</th>
-  				<th class="col1">确认状态</th>
-  				<th class="col1">类型</th>
-  				<th class="col1">验收状态</th>
-  				<th class="col2_4">供应商编码</th>
-  				<th class="col1">供应商名称</th>
-  				<th class="col2_4">交货日期</th>
-  				<th class="col1">交货门店</th>
-  				<th class="col1">查看次数</th>
-  				<th class="col1">打印次数</th>
-          <th class="col1">备注</th>
-  			</tr>
-  		  </thead>
-  		  <tbody>
-  			<tr>
-  				<td class="col1">订单单据编号</td>
-          <td class="col1">审核日期</td>
-          <td class="col1">过期状态</td>
-          <td class="col1">确认状态</td>
-          <td class="col1">类型</td>
-          <td class="col1">验收状态</td>
-          <td class="col2_4">供应商编码</td>
-          <td class="col1">供应商名称</td>
-          <td class="col2_4">交货日期</td>
-          <td class="col1">交货门店</td>
-          <td class="col1">查看次数</td>
-          <td class="col1">打印次数</td>
-          <td class="col1">备注</td>
-  			</tr>
-  		  </tbody>
-  	  </table>
-      <div class="page">
-        <span>每页</span>
-        <input class="pageTxt" id="pageNum" name="pageNum" type="text">
-        <span>条记录</span>
-        <span>共<b>200</b>页/<b>200</b>条记录</span>
-        <a href="#">首页</a>
-        <a href="#">上一页</a>
-        <a href="#">下一页</a>
-        <a href="#">尾页</a>
-        <span class="totalPage">到第</span>
-        <input  class="pageTxt" id="pageIndex" name="pageIndex" type="text">
-        <span>页</span>
-        <input value="确定" id="pageEnter" type="button">
-      </div>  
-  </div>
-<!--[if IE]> <script type="text/javascript" src="js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="js/jquery-2.1.4.min.js"></script><![endif]> 
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% load basefilter %}
+        {% include "common/nav.html" %}
+        <div class="query comWidth">
+            <form id="queryForm" class="query-list" action="/scm/base/supp/order/query/" method="post">
+                 <p class="shopList">
+                    <label>门店：</label>
+                    <input type="text" name="shopCode" id="shopCode" value="{{ shopCode }}">
+                    <span class="shopList-icon"></span>
+                </p>
+                <p>
+                    <label>确认状态：</label>
+                    <select type="text" name="status" >
+                        <option value="A" {% ifequal status "" %}selected="selected" {% endifequal %}>
+                            全部
+                        </option>
+                        <option value="Y" {% ifequal status "Y" %}selected="selected" {% endifequal %}>
+                            已确认
+                        </option>
+                        <option value="N" {% ifequal status "N" %}selected="selected" {% endifequal %}>
+                            未确认
+                        </option>
+                    </select>
+                </p>
+                <p>
+                    <label>过期状态：</label>
+                    <select name="state">
+                        <option value="A" {% ifequal state "" %}selected="selected" {% endifequal %}>
+                            全部
+                        </option>
+                        <option value="Y" {% ifequal state "Y" %}selected="selected" {% endifequal %}>
+                            已过期
+                        </option>
+                        <option value="N" {% ifequal state "N" %}selected="selected" {% endifequal %}>
+                            未过期
+                        </option>
+                    </select>
+                </p>
+                <p>
+                    <label>订单类型：</label>
+                    <select name="logistics">
+                        <option value="A" {% ifequal logistics "" %}selected="selected" {% endifequal %}>
+                            全部
+                        </option>
+                        <option value="1" {% ifequal logistics "1" %}selected="selected" {% endifequal %}>
+                            直接订单
+                        </option>
+                        <option value="0" {% ifequal logistics "0" %}selected="selected" {% endifequal %}>
+                            配送订单
+                        </option>
+                    </select>
+                </p>
+                <p>
+                    <label>订单号：</label><input type="text" name="ordercode" value="{{ ordercode }}">
+                </p>
+                <p>
+                    <label for="start">开始日期：</label>
+                    <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}" style="width:120px; margin-right:10px;">
+                </p>
+                <p>
+                    <label for="end">结束日期：</label>
+                    <input class="inline laydate-icon" id="end" name="end" value="{{ end }}" type="text" style="width:120px;">
+                </p>
 
-<script type="text/javascript">
-  !function(){
-    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
-    laydate({elem: '#demo'});//绑定元素
-  }();
+                <p>
+                    <label>排序条件：</label>
+                    <select name="orderstyle" class="input">
+                        <option value="checkdate" {% ifequal orderstyle "checkdate" %}selected="selected" {% endifequal %}>
+                            审核日期
+                        </option>
+                        <option value="ordercode" {% ifequal orderstyle "ordercode" %}selected="selected" {% endifequal %}>
+                            订单编码
+                        </option>
+                        <option value="shopcode" {% ifequal orderstyle "shopcode" %}selected="selected" {% endifequal %}>
+                            交货门店
+                        </option>
+                        <option value="sdate"  {% ifequal orderstyle "sdate" %}selected="selected" {% endifequal %}>
+                            交货日期
+                        </option>
+                    </select>
+                </p>
+                <p>
+                    <input class="query-enter" type="submit" value="查询">
+                </p>
+            </form>
+           <div class="shopList-cnt">
+                <p class="shopList-cnt-tit">
+                    <span>门店：</span>
+                    <input type="checkbox" name="scode" class="all"><label for="">全选/全不选</label>
+                    <input class="enter" type="button" value="确定" >
+                    <input class="close" type="button" value="放弃">
+                </p>
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                    <thead>
+                        <tr>
+                            <th>
+                                选择
+                            </th>
+                            <th>
+                                门店编码
+                            </th>
+                            <th>
+                                门店名称
+                            </th>
+                            <th>
+                                经营方式
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shop in  shopList %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="scode" value="{{ shop.shopcode }}">
+                            </td>
+                            <td>
+                                {{ shop.shopcode }}
+                            </td>
+                            <td>
+                                 {{ shop.shopnm }}
+                            </td>
+                            <td>
+                                 {{ shop.shopcode }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    订单列表
+                </h1>
+                <p>
+                     <b>单位：</b><span>{{ grpname }}</span>
+                </p>
+                <p>
+                    <b>门店：</b><span>{{ shopnames }}</span>
+                </p>
+                <p><b>时间：</b><span>{{ start }}至{{ end }}</span> <b>单位：</b><span>元</span> <b>含税进价金额合计：</b><span>{{ sum }}</span></p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th class="col1">
+                            订单单据编号
+                        </th>
+                        <th class="col1">
+                            审核日期
+                        </th>
+                        <th class="col1">
+                            过期状态
+                        </th>
+                        <th class="col1">
+                            确认状态
+                        </th>
+                        <th class="col1">
+                            类型
+                        </th>
+                        <th class="col1">
+                            验收状态
+                        </th>
+                        <th class="col2_4">
+                            供应商编码
+                        </th>
+                        <th class="col1">
+                            供应商名称
+                        </th>
+                        <th class="col2_4">
+                            交货日期
+                        </th>
+                        <th class="col1">
+                            交货门店
+                        </th>
+                        <th class="col1">
+                            查看次数
+                        </th>
+                        <th class="col1">
+                            打印次数
+                        </th>
+                        <th class="col1">
+                            备注
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in page.object_list %}
+                        <tr>
+                            <td class="col1">
+                                <a href="/scm/base/supp/order/find/?ordercode={{ row.ordercode }}" target="_blank">{{ row.ordercode }}</a>
+                            </td>
+                            <td class="col1">{{ row.checkdate|date:"Y-m-d H:i" }}</td>
+                            <td class="col1">
+                               {{ row.sdate|expired:today }}
+                            </td>
+                            <td class="col1">
+                                {% ifequal row.status "Y" %}
+                                     已确认
+                                {% else %}
+                                     未确认
+                                {% endifequal %}
+                            </td>
+                            <td class="col1">
+                                {% if row.logistics == 1 %}
+                                     直接订单
+                                {% else %}
+                                     配送订单
+                                {% endif %}
+                            </td>
+                            <td class="col1">
+                                {% if row.inflag == 1 %}
+                                     已验收
+                                {% else %}
+                                     未验收
+                                {% endif %}
+                            </td>
+                            <td class="col2_4">{{ row.spercode }}</td>
+                            <td class="col1">{{ row.spername }}</td>
+                            <td class="col2_4">{{ row.sdate |date:"Y-m-d H:i" }}</td>
+                            <td class="col1">{{ shopDict|key:row.shopcode }}</td>
+                            <td class="col1">{{ row.seenum | default_if_none:"0"}}</td>
+                            <td class="col1">{{ row.printnum | default_if_none:"0"}}</td>
+                            <td class="col1">{{ row.remark }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+             <div class="page">
+                    <span>第<b>{{ pageNum }}</b>页/共<b>{{ page.paginator.num_pages }}</b>页</span>
+                    <a href="/scm/base/supp/order/query/?pageNum=1&shopCode={{ shopCode }}&status={{ status }}&state={{ state }}&logistics={{ logistics }}&orderstyle={{ orderstyle }}&start={{ start }}&end={{ end }}&ordercode={{ ordercode }}">首页</a>
+                    {% if page.has_previous %}
+                        <a href="/scm/base/supp/order/query/?pageNum={{ page.previous_page_number }}&shopCode={{ shopCode }}&status={{ status }}&state={{ state }}&logistics={{ logistics }}&orderstyle={{ orderstyle }}&start={{ start }}&end={{ end }}&ordercode={{ ordercode }}">上一页</a>
+                    {% else %}
+                        <a href="javascript:void(0)" >上一页</a>
+                    {% endif %}
 
-  //日期范围限制
-  var start = {
-      elem: '#start',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(), //设定最小日期为当前日期
-      max: '2099-06-16', //最大日期
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-           end.min = datas; //开始日选好后，重置结束日的最小日期
-           end.start = datas //将结束日的初始值设定为开始日
-      }
-  };
+                    {% if page.has_next %}
+                         <a href="/scm/base/supp/order/query/?pageNum={{ page.next_page_number }}&shopCode={{ shopCode }}&status={{ status }}&state={{ state }}&logistics={{ logistics }}&orderstyle={{ orderstyle }}&start={{ start }}&end={{ end }}&ordercode={{ ordercode }}">下一页</a>
+                    {% else %}
+                        <a href="javascript:void(0)" >下一页</a>
+                    {% endif %}
 
-  var end = {
-      elem: '#end',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(),
-      max: '2099-06-16',
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-          start.max = datas; //结束日选好后，充值开始日的最大日期
-      }
-  };
-  laydate(start);
-  laydate(end);
+                    <a href="/scm/base/supp/order/query/?pageNum={{ page.paginator.num_pages }}&shopCode={{ shopCode }}&status={{ status }}&state={{ state }}&logistics={{ logistics }}&orderstyle={{ orderstyle }}&start={{ start }}&end={{ end }}&ordercode={{ ordercode }}">尾页</a>
 
-  //自定义日期格式
-  laydate({
-      elem: '#test1',
-      format: 'YYYY年MM月DD日',
-      festival: true, //显示节日
-      choose: function(datas){ //选择日期完毕的回调
-          alert('得到：'+datas);
-      }
-  });
+                    <form method="post" id="codeForm" action="/scm/base/supp/order/query/" style="display: inline-block">
+                        <input type="hidden" name="shopCode" value="{{ shopCode }}">
+                        <input type="hidden" name="status" value="{{ status }}">
+                        <input type="hidden" name="state" value="{{ state }}">
+                        <input type="hidden" name="logistics" value="{{ logistics }}">
+                        <input type="hidden" name="start" value="{{ start }}">
+                        <input type="hidden" name="end" value="{{ end }}">
+                        <input type="hidden" name="ordercode" value="{{ ordercode }}">
+                        <input type="hidden" name="orderstyle" value="{{ orderstyle }}">
 
-  //日期范围限定在昨天到明天
-  laydate({
-      elem: '#hello3',
-      min: laydate.now(-1), //-1代表昨天，-2代表前天，以此类推
-      max: laydate.now(+1) //+1代表明天，+2代表后天，以此类推
-  });
-  </script>
-  <script type="text/javascript" src="js/main.js"></script>
-</body>
+                        <span class="totalPage">到第</span> <input type="text" class="pageTxt"  id="pageNum" name="pageNum"  value="{{ pageNum }}"> <span>页</span>
+                        <input type="button" id="pageEnter" value="确定" />
+                    </form>
+            </div>
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current='dinghuo'
+
+            $(function(){
+                $("#pageEnter").on("click",function(){
+
+                    var pageNum = $("#pageNum").val();
+
+                    if(!isNaN(pageNum) && pageNum!=''){
+                        var num = parseInt(pageNum);
+                        var maxNum = parseInt('{{ page.paginator.num_pages }}');
+
+                        if(num<1){
+                             $("#pageNum").val(1);
+                        }
+                        if(num>maxNum){
+                            $("#pageNum").val(maxNum);
+                        }
+                    }else{
+                         $("#pageNum").val(1);
+                    }
+                    $("#codeForm").submit();
+                });
+            });
+
+            //日期窗口样式
+            !function(){
+                laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+            }();
+
+            //日期范围限制
+            var start = {
+                elem: '#start',
+                format: 'YYYY-MM-DD',
+                //min: laydate.now(), //设定最小日期为当前日期
+                max: '2099-06-16', //最大日期
+                istime: false,
+                istoday: false,
+                choose: function(datas){
+                   end.min = datas; //开始日选好后，重置结束日的最小日期
+                   end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+
+            var end = {
+                elem: '#end',
+                format: 'YYYY-MM-DD',
+                //min: laydate.now(),
+                max: '2099-06-16',
+                istime: false,
+                istoday: false,
+                choose: function(datas){
+                    start.max = datas; //结束日选好后，充值开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+        </script>
+    </body>
 </html>

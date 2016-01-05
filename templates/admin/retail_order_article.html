@@ -1,0 +1,85 @@
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+
+    </head>
+    <body>        
+
+        {% include "common/nav.html" %}
+        <p class="comWidth"><input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;"></p>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    验收单明细
+                </h1>
+                <h3>
+                    单位：<span>{{ grpName }}</span>
+                </h3>
+                <p>
+                    <b>订单编号：</b><span>{{ orderCode }}</span>
+                    <b>交货门店：</b><span>{{ shopDict | key:sperDict.shopcode }}</span>
+                    <b>交货日期：</b><span>{{ sperDict.sdate | date:'Y-m-d' }}</span>
+                </p>
+                <p>
+                    <b>供应商代码：</b><span>{{ sperDict.spercode}}</span>
+                    <b>供应商名称：</b><span>{{ sperDict.spername }}</span>
+                    <b>采购日期：</b><span>{{ sperDict.purdate | date:'Y-m-d'}}</span>
+                </p>
+                <p>
+                    <b>预约送货日期：</b><span>{{ sperDict.yyshdate| date:'Y-m-d' }}</span>
+                    <b>备注：</b><span>{{ sperDict.remark }}</span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>商品编码</th>
+                        <th>规格</th>
+                        <th>品名</th>
+                        <th>单位</th>
+                        <th>税率</th>
+                        <th>件含数</th>
+                        <th>细数</th>
+                        <th>含税进价</th>
+                        <th>含税金额</th>
+                        <th>实件数</th>
+                        <th>实赠品数</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for retOrder in retOrderList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ retOrder.procode }}</td>
+                        <td></td>
+                        <td>{{ retOrder.pn }}</td>
+                        <td>{{ retOrder.unit }}</td>
+                        <td>{{ retOrder.taxrate | floatformat:1 }}</td>
+                        <td>{{ retOrder.innums | floatformat:1 }}</td>
+                        <td>{{ retOrder.denums | floatformat:1 }}</td>
+                        <td>{{ retOrder.price_intax | floatformat:1 }}</td>
+                        <td>{{ retOrder.sum_intax | floatformat:1 }}</td>
+                        <td>{% if retOrder.sjshsum == -1 %}{% else %}{{ retOrder.sjshsum }}{% endif %}</td>
+                        <td>{% if retOrder.sjprnum == -1 %}{% else %}{{ retOrder.sjprnum }}{% endif %}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="7">合计：</td>
+                        <td>{{ sumDenums | floatformat:1 }}</td>
+                        <td></td>
+                        <td>{{ sumSumIntax | floatformat:2 }}</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script>
+            current="dinghuo";
+        </script>
+    </body>
+</html>

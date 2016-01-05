@@ -1,0 +1,53 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+           商业供应链系统
+        </title>
+    </head>
+    <body>
+        {% load basefilter %}
+        {% include "common/nav.html" %}
+        <p class="comWidth">
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
+            <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">
+        </p>
+        <h1 class="tTitle">
+            系统公告
+        </h1>
+        <div class="articleNotice comWidth">
+            <h2>
+                {{ infoObj.title }}
+                {% if infoObj.mailpath %}
+                <a class="button right" href="/scm/base/msg/download/?filename={{ infoObj.mailpath }}">
+                    下载附件
+                </a>
+
+                {% endif %}
+
+            </h2>
+            <p class="notice-ctn">
+
+                {{ infoObj.content | keep_spacing }}
+            </p>
+            <div class="noticeBottom">
+            	<p class="left">作者：<span>{{ infoObj.checker }}</span></p>
+            	<p class="right">发布日期：<span>{{ infoObj.subtime | date:'Y-m-d'}}</span></p>
+            </div>
+        </div>
+         {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current ="tongzhi";
+            function setAction(act){
+                var utype = "{{ request.session.s_utype }}";
+                var infotype = ""
+                if(utype=="2"){
+                    infotype = "1"
+                }else{
+                    infotype = "0"
+                }
+                window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype;
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,103 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <div class="query comWidth" style="width: 100%;text-align: right;">
+           <form class="query comWidth" style="width: 100%;text-align: right;" method="post" id="queryForm" action="/scm/base/supp/sale/counter/detail/">
+                <p>
+                    <input type="hidden" name="shopCode" value="{{ shopCode }}">
+                    <input type="hidden" name="teamcode" value="{{ teamcode }}">
+                    <input type="hidden" name="teamname" value="{{ teamname }}">
+                    <input type="hidden" name="start" value="{{ start }}">
+                    <input type="hidden" name="end" value="{{ end }}">
+                    <input type="hidden" id="qtype" name="qtype" value="{{ qtype }}">
+                    <input class="query-enter" type="button" value="返回" onclick="closeFun()">
+                    <input class="query-enter" type="button" value="导出到excel" onclick="queryForm(2)">
+                </p>
+            </form>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    门店销售列表
+                </h1>
+                <h3>
+                    单位：<span>{{ grpname }}</span>
+                </h3>
+                <h3>
+                    门店：<span>{{ shops }}</span>
+                </h3>
+                <p>
+                    <b>经营方式：</b><span>全部</span> <b>时间：</b><span>{{ start }}至{{ end }}</span> <b>单位：</b><span>元</span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>大类编码</th>
+                        <th>大类名称</th>
+                        <th>日期</th>
+                        <th>销售数量</th>
+                        <th>实际销售</th>
+                        <th>销售成本</th>
+                        <th>占比（%）</th>
+                        <th>累计占比（%）</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rslist %}
+                        {% if row.8 == '1' %}
+                              <tr style="background-color:lightskyblue;">
+                                    <td>{{ row.0 }}</td>
+                                    <td>{{ row.1 }}</td>
+                                    <td>{{ row.2 }}</td>
+                                    <td>{{ row.3 |floatformat:2 }}</td>
+                                    <td>{{ row.4 |floatformat:2}}</td>
+                                    <td>{{ row.5 |floatformat:2}}</td>
+                                    <td>{{ row.6 }}</td>
+                                    <td>{{ row.7 }}</td>
+                              </tr>
+                        {% else %}
+                            <tr>
+                                <td>{{ row.0 }}</td>
+                                <td>{{ row.1 }}</td>
+                                <td>{{ row.2 }}</td>
+                                <td>{{ row.3 |floatformat:2}}</td>
+                                <td>{{ row.4 |floatformat:2}}</td>
+                                <td>{{ row.5 |floatformat:2}}</td>
+                                <td>{{ row.6 |floatformat:2 }}</td>
+                                <td>{{ row.7 |floatformat:1 }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                    <tr style="background-color: lightskyblue;">
+                        <td>合计：</td>
+                        <td> </td>
+                        <td></td>
+                        <td>{{ sum1 }}</td>
+                        <td>{{ sum2 }}</td>
+                        <td>{{ sum3 }}</td>
+                        <td>100.00</td>
+                        <td>100.00</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current = "xiaoshou";
+            function queryForm(val){
+                $("#qtype").attr("value",val);
+                $("#queryForm").submit();
+            };
+            //关闭窗口
+            function closeFun(){
+{#                window.opener.location.reload();#}
+                self.close();
+            }
+        </script>
+    </body>
+</html>

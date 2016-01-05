@@ -1,0 +1,37 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统
+        </title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <h1 class="tTitle">
+            <span >{{ infoTypeName }}</span>
+            <span ><input type="button" value="下载附件" onclick="download('{{ pub.mailpath }}')"></span>
+            <span ><input type="button" value="返回" onclick="javascript:window.history.go(-1)"></span>
+        </h1>
+        <div class="articleNotice comWidth">
+            <h3>
+                {{ pub.title }}
+            </h3>
+            <p class="notice-ctn">
+                {{ pub.content }}
+            </p>
+            <div class="noticeBottom">
+            	<p class="left">作者：<span>{{ pub.username }}</span></p>
+            	<p class="right">发布日期：<span>{{ pub.subtime | date:"Y-m-d H:i" }}</span></p>
+            </div>
+
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current="shouye"
+
+            function download(fileName){
+                window.location.href='/scm/base/msg/download/?filename='+fileName
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,463 @@
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+           商业供应链系统
+        </title>
+
+    </head>
+    <body>
+        {% load basefilter %}
+        {% include "common/nav.html" %}
+        <div class="mainConf">
+            <div class="confSide left">
+                <h3>
+                    用户 列表
+                    <a class="icon" href="/scm/base/admin/retuser/index/?action=new&page={{ page }}" style="text-decoration: none" title="新建">+</a>
+                </h3>
+                <div class="confSide-cnt">
+                    <div class="confSide-page">
+                    <form id="page_form" method="post" action="/scm/base/admin/retuser/index/">
+                        {% if retUserList.has_previous %}
+                            <a href="/scm/base/admin/retuser/index/?page={{ retUserList.previous_page_number }}">&lt;&lt;&lt;</a>
+                        {% else %}
+                            <a href="javascript:;">&lt;&lt;&lt;</a>
+                        {% endif %}
+
+                            <span >第</span>
+                            <span >
+                                <select class="page" id="page" name="page">
+                                    {% for page_number in retUserList.paginator.page_range %}
+                                        {% ifequal page_number retUserList.number %}
+                                            <option value="{{ page_number }}">{{ page_number }}</option>
+                                        {% else %}
+                                            <option value="{{ page_number }}">{{ page_number }}</option>
+                                        {% endifequal %}
+                                    {% endfor %}
+                                </select>
+                            </span>
+                            <span >页</span>
+
+                        {% if retUserList.has_next %}
+                            <a href="/scm/base/admin/retuser/index/?page={{ retUserList.next_page_number }}">&gt;&gt;&gt;</a>
+                        {% else %}
+                            <a href="javascript:;">&gt;&gt;&gt;</a>
+                        {% endif %}
+                     </form>
+                    </div>
+                    <div class="sideBox">
+                        <div class="retailBox">
+                            {% for retUser in retUserList %}
+                            <h4>
+                                <a href="/scm/base/admin/retuser/index/?ucode={{ retUser.ucode }}&page={{ page }}">{{ retUser.nm }}</a>
+                            </h4>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="confCnt left">
+                <div class="tTitle">
+                    <h2>
+                        用户信息管理（红色字段为必填选项）
+                    </h2>
+                </div>
+                <div class="confCnt-box">
+                    <form class="confCnt-form" action="/scm/base/admin/retuser/index/" id="retUserForm" method="post">
+                        <input type="hidden" id="action" name="action" value="save">
+                        <input type="hidden" name="page" value="{{ page }}">
+                        <div class="conf baseInfo">
+                            <h3>
+                                基本信息&nbsp;--&nbsp;编号：<span>{{ user.rcode }}</span>
+                                <input class="shopSet" type="button" value="角色" id="openRoleBtn">
+                            </h3>
+                            <div class="baseInfo-box">
+                                <p class="red">
+                                    <label for="">用户姓名：</label>
+                                    <input type="text" id="nm" name="nm" value="{{ user.nm|default_if_none:"" }}" >
+                                    <span id="error_nm"></span>
+                                </p>
+                                <p class="red">
+                                    <label for="">用户编码：</label>
+                                    {% if not user.ucode %}
+                                        <input type="text" id="ucode" name="ucode" value="{{ user.ucode|default_if_none:"" }}" >
+                                        <span id="error_ucode"></span>
+                                    {% else %}
+                                        <input type="text" id="ucode" name="ucode" value="{{ user.ucode|default_if_none:"" }}" readonly>
+                                    {% endif %}
+                                </p>
+                                <p class="red">
+                                    <label for="">密码：</label>
+                                    <input type="password" id="pwd" name="pwd" value="{{ pwd }}" maxlength="16">
+                                    <span id="error_pwd"></span>
+                                </p>
+                                <p class="red">
+                                    <label for="">确认密码：</label>
+                                    <input type="password" id="repwd" name="repwd" value="{{ repwd }}" maxlength="16">
+                                    <span id="error_repwd"></span>
+                                </p>
+                                <p>
+                                     <ul class="pwNotice left" style="clear: both">
+                                        <li>
+                                            <span class="color_gray" id='pwdLevel_1'> </span>
+                                            <span class="color_gray_label"> 弱</span>
+                                        </li>
+                                        <li>
+                                            <span class="color_gray" id='pwdLevel_2'> </span>
+                                            <span class="color_gray_label"> 中</span>
+
+                                        </li>
+                                        <li>
+
+                                            <span class="color_gray" id='pwdLevel_3'> </span>
+                                            <span class="color_gray_label"> 强</span>
+                                        </li>
+                                    </ul>
+                                </p>
+                                <p> <label for="">&nbsp;</label></p>
+                                <p>
+                                    <label for="">所属部门：</label>
+                                    <input type="text" id="dept" name="dept" value="{{ user.dept|default_if_none:"" }}" >
+                                    <span style="font-size:22px;" id="findShopId">+</span>
+                                </p>
+                                <p>
+                                    <label for="">所属集团：</label>
+                                    <input type="text" id="grpcode" name="grpcode" value="{{ user.grpcode|default_if_none:"" }}" >
+                                     <span style="font-size:22px;" >&nbsp;</span>
+                                </p>
+                                 <p>
+                                    <label for="uStatus">状态：</label>
+                                    <select name="status">
+                                        <option value="0" {% ifequal user.status "0" %}selected="selected" {% endifequal %}>无效</option>
+                                        <option value="1" {% ifequal user.status "1" %}selected="selected" {% endifequal %}>有效</option>
+                                    </select>
+                                </p>
+                                 <p>
+                                    <label for="uStatus">用户类型：</label>
+                                    <select name="utype">
+                                        <option value="{{ usertype.0 }}">{{ usertype.1 }}</option>
+                                    </select>
+                                </p>
+                                 <p>
+                                    <label for="uRemark">备注：</label>
+                                    <input type="text" id="remark" name="remark" value="{{ user.remark|default_if_none:"" }}" >
+                                </p>
+                            </div>
+                        </div>
+                        <div class="btn" style="width: 100%;">
+                            <span style="float:left;font-size: 12px;color: dodgerblue;width: 40%;padding-left:28px;">密码由6-16位字母（区分大小写）、数字、符号组成</span>
+                            <span style="float: left;width: 55%;text-align: right;">
+                                <input type="button" value="保存" onclick="setAction('save')">
+                                <input type="button" value="删除" onclick="setAction('del')">
+                            </span>
+                        </div>
+                    </form>
+
+                    <div class="powerSet-box" id="roleBoxId" style="top:200px">
+                         <form  id="saveRoleForm" method="post">
+                          <p class="title">
+                                <span>当前用户：{{ user.nm|default_if_none:"" }}</span>
+                                <input id="roleAll" type="checkbox" value=""><label for="">全选/全不选</label>
+                                <input type="button" value="确定" id="save_role_btn">&nbsp;
+                                <input type="button" value="放弃" id="roleCloseBtn">
+                                <input type="hidden" name="ucode" value="{{ user.ucode }}">
+                            </p>
+                            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                                <thead>
+                                     <tr>
+                                        <th>选择</th>
+                                        <th>角色编码</th>
+                                        <th>角色名称</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="content"></tbody>
+                            </table>
+                        </form>
+                     </div>
+
+                    <div class="powerSet-box" id="shopBoxId"  style="left: 50px;right: auto;width: 350px">
+                          <p class="title">
+                                <span>当前用户：{{ user.nm|default_if_none:"" }}</span>
+                                <input type="button" value="放弃" id="shopCloseBtn">
+                            </p>
+                            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                                <thead>
+                                     <tr>
+                                        <th>选择</th>
+                                        <th>门店代码</th>
+                                        <th>名称</th>
+                                        <th>集团</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="content">
+                                     {% for shop in  shopList %}
+                                        <tr>
+                                            <td>
+                                                <input type="radio" onclick="addShop('{{ shop.shopcode }}')">
+                                            </td>
+                                            <td>
+                                                {{ shop.shopcode }}
+                                            </td>
+                                            <td>
+                                                 {{ shop.shopnm }}
+                                            </td>
+                                            <td>
+                                                 {{ shop.grpcode }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                     </div>
+                </div>
+            </div>
+        </div>
+       {% include "common/footer.html" %}
+        <script>
+            current="lingshoushangquanxian";
+
+            $(function () {
+                $("#roleAll").on("click",function(){
+                     $("input[name='rcode']").attr("checked",$(this).attr("checked"));
+                });
+
+                $("#openRoleBtn").on("click",function(){
+                    var ucode = '{{ user.ucode }}';
+                    if(ucode===''){
+                        alert("请选择用户!");
+                        return false;
+                    }
+                    $("#content").html("");
+                    $.post("/scm/base/admin/retuser/findrole/",{"ucode":ucode},function(result){
+                        var data = JSON.parse(result);
+                        $(data.rlist).each(function(index, item){
+                            var content = ""
+                            var flag = $.inArray(item.rcode,data.urlist);
+                            if(flag!=-1){
+                                content = '<tr><td><input type="checkbox" checked="checked" name="rcode" value="'+item.rcode+'"></td><td>'+item.rcode+'</td><td>'+item.nm+'</td></tr>';
+                            }else{
+                                content = '<tr><td><input type="checkbox" name="rcode" value="'+item.rcode+'"></td><td>'+item.rcode+'</td><td>'+item.nm+'</td></tr>';
+                            }
+
+                            $("#content").append(content);
+                        });
+                        $("#roleBoxId").show();
+                    });
+                });
+
+                $("#save_role_btn").on("click",function(){
+                      var ajax_option= {
+                            url: "/scm/base/admin/retuser/saverole/",
+                            data:$('#saveRoleForm').serialize(),
+                            type:'post',
+                            dataType:'json',
+                            async:false,
+                            cache: false,
+                            beforeSubmit:function(a,f,o){},
+                            success: function (result) {
+                                var status = result.status
+                                if(status=="0"){
+                                    alert("操作成功");
+                                    $("#roleBoxId").hide();
+                                }else{
+                                    alert("操作失败");
+                                }
+                            }
+                        }
+
+                       $('#saveRoleForm').ajaxSubmit(ajax_option);
+                });
+
+                $("#roleCloseBtn").on("click",function(){
+                    $("#roleBoxId").hide();
+                });
+
+                $("#findShopId").on("click",function(){
+                    $("#shopBoxId").show();
+
+                });
+
+                $("#shopCloseBtn").on("click",function(){
+                    $("#shopBoxId").hide();
+                });
+
+                $('#page').find("option[value='{{ page }}']").attr("selected", true);
+                $('#page').bind('change', function () {
+                    $('#page_form').submit();
+                });
+
+                  //验证密码强度
+                $('#pwd').keyup(function () {
+                    var __th = $(this);
+                    if (!__th.val()) {
+                        Primary();
+                        return;
+                    }
+                    if (__th.val().length < 6) {
+                        Weak();
+                        return;
+                    }
+                    var _r = checkPassword(__th);
+                    if (_r < 1) {
+                        Primary();
+                        return;
+                    }
+
+                    if (_r > 0 && _r < 2) {
+                        Weak();
+                    } else if (_r >= 2 && _r < 4) {
+                        Medium();
+                    } else if (_r >= 4) {
+                        Tough();
+                    }
+                });
+            })
+
+            function addShop(shopcode){
+                $("#dept").attr("value",shopcode);
+                $("#shopBoxId").hide();
+            }
+
+            function setAction(action){
+                $("span[id^='error_']").html("");
+
+                if(action=="save"){
+                    var nm = $("#nm");
+                    if(nm.val()==='' ){
+                        nm.focus();
+                        setCnt("nm","用户姓名不能为空","red")
+                        return false;
+                    }
+                    var ucode = $("#ucode");
+                    if(ucode.val()==='' ){
+                        ucode.focus();
+                        setCnt("ucode","用户编码不能为空","red")
+                        return false;
+                    }
+
+
+
+                    var pwd = $("#pwd");
+                    if(pwd.val()==='' ){
+                        pwd.focus();
+                        setCnt("pwd","密码不能为空","red")
+                        return false;
+                    }
+
+                    var pwdLen = pwd.val().length
+                      if(pwdLen<6){
+                          pwd.focus();
+                          $("#error_pwd").html("密码长度不能小于6位");
+                          return false;
+                      }
+
+                    var repwd = $("#repwd");
+                    if(repwd.val()==='' ){
+                        repwd.focus();
+                        setCnt("repwd","确认密码不能为空","red")
+                        return false;
+                    }
+
+                    if(pwd.val()!=repwd.val()){
+                        repwd.focus();
+                        setCnt("repwd","确认密码与密码不一致","red")
+                        return false;
+                    }
+
+                }
+                $("#action").attr("value",action);
+                $("#retUserForm").submit();
+            }
+            function setCnt(id,content,color){
+                $("#error_"+id).html(content)
+                if(color!='')
+                    $("#error_"+id).css({"color":color,"font-size":"12px"})
+                else
+                    $("#error_"+id).css({"font-size":"12px"})
+            }
+
+              function Primary() {
+                    $('#pwdLevel_1').attr('class', 'color_gray');
+                    $('#pwdLevel_2').attr('class', 'color_gray');
+                    $('#pwdLevel_3').attr('class', 'color_gray');
+              }
+
+              function Weak() {
+                    $('#pwdLevel_1').attr('class', 'color_red');
+                    $('#pwdLevel_2').attr('class', 'color_gray');
+                    $('#pwdLevel_3').attr('class', 'color_gray');
+              }
+
+              function Medium() {
+                    $('#pwdLevel_1').attr('class', 'color_red');
+                    $('#pwdLevel_2').attr('class', 'color_red2');
+                    $('#pwdLevel_3').attr('class', 'color_gray');
+              }
+
+              function Tough() {
+                    $('#pwdLevel_1').attr('class', 'color_red');
+                    $('#pwdLevel_2').attr('class', 'color_red2');
+                    $('#pwdLevel_3').attr('class', 'color_red3');
+              }
+
+              function checkPassword(pwdinput) {
+                    var maths, smalls, bigs, corps, cat, num;
+                    var str = $(pwdinput).val()
+                    var len = str.length;
+
+                    var cat = /.{16}/g
+                    if (len == 0) return 1;
+                    if (len > 16) { $(pwdinput).val(str.match(cat)[0]); }
+                    cat = /.*[\u4e00-\u9fa5]+.*$/
+                    if (cat.test(str)) {
+                        return -1;
+                    }
+                    cat = /\d/;
+                    var maths = cat.test(str);
+                    cat = /[a-z]/;
+                    var smalls = cat.test(str);
+                    cat = /[A-Z]/;
+                    var bigs = cat.test(str);
+                    var corps = corpses(pwdinput);
+                    var num = maths + smalls + bigs + corps;
+
+                    if (len < 6) { return 1; }
+
+                    if (len >= 6 && len <= 8) {
+                        if (num == 1) return 1;
+                        if (num == 2 || num == 3) return 2;
+                        if (num == 4) return 3;
+                    }
+
+                    if (len > 8 && len <= 11) {
+                        if (num == 1) return 2;
+                        if (num == 2) return 3;
+                        if (num == 3) return 4;
+                        if (num == 4) return 5;
+                    }
+
+                    if (len > 11) {
+                        if (num == 1) return 3;
+                        if (num == 2) return 4;
+                        if (num > 2) return 5;
+                    }
+              }
+
+              function corpses(pwdinput) {
+                    var cat = /./g
+                    var str = $(pwdinput).val();
+                    var sz = str.match(cat)
+                    for (var i = 0; i < sz.length; i++) {
+                        cat = /\d/;
+                        maths_01 = cat.test(sz[i]);
+                        cat = /[a-z]/;
+                        smalls_01 = cat.test(sz[i]);
+                        cat = /[A-Z]/;
+                        bigs_01 = cat.test(sz[i]);
+                        if (!maths_01 && !smalls_01 && !bigs_01) { return true; }
+                    }
+                    return false;
+              }
+        </script>
+    </body>
+</html>

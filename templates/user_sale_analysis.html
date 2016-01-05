@@ -1,0 +1,228 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+       {% load basefilter %}
+       {% include "common/nav.html" %}
+        <div class="query comWidth">
+            <form class="query-list" method="post" id="queryForm" action="/scm/base/supp/sale/analysis/query/">
+                <p class="shopList">
+                    <label>门店：</label>
+                    <input type="text" id="shopCode" name="shopCode" value="{{ shopCode }}">
+                    <span class="shopList-icon"></span>
+                </p>
+                <p class="date"></p>
+                <p>
+                    <label for="start">开始日：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}" style="width:180px; margin-right:10px;">
+                </p>
+                <p>
+                    <label for="end">结束日：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}" style="width:180px;">
+                </p>
+                <p>
+                    <input class="query-enter" type="button" value="查询" onclick="queryForm(1)">
+                    <input type="hidden" id="qtype" name="qtype">
+                </p>
+                <p>
+                    <input class="query-enter" type="button" value="导出到excel" onclick="queryForm(2)">
+                </p>
+            </form>
+             <div class="shopList-cnt">
+                <p class="shopList-cnt-tit">
+                    <span>门店：</span>
+                    <input type="checkbox" name="scode" class="all"><label for="">全选/全不选</label>
+                    <input class="enter" type="button" value="确定" >
+                    <input class="close" type="button" value="放弃">
+                </p>
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                    <thead>
+                        <tr>
+                            <th>
+                                选择
+                            </th>
+                            <th>
+                                门店编码
+                            </th>
+                            <th>
+                                门店名称
+                            </th>
+                            <th>
+                                经营方式
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for shop in  shopList %}
+                        <tr>
+                            <td>
+                                <input type="checkbox" name="scode" value="{{ shop.shopcode }}">
+                            </td>
+                            <td>
+                                {{ shop.shopcode }}
+                            </td>
+                            <td>
+                                 {{ shop.shopnm }}
+                            </td>
+                            <td>
+                                 {{ shop.shopcode }}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+               {% comment %} <p><img src="{{ imgfile }}" width="760" height="380"/></p>{% endcomment %}
+                <h1>
+                    日销售汇总列表
+                </h1>
+                <h3>
+                    单位：<span>{{ grpname }}</span>
+                </h3>
+                <h3>
+                    门店：<span>{{ shops }}</span>
+                </h3>
+                <p>
+                    <b>经营方式：</b><span>全部</span> <b>时间：</b><span>{{ start }}至{{ end }}</span> <b>单位：</b><span>元</span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th class="col1">
+                            日期
+                        </th>
+                        <th class="col1">
+                            门店明细
+                        </th>
+                        <th class="col1">
+                            单品明细
+                        </th>
+                        <th class="col1">
+                            大类明细
+                        </th>
+                         <th class="col1">
+                            销售数量
+                        </th>
+                         <th class="col1">
+                            实际销售
+                        </th>
+                         <th class="col1">
+                            销售成本
+                        </th>
+                         <th class="col1">
+                            销售成本占比(%)
+                        </th>
+                         <th class="col1">
+                            销售成本累计占比(%)
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rslist %}
+                        <tr>
+                            <td class="col1">
+                                {{ row.0 }}
+                            </td>
+                            <td class="col1">
+                               <a href="/scm/base/supp/sale/analysis/detail1/?sdate={{ row.0 }}&shopCode={{ shopCode }}&qtype=1" target="_blank">查看</a>
+                            </td>
+                            <td class="col1">
+                                <a href="/scm/base/supp/sale/analysis/detail2/?sdate={{ row.0 }}&qtype=1" target="_blank">查看</a>
+                            </td>
+                            <td class="col1">
+                                <a href="/scm/base/supp/sale/analysis/detail3/?sdate={{ row.0 }}&qtype=1" target="_blank">查看</a>
+                            </td>
+                            <td class="col1">
+                                {{ row.4 }}
+                            </td>
+                            <td class="col1">
+                                {{  row.5|floatformat:2 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.6|floatformat:2 }}
+                            </td>
+                            <td class="col1">
+                                {{ row.7 |floatformat:2}}
+                            </td>
+                            <td class="col1">
+                                {{ row.8 |floatformat:1}}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    <tr style="background-color: lightskyblue">
+                        <td class="col1">
+                            合计
+                        </td>
+                        <td class="col1">
+                            <a href="/scm/base/supp/sale/analysis/detail1/?start={{ start }}&end={{ end }}&qtype=1" target="_blank">门店合计</a>
+                        </td>
+                        <td class="col1">
+                            <a href="/scm/base/supp/sale/analysis/detail2/?start={{ start }}&end={{ end }}&qtype=1" target="_blank">单品合计</a>
+                        </td>
+                        <td class="col1">
+                            <a href="/scm/base/supp/sale/analysis/detail3/?start={{ start }}&end={{ end }}&qtype=1" target="_blank">大类合计</a>
+                        </td>
+                          <td class="col1">
+                            {{ sum1 }}
+                        </td>
+                        <td class="col1">
+                            {{ sum2 }}
+                        </td>
+                        <td class="col1">
+                             {{ sum3 }}
+                        </td>
+                        <td class="col1">
+                            100.00
+                        </td>
+                        <td class="col1">
+                            100.00
+                        </td>
+
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current = "xiaoshou";
+
+            function queryForm(val){
+                $("#qtype").attr("value",val);
+                $("#queryForm").submit();
+            };
+
+            !function(){
+                laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+            }();
+
+            //日期范围限制
+            var start = {
+                elem: '#start',
+                format: 'YYYY-MM-DD',
+                max: '2099-06-16', //最大日期
+                istoday: false,
+                choose: function(datas){
+                   end.min = datas; //开始日选好后，重置结束日的最小日期
+                   end.start = datas //将结束日的初始值设定为开始日
+                }
+            };
+
+            var end = {
+                elem: '#end',
+                format: 'YYYY-MM-DD',
+                max: '2099-06-16',
+                istoday: false,
+                choose: function(datas){
+                    start.max = datas; //结束日选好后，充值开始日的最大日期
+                }
+            };
+            laydate(start);
+            laydate(end);
+        </script>
+    </body>
+</html>

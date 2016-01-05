@@ -1,121 +1,211 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-	<meta charset="UTF-8">
-	<title>零售商权限</title>
-	<link rel="stylesheet" href="../css/reset.css"/>
-	<link rel="stylesheet" href="../css/main.css"/>
+    <meta charset="UTF-8">
+    <title>
+       商业供应链系统
+    </title>
+
 </head>
 <body>
-  <div class="header">
-  	<div class="logo"></div>
-  	<div class="nav comWidth">
-  		<ul class="nav-list" style="display:block">
-  			<li class="nav-list-item"><a href="index.html">首页</a></li>
-        <li class="nav-list-item"><a class="active" href="sysConf_supply.html">供应商权限</a></li>
-        <li class="nav-list-item"><a href="sysConf_retail.html">零售商权限</a></li>
-        <li class="nav-list-item"><a href="login.html">退出</a></li>
-  		</ul>
-  	</div>
-  </div>
-  <div class="mainConf">
-  	<div class="confSide left">
-  		<h3>角色列表<b class="icon">+</b></h3>
-      <div class="confSide-cnt">
-        <div class="confSide-page">
-          <a href="/" id="">&lt;&lt;&lt;</a>
-          <span>第</span>
-          <select class="page" name="" id="">
-            <option value="1" selected="selected">1</option>
-            <option value="2">2</option>
-            <option value="3">3</option>
-            <option value="4">4</option>
-          </select>
-          <a href="/" id="">&gt;&gt;&gt;</a>
+{% include "common/nav.html" %}
+<div class="mainConf">
+    <div class="confSide left">
+        <h3>
+            角色列表<b class="icon"><a href="/scm/base/admin/supprole/">+</a></b>
+        </h3>
+
+        <div class="confSide-cnt">
+            <div class="confSide-page">
+                <span>第</span>
+
+                <form id="page_form" method="get" action="/scm/base/admin/supprole/index" style="display: inline-block">
+                    <select class="page" id="page" name="page">
+                        {% for page_number in topics.paginator.page_range %}
+                            {% ifequal page_number topics.number %}
+                                <option value="{{ page_number }}">{{ page_number }}</option>
+                            {% else %}
+                                <option value="{{ page_number }}">{{ page_number }}</option>
+                            {% endifequal %}
+                        {% endfor %}
+                    </select>
+                </form>
+                <span>页</span>
+            </div>
+            <div class="sideBox">
+                <div class="supplyBox">
+                    {% for topic in topics.object_list %}
+                        <h4><a href="/scm/base/admin/supprole_form/?page={{ page }}&rcode={{ topic.rcode }}">{{ topic.nm }}</a></h4>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        <div class="sideBox">
-          <div class="supplyBox">
-            <a href="javascript:;">未分类供应商组</a>
-          </div>
-        </div>      
-      </div>
-  	</div>
-  	<div class="confCnt left">
-      <div class="tTitle">
-  		  <h2>角色信息管理（红色字段为必填选项）</h2>
-      </div>
-  	  <div class="confCnt-box"> 
-        <form class="confCnt-form" action="adf.html">
-          <div class="conf baseInfo">
-            <h3>基本信息&nbsp;--&nbsp;编号：<span>001</span></h3>
-            <div class="baseInfo-box">
-              <p class="red"><label for="uName">名称：</label><input type="text" name="uName" id="uName"><span class="uName-notice" style="display:none" >此字段为必填</span></p>
-              <p><label for="uId">ID：</label><input type="text" name="uId" id="uId"></p>
-              <p><label for="uStatus">状态：</label><input type="text" name="uStatus" id="uStatus"></p>
-              <p><label for="uRemark">备注：</label><input type="text" name="uRemark" id="uRemark"></p>
-              <p><label for="uCompany">集团：</label><input type="text" name="uCompany" id="uCompany"></p>
-            </div>
-          </div>
-          <div class="conf powerInfo">
-            <h3>
-              权限设置：
-              <input type="button" class="all" id="powerAll" value="全选">
-              <input type="button" class="none" id="powerNone" value="全不选">
-            </h3>
-            <div class="powerInfo-box">
-              <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center">
-                <thead>
-                  <tr>
-                    <th>选择</th>
-                    <th>功能代码</th>
-                    <th>功能名称</th>
-                    <th>子项</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td><input type="checkbox" name="" value="002"></td>
-                    <td>002</td>
-                    <td>角色管理</td>   
-                    <td>察看</td>
-                  </tr>
-                  <tr>
-                    <td><input type="checkbox" name="" value="004"></td>
-                    <td>004</td>
-                    <td>用户管理</td>   
-                    <td>察看</td>
-                  </tr>
-                  <tr>
-                    <td><input type="checkbox" name="" value="004"></td>
-                    <td>004</td>
-                    <td>用户管理</td>   
-                    <td>察看</td>
-                  </tr>
-                  <tr>
-                    <td><input type="checkbox" name="" value="004"></td>
-                    <td>004</td>
-                    <td>用户管理</td>   
-                    <td>察看</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-          <div class="btn">
-            <input id="save" type="submit" value="保存" >
-            <input type="button" value="删除">
-          </div>
-        </form>
-      </div>
-  	</div>
-  </div>
+    </div>
+    <div class="confCnt left">
+        <div class="tTitle">
+            <h2>
+                角色信息管理（红色字段为必填选项）
+            </h2>
+        </div>
+        <div class="confCnt-box">
+            <form class="confCnt-form" name="supproleForm" id="supproleForm" action="" method="post">
+                <div class="conf baseInfo">
+                    <h3>
+                        基本信息&nbsp;--&nbsp;编号：<span>001</span> <input class="powerSet" id="powerSetBtn" name="powerSetBtn" type="button" value="权限">
+                    </h3>
 
+                    <div class="baseInfo-box">
+                        <p class="red">
+                            <label for="uName">名称：</label>{{ form.nm }}{{ form.nm.errors }}<span class="uName-notice"
+                                                                                                 style="display:none">此字段为必填</span>
+                        </p>
 
+                        <p>
+                            <label for="uId">ID：</label>{{ form.rcode }}{{ form.rcode.errors }}
+                        </p>
 
+                        <p>
+                            <label for="uStatus">状态：</label>{{ form.status }}{{ form.status.errors }}
+                        </p>
 
-<!--[if IE]> <script type="text/javascript" src="../js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="../js/jquery-2.1.4.min.js"></script><![endif]> 
-<script type="text/javascript" src="js/main.js"></script>
+                        <p>
+                            <label for="uRemark">备注：</label>{{ form.remark }}
+                        </p>
+
+                        <p>
+                            <label for="uCompany">集团：</label>{{ form.grpcode }}
+                        </p>
+                        <input type="hidden" name="oldrcode" id="oldrcode" value="{{ rcode }}">
+                        <input type="hidden" name="flag" id="flag" value="{{ flag }}">
+                    </div>
+                </div>
+                <div class="btn">
+                    <input type="hidden" name="action" id="action">
+                    <input type="hidden" name="page" id="page" value="{{ page }}">
+                    <input id="saveQuery" name="saveQuery" type="button" value="保存" onclick="saveRole()">
+                    <input id="delQuery" name="delQuery" type="button" value="删除" onclick="delRole()">
+                </div>
+            </form>
+            <form class="powerSet-box" name="powerSet-box" id="powerSet-box" action="/scm/base/admin/supp_chmodRole" style="top:200px;width: 350px">
+                <p class="title">
+                    <span>当前角色：</span> <input id="" class="all" type="checkbox" name="" checked="false"><label for="">全选/全不选</label>
+                    <input type="button" id="purBtn" value="确定"> <input class="close" type="button" value="放弃">
+                    <input type="hidden" name="rcode" value="{{ rcode }}">
+                </p>
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center"
+                       style="background-color: #999;">
+                    <thead>
+                         <tr>
+                            <td>
+                                选择
+                            </td>
+                            <td>
+                                功能代码
+                            </td>
+                            <td>
+                                功能名称
+                            </td>
+                            <td>
+                                子项
+                            </td>
+                        </tr>
+                    </thead>
+                    <tbody id="purlist">
+                    </tbody>
+                </table>
+            </form>
+        </div>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script>
+    current="gongyingshangquanxian";
+    $(document).ready(function () {
+        $('#page').find("option[value='{{ page }}']").attr("selected", true);
+        $('#page').bind('change', function () {
+            $('#page_form').submit();
+        });
+    });
+    $(document).ready(function(){
+            if ($('#uId').attr("value") != '') {
+                $('#uId').attr("readonly", "readonly");
+                $('#uId').css("background","#ADADAD");
+            }
+            if (!($('#uId').attr("value"))){
+                $('#uId').removeAttr("readonly");
+                $('#uId').css("background", "#eee");
+            }
+    });
+    $(document).ready(function(){
+        v = $('#flag').attr("value");
+        if (v == 1) {
+            alert("ID已存在,请重新添加!");
+        }
+        $('#uId').removeAttr("readonly");
+        $('#uId').css("background", "#eee");
+    });
+    {#  权限按钮  #}
+    $(document).ready(function(){
+        $('#powerSetBtn').click(function(){
+            $.post("/scm/base/admin/supp_queryRole", {'rcode':'{{ rcode }}'}, function (result) {
+            var data = JSON.parse(result);
+            $("#purlist").html("")
+            $(data.purL).each(function (index, item) {
+                var flag = $.inArray(item.pcode,data.uPurL);
+                var content = "";
+                if(flag!=-1){
+                    content ="<tr><td><input type='checkbox' checked='checked' name='pcode' id='" + item.pcode + "' value='" + item.pcode + "'></td><td>"+item.pcode +"</td><td>"+item.nm+"</td><td>查看</td></tr>"
+                }else{
+                    content ="<tr><td><input type='checkbox' name='pcode' id='" + item.pcode + "' value='" + item.pcode + "'></td><td>"+item.pcode +"</td><td>"+item.nm+"</td><td>查看</td></tr>"
+                }
+                $("#purlist").append(content);
+            });
+        });
+        });
+
+        $('#purBtn').click(function () {
+            var ajax_option = {
+                url: "/scm/base/admin/supp_savePur",
+                data: $('#powerSet-box').serialize(),
+                type: 'post',
+                datatype: 'json',
+                async: false,
+                cache: false,
+                beforeSubmit: function () {
+
+                },
+                success: function (f) {
+                    obj = JSON.parse(f);
+                    if (obj.flag == 0) {
+                        $('.powerSet-box').hide();
+                        window.location.reload();
+                    } else {
+                        $('.powerSet-box').hide();
+                        alert("操作失败");
+                    }
+                },
+            };
+            $('#powerSet-box').ajaxSubmit(ajax_option);
+        });
+    });
+
+    function purSet() {
+        var purList = $("input[name='purcheck']:checked").serialize();
+        $.post("/scm/base/admin/supp_chmodRole", {utype: t, ucode: i}, function(result) {
+        });
+    }
+</script>
+<script language="JavaScript">
+    function saveRole() {
+        $("#supproleForm").attr("action",'/scm/base/admin/supprole_form/');
+        $("#action").attr("value","saveQuery");
+        $("#supproleForm").submit();
+    }
+    function delRole() {
+        $("#supproleForm").attr("action", '/scm/base/admin/supprole_form/');
+        $("#action").attr("value","delQuery");
+        $("#supproleForm").submit();
+    }
+</script>
 
 </body>
 </html>

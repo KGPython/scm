@@ -1,35 +1,135 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>用户登录</title>
-	<link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/main.css"/>
-	<!--[if IE 6]>
-	<script type="text/javascript" src="js/DD_belatedPNG_0.0.8a-min.js"></script>
-	<script type="text/javascript" src="js/ie6fixpng.js"></script>
-	<![endif]-->
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统-登录
+        </title>
+       <link rel="stylesheet" href="{{ static }}/css/reset.css" type="text/css" media="screen">
+       <link rel="stylesheet" href="{{ static }}/css/main.css" type="text/css" media="screen">
+    </head>
+    <body>
+        <div class="login-main">
+            <div class="l-main-title">
+                <h1 style="margin-top: 15px;">
+                    商业供应链管理系统
+                </h1>
+            </div>
+            <div class="l-main-content" >
+                <form id="loginForm" method="post" action="/scm/base/login/">
+                    <p><span id="error_msg"></span></p>
+                    <p>
+                        <label for="username">用户名:</label>
+                        <input type="text" class="username" id="ucode" name="ucode" value="900069">
+                        <span id="error_ucode"></span>
+                    </p>
+                    <p>
+                        <label for="password">密&emsp;码:</label>
+                        <input type="password" class="password" id="password" name="password" value="IMG_900069">
+                    </p>
+                  {% comment %}  <p>
+                        <label for="username">用户名:</label>
+                        <input type="text" class="username" id="ucode" name="ucode" value="8100020">
+                        <span id="error_ucode"></span>
+                    </p>
+                    <p>
+                        <label for="password">密&emsp;码:</label>
+                        <input type="password" class="password" id="password" name="password" value="1">
+                    </p>{% endcomment %}
+                    <p class="validate">
+                        <label for="validate">验证码:</label>
+                        <input type="text" id="vcode" name="vcode" style="width: 85px;">
+                        <img align="absmiddle"  id="validateImg"  src="/scm/base/vcode/" width="100px;" height="30px;">
+                        <a href="##" onclick="changeValidateCode('validateImg')">[刷新]</a>
+                    </p>
+                    <p>
+                        <input type="button" class="enter" id="loginId" value="登&nbsp;&nbsp;&nbsp;&nbsp;录">
+                    </p>
+                </form>
+                <p style="font-size:14px;margin-top:40px;padding-left: 50px; ">承德宽广超市集团有限公司 技术咨询电话：0314-2064525</p>
+            </div>
+        </div>
+        {% include "common/footer.html" %}
+        <script>
+            $(function(){
+                  $('#loginId').bind("click",function(){
 
-</head>
-<body>
-  <div class="login-main">
-    <div class="l-main-title">
-      <h1>商业供应链管理系统</h1>
-    </div> 
-    <div class="l-main-content">
-      <form action="">
-        <p><label for="username">用户名:</label><input type="text" class="username" id="username"></p>
-        <p><label for="password">密&nbsp;&nbsp;&nbsp;码:</label><input type="password" class="password" id="password"></p>
-        <p><label for="validate">验证码:</label><input type="text" class="validate" id="validate"></p>
-        <p class="validate"><img id="validateImg" src="image/validateImg.jpg" align="absmiddle"><a href="">[刷新]</a></p>
-        <p><input type="submit" class="enter" id="enter" value="登&nbsp;&nbsp;&nbsp;&nbsp;录">
-      </form></p>
-    </div>
-  </div>
+                       var ajax_option= {
+                            url: "/scm/base/login/",
+                            data:$('#loginForm').serialize(),
+                            type:'post',
+                            dataType:'json',
+                            async:false,
+                            cache: false,
+                            beforeSubmit:function(a,f,o){
+                                //$("#loginId").attr({ disabled: "disabled" });
+                            },
+                            success: function (result) {
+                                var status = result.status
+                                if(status=='1'){
+                                    setCnt("msg","用户名不存在","red");
+                                }else if(status=='2'){
+                                    setCnt("msg","密码输入错误","red");
+                                }else if(status=='3'){
+                                    setCnt("msg","验证码输入错误","red");
+                                }else if(status=='4'){
+                                    setCnt("msg","账号尚未分配权限，请与系统管理员联系","red");
+                                }else{
+                                    window.location.href=result.homeurl
+                                }
+                                //$("#loginId").attr({ disabled: "none" });
+                            }
+                        }
 
+                       if(checkForm()){
+                           $('#loginForm').ajaxSubmit(ajax_option);
+                       }
+                   });
+            });
+            function checkForm(){
+                var ucode = $("#ucode");
+                var pwd = $("#password");
+                var vcode = $("#vcode");
 
+                if(ucode.val()==='' ){
+                    ucode.focus();
+                    setCnt("ucode","用户名不能为空","red")
+                    return false;
+                }else{
+                    setCnt("ucode","","")
+                }
+                if(pwd.val()==='' ){
+                    pwd.focus();
+                    setCnt("password","密码不能为空","red")
+                    return false;
+                }else{
+                    setCnt("password","","")
+                }
+                if(vcode.val()==='' ){
+                    vcode.focus();
+                    setCnt("vcode","验证码不能为空","red")
+                    return false;
+                }else{
+                    setCnt("vcode","","")
+                }
 
-<!--[if IE]> <script type="text/javascript" src="js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="js/jquery-2.1.4.min.js"></script><![endif]> 
-</body>
+                return true;
+            }
+
+            function setCnt(id,content,color){
+                $("#error_"+id).html(content)
+                if(color!='')
+                    $("#error_"+id).css({"color":color,"font-size":"12px"})
+                else
+                    $("#error_"+id).css({"font-size":"12px"})
+            }
+
+            function changeValidateCode(id) {
+                //获取当前的时间作为参数，无具体意义
+                var timenow = new Date().getTime();
+                //每次请求需要一个不同的参数，否则可能会返回同样的验证码
+                //这和浏览器的缓存机制有关系，也可以把页面设置为不缓存，这样就不用这个参数了。
+                $('#'+id).attr("src",'/scm/base/vcode/?nocache='+timenow);
+            }
+        </script>
+    </body>
 </html>

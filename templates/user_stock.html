@@ -1,190 +1,155 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>库存</title>
-	<link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/main.css"/>
-  <script type="text/javascript" src="js/laydate.js"></script>
-</head>
-<body>
-  <div class="header">
-    <div class="logo"></div>
-    <div class="nav comWidth">
-      <ul class="nav-list" style="display:block">
-        <li class="nav-list-item"><a href="index.html">首页</a></li>
-        <li class="nav-list-item"><a href="user_base.html">基本资料</a></li>
-        <li class="nav-list-item"><a href="user_order.html">订货</a></li>
-        <li class="nav-list-item"><a href="user_saile.html">销售</a></li>
-        <li class="nav-list-item"><a class="active" href="user_stock.html">库存</a></li>
-        <li class="nav-list-item"><a href="user_bill.html">单据</a></li>
-        <li class="nav-list-item"><a href="user_settle.html">结算</a></li>
-        <li class="nav-list-item"><a href="user_notice.html">通知</a></li>
-        <li class="nav-list-item"><a href="/">退出</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="query comWidth">
-    <form class="query-list">
-      <p class="shopList">
-        <label>门店：</label><input type="text"><span class="shopList-icon"></span>
-      </p>
-      <p><label>商品条码：</label><input type="text"></p>
-      <p>
-      	<label >库存范围：</label>
-      	<input type="text" >
-      	<span>&lt;=库存数量&lt;=</span>
-      	<input type="text">
-      </p>
-      <p><label>商品类别：</label><input type="text"></p>
-      <p><label>商品名称：</label><input type="text"></p>
-      <p>
-        <label>查询条件：</label>
-        <select name="orderstyle" class="input" value="">
-          <option value="spercode">供应商编码</option>
-          <option selected="selected" value="checkdate">审核日期</option>
-          <option value="ordercode">订单编码</option>
-          <option value="shopcode">交货门店</option>          
-        </select>
-      </p>
-      <p><input class="query-enter" type="submit" value="查询" ></p>
-      <p><input class="query-enter" type="button" value="导出到excel" ></p>
-    </form>
-    <form class="shopList-cnt" action="">
-      <p class="shopList-cnt-tit">
-        <span>门店：</span>
-        <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
-        <input type="submit" value="确定">
-        <input class="close" type="button" value="放弃">
-      </p>
-      <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-        <thead>
-          <tr>
-            <th>选择</th>
-            <th>门店编码</th>
-            <th>门店名称</th>
-            <th>经营方式</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>     
-  </div>
-  <div class="notice noticeOrder comWidth">
-      <div class="tTitle">
-        <h1>库存单据列表</h1>
-        <h3>单位：<span>宽广超市</span></h3>
-        <p>
-          <b>经营方式：</b><span>经销-代销-联营</span> 
-          <b>时间：</b><span>2015-11-01至2015-11-03</span>
-          <b>单位：</b><span>元</span>
-          <b>含税进价金额合计：</b><span>6114710.51</span>
-        </p> 
-      </div> 
-  	  <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-  		  <thead>
-  			<tr>
-  			  <th>门店</th>
-  				<th>库存数量</th>
-  				<th>库存进价含税金额</th>
-  			</tr>
-  		  </thead>
-  		  <tbody>
-  			<tr>
-  				<td><a href="user_stock_article.html">门店</a></td>
-          <td>库存数量</td>
-          <td>库存进价含税金额</td>
-  			</tr>
-  		  </tbody>
-  	  </table>
-      <div class="page">
-        <span>每页</span>
-        <input class="pageTxt" id="pageNum" name="pageNum" type="text">
-        <span>条记录</span>
-        <span>共<b>200</b>页/<b>200</b>条记录</span>
-        <a href="#">首页</a>
-        <a href="#">上一页</a>
-        <a href="#">下一页</a>
-        <a href="#">尾页</a>
-        <span class="totalPage">到第</span>
-        <input  class="pageTxt" id="pageIndex" name="pageIndex" type="text">
-        <span>页</span>
-        <input value="确定" id="pageEnter" type="button">
-      </div>  
-  </div>
-<!--[if IE]> <script type="text/javascript" src="js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="js/jquery-2.1.4.min.js"></script><![endif]> 
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
 
-<script type="text/javascript">
-  !function(){
-    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
-    laydate({elem: '#demo'});//绑定元素
-  }();
+    </head>
+    <body>       
+       {% include "common/nav.html" %}
+        <div class="query comWidth">
+            <form class="query-list" method="post" id="queryForm" name="queryForm">
+                {% csrf_token %}
+                <p class="shopList">
+                    <label>门店：</label>
+                    {{ form.shopCode }}
+                    <span class="shopList-icon"></span>
+                </p>
+                <p>
+                    <label>商品编码：</label>
+                    {{ form.proCode }}
+                </p>
+                <p>
+                    <label>库存范围：</label>
+                    {{ form.num1 }}
+                    <span>&lt;=库存数量&lt;=</span>
+                    {{ form.num2 }}
+                </p>
+                {{ form.num1.errors }}
+                {{ form.num2.errors }}
+                <p>
+                    <label>商品类别：</label>
+                    {{ form.scCode }}
+                </p>
+                <p>
+                    <label>商品名称：</label>
+                    {{ form.proName }}
 
-  //日期范围限制
-  var start = {
-      elem: '#start',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(), //设定最小日期为当前日期
-      max: '2099-06-16', //最大日期
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-           end.min = datas; //开始日选好后，重置结束日的最小日期
-           end.start = datas //将结束日的初始值设定为开始日
-      }
-  };
+                </p>
+                <p>
+                    <label>查询条件：</label>
+                    {{ form.orderStyle }}
 
-  var end = {
-      elem: '#end',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(),
-      max: '2099-06-16',
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-          start.max = datas; //结束日选好后，充值开始日的最大日期
-      }
-  };
-  laydate(start);
-  laydate(end);
-
-  //自定义日期格式
-  laydate({
-      elem: '#test1',
-      format: 'YYYY年MM月DD日',
-      festival: true, //显示节日
-      choose: function(datas){ //选择日期完毕的回调
-          alert('得到：'+datas);
-      }
-  });
-
-  //日期范围限定在昨天到明天
-  laydate({
-      elem: '#hello3',
-      min: laydate.now(-1), //-1代表昨天，-2代表前天，以此类推
-      max: laydate.now(+1) //+1代表明天，+2代表后天，以此类推
-  });
-  </script>
-  <script type="text/javascript" src="js/main.js"></script>
-</body>
+                </p>
+                <p>
+                    <input class="query-enter" id="queryOut" type="submit" value="查询" onclick="outQuery()">
+                </p>
+                <p>
+                    <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
+                </p>
+            </form>
+            <div class="shopList-cnt">
+                <p class="shopList-cnt-tit">
+                    <span>门店：</span>
+                    <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
+                    <input class="enter" type="button" value="确定">
+                    <input class="close" type="button" value="放弃">
+                </p>
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                    <thead>
+                        <tr>
+                            <th>选择</th>
+                            <th>门店编码</th>
+                            <th>门店名称</th>
+                            <th>经营方式</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for shop in shopList %}
+                        <tr>
+                            <td><input type="checkbox" name="" id="" value="{{ shop.shopcode }}" title="{{ shop.shopnm }}"></td>
+                            <td >{{ shop.shopcode }}</td>
+                            <td class="shopNm">{{ shop.shopnm }}</td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    库存单据列表
+                </h1>
+                <h3>
+                    单位：<span>{{ grpName }}</span>
+                </h3>
+                <p>
+                    门店：
+                    <span class="shopListTxt">
+                    {% if shopCode %}
+                        {% for id in shopCode %}
+                           {{ shopDict | key:id}}，
+                        {% endfor %}
+                    {% else %}
+                        全部
+                    {% endif %}
+{#                    {% for stcok in stockList %}#}
+{#                        {{ shopDict | key:stcok.shopcode }}，#}
+{#                    {% endfor %}#}
+                    </span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>供应商编码</th>
+                        <th>门店</th>
+                        <th>库存数量</th>
+                        <th>库存进价含税金额</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for stock in stockList %}
+                    <tr>
+                        <td>{{ stock.suppcode }}</td>
+                        <td>
+                            <a href="{% url 'stockArticle' %}?shopcode={{ stock.shopcode }}">
+                                {{ shopDict | key:stock.shopcode }}
+                            </a>
+                        </td>
+                        <td>
+                            {{ stock.num | floatformat:2 }}
+                        </td>
+                        <td>
+                            {{ stock.sums_intax | floatformat:2 }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                    <tr>
+                        <td colspan="2">合计：</td>
+                        <td>{{ totalNum }}</td>
+                        <td>{{ totalSumsIntax }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script>
+            current ="kucun";
+            $(function(){
+                $(".errorlist").css({
+                    "margin-left":"-240px",
+                    "margin-top":"60px"
+                })
+            })
+            function outQuery(){
+                document.queryForm.action ="{% url 'supplierStock' %}?action=outQuery";
+            }
+            function outQxcel(){
+                document.queryForm.action ="{% url 'supplierStock' %}?action=outExcel";
+            }
+        </script>
+    </body>
 </html>

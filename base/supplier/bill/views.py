@@ -1,0 +1,326 @@
+# -*- coding:utf-8 -*-
+
+from django.shortcuts import render
+import logging
+from .forms import *
+from base.models import BillIn,BillInd,BasShop,Adpriced,Adprice
+from django.core.paginator import Paginator #分页查询
+import time,datetime
+from django.db import connection
+
+# Create your views here.
+logger=logging.getLogger('base.supplier.stock.views')
+time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+def supplierBill(request):
+    sperCode = request.session.get('s_suppcode')   #用户所属单位
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    shopCodeList = []
+    shopCode = ''
+    code = ''
+    start = time
+    end = time
+    page = request.GET.get('page',1)
+
+    if request.method== 'POST':
+        form = BillInForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            shopCode = form.cleaned_data['shopcode']
+            start = form.cleaned_data['start']
+            end = form.cleaned_data['end']
+    else:
+        code = request.GET.get('code','')
+        shopCode = request.GET.get('shopcode','')
+        start = request.GET.get('start',monthFrist)
+        end = request.GET.get('end',time)
+        data = {'code':code,'shopcode':shopCode,'start':start,'end':end}
+        form = BillInForm(data)
+
+    kwargs = {}
+    if code:
+        kwargs.setdefault("code__contains",code)
+    if len(shopCode):
+        shopCodeStr = shopCode[0:len(shopCode)-1]
+        shopCodeList = shopCodeStr.split(',')
+        kwargs.setdefault("shopcode__in",shopCodeList)
+    kwargs.setdefault("chdate__gte",start)
+    kwargs.setdefault("chdate__lte",end)
+    kwargs.setdefault("orderstyle","2301")
+    kwargs.setdefault("spercode",sperCode)
+    kwargs.setdefault("grpcode",grpCode)
+
+    billList = BillIn.objects.values("code","ordercode","chdate","spercode","spername","shopcode","inprice_tax","seenum","remark","sstyle")\
+                                         .filter(**kwargs)
+    #分页函数
+    paginator=Paginator(billList,20)
+    try:
+        billList=paginator.page(page)
+    except Exception as e:
+        print(e)
+
+    return render(request,
+                  'user_bill.html',
+                  {"form":form,
+                   "paginator":paginator,
+                   "page":page,
+                   "code":code,
+                   "shopCode":shopCode,
+                   "shopCodeList":shopCodeList,
+                   "start":str(start),
+                   "end":str(end),
+                   "billList":billList,
+                   "grpName":grpName
+
+                   })
+
+
+def billArticle(request):
+    sperCode = request.session.get('s_suppcode')   #用户所属单位
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    code = request.GET.get('code',None)
+
+    #供应商信息
+    suppiler = BillIn.objects.values("spercode","spername","shopcode","seenum","chdate","edate").distinct().get(code=code)
+    #更改查看次数
+    seeNum = suppiler.get('seenum')
+    if not seeNum:
+        seeNum = 0
+    setSeeNum(code,grpCode,seeNum+1)
+    #门店信息
+    shopCode = suppiler.get('shopcode')
+    shopName = BasShop.objects.values('shopnm').get(shopcode=shopCode)
+
+    #入库单明细
+    billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate")\
+                              .filter(code=code,orderstyle__in=('2323','2301'),grpcode=grpCode)\
+                              .order_by('pname','unit')#order_by('pname','class'，'unit')
+
+    TotalSumTax = 0  #含税进价总额
+    for bill in billList:
+        TotalSumTax += bill.get('sum_tax',0)
+
+    return render(request,'user_bill_article.html',locals())
+
+def billAdjust(request):
+    sperCode = request.session.get('s_suppcode')   #用户所属单位
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    billList = []
+    shopCode = ''
+    shopCodeList = []
+    shopStr = ''
+    code = ''
+    start = ''
+    end = ''
+    orderStyle = ''
+    page = request.GET.get('page',1)
+
+    if request.method== 'POST':
+        form = AdPriceForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            shopCode = form.cleaned_data['shopcode']
+            start = str(form.cleaned_data['start'])
+            end = str(form.cleaned_data['end'])
+            orderStyle = form.cleaned_data['orderStyle']
+    else:
+        code = request.GET.get('code','')
+        shopCode = request.GET.get('shopcode','')
+        start = request.GET.get('start',monthFrist)
+        end = request.GET.get('end',time)
+        orderStyle = request.GET.get('orderstyle',time)
+
+        data = {'code':code,'shopcode':shopCode,'start':start,'end':end}
+        form = AdPriceForm(data)
+
+    if shopCode:
+        shopStr=str(shopCode[0:len(shopCode)-1])
+        shopCodeList = shopStr.split(",")
+        shopCode ="'"
+        for item in shopCodeList:
+            shopCode +=str(item)
+            shopCode +="','"
+        shopCode = shopCode[0:len(shopCode)-2]
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum from adprice,adpriced where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+"' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
+    else:
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum,cstyle,csname,bdate,edate,remark,status,sum(anum) anum from adprice,adpriced where adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+"' and adprice.code=adpriced.code and  adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
+
+    cursor = connection.cursor()
+    cursor.execute(sql)
+    fetchall = cursor.fetchall()
+    cursor.close()
+    connection.close()
+
+    for obj in fetchall:
+        dic={}
+        dic['adpriceclass']=obj[0]
+        dic['code']=obj[1]
+        dic['chdate']=obj[2]
+        dic['spercode']=obj[3]
+        dic['spername']=obj[4]
+        dic['shopcode']=obj[5]
+        dic['shopname']=obj[6]
+        dic['inprice_tax']=obj[7]
+        dic['seenum']=obj[8]
+        billList.append(dic)
+    #分页函数
+    paginator=Paginator(billList,20)
+    try:
+        billList=paginator.page(page)
+    except Exception as e:
+        print(e)
+
+    return render(request,
+                  'user_billAdjust.html',
+                  {"form":form,
+                   "paginator":paginator,
+                   "page":page,
+                   "code":code,
+                   "shopCode":shopCode,
+                   "shopCodeList":shopCodeList,
+                   "shopStr":shopStr,
+                   "start":str(start),
+                   "end":str(end),
+                   "billList":billList,
+                   "orderStyle":orderStyle,
+                   "grpName":grpName
+                   })
+def adjustArticle(request):
+    sperCode = request.session.get('s_suppcode')   #用户所属单位
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    code = request.GET.get('code',None)
+
+    # 供应商信息
+    suppiler={}
+    suppiler = Adprice.objects.values("spercode","spername","shopname","seenum","chdate","edate").distinct().get(code=code,spercode=sperCode)
+
+    #更改查看次数
+    seeNum = suppiler.get('seenum')
+    if not seeNum:
+        seeNum = 0
+    Adprice.objects.filter(code=code,grpcode=grpCode).update(seenum=seeNum)
+
+    #获取详情信息
+    kwargs = {}
+    if sperCode:
+        kwargs.setdefault("spercode",sperCode)
+    kwargs.setdefault("code",code)
+    kwargs.setdefault("grpcode",grpCode)
+    adBillList = Adpriced.objects.values("adbatchseq","pcode","pname","anum","cprice_notax","dqhsjj","spercode")\
+                                 .filter(**kwargs)
+
+    sum4=0  #含税调整金额
+    sum5=0  #调整数量（合计）
+    sum6=0  #含税调整金额（合计）
+    for adObj in adBillList:
+        sum4 = round((adObj.get('dqhsjj')-adObj.get('cprice_notax'))*adObj.get('anum'),2)
+        adObj.setdefault("sum4",sum4)
+        sum6+=sum4
+        sum5+=round(adObj.get('anum'),2)
+
+    return render(request,'user_billAdjust_article.html',locals())
+
+
+def billBack(request):
+    sperCode = request.session.get('s_suppcode')   #用户所属单位
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    shopCodeList = []
+    shopCode = ''
+    code = ''
+    start = time
+    end = time
+    page = request.GET.get('page',1)
+    if request.method== 'POST':
+        form = BillInForm(request.POST)
+        if form.is_valid():
+            code = form.cleaned_data['code']
+            shopCode = form.cleaned_data['shopcode']
+            start = form.cleaned_data['start']
+            end = form.cleaned_data['end']
+    else:
+        code = request.GET.get('code','')
+        shopCode = request.GET.get('shopcode','')
+        start = request.GET.get('start',monthFrist)
+        end = request.GET.get('end',time)
+        data = {'code':code,'shopcode':shopCode,'start':start,'end':end}
+        form = BillInForm(data)
+    kwargs = {}
+    if grpCode:
+        kwargs.setdefault("grpcode",grpCode)
+    if code:
+        kwargs.setdefault("code__contains",code)
+    if len(shopCode):
+        shopCodeStr = shopCode[0:len(shopCode)-1]
+        shopCodeList = shopCodeStr.split(',')
+        kwargs.setdefault("shopcode__in",shopCodeList)
+    kwargs.setdefault("chdate__gte",start)
+    kwargs.setdefault("chdate__lte",end)
+    kwargs.setdefault("orderstyle","2323")
+    kwargs.setdefault("spercode",sperCode)
+
+    billList = BillIn.objects.values("code","ordercode","chdate","spercode","spername","shopcode","inprice_tax","seenum","remark","sstyle")\
+                             .filter(**kwargs)
+
+    #分页函数
+    paginator=Paginator(billList,20)
+    try:
+        billList=paginator.page(page)
+    except Exception as e:
+        print(e)
+
+    return render(request,
+                  'user_billBack.html',
+                  {"form":form,
+                   "paginator":paginator,
+                   "page":page,
+                   "code":code,
+                   "shopCode":shopCode,
+                   "shopCodeList":shopCodeList,
+                   "start":str(start),
+                   "end":str(end),
+                   "billList":billList,
+                   "grpName":grpName
+                   })
+
+def backArticle(request):
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    code = request.GET.get('code',None)
+
+    #供应商信息
+    suppiler = BillIn.objects.values("spercode","spername","shopcode","seenum","chdate","edate").distinct().get(code=code)
+    #更改查看次数
+    seeNum = suppiler.get('seenum')
+    if not seeNum:
+        seeNum = 0
+    setSeeNum(code,grpCode,seeNum+1)
+    #门店信息
+    shopCode = suppiler.get('shopcode')
+    shopName = BasShop.objects.values('shopnm').get(shopcode=shopCode)
+
+    billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate")\
+                              .filter(code=code,orderstyle__in=('2323','2301'),grpcode=grpCode)\
+                              .order_by('pname','unit')#order_by('pname','class'，'unit')
+
+    TotalSumTax = 0  #含税进价总额
+
+    for bill in billList:
+        TotalSumTax += bill.get('sum_tax',0)
+
+    return render(request,'user_billback_article.html',locals())
+
+
+def setSeeNum(code,grpcode,seeNum):
+    BillIn.objects.filter(code=code,grpcode=grpcode).update(seenum=seeNum)
+

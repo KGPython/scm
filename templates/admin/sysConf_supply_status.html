@@ -1,0 +1,278 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+
+    <style type="text/css">
+        #mask {
+            background: #000;
+            opacity: 0.75;
+            filter: alpha(opacity=75);
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+{% include "common/nav.html" %}
+<div class="supply_admin comWidth">
+    <h1 class="tTitle">
+        供应商开户
+    </h1>
+
+    <div class="query comWidth">
+        <h2 style="margin-bottom: 15px">
+            查询 供应商开户记录
+        </h2>
+
+        <form action="/scm/base/admin/suppstatus/" class="query-list" method="get">
+            <p>
+                <label>单号：</label>{{ form.bid }}
+            </p>
+
+            <p>
+                <label>供应商编号：</label>{{ form.suppcode }}
+            </p>
+
+            <p>
+                <label>状态：</label>{{ form.status }}
+            </p>
+
+            <p class="btn">
+                <input class="query-enter" id="quetyBtn" name="queryBtn" type="submit" value="开始查询">
+            </p>
+        </form>
+    </div>
+    <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+        <thead>
+        <tr>
+            <th>
+                单号
+            </th>
+            <th>
+                供应商用户名
+            </th>
+            <th>
+                供应商名称
+            </th>
+            <th>
+                状态
+            </th>
+            <th>
+                所属集团
+            </th>
+            <th>
+                金额
+            </th>
+            <th>操作</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for rows in resultList.object_list %}
+            <tr>
+                <td>
+                    {{ rows.bid }}
+                </td>
+                <td>
+                    {{ rows.ucode }}
+                </td>
+                <td>
+                    {{ rows.chnm }}
+                </td>
+                <td>
+                    {{ rows.status }}
+                </td>
+                <td>
+                    {{ rows.grpcode }}
+                </td>
+                <td>
+                    {{ rows.bsum |default_if_none:'0' }}
+                </td>
+                <td class="click">
+                    <span class="powerSet" onclick="passbid({{ rows.bid }})">启用/禁用</span>&nbsp;&nbsp;<span class="roles"
+                                                                                                           id="roles"
+                                                                                                           onclick="selRole(2,{{ rows.ucode }})">角色</span>
+                </td>
+            </tr>
+        {% empty %}
+            <tr>
+                <td colspan="7">未查询到结果,请确认查询信息是否正确</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <div class="powerSet-box" style="height: auto">
+        <form action="/scm/base/admin/supp_sta_form" id="staForm" method="post">
+            <p>
+                <label for="">状态</label> <select name="status" id="suppUserStatus">
+                <option value="N" selected="selected">
+                    禁用
+                </option>
+                <option value="Y">
+                    启用
+                </option>
+            </select>
+            </p>
+            <p>
+                <label for="">金额</label><input type="text" name="bsum">
+            </p>
+            <p class="btn">
+                <input type="button" id="submit" value="提交"> <input type="button" class="close" value="关闭">
+                <input type="hidden" value="" name="bid" id="bids">
+                <input type="hidden" value="" name="ucode" id="ucode">
+                <input type="hidden" value="" name="grpcode" id="grpcode">
+                <input type="hidden" value="" name="suppcode" id="supp_code">
+            </p>
+        </form>
+    </div>
+
+    <div class="roles-box">
+        <form action="/scm/base/admin/supp_addRole" method="post" id="roles_box">
+            <div id="rolebox"></div>
+            <p class="btn">
+                <input type="button" id="role_submit" value="确定">
+                <input type="button" class="close" value="关闭" id="close_role">
+                <input type="hidden" name="ucode" id="r_ucode">
+            </p>
+        </form>
+    </div>
+
+</div>
+<div class="page noprint"><span>第{{ page }} 页</span>/<span>共<b>{{ resultList.paginator.num_pages }}</b>页</span>
+    <a href="/scm/base/admin/suppstatus/?page=1&bid={{ bid }}&suppcode={{ suppcode }}&status={{ status }}">首页</a>
+    {% if resultList.has_previous %}
+        <a href="/scm/base/admin/suppstatus/?page={{ resultList.previous_page_number }}&bid={{ bid }}&suppcode={{ suppcode }}&status={{ status }}">上一页</a>
+    {% else %}
+        <a href="javascript:;">上一页</a>
+    {% endif %}
+    {% if resultList.has_next %}
+        <a href="/scm/base/admin/suppstatus/?page={{ resultList.next_page_number }}&bid={{ bid }}&suppcode={{ suppcode }}&status={{ status }}">下一页</a>
+    {% else %}
+        <a href="javascript:;">下一页</a>
+    {% endif %}
+    <a href="/scm/base/admin/suppstatus/?page={{ resultList.paginator.num_pages }}&bid={{ bid }}&suppcode={{ suppcode }}&status={{ status }}">尾页</a>
+
+    <form id="pageForm" name="pageForm" method="get" action="/scm/base/admin/suppstatus/">
+        <span class="totalPage">到第</span> <input class="pageTxt" id="page" name="page" type="text" value="{{ page }}">
+        <span>页</span> <input value="确定" id="pageEnter" type="button">
+        <input type="hidden" name="bid" value="{{ bid }}">
+        <input type="hidden" name="suppcode" value="{{ suppcode }}">
+        <input type="hidden" name="status" value="{{ status }}">
+    </form>
+</div>
+
+{% include "common/footer.html" %}
+<script>
+    current="gongyingshangquanxian";
+    function passbid(bid,ucode,grpcode,suppcode,status) {
+        $('#bids').attr('value', bid);
+        $('#ucode').attr('value', ucode);
+        $('#grpcode').attr('value', grpcode);
+        $('#supp_code').attr('value', suppcode);
+        $('#suppUserStatus').find("option[value='"+status+"']").attr("selected", true);
+
+    }
+
+    function selRole(t, i) {
+        $('#r_ucode').attr('value', i);
+        $("#rolebox").html("");
+        $.post("/scm/base/admin/supp_findRole", {utype: t, ucode: i}, function (result) {
+            var rs = JSON.parse(result);
+            $(rs.rolelist).each(function (index, item) {
+                 flag = false;
+                 $(rs.codelist).each(function (index, item2) {
+                     if(item.rcode==item2){
+                         flag = true;
+                         return true;
+                     }
+                 });
+                var content = "";
+                if(flag){
+                    content = "<p class='checkbox'><input type='checkbox' checked='checked' name='choices' id='" + item.rcode + "' value='" + item.rcode + "'><label for=''>" + item.nm + "</label></p>";
+                }else{
+                    content = "<p class='checkbox'><input type='checkbox' name='choices' id='" + item.rcode + "' value='" + item.rcode + "'><label for=''>" + item.nm + "</label></p>";
+                }
+
+                $("#rolebox").append(content);
+            });
+        });
+    }
+
+    $(function () {
+          $("#pageEnter").on("click",function(){
+
+                var pageNum = $("#page").val();
+
+                if(!isNaN(pageNum) && pageNum!=''){
+                    var num = parseInt(pageNum);
+                    var maxNum = parseInt('{{ resultList.paginator.num_pages }}');
+
+                    if(num<1){
+                         $("#page").val(1);
+                    }
+                    if(num>maxNum){
+                        $("#page").val(maxNum);
+                    }
+                }else{
+                     $("#page").val(1);
+                }
+                $("#pageForm").submit();
+           });
+
+        $('#submit').click(function () {
+            var ajax_option = {
+                url: "/scm/base/admin/supp_sta_form",
+                data: $('#staForm').serialize(),
+                type: 'post',
+                datatype: 'json',
+                async: false,
+                cache: false,
+                beforeSubmit: function () {
+
+                },
+                success: function (f) {
+                    obj = JSON.parse(f);
+                    if (obj.flag == 0) {
+                        $('.powerSet-box').hide();
+                        window.location.reload();
+                        alert("操作成功");
+                    } else {
+                        $('.powerSet-box').hide();
+                        alert("操作失败");
+                    }
+                },
+            };
+            $('#staForm').ajaxSubmit(ajax_option);
+        });
+    });
+
+    $(function () {
+        $('#role_submit').click(function () {
+            var ajax_option = {
+                url: "/scm/base/admin/supp_addRole",
+                data: $('#roles_box').serialize(),
+                type: 'post',
+                datatype: 'json',
+                async: false,
+                cache: false,
+                beforeSubmit: function () {
+
+                },
+                success: function (f) {
+                    obj = JSON.parse(f);
+                    if (obj.flag == '0') {
+                        $('.roles-box').hide();
+                        alert("操作成功");
+                    } else {
+                        $('.roles-box').hide();
+                        alert("操作失败");
+                    }
+                }
+            };
+            $('#roles_box').ajaxSubmit(ajax_option);
+        });
+    });
+</script>
+</body>
+</html>

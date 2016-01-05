@@ -1,0 +1,17 @@
+<!--[if IE]>
+<script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
+<![if !IE]>
+<script type="text/javascript" src="{{ static }}/js/jquery-2.1.4.min.js"></script><![endif]>
+<script type="text/javascript" src="{{ static }}/js/jquery.form.js"></script>
+<script type="text/javascript" src="{{ static }}/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="{{ static }}/js/csrf.js"></script>
+<script type="text/javascript" src="{{ static }}/js/print/jquery.jqprint-0.3.js"></script>
+<script type="text/javascript" src="{{ static }}/js/main.js"></script>
+<script type="text/javascript" src="{{ static }}/js/laydate.js"></script>
+<script type="text/javascript">
+   $(function(){
+        if(typeof(current) != "undefined"){
+            $('#nav_'+current).css({"background":"#fff","color":"#337AB7"});
+        }
+   });
+</script>
