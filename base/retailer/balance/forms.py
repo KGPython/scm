@@ -5,9 +5,9 @@ class BillInForm(forms.Form):
     shopid = forms.CharField(widget=forms.TextInput(attrs={"id":"shopCode","name":"shopCode","style":"width:200px","readonly":"readonly"}),max_length=1000,
                                required=False)
     start = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"start","name":"start",
-                                                          "style":"width:120px"}),required=True,error_messages={"required":"起始日期不能为空",})
+                                                          "style":"width:180px"}),required=True,error_messages={"required":"起始日期不能为空",})
     end = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"end","name":"end",
-                                                        "style":"width:120px"}),required=True,error_messages={"required":"截止日期不能为空",})
+                                                        "style":"width:180px"}),required=True,error_messages={"required":"截止日期不能为空",})
 
     venderId = forms.CharField(widget=forms.TextInput(attrs={"id":"venderId","name":"venderId","style":"width:150px"}),max_length=32,required=False)
     sheetId  = forms.CharField(widget=forms.TextInput(attrs={"id":"sheetId","name":"sheetId","style":"width:200px"}),max_length=16,required=False)

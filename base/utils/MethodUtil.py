@@ -8,6 +8,30 @@ from django.conf import settings
 
 from base.utils import Constants
 
+import pymysql
+
+#获取mysql数据库连接
+def getConnection():
+
+    conn = pymysql.connect(host="192.168.122.146",
+                           port=3306,
+                           user="root",
+                           password="10233201sn",
+                           db="kgscm",
+                           charset='utf8mb4',
+                           cursorclass=pymysql.cursors.DictCursor)
+    return conn
+
+#关闭连接
+def close(conn,cur):
+    try:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
+    except Exception as e:
+        print(e)
+
 #md5
 def md5(str):
 

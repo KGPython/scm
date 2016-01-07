@@ -37,8 +37,7 @@ SECRET_KEY = '959pnv02y=9dyry1k0mypr8&m)a^pv7-x7cx3rtogleb4w*ty5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
-
+#ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 # Application definition
 
@@ -99,10 +98,10 @@ DATABASES = {
     # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'scm',
+        'NAME': 'kgscm',
         'USER': 'root',
-        'PASSWORD': '123456',
-        'HOST': '127.0.0.1',
+        'PASSWORD': '10233201sn',
+        'HOST': '192.168.122.146',
         'PORT': '3306',
     }
 }
@@ -136,11 +135,11 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-#ä¸Šä¼ æ–‡ä»¶
+#ÉÏ´«ÎÄ¼ş
 MEDIA_URL = '/upload/'
 MEDIA_ROOT = 'upload'
 
-# ***é…ç½®ï¼šé™æ€æ–‡ä»¶ï¼ˆCSSã€JSï¼‰è·¯å¾„***
+# ***ÅäÖÃ£º¾²Ì¬ÎÄ¼ş£¨CSS¡¢JS£©Â·¾¶***
 STATIC_URL = '/static/'
 STATIC_ROOT="comm_static"
 
@@ -152,14 +151,14 @@ LOGIN_URL ="/scm/base/loginpage"
 LOGIN_EXEMPT_URLS=["scm/base/login","scm/base/logout","scm/base/vcode/","favicon.ico"]
 
 
-#linuxé…ç½®static
+#linuxÅäÖÃstatic
 # STATICFILES_DIRS = [
 #    os.path.join(BASE_DIR, "static"),
 #    '/var/www/scm/static',
 # ]
 # STATIC_ROOT = os.path.join(BASE_DIR, "scm_static/")
 
-# ***è‡ªå®šä¹‰æ—¥å¿—è¾“å‡ºä¿¡æ¯***
+# ***×Ô¶¨ÒåÈÕÖ¾Êä³öĞÅÏ¢***
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': True,

@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from numpy import array
 import numpy as np
-import matplotlib,os
+import matplotlib
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MultipleLocator, FuncFormatter
 import matplotlib.ticker as ticker
@@ -12,11 +12,10 @@ import base.utils.MethodUtil as mdu
 
 import pytz as tz
 
-import dateutil, pylab,random,time
+import dateutil, pylab,random
 from pylab import *
 
 from datetime import timedelta
-from redis import client
 
 
 from pylab import *
@@ -73,17 +72,6 @@ def test1():
     if isinstance(c,tuple):
         print("tuple-c")
 
-
-def task():
-    print("task......")
-
-#定时任务
-def timer(n):
-    while True:
-        print(time.strftime('%Y-%m-%d %X',time.localtime()))
-        task()
-        time.sleep(n)
-
 if __name__ == "__main__":
     #tz = tz.timezone('Asia/Shanghai')
     #sh_dt = datetime.datetime.now(tz)
@@ -106,46 +94,19 @@ if __name__ == "__main__":
     # print(b)
     # c = [int(i) for i in b ]
     # print(c)
-    #
-    # ls = ["2","3","a"]
-    # try:
-    #     s_sadmin = ls.index("1")
-    #     print(s_sadmin)
-    # except:
-    #     print(-1)
-    #
-    # def cutStr(str,separator):
-    #     try:
-    #         index = str.index(separator)
-    #         return str[index+1:]
-    #     except:
-    #         return str
-    # s = "23423sd.fsdfsdf"
-    # print(cutStr(s,"."))
 
-    #timer(3)
+    ls = ["2","3","a"]
+    try:
+        s_sadmin = ls.index("1")
+        print(s_sadmin)
+    except:
+        print(-1)
 
-    # output = os.popen("pip list")
-
-    # print(output)
-   # print(int(time.time()*1000000))
-   #  l = [3,2,5]
-   #  l = sorted(l)
-   #  print(l)
-   #  l = reversed(l)
-   #  print(list(l))
-   #  s = "abeddef"
-   #  s = reversed(s)
-   #  print(list(s))
-   #  a = {"a":"c"}
-   #  a.keys()
-   #  for i in range(10):
-   #   print (i, end=",")
-
-    #print(17%10)
-    a = "123456789"
-    # l = list(a)
-    # c = filter(lambda x:int(x)%2!=0,l)
-    # print("".join(c))
-
-    print (a[::2])
+    def cutStr(str,separator):
+        try:
+            index = str.index(separator)
+            return str[index+1:]
+        except:
+            return str
+    s = "23423sd.fsdfsdf"
+    print(cutStr(s,"."))

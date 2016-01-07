@@ -104,7 +104,6 @@
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                 <thead>
                     <tr>
-                        <th>供应商编码</th>
                         <th>门店</th>
                         <th>库存数量</th>
                         <th>库存进价含税金额</th>
@@ -113,7 +112,6 @@
                 <tbody>
                 {% for stock in stockList %}
                     <tr>
-                        <td>{{ stock.suppcode }}</td>
                         <td>
                             <a href="{% url 'stockArticle' %}?shopcode={{ stock.shopcode }}">
                                 {{ shopDict | key:stock.shopcode }}
@@ -128,9 +126,9 @@
                     </tr>
                 {% endfor %}
                     <tr>
-                        <td colspan="2">合计：</td>
-                        <td>{{ totalNum }}</td>
-                        <td>{{ totalSumsIntax }}</td>
+                        <td>合计：</td>
+                        <td>{{ totalNum | floatformat:2 }}</td>
+                        <td>{{ totalSumsIntax | floatformat:2 }}</td>
                     </tr>
                 </tbody>
             </table>

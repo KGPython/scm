@@ -12,6 +12,7 @@ from .forms import *
 import time,datetime
 import sys
 from django.core.paginator import Paginator,Page
+from django.conf import settings
 
 #读取文件
 def readFile(fn, buf_size=262144):
@@ -110,7 +111,7 @@ def msglist(request):
                 # 根据用户类型，获特殊查询条件
                 if userType == "2":
                     q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='')),Q.AND)
-                else:
+                else:#零售商
                     q.add(((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='23') & Q(depart=''))),Q.AND)
 
                 #获取数据列表
@@ -154,10 +155,10 @@ def msglist(request):
 
         if flag == 'msgIn':
             # 根据用户类型，获特殊查询条件
-            if userType == "2":
+            if userType == "2":#供应商
                 q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='')),Q.AND)
-            else:
-                q.add(((Q(depart=userCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart=''))),Q.AND)
+            else:#零售商
+                q.add(((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='23') & Q(depart=''))),Q.AND)
 
             #获取数据列表
             infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
@@ -191,14 +192,14 @@ def msglist(request):
 
 
 timestr = time.strftime("%Y-%m-%d %H:%M:%S")
-
+time = time.time()
 def msgPreview(request):
+    userCode = request.session.get('s_ucode')
     infoCode = request.GET.get("infocode","")
     infoObj = Pubinfo.objects.values("title","content","checker","subtime","mailpath").get(infocode=infoCode)
     return render(request,'notice_preview.html',locals())
 
 def msgCreate(request):
-
     #session传递参数
     grpCode = request.session.get('s_grpcode','')#00069
 
@@ -238,7 +239,7 @@ def msgCreate(request):
         oldpath = request.POST.get('oldpath')
 
         mailpath=''
-        rootPath = os.getcwd()  #获取工程目录
+        rootPath = constants.BASE_ROOT  #获取工程目录
         if oldpath:
             os.remove(rootPath+oldpath)
         if fileObj:
@@ -247,7 +248,8 @@ def msgCreate(request):
         #编辑
         if infoCode and action!="answer":
             Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,depart=depart,mailpath=mailpath,subtime=timestr)
-            succ = "1" #设置提交成功返回信息，在前端展现
+            # succ = "1" #设置提交成功返回信息，在前端展现
+            return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
         #创建
         else:
             info = Pubinfo()
@@ -271,22 +273,25 @@ def msgCreate(request):
             info.infocode= infoCode
 
             info.save()
-            if action=="answer":
-                succ = "3"
-            else:
-                succ = "2" #设置提交成功返回信息，在前端展现
+            return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
+            # if action=="answer":
+            #     succ = "3"
+            # else:
+            #     succ = "2" #设置提交成功返回信息，在前端展现
     return render(request, 'noticeCreate.html',locals())
 
 def uploadFile(fileObj):
-    rootPath = os.getcwd()  #获取工程目录
-    UPLOAD_ROOT = rootPath+'/upload/message/'
-    if not os.path.exists(UPLOAD_ROOT):
-        os.makedirs(UPLOAD_ROOT)
 
-    microsecond = datetime.datetime.now().microsecond
+    rootPath = settings.BASE_DIR #获取工程目录
+    UPLOAD_ROOT = '/home/system/djangoapps/scm/upload/message/'
+
+
+    # microsecond = datetime.datetime.now()
+
     file_name = fileObj.name #附件存储名称
     file_name_list = file_name.split(".")
-    file_name = str(microsecond)+"."+file_name_list[1]     #上传附件的存储名称
+    timestr= str(int(time*1000000))
+    file_name = timestr+"."+file_name_list[1]     #上传附件的存储名称
 
     file_full_path = os.path.join(UPLOAD_ROOT, file_name)
 
@@ -314,3 +319,4 @@ def getInfoCode(request,id):
     stub.lastnum = lastNum
     stub.save()
     return infoCode
+

@@ -44,7 +44,7 @@ def supplierStock(request):
             kwargs.setdefault("suppcode",suppCode)
             kwargs.setdefault("grpcode",grpCode)
 
-            stockList = Stock.objects.values("shopcode","suppcode")\
+            stockList = Stock.objects.values("shopcode")\
                                      .filter(**kwargs)\
                                      .annotate(num=Sum('num'),sums_intax=Sum('sums_intax'))\
                                      .order_by('-sums_intax')
@@ -285,8 +285,8 @@ def writeExcel(list,title,rowTitle,keyList,rowTotal):
     stylebody = set_style('Arial',230)
     for i in range(0,len(list)):
         for j in range(0,len(keyList)):
-            sheet1.write(i+2,j,list[i].get(keyList[j]).strip(),stylebody)
-            sheet1.col(i).width = 7000      #单元格宽度
+            sheet1.write(i+2,j,list[i].get(keyList[j]),stylebody)
+            sheet1.col(j).width = 7000      #单元格宽度
     #最后一行合计
     for i in range(0,len(rowTotal)):
         sheet1.write(len(list)+2,i,rowTotal[i],set_style('Arial',220,True))

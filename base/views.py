@@ -7,21 +7,24 @@ from base.models import BasShop, SerialNumber, BasOrg, BasKe, BasGoods
 
 
 def global_setting(request):
-    request.session["grpcode"] = "120039"
-    request.session["curgrpcode"] = "00069"
-    spercode = request.session.get("grpcode")
-    grpcode = request.session.get("curgrpcode")
+    grpcode = request.session.get("s_grpcode")
+    utype =  request.session.get("s_utype")
+    if utype == "2":
+        spercode = request.session.get("s_suppcode")
+         # 商品小类信息
+        deptList = BasGoods.objects.filter(grpcode=grpcode, venderid=spercode).values("deptid", "deptname").order_by("deptid").distinct()
+    else:
+        spercode = ""
+        deptList = []
 
     # 门店信息
-    shopList = BasShop.objects.all().values("shopcode", "shopnm").filter(grpcode="00069").exclude(shopcode__startswith="A").exclude(shopcode__startswith="F")
+    shopList = BasShop.objects.all().values("shopcode", "shopnm").filter(grpcode=grpcode).exclude(shopcode__startswith="A").exclude(shopcode__startswith="F")
     # 门店信息（字典）
     shopDict = findShop()
     # 序列配置信息
     serialList = SerialNumber.objects.all().values("name", "serialid")
     # 商品类别组织结构信息
     orgList = BasOrg.objects.all().values("orgname", "orgcode")
-    # 商品小类信息
-    deptList = BasGoods.objects.filter(grpcode=grpcode, venderid=spercode).values("deptid", "deptname").order_by("deptid").distinct()
     # 零售商管理员信息
     basKeList = BasKe.objects.all().values("kbcode", "kbname")
     # 单据类型

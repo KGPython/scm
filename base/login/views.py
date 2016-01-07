@@ -167,7 +167,7 @@ def getMenu(purlist):
                 mls.append([m[0],dls,pinyin.hanzi2pinyin_split(string=mkey, split="")])
         dt[r] = mls
 
-    print(">>>>>>菜单：",dt)
+    #print(">>>>>>菜单：",dt)
     return dt
 
 def cutStr(str,separator):

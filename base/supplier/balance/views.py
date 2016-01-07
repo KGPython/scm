@@ -15,12 +15,12 @@ def balance(request):
     grpCode = request.session.get('s_grpcode')   #用户所属单位
     grpName = request.session.get('s_grpname')
 
-    start = ''
-    end = ''
+    start = monthFrist
+    end = time
     shopId = []
     sheetId = ''
     status = ''
-    orderStyle = ''
+    orderStyle = '-editdate'
     page = request.GET.get('page',1)
     if request.method== 'POST':
         form = BillInForm(request.POST)

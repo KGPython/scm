@@ -10,18 +10,19 @@ import time,datetime
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
 time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
-
+monthFrist = (datetime.datetime.now() - datetime.timedelta(days = 60)).strftime("%Y-%m-%d")
 def balance(request):
     grpCode = request.session.get('s_grpcode','')
     grpName = request.session.get('s_grpname','')
 
-    start = ''
-    end = ''
+    start = monthFrist
+    end = time
     shopId = []
     sheetId = ''
     venderId = ''
     status = ''
-    orderStyle = ''
+    orderStyle = '-editdate'
+
     page = request.GET.get('page',1)
     if request.method== 'POST':
         form = BillInForm(request.POST)
@@ -36,7 +37,7 @@ def balance(request):
     else:
 
         shopId = request.GET.get('shopid','')
-        start = request.GET.get('start',(datetime.datetime.now() - datetime.timedelta(days = 60)).strftime("%Y-%m-%d"))
+        start = request.GET.get('start',monthFrist)
         end = request.GET.get('end',time)
         sheetId = request.GET.get('sheetid','')
         venderId = request.GET.get('venderId','')
@@ -108,6 +109,12 @@ def balanceArticle(request):
                                                "premoney","editor","checker","paychecker","contracttype")\
                                        .get(sheetid__contains=sheetId)
 
+
+    if balanceList.get('kxinvoice'):
+        cfpkx = float(round(balanceList.get('kxinvoice'),2))
+    else:
+        cfpkx = 0
+
     zkkx = float(round(balanceList.get('kxmoney')-balanceList.get('kxcash'),2))#帐扣扣项
 
     if balanceList.get('curdxvalue'):
@@ -126,8 +133,10 @@ def balanceArticle(request):
         premoney = 0
 
     if curdxValue == 0:
+        invoicePay = round((payableMoney-cfpkx),2)#应开票金额
         realPay = round((payableMoney-zkkx-premoney),2)#实付金额
     else:
+        invoicePay = round((curdxValue-cfpkx),2)
         realPay = round((curdxValue-zkkx-premoney),2)
 
 

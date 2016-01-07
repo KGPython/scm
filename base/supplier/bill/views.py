@@ -54,6 +54,11 @@ def supplierBill(request):
 
     billList = BillIn.objects.values("code","ordercode","chdate","spercode","spername","shopcode","inprice_tax","seenum","remark","sstyle")\
                                          .filter(**kwargs)
+
+    totalInpriceTax = 0
+    for item in billList:
+        totalInpriceTax += item['inprice_tax']
+
     #分页函数
     paginator=Paginator(billList,20)
     try:
@@ -72,8 +77,8 @@ def supplierBill(request):
                    "start":str(start),
                    "end":str(end),
                    "billList":billList,
-                   "grpName":grpName
-
+                   "grpName":grpName,
+                   "totalInpriceTax":totalInpriceTax
                    })
 
 
@@ -169,6 +174,7 @@ def billAdjust(request):
         dic['inprice_tax']=obj[7]
         dic['seenum']=obj[8]
         billList.append(dic)
+
     #分页函数
     paginator=Paginator(billList,20)
     try:
@@ -270,7 +276,9 @@ def billBack(request):
 
     billList = BillIn.objects.values("code","ordercode","chdate","spercode","spername","shopcode","inprice_tax","seenum","remark","sstyle")\
                              .filter(**kwargs)
-
+    totalInpriceTax = 0
+    for item in billList:
+        totalInpriceTax += item['inprice_tax']
     #分页函数
     paginator=Paginator(billList,20)
     try:
@@ -289,7 +297,8 @@ def billBack(request):
                    "start":str(start),
                    "end":str(end),
                    "billList":billList,
-                   "grpName":grpName
+                   "grpName":grpName,
+                   "totalInpriceTax":totalInpriceTax
                    })
 
 def backArticle(request):

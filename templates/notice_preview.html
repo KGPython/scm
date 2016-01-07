@@ -10,7 +10,10 @@
         {% include "common/nav.html" %}
         <p class="comWidth">
             <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
-            <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">
+            {% if infoObj.checker != userCode %}
+               <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">
+            {% endif %}
+
         </p>
         <h1 class="tTitle">
             系统公告

@@ -196,7 +196,7 @@
                             <td class="col1">
                                 <a href="/scm/base/supp/order/find/?ordercode={{ row.ordercode }}" target="_blank">{{ row.ordercode }}</a>
                             </td>
-                            <td class="col1">{{ row.checkdate|date:"Y-m-d H:i" }}</td>
+                            <td class="col1">{{ row.checkdate|date:"Y-m-d" }}</td>
                             <td class="col1">
                                {{ row.sdate|expired:today }}
                             </td>
@@ -223,7 +223,7 @@
                             </td>
                             <td class="col2_4">{{ row.spercode }}</td>
                             <td class="col1">{{ row.spername }}</td>
-                            <td class="col2_4">{{ row.sdate |date:"Y-m-d H:i" }}</td>
+                            <td class="col2_4">{{ row.sdate |date:"Y-m-d" }}</td>
                             <td class="col1">{{ shopDict|key:row.shopcode }}</td>
                             <td class="col1">{{ row.seenum | default_if_none:"0"}}</td>
                             <td class="col1">{{ row.printnum | default_if_none:"0"}}</td>
