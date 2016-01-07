@@ -188,13 +188,18 @@
             }
         });
 
-        {% if succ == "1" %}
-            alert('公告编辑并发布成功');
-        {% elif succ == "2" %}
-            alert('公告发布成功');
-        {% elif succ == "3" %}
-            alert('回复成功');
-        {% endif %}
+            {% if succ == "1" %}
+                alert('公告编辑并发布成功');
+                window.location.href="{% url 'msglist' %}?flag=msgOut";
+            {% elif succ == "2" %}
+                alert('公告发布成功');
+                window.location.href="{% url 'msglist' %}?flag=msgOut";
+            {% elif succ == "3" %}
+                alert('回复成功');
+                window.location.href="{% url 'msglist' %}?flag=msgOut";
+            {% endif %}
+
+
     </script>
 </body>
 </html>

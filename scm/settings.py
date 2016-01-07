@@ -37,7 +37,8 @@ SECRET_KEY = '959pnv02y=9dyry1k0mypr8&m)a^pv7-x7cx3rtogleb4w*ty5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-#ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+
 
 # Application definition
 
@@ -135,28 +136,19 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-#上传文件
+#上传文件,scm.conf需要相应配置
 MEDIA_URL = '/upload/'
-MEDIA_ROOT = 'upload'
+MEDIA_ROOT = os.path.join(BASE_DIR,  'upload')
 
-# ***配置：静态文件（CSS、JS）路径***
 STATIC_URL = '/static/'
 STATIC_ROOT="comm_static"
-
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR,  'static'),
-)
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+    #'/home/system/djangoapps/scm/static',
+]
 
 LOGIN_URL ="/scm/base/loginpage"
 LOGIN_EXEMPT_URLS=["scm/base/login","scm/base/logout","scm/base/vcode/","favicon.ico"]
-
-
-#linux配置static
-# STATICFILES_DIRS = [
-#    os.path.join(BASE_DIR, "static"),
-#    '/var/www/scm/static',
-# ]
-# STATIC_ROOT = os.path.join(BASE_DIR, "scm_static/")
 
 # ***自定义日志输出信息***
 # LOGGING = {

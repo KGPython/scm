@@ -20,7 +20,7 @@ class BillInForm(forms.Form):
     ORDER_CHOICES = (
         ('-editdate', u'制单日期'),
         ('sheetid', u'编码'),
-        ('shopcode', u'结算位置'),
+        ('shopid', u'结算位置'),
         ('-begindate', u'上次结算日期'),
         ('-enddate', u'本次结算日期'),
         ('flag', u'结算状态'),

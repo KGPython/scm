@@ -16,10 +16,9 @@ from django.conf import settings
 
 #读取文件
 def readFile(fn, buf_size=262144):
-    rootPath = os.getcwd()
-
     #存放文件路径
-    path = rootPath
+    path = os.getcwd()#本地测试
+    path = constants.BASE_ROOT
     file = path+fn
     f = open(file,"rb")
     while True:
@@ -126,11 +125,9 @@ def msglist(request):
         start = request.GET.get('start','')
         if not start:
             start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
-
         end = request.GET.get('end','')
         if not end:
             end = datetime.datetime.today().strftime("%Y-%m-%d")
-
         flag = request.GET.get('flag','')
         data = {'infocode':infoCode,'start':start,'end':end,'flag':flag}
         form=msgForm(data)
@@ -141,7 +138,8 @@ def msglist(request):
                 infoObj=None
             if infoObj:
                 mailPath = infoObj.mailpath
-                rootPath = os.getcwd()  #获取工程目录
+                # rootPath = os.getcwd()  #服务器环境
+                rootPath = constants.BASE_ROOT
                 if os.path.isfile(rootPath+mailPath):
                     os.remove(rootPath+mailPath)
                 infoObj.delete()
@@ -239,7 +237,9 @@ def msgCreate(request):
         oldpath = request.POST.get('oldpath')
 
         mailpath=''
-        rootPath = constants.BASE_ROOT  #获取工程目录
+
+        # rootPath = os.getcwd()#本地测试
+        rootPath = constants.BASE_ROOT
         if oldpath:
             os.remove(rootPath+oldpath)
         if fileObj:
@@ -248,8 +248,8 @@ def msgCreate(request):
         #编辑
         if infoCode and action!="answer":
             Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,depart=depart,mailpath=mailpath,subtime=timestr)
-            # succ = "1" #设置提交成功返回信息，在前端展现
-            return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
+            succ = "1" #设置提交成功返回信息，在前端展现
+            # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
         #创建
         else:
             info = Pubinfo()
@@ -273,18 +273,16 @@ def msgCreate(request):
             info.infocode= infoCode
 
             info.save()
-            return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
-            # if action=="answer":
-            #     succ = "3"
-            # else:
-            #     succ = "2" #设置提交成功返回信息，在前端展现
+            # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
+            if action=="answer":
+                succ = "3"
+            else:
+                succ = "2" #设置提交成功返回信息，在前端展现
     return render(request, 'noticeCreate.html',locals())
 
 def uploadFile(fileObj):
-
-    rootPath = settings.BASE_DIR #获取工程目录
-    UPLOAD_ROOT = '/home/system/djangoapps/scm/upload/message/'
-
+    # UPLOAD_ROOT = os.getcwd()+'/upload/message/'#服务器环境
+    UPLOAD_ROOT = constants.BASE_ROOT+'/upload/message/'
 
     # microsecond = datetime.datetime.now()
 
