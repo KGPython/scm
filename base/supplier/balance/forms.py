@@ -2,13 +2,13 @@
 from django import forms
 
 class BillInForm(forms.Form):
-    shopid = forms.CharField(widget=forms.TextInput(attrs={"id":"shopCode","name":"shopCode","style":"width:200px","readonly":"readonly"}),max_length=1000,
+    shopid = forms.CharField(widget=forms.TextInput(attrs={"id":"shopCode","name":"shopCode","style":"width:170px","readonly":"readonly"}),max_length=1000,
                                required=False)
     start = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"start","name":"start",
-                                                          "style":"width:200px"}),required=True,error_messages={"required":"起始日期不能为空",})
+                                                          "style":"width:170px"}),required=True,error_messages={"required":"起始日期不能为空",})
     end = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"end","name":"end",
-                                                        "style":"width:200px"}),required=True,error_messages={"required":"截止日期不能为空",})
-    sheetId  = forms.CharField(widget=forms.TextInput(attrs={"id":"sheetId","name":"sheetId","style":"width:200px"}),max_length=16,required=False)
+                                                        "style":"width:170px"}),required=True,error_messages={"required":"截止日期不能为空",})
+    sheetId  = forms.CharField(widget=forms.TextInput(attrs={"id":"sheetId","name":"sheetId","style":"width:170px"}),max_length=16,required=False)
     STATUS_CHOICES = (
         ('N', u'未确认'),
         ('Y', u'已确认'),

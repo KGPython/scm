@@ -2,132 +2,102 @@
     <head>
         <meta charset="UTF-8">
         <title>商业供应链系统</title>
-        <style>
-            .scList .scList-icon{
-                display: inline-block;
-                width: 20px;
-                height: 20px;
-                background: transparent url("{{ static }}/image/plus.gif") no-repeat center;
-                cursor: pointer;
-            }
-            .scList-cnt{
-                display: none;
-                position: absolute;
-                width: 450px;
-                height: 450px;
-                background: #efefef;
-                overflow: auto;
-                border: 1px solid #ccc;
-                margin-left:200px;
-            }
-            .scList-cnt-tit{
-                position: fixed;
-                width: 450px;
-                height: 45px;
-                background: #ddd;
-                line-height: 45px;
-            }
-            .scList-cnt-tit span{
-                margin-right:100px;
-                margin-left:10px;
-            }
-            .scList-cnt-tit label{
-                margin-right:30px;
-            }
-            .scList-cnt-tit input{
-                display: inline-block;
-                margin-right:10px;
-                margin-top: 10px;
-            }
-            .scList-cnt-tit input[type="submit"],
-            .scList-cnt-tit input[type="button"]
-            {
-                background: #337AB7;
-                color:#fff;
-                padding: 2px 4px;
-            }
-            .scList-cnt table{
-                margin-top: 45px;
-            }
-            .scList-cnt th{
-                font-size: 14px
-            }
-        </style>
+
     </head>
     <body>
         {% load basefilter %}
+        <style>
+            .box{
+                overflow: hidden;
+                position: relative;
+            }
+            .box-row{overflow: hidden;}
+            .box-row p{
+                width: 200px;
+                margin-right: 25px;
+            }
+            .button-box{
+                position: absolute;
+                z-index: 10;
+                top:0;
+                right: 0;
+            }
+        </style>
        {% include "common/nav.html" %}
         <div class="query comWidth">
             <form class="query-list" method="post" id="queryForm" action="/scm/base/supp/sale/sellinfo/query/">
-                            <p class="shopList">
-                                <label>门店：</label>
-                                <input type="text" id="shopCode" name="shopCode" value="{{ shopCode }}">
-                                <span class="shopList-icon"></span>
-                            </p>
-                            <p class="scList">
-                                <label>商品类别：</label>
-                                <input type="text" id="sccode" name="sccode" value="{{ sccode }}">
-                                <span class="scList-icon"></span>
-                            </p>
-                            <p class="date"></p>
-                            <p>
-                                <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}" style="width:180px; margin-right:10px;">
-                            </p>
-                            <p>
-                                <label for="end">结束日期：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}" style="width:180px;">
-                            </p>
+                <div class="box">
+                    <div class="box-row">
+                    <p class="shopList">
+                        <label>门店：</label>
+                        <input type="text" id="shopCode" name="shopCode" value="{{ shopCode }}">
+                        <a class="shopList-icon" title="门店"></a>
+                    </p>
+                    <p class="scList">
+                        <label>商品类别：</label>
+                        <input type="text" id="sccode" name="sccode" value="{{ sccode }}">
+                        <a class="scList-icon" title="商品类别"></a>
+                    </p>
+                    <p>
+                        <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}" style="width:180px; margin-right:10px;">
+                    </p>
+                    <p>
+                        <label for="end">结束日期：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}" style="width:180px;">
+                    </p>
+                    <p>
+                        <label>商品名称：</label><input type="text" name="pname" value="{{ pname }}">
+                    </p>
+                </div>
+                    <div class="box-row">
 
-                           <p>
-                                <label>商品名称：</label><input type="text" name="pname" value="{{ pname }}">
-                           </p>
-                           <p>
-                                <label>商品编码：</label><input type="text" name="pcode" value="{{ pcode }}">
-                           </p>
-                           <p>
-                                <label>商品条码：</label><input type="text" name="barcode" value="{{ barcode }}">
-                           </p>
-                           <p>
-                               <label>税率：</label>
-                               <select name="tax" class="input">
-                                   <option  {% ifequal tax "" %}selected="selected" {% endifequal %} value="">全部</option>
-                                   <option {% ifequal tax "0" %}selected="selected" {% endifequal %} value="0">0%</option>
-                                   <option {% ifequal tax "13" %}selected="selected" {% endifequal %} value="13">13%</option>
-                                   <option {% ifequal tax "17" %}selected="selected" {% endifequal %} value="17">17%</option>
-                               </select>
-                           </p>
-                           <p>
-                                <label>排序条件：</label>
-                                <select name="orderstyle" class="input">
-                                    <option value="pcode" {% ifequal orderstyle "pcode" %}selected="selected" {% endifequal %}>
-                                        商品编码
-                                    </option>
-                                    <option value="pname" {% ifequal orderstyle "pname" %}selected="selected" {% endifequal %}>
-                                        商品名称
-                                    </option>
-                                    <option value="num" {% ifequal orderstyle "num" %}selected="selected" {% endifequal %}>
-                                        销售数量
-                                    </option>
-                                    <option value="scost"  {% ifequal orderstyle "scost" %}selected="selected" {% endifequal %}>
-                                        销售成本
-                                    </option>
-                                    <option value="tax"  {% ifequal orderstyle "tax" %}selected="selected" {% endifequal %}>
-                                        税率
-                                    </option>
-                                    <option value="zzk"  {% ifequal orderstyle "zzk" %}selected="selected" {% endifequal %}>
-                                        折扣
-                                    </option>
-                                    <option value="sccode"  {% ifequal orderstyle "sccode" %}selected="selected" {% endifequal %}>
-                                        小类
-                                    </option>
-                                </select>
-                           </p>
-                           <div class="button-box">
-                               <input class="query-enter right" type="button" value="导出到excel"  onclick="queryForm(2)" style="margin-right: 35px">
-                               <input class="query-enter right" type="button" value="查询"  onclick="queryForm(1)" style="margin-right: 15px">
-                               <input type="hidden" id="qtype" name="qtype">
-                           </div>
-
-
+                    <p>
+                        <label>商品编码：</label><input type="text" name="pcode" value="{{ pcode }}">
+                    </p>
+                    <p>
+                        <label>商品条码：</label><input type="text" name="barcode" value="{{ barcode }}">
+                    </p>
+                    <p>
+                        <label>税率：</label>
+                        <select name="tax" class="input">
+                            <option  {% ifequal tax "" %}selected="selected" {% endifequal %} value="">全部</option>
+                            <option {% ifequal tax "0" %}selected="selected" {% endifequal %} value="0">0%</option>
+                            <option {% ifequal tax "13" %}selected="selected" {% endifequal %} value="13">13%</option>
+                            <option {% ifequal tax "17" %}selected="selected" {% endifequal %} value="17">17%</option>
+                        </select>
+                    </p>
+                    <p>
+                        <label>排序条件：</label>
+                        <select name="orderstyle" class="input">
+                            <option value="pcode" {% ifequal orderstyle "pcode" %}selected="selected" {% endifequal %}>
+                                商品编码
+                            </option>
+                            <option value="pname" {% ifequal orderstyle "pname" %}selected="selected" {% endifequal %}>
+                                商品名称
+                            </option>
+                            <option value="num" {% ifequal orderstyle "num" %}selected="selected" {% endifequal %}>
+                                销售数量
+                            </option>
+                            <option value="scost"  {% ifequal orderstyle "scost" %}selected="selected" {% endifequal %}>
+                                销售成本
+                            </option>
+                            <option value="tax"  {% ifequal orderstyle "tax" %}selected="selected" {% endifequal %}>
+                                税率
+                            </option>
+                            <option value="zzk"  {% ifequal orderstyle "zzk" %}selected="selected" {% endifequal %}>
+                                折扣
+                            </option>
+                            <option value="sccode"  {% ifequal orderstyle "sccode" %}selected="selected" {% endifequal %}>
+                                小类
+                            </option>
+                        </select>
+                    </p>
+                </div>
+                    <div class="button-box">
+                        <input class="query-enter right" type="button" value="导出到excel"  onclick="queryForm(2)" style="margin-right: 35px">
+                        <input class="query-enter right" type="button" value="查询"  onclick="queryForm(1)" style="margin-right: 15px">
+                        <input type="hidden" id="qtype" name="qtype">
+                    </div>
+                </div>
             </form>
              <div class="shopList-cnt">
                 <p class="shopList-cnt-tit">

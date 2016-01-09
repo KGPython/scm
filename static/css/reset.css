@@ -80,12 +80,16 @@ h1,h2,h3,h4,h5,h6{
 }
 
 /*清除浮动*/
-.clearfix:after{content:” ”;display:block;clear:both;}
+.clearfix:after{content:"";display:block;clear:both;}
 .clearfix{zoom:1;}
 .clear{float:none;}
 
 /*共用*/
 .comWidth{width:1510px;margin-left: auto;margin-right: auto;overflow: hidden;}
+@media screen and (max-width: 1367px){
+	.comWidth{width:1290px;}
+}
+
 .right{float:right;}
 .left{float:left;}
 .hide{display:none;}

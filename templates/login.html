@@ -36,6 +36,7 @@
                         <input type="button" class="enter" id="loginId" value="登&nbsp;&nbsp;&nbsp;&nbsp;录">
                     </p>
                 </form>
+                <p class="browserDownload red"><a href="http://rj.baidu.com/soft/detail/11843.html?ald" class="red">点击下载SCM系统推荐使用的浏览器</a></p>
                 <p style="font-size:14px;margin-top:40px;padding-left: 50px; ">承德宽广超市集团有限公司 技术咨询电话：0314-2064525</p>
             </div>
         </div>
@@ -120,6 +121,20 @@
                 //每次请求需要一个不同的参数，否则可能会返回同样的验证码
                 //这和浏览器的缓存机制有关系，也可以把页面设置为不缓存，这样就不用这个参数了。
                 $('#'+id).attr("src",'/scm/base/vcode/?nocache='+timenow);
+            }
+        </script>
+        <script>
+{#            if(navigator.appName == "Microsoft Internet Explorer"&& navigator.appVersion.match(/7./i)=="7."){#}
+{#                alert("尊敬的您好，为了更好的应用此系统，请您使用火狐、谷歌、360浏览器（IE8以上版本IE）进行登录")#}
+{#                $(".browserDownload").css({"display":"block"})#}
+{#            }#}
+
+
+
+            var is_IE=myBrowser();
+            if(is_IE){
+                alert("尊敬的用户您好，由于您的IE版本过低，为了更好的使用此系统，请您使用火狐、谷歌、360浏览器（IE9及以上版本IE）进行登录，如需下载可点击登录按钮下方链接。")
+                $(".browserDownload").css({"display":"block"})
             }
         </script>
     </body>

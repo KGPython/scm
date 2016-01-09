@@ -2,59 +2,13 @@
     <head>
         <meta charset="UTF-8">
         <title>商业供应链系统</title>
-        <style>
-            .scList .scList-icon{
-                display: inline-block;
-                width: 20px;
-                height: 20px;
-                background: transparent url("{{ static }}/image/plus.gif") no-repeat center;
-                cursor: pointer;
-            }
-            .scList-cnt{
-                display: none;
-                position: absolute;
-                width: 450px;
-                height: 450px;
-                background: #efefef;
-                overflow: auto;
-                border: 1px solid #ccc;
-                margin-left:200px;
-            }
-            .scList-cnt-tit{
-                width: 450px;
-                height: 45px;
-                background: #ddd;
-                line-height: 45px;
-            }
-            .scList-cnt-tit span{
-                margin-right:100px;
-                margin-left:10px;
-            }
-            .scList-cnt-tit label{
-                margin-right:30px;
-            }
-            .scList-cnt-tit input{
-                display: inline-block;
-                margin-right:10px;
-                margin-top: 10px;
-            }
-            .scList-cnt-tit input[type="submit"],
-            .scList-cnt-tit input[type="button"]
-            {
-                background: #337AB7;
-                color:#fff;
-                padding: 2px 4px;
-            }
-            .scList-cnt th{
-                font-size: 14px
-            }
-        </style>
+
     </head>
     <body>
         {% load basefilter %}
-       {% include "common/nav.html" %}
+        {% include "common/nav.html" %}
         <div class="query comWidth">
-            <form class="query-list" method="post" id="queryForm" action="/scm/base/supp/sale/product/query/">
+            <form class="query-list sale-pro" method="post" id="queryForm" action="/scm/base/supp/sale/product/query/">
 
                           <p class="shopList">
                                 <label>门店：</label>
@@ -68,10 +22,10 @@
                             </p>
                             <p class="date"></p>
                             <p>
-                                <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}" style="width:180px; margin-right:10px;">
+                                <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}" style="width:120px; margin-right:10px;">
                             </p>
                             <p>
-                                <label for="end">结束日期：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}" style="width:180px;">
+                                <label for="end">结束日期：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}" style="width:120px;">
                             </p>
 
                            <p>

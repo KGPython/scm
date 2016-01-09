@@ -3,11 +3,11 @@ input[type="submit"],
 .button{
 	padding:0 10px;
 	height: 35px;
+	line-height: 35px;
 	background-color: #337AB7;
 	border-color: #2E6DA4;
 	border-radius: 5px;
 	text-align: center;
-	font-size: 16px;
 	color: #fff;
 }
 .button{
@@ -70,7 +70,10 @@ body{
 	border-color: #2E6DA4;
 	color:#fff;
 	font-size: 16px
-}   
+}  
+.browserDownload{
+	display: none;
+}
 /*
 ***************************************头部导航****************************************
 */ 
@@ -80,21 +83,25 @@ body{
 	margin-bottom:30px;
 	box-shadow: 0px 1px 5px #000; 
 	height: 60px;
+	+border:1px solid #666;
+	min-width: 1300px;
 }
 .nav{
-	width:1510px;
+	width:100%;
 	margin-left: auto;
 	margin-right: auto;
 	height: 100%;
 }
 .nav .nav-list{
 	height: 100%;
+	background: #efefef;
 }
 .nav .nav-list .nav-list-item{
 	position: relative;
 	float: left;
 	width: 120px;
 	font-size: 16px;
+	z-index: 100;
 }
 .nav-item-icon{
 	color: #337AB7;
@@ -113,7 +120,8 @@ body{
 }
 .nav-list2{
 	position: absolute;
-	top:60px;
+	top:59px;
+	+top:58px;
 	display: none;
 	width: 118px;
 	clear: both;
@@ -145,20 +153,27 @@ body{
 	margin: 0 auto;
 	overflow: hidden;
 	float: left;
+	width: 100%;
 }
 .query .query-list p{
 	float: left;
 	margin-right: 20px;
 }
+
 .query .query-list p label{
 	display: block;
 	margin-bottom:5px; 
 }
-.query .query-list p select,
+.query .query-list p select{
+	height: 30px;
+	line-height: 30px;
+	text-indent: 10px;
+	width: 100px;
+}
 .query .query-list p input[type="text"],
 .query .query-list p input[type="password"]{
 	height: 30px;
-	width: 120px;
+	line-height: 30px;
 	text-indent: 10px;
 }
 .query .query-list p input[type="text"],
@@ -177,9 +192,8 @@ body{
 	border-color: #2E6DA4;
 	border-radius: 5px;
 	text-align: center;
-	font-size: 16px; 
 }
-.laydate-icon
+
 .outPut{
 	border: 1px solid #337AB7;
 }
@@ -197,52 +211,70 @@ body{
 	line-height: 50px;
 	border: 10px;
 }
-.shopList .shopList-icon{
+.shopList .shopList-icon,
+.scList .scList-icon{
 	display: inline-block;
+	+display:block;
+	/*+float:left;*/
+	/*+margin-top:-27px;*/
+	/*+margin-left:125px;*/
 	width: 20px;
 	height: 20px;
 	background: transparent url("../image/plus.gif") no-repeat center;
 	cursor: pointer;
 }
-.shopList-cnt{
+.shopList-cnt,
+.scList-cnt{
 	display: none;
 	position: absolute;
+	top:170px;
+	left: 0;
 	width: 450px;
 	height: 450px;
 	background: #efefef;
 	overflow: auto;
 	border: 1px solid #ccc
 }
-.shopList-cnt-tit{
-	/*position: fixed;*/
+.scList-cnt{
+	width: 450px;
+	height: 450px;
+	margin-left:200px;
+}
+.shopList-cnt-tit,
+.scList-cnt-tit{
 	width: 450px;
 	height: 45px;
 	background: #ddd;
 	line-height: 45px;
 }
-.shopList-cnt-tit span{
+
+.shopList-cnt-tit span,
+.scList-cnt-tit span{
 	margin-right:100px; 
 	margin-left:10px; 
 }
-.shopList-cnt-tit label{
+.shopList-cnt-tit label,
+.scList-cnt-tit label{
 	margin-right:30px; 
 }
-.shopList-cnt-tit input{
+.shopList-cnt-tit input,
+.scList-cnt-tit input{
 	display: inline-block;
 	margin-right:10px; 
 	margin-top: 10px;
 }
 .shopList-cnt-tit input[type="submit"],
-.shopList-cnt-tit input[type="button"]
+.shopList-cnt-tit input[type="button"],
+.scList-cnt-tit input[type="submit"],
+.scList-cnt-tit input[type="button"]
 {
 	background: #337AB7;
 	color:#fff;
 	padding: 2px 4px;
 }
-.shopList-cnt table{
-	/*margin-top: 45px;*/
-}
-.shopList-cnt th{
+
+.shopList-cnt th,
+.scList-cnt th{
 	font-size: 14px
 }
 .errorlist{
@@ -281,7 +313,7 @@ table{
 	background: #999;
 }
 table th {
-	font-size:16px;
+	font-size:15px;
 	font-weight: bold;
 	text-align: center;
 	border-width: 1px;
@@ -297,15 +329,16 @@ table td {
 	border-color: #666666;
 	background-color: #e5e5e5;
 	text-align: center;
+	font-size: 12px;
 }
 tbody a{
-			color: #337AB7
-		}
+	color: #337AB7
+}
 /*
 ***************************************首页****************************************
 */
 .noticeHome{
-	width: 1150px;
+	width: 1000px;
 }
 .mainHome .sideNav{
 	padding-left: 20px;
@@ -313,7 +346,7 @@ tbody a{
 	margin-right:10px;
 	margin-top:100px;
 	margin-bottom:500px;
-	width: 260px;
+	width: 200px;
 	overflow: hidden;
 }
 .sideNav .sideNav-list .sideNav-list-item a{
@@ -643,7 +676,146 @@ tbody a{
 	background-color: #337AB7;
 	border-color: #2E6DA4;
 	cursor: pointer;
+	line-height: 24px;
+	font-size: 12px;
 }
 .page #pageForm{
 	display: inline-block;
+}
+
+/*************************************inputBox********************************************/
+.inputBox{
+	margin-bottom: 15px;
+	overflow: hidden;
+	border: 1px solid #bbb;
+	padding:10px;
+}
+.box-line{
+	overflow: hidden;
+	padding-top: 5px;
+	padding-bottom: 5px;
+}
+.box-line p{
+	float: left;
+	width: 230px;
+	margin-left: 100px;
+	text-align: right;
+}
+.box-line .date{
+	width: 500px;
+}
+.box-line p label{
+	margin-bottom:5px;
+	text-align: left;
+}
+.box-line p input[type=text]{
+	height: 30px;
+	width: 120px;
+	text-indent: 10px;
+	background-color: #fff;
+	border-color: #ccc;
+	padding:0;
+}
+.inputBox .query-enter{
+	margin-top: 23px;
+}
+.invioce table th{
+	font-size: 12px;
+	font-weight: normal;
+	background: #efefef
+}
+.invioce table td{padding:0;}
+.invioce table td input{
+	width: 100%;
+	height: 20px;
+	line-height: 20px;
+	border-radius: 0;
+	border:none;
+	text-indent: 2px;
+}
+.invioce .addLine .button{
+	font-size: 10px;
+	line-height: 15px;
+	height: 15px;
+}
+
+
+.printHead{
+	overflow: hidden;
+	padding:10px;
+	border: 1px solid #bbb;
+}
+.printHead p{
+	margin-left: 30px;
+	line-height: 35px;
+	height: 35px;
+}
+
+.printHead p span{
+	display: inline-block;
+	float: left;
+	width: 350px;
+	text-align: right;
+}
+.tableBox{
+	clear: both;
+	margin-top:15px;
+	overflow: hidden;
+}
+.tableBox table{
+	width: 40%;
+	float: left;
+	margin-left: 200px;
+}
+.tableBox table th{
+	font-size: 14px;
+	font-weight: normal;
+	padding: 5px;
+	background: #efefef;
+}
+.tableBox table td{
+	padding: 2px;
+	background: #efefef;
+}
+.tableBox .seal{
+	float: left;
+	margin-left: 200px;
+	width: 200px;
+	height: 200px;
+	border: 1px dotted #bbb;
+}
+.checker{
+	clear: both;
+	height: 35px;
+	margin-top:15px;
+}
+.checker span{
+	margin-right: 50px;
+	text-align: left;
+}
+.table2 table th{
+	font-weight: normal;
+	font-size: 16px;
+}
+
+@media screen and (max-width: 1367px){
+	.nav .nav-list .nav-list-item {
+		font-size: 14px;
+	}
+	.noticeHome{
+		width: 900px;
+		margin-right: 100px;
+	}
+	.query .query-list p{
+		margin-right: 10px;
+	}
+	.query .query-list p input{
+		width: 110px;
+	}
+	table th{
+		font-size: 12px;
+	}
+	table td{
+		font-size: 10px;
+	}
 }
