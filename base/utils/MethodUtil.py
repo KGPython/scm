@@ -1,5 +1,6 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
+
 import xlrd,xlwt3 as xlwt
 import os,decimal,datetime,time,random,hashlib
 from PIL import Image, ImageDraw, ImageFont
@@ -9,9 +10,21 @@ from django.conf import settings
 from base.utils import Constants
 
 import pymysql
+import pymssql
 
 #获取mysql数据库连接
-def getConnection():
+def getMssqlConn():
+    conn = pymssql.connect(host="192.168.122.141",
+                           port=1433,
+                           user="myshop",
+                           password="oyf20140208HH",
+                           database="mySHOPCMStock",
+                           charset='utf8',
+                           as_dict=True)
+    return conn
+
+#获取mysql数据库连接
+def getMysqlConn():
 
     conn = pymysql.connect(host="192.168.122.146",
                            port=3306,
@@ -31,6 +44,10 @@ def close(conn,cur):
             conn.close()
     except Exception as e:
         print(e)
+
+def getDBVal(row,key):
+
+    return row[key].encode('latin-1').decode('gbk')
 
 #md5
 def md5(str):
@@ -303,7 +320,26 @@ class PinYin(object):
         result = self.hanzi2pinyin(string=string)
         return split.join(result)
 
+
+
+# -*- coding: utf8 -*-
+def testmssql():
+    conn = getMssqlConn()
+    cur = conn.cursor()
+    # sql = "select top 10 [ID],[Name] from [Shop]"
+    # cur.execute(sql)
+    # list = cur.fetchall()
+    # for row in list:
+    #     print(row["ID"],getDBVal(row,"Name"))
+
+    sql = "INSERT INTO [uRetRight] VALUES('测试','测试1','1')".encode("gbk")
+    cur.execute(sql)
+    conn.commit()
+    conn.close()
+
 if __name__ == "__main__":
-    d1 = datetime.datetime.now()
-    d2 = datetime.datetime.strptime("2015-12-10",'%Y-%m-%d')
-    print(dtsub(d1,d2))
+    print(">>>__main__")
+    # d1 = datetime.datetime.now()
+    # d2 = datetime.datetime.strptime("2015-12-10",'%Y-%m-%d')
+    # print(dtsub(d1,d2))
+    testmssql()
