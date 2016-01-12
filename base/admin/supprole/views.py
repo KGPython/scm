@@ -125,6 +125,7 @@ def queryRole(request):
 @csrf_exempt
 def savePur(request):
     checkedList = request.POST.getlist('pcode')
+    print(checkedList)
     rs = {}
     rcode = request.POST.get('rcode')
     try:
@@ -132,7 +133,7 @@ def savePur(request):
         sql = "delete from bas_role_pur where rcode=" + rcode
         cursor.execute(sql)
         for row in checkedList:
-            sql = "insert into bas_role_pur(rcode, pcode, pccode, status) values (" + rcode + "," + row + ", 0, 0)"
+            sql = "insert into bas_role_pur(rcode, pcode, pccode, status) values ('" + rcode + "','" + row + "', 0, 0)"
             cursor.execute(sql)
         rs["flag"] = '0'
     except Exception as e:

@@ -3,7 +3,7 @@ input[type="submit"],
 .button{
 	padding:0 10px;
 	height: 35px;
-	line-height: 35px;
+	/*line-height: 35px;*/
 	background-color: #337AB7;
 	border-color: #2E6DA4;
 	border-radius: 5px;
@@ -797,6 +797,42 @@ tbody a{
 	font-weight: normal;
 	font-size: 16px;
 }
+
+/************************************blanceStyle*************************************/
+.blanceStyle{
+	height: 900px;
+	/*position: relative;
+	z-index: 10;*/
+}
+.blanceStyle .edit{
+	position: relative;
+}
+.editBox{
+	position: absolute;
+	z-index: 20;
+	top:0px;
+	right: 0px;
+	display: none;
+	padding:30px;
+	width: 190px;
+	height: 140px;
+	background: #fff;
+	border:1px solid #ccc;
+}
+.editBox p{
+	margin-bottom: 10px;
+	text-align: left
+}
+.editBox p label{
+	display:block ;
+	margin-bottom: 10px;
+}
+.editBox p input[type="submit"]{
+	line-height: 23px;
+	height: 25px
+}
+
+
 
 @media screen and (max-width: 1367px){
 	.nav .nav-list .nav-list-item {
