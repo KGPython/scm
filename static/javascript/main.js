@@ -54,9 +54,9 @@ $(".nav-list .nav-list-item").hover(function(){
             checkVal += ',';
           }
       });
-      $("#shopCode").attr("value",checkVal)
+      $("#shopCode").attr("value",checkVal);
       $(".shopList-cnt").hide();
-  })
+  });
 
   $(".shopList-cnt .close").click(function(){
       $(".shopList-cnt").hide();
@@ -75,17 +75,55 @@ $(".nav-list .nav-list-item").hover(function(){
   //权限管理
   $(".powerSet").click(function(){
       $(".powerSet-box").show()
-  })
+  });
   $(".powerSet-box .close").click(function(){
       $(".powerSet-box").hide()
-  })
+  });
 
   $(".roles").click(function(){
       $(".roles-box").show();
-  })
+  });
   $(".roles-box .close").click(function(){
       $(".roles-box").hide();
-  })
+  });
+
+  //表格操作，增加新的一行
+  function addRow(){
+    var tbody = document.getElementsByTagName('tbody')[0];
+    var rowsL = tbody.rows.length
+    var columsL = tbody.rows[0].cells.length;
+    var lastRow = tbody.rows[rowsL-1]
+    lastRow.style.background='red'
+    var row = tbody.insertRow(rowsL);
+
+    for(i=0;i<columsL;i++){
+      var td=document.createElement("td");
+      if(i==1){
+        var select = document.createElement("select");
+        select.id="";
+        select.options.add(new Option("普票","p"));
+        select.options.add(new Option("税票","s"));
+        td.appendChild(select)
+      }else if(i==13){
+        var input = document.createElement("input");
+        input.style.readonly="readonly";
+        td.appendChild(input)
+      }else{
+        var input = document.createElement("input");
+        td.appendChild(input)
+      }
+      row.appendChild(td)
+    }
+  }
+
+  function delRow(){
+    var tbody = document.getElementsByTagName('tbody')[0];
+    var rowsL = tbody.rows.length;
+    if(rowsL>1){
+      tbody.deleteRow(rowsL-1)
+    }
+
+  }
 
 
   

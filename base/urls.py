@@ -83,6 +83,10 @@ urlpatterns = [
 	url(r'^base/msg/msgcreate/','base.message.views.msgCreate',name="msgCreate"),
 	url(r'^base/msg/msgpreview/','base.message.views.msgPreview',name="msgPreview"),
 
+    #供应商》发票
+    url(r'^base/supp/invioce/$','base.supplier.invioce.views.createInvioce',name='createInvioce'),
+    url(r'^base/supp/invioce/save','base.supplier.invioce.views.saveInvioce',name='saveInvioce'),
+
 	#零售商&系统管理
     url(r'^base/admin/index/','base.admin.home.index'),
     url(r'^base/admin/supprole/','base.admin.supprole.views.index'),
