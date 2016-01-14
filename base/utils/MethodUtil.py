@@ -11,16 +11,25 @@ from base.utils import Constants
 
 import pymysql
 import pymssql
+import _mssql
 
 #获取mysql数据库连接
-def getMssqlConn():
+def getMssqlConn(as_dict=True):
     conn = pymssql.connect(host="192.168.122.141",
                            port=1433,
                            user="myshop",
                            password="oyf20140208HH",
                            database="mySHOPCMStock",
                            charset='utf8',
-                           as_dict=True)
+                           as_dict=as_dict)
+    return conn
+
+def getMssqlTranConn():
+    conn = _mssql.connect(server="192.168.122.141:1433",
+                           user="myshop",
+                           password="oyf20140208HH",
+                           database="mySHOPCMStock",
+                           charset='utf8')
     return conn
 
 #获取mysql数据库连接
@@ -260,7 +269,7 @@ def verifycode(request,key):
 
     # 输出文字:
     chars=['0','1','2','3','4','5','6','7','8','9',
-           'a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
+           #'a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
            'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',]
     y = [y for y in [random.randint(x-x, len(chars)-1) for x in range(4)] ]
     charlist = [chars[i] for i in y]
@@ -320,21 +329,18 @@ class PinYin(object):
         result = self.hanzi2pinyin(string=string)
         return split.join(result)
 
-
-
-# -*- coding: utf8 -*-
 def testmssql():
     conn = getMssqlConn()
     cur = conn.cursor()
-    # sql = "select top 10 [ID],[Name] from [Shop]"
-    # cur.execute(sql)
-    # list = cur.fetchall()
-    # for row in list:
-    #     print(row["ID"],getDBVal(row,"Name"))
-
-    sql = "INSERT INTO [uRetRight] VALUES('测试','测试1','1')".encode("gbk")
+    sql = "select top 10 [ID],[Name] from [Shop]"
     cur.execute(sql)
-    conn.commit()
+    list = cur.fetchall()
+    for row in list:
+        print(row["ID"],getDBVal(row,"Name"))
+
+    # sql = "insert into CustReceiveItem0 values( 'CM01201601120002','203','测试保存2','211','2016-01-12 16:53:37','0','212','10','204','205','209','207','213')"
+    # cur.execute(sql)
+    # conn.commit()
     conn.close()
 
 if __name__ == "__main__":
@@ -343,3 +349,6 @@ if __name__ == "__main__":
     # d2 = datetime.datetime.strptime("2015-12-10",'%Y-%m-%d')
     # print(dtsub(d1,d2))
     testmssql()
+    d = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y%m")
+    print(datetime.timedelta(1))
+    print(getDBVal({"Name":"we"},"Name"))
