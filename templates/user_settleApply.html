@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商业供应链系统</title>
+    <style>
+        .box-line{
+            overflow: hidden;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            float: left;
+        }
+        .box-line p{
+            float: left;
+            text-align: right;
+        }
+        .box-line p label{
+            margin-bottom:5px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    {% load basefilter %}
+    {% include "common/nav.html" %}
+    <form id="billForm" method="post" action="/scm/base/balance/apply/save/">
+        <input type="hidden" name="sheetId" value="{{ sheetId }}">
+        <input type="hidden" name="paytypeid" value="{{ paytypeid }}">
+        <input type="hidden" name="payTypeName" value="{{ payTypeName }}">
+        <input type="hidden" name="balancePlaceId" value="{{ balancePlaceId }}">
+        <input type="hidden" name="balancePlaceName" value="{{ balancePlaceName }}">
+        <input type="hidden" name="pstart" value="{{ pstart }}">
+        <input type="hidden" name="pend" value="{{ pend }}">
+        <input type="hidden" name="cstart" value="{{ cstart }}">
+        <input type="hidden" name="cend" value="{{ cend }}">
+        <input type="hidden" id="kxinvoice" value="{{ kxinvoice }}">
+
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>结算申请单 </h1>
+                <div class="inputBox" >
+                    <div class="box-line">
+                        <p style="width:250px;margin-left:20px;"><label>结算地：</label>{{ balancePlaceId }}|{{ balancePlaceName }}</p>
+                        <p style="width:250px;margin-left:20px;"><label>结算方式：</label>{{ payTypeName }}</p>
+                        <p style="width:250px;margin-left:20px;">
+                            <label>结算日期：</label> {{ pstart }}至{{ pend }}
+                        </p>
+                        <p style="width:250px;margin-left:20px;">
+                            <label>单据日期：</label>{{ cstart }}至{{ cend }}
+                        </p>
+                        <p style="width:250px;margin-left:20px;">&nbsp;</p>
+                    </div>
+                    <div class="box-line">
+                        <p style="width:250px;margin-left:20px;"><label>应付金额：</label><span id="payablemoney">{{ payablemoney|default_if_none:0 }}</span></p>
+                        <p style="width:250px;margin-left:20px;"><label>实付金额：</label><span id="paidmoney">{{ paidmoney|default_if_none:0 }}</span></p>
+                        <p style="width:250px;margin-left:20px;"><label>应开票金额：</label><span id="paidinvoice">{{ paidmoney|default_if_none:0 }}</span></p>
+                        <p style="width:250px;margin-left:20px;"><label>帐扣金额：</label><span>{{ kxinvoice|default_if_none:0 }}</span></p>
+                        <p style="width:250px;margin-left:20px;"><label>帐扣可冲发票金额：</label><span>{{ zkinvoice|default_if_none:0 }}</span></p>
+                    </div>
+                    <div class="box-line">
+                        <p>
+                            全选<input type="checkbox" id="billAll"  />
+                            反选<input type="checkbox" id="billReverse" />
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <table  border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>本单是否结算<br/></th>
+                        <th>结算类型</th>
+                        <th>发生店</th>
+                        <th>发生店名称</th>
+                        <th>相关单号</th>
+                        <th>应结金额（含税）</th>
+                        <th>不含税金额</th>
+                        <th>税金</th>
+                        <th>单据名称</th>
+                        <th>管理类别编码</th>
+                        <th>销售金额</th>
+                        <th>进项税率</th>
+                        <th>是否农产品</th>
+                        <th>应付日期</th>
+                        <th>发票接收单号</th>
+                        <th>倒扣率</th>
+                        <th>原始单号</th>
+                        <th>原始单据类型名称</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in itemList %}
+                        <tr>
+                            <td><input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{{ item.refsheetid }}"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}></td>
+                            <td>{{ contractTypeDict|key:item.paytypesortid }}</td>
+                            <td>{{ item.inshopid }}</td>
+                            <td>{{ shopDict|key:item.inshopid }}</td>
+                            <td>{{ item.refsheetid }}</td>
+                            <td id="costvalue_{{ forloop.counter }}" val="{{ item.costvalue }}">{{ item.costvalue }}</td>
+                            <td>{{ item.notaxvalue }}</td>
+                            <td>{{ item.costtaxvalue }}</td>
+                            <td>{{ item.sheetname|encodeStr }}</td>
+                            <td>{{ item.managedeptid|fillZero:1 }}</td>
+                            <td>{{ item.salevalue }}</td>
+                            <td>{{ item.costtaxrate }}</td>
+                            <td>{{ item.agroflag|isYes }}</td>
+                            <td>{{ item.payabledate|date:'Y-m-d' }}</td>
+                            <td>{{ item.invoicesheetid }}</td>
+                            <td>{{ item.Dkrate }}</td>
+                            <td>{{ item.Adjustsheetid|default_if_none:"" }}</td>
+                            <td>{{ item.Adjustsheetname|default_if_none:"" }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+                <tr >
+                    <td></td>
+                    <td></td>
+                    <td >合计：</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ sum1 }}</td>
+                    <td>{{ sum2 }}</td>
+                    <td>{{ sum3 }}</td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ sum4 }}</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <div class="pageBottom-btn ">
+                <p>
+                    <input class="query-enter right" type="button" value="提交" id="submitBtn">
+                    <input class="query-enter right" type="button" value="取消" >
+                </p>
+            </div>
+        </div>
+    </form>
+    {% include "common/footer.html" %}
+	<script type="text/javascript">
+        $(function(){
+            count();
+
+            $("#billAll").on("change",function(){
+                if($(this).prop('checked')){
+                    $("input:checkbox[name='refsheetid']").prop('checked',true);
+                }else{
+                    clearAll();
+                }
+                count();
+            });
+
+            $("#billReverse").on("change",function(){
+                $("input:checkbox[name='refsheetid']").each(function(){
+                    if(!$(this).attr("checked")){
+                        $(this).prop('checked',function(index, oldValue){
+
+                            return !oldValue;
+                        });
+                    }
+                });
+                count();
+            });
+
+            $("#submitBtn").on("click",function(){
+                 var ajax_option= {
+                    url: "/scm/base/balance/apply/save/",
+                    data:$('#billForm').serialize(),
+                    type:'post',
+                    dataType:'json',
+                    async:false,
+                    cache: false,
+                    beforeSubmit:function(a,f,o){},
+                    success: function (result) {
+                        var status = result.status;
+                        if(status=='1'){
+                            alert("结算申请单提交失败！");
+                        }else{
+                            window.location.href="/scm/base/supp/invoice/?sheetid="+result.sheetId;
+                        }
+                    }
+                }
+                if(confirm("您确定提交吗")){
+                     $('#billForm').ajaxSubmit(ajax_option);
+                }
+            });
+        });
+
+        function clearAll(){
+              $("input:checkbox[name='refsheetid']").each(function(){
+                  rtype = $(this).attr("rtype");
+                  if(rtype != "2323" && rtype != "5205"){
+                      $(this).prop('checked',false);
+                  }
+            });
+        }
+
+        function count(){
+            costvalueSum = 0.0;
+            kxinvoice = $("#kxinvoice").val();
+
+            $("input:checkbox[name='refsheetid']:checked").each(function(){
+                  index = $(this).attr("id");
+                  costvalue = $("#costvalue_"+index).text();
+                  costvalueSum += parseFloat(costvalue);
+            });
+            $("#payablemoney").html(costvalueSum);
+            $("#paidmoney").html(costvalueSum-kxinvoice);
+            $("#paidinvoice").html(costvalueSum-kxinvoice);
+        }
+
+	  	!function(){
+		    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
+		}();
+
+		//日期范围限制
+		var start = {
+			elem: '#start',
+			format: 'YYYY-MM-DD',
+		    max: '2099-06-16', //最大日期
+		    istime: false,
+		    istoday: true,
+		    choose: function(datas){
+		        end.min = datas; //开始日选好后，重置结束日的最小日期
+		        end.start = datas //将结束日的初始值设定为开始日
+		    }
+		};
+
+		var end = {
+			elem: '#end',
+			format: 'YYYY-MM-DD',
+			max: '2099-06-16',
+			istime: false,
+			istoday: true,
+			choose: function(datas){
+	          start.max = datas; //结束日选好后，充值开始日的最大日期
+	        }
+	    };
+	    laydate(start);
+	    laydate(end);
+  	</script>
+</body>
+</html>
