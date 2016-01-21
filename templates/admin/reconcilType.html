@@ -13,13 +13,41 @@
         <div class="mainConf">
             <div class="confSide left">
                 <h3>
-                    供应商对账方式<b class="icon">+</b>
+                    供应商对账方式
                 </h3>
                 <div class="confSide-cnt">
                     <div class="sideBox">
-                        {% for rec in recList %}
-                         <a href="{% url 'reconciltype' %}?rid={{ rec.id }}" class="listTitle">{{ rec.rname }} </a>
-                        {% endfor %}
+                        <div class="listBox">
+                            <span class="nav-item-icon">∨</span>
+                            <a class="listTitle">已启用的对账方式：</a>
+                            <div class="list">
+                                <ul>
+                                    {% for rec in QrecList %}
+                                        <li>
+                                             <a href="{% url 'reconciltype' %}?rid={{ rec.id }}" class="payType">
+                                                 {{ rec.rname }}
+                                             </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="listBox">
+                            <span class="nav-item-icon">∨</span>
+                            <a class="listTitle">已禁用的对账方式：</a>
+                            <div class="list">
+                                <ul>
+                                    {% for rec in JrecList %}
+                                        <li>
+                                             <a href="{% url 'reconciltype' %}?rid={{ rec.id }}" class="payType">
+                                                 {{ rec.rname }}
+                                             </a>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -37,13 +65,28 @@
                                 供应商对账方式基本信息：
                             </h3>
                             <div class="payTypeBox">
+                                    <input type="hidden" name="reconId" id="reconId" value="{{ reconList.id }}">
                                 <p>
-                                    <label>对账方式名称：</label><input type="text" name="reconName" id="reconName">
+                                    <label>对账方式名称：</label>
+                                    <input type="text" name="reconName" id="reconName" value="{{ reconList.rname }}">
+                                </p>
+                                <p>
+                                    <label>使&nbsp;&nbsp;用&nbsp;&nbsp;状&nbsp;&nbsp;态&nbsp;：</label>
+                                    <select name="rstatus" id="">
+                                        {% if reconList.status == '0' %}
+                                            <option value="0" selected="selected">禁用</option>
+                                            <option value="1">启用</option>
+                                        {% else %}
+                                           <option value="0">禁用</option>
+                                            <option value="1" selected="selected">启用</option>
+                                        {% endif %}
+
+                                    </select>
                                 </p>
                                 <ul class="payTypeList">
                                     {% for pay in PayList %}
                                     <li>
-                                        <input name="payType" type="checkbox" value="{{ pay.id }}" {{ payTyleLoad | checkCode:pay.id }}/>
+                                        <input name="payType" type="checkbox" value="{{ pay.id }}" {{ payTyleLoad | checkPayType:pay.id }}/>
                                         <label>{{ pay.name | encodeStr }}</label>
                                     </li>
                                     {% endfor %}
@@ -66,6 +109,15 @@
             function setAction(action){
                 document.ReconForm.action = "{% url 'reconciltype' %}?action="+action;
             }
+            $(".listTitle").click(function(){
+                $(this).siblings(".list").find("ul").toggle()
+            })
+        </script>
+        <script>
+            {% if succ %}
+                alert('数据提交成功');
+                window.location.href="{% url 'reconciltype' %}";
+            {% endif %}
         </script>
     </body>
 </html>

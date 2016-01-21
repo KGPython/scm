@@ -805,7 +805,27 @@ tbody a{
 	font-size: 16px;
 }
 
-/************************************ReconcilType*************************************/
+/************************************对账方式部分开始*************************************/
+.sideBox .payType{
+	display: block;
+	text-align: left;
+}
+
+.listBox{
+	text-align: left;
+	padding-left:35px;
+	margin-top:15px;
+}
+.list{
+	padding-left: 25px;
+}
+.listBox .listTitle{
+	font-weight: bold;
+	font-size: 14px;
+}
+.list ul{
+	display: none;
+}
 .payTypeBox{
 	width: 500px;
 	padding-top: 20px;

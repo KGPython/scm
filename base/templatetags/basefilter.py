@@ -157,6 +157,17 @@ def checkTuple(tuple,key):
     return ''
 
 @register.filter
+def checkPayType(d,key):
+    str = "checked='checked'"
+    for item in d:
+        try:
+            if key == item['pid']:
+                return str
+        except Exception as e:
+            print(e)
+    return ''
+
+@register.filter
 def encodeStr(str):
     return str.encode('latin-1').decode('gbk')
 
