@@ -99,7 +99,7 @@ def queryRole(request):
     uPurL = []
     rcode = request.POST.get('rcode')
     cursor = connection.cursor()
-    sql = "select pcode,nm from bas_pur where grpname = '供应商' and status='1'"
+    sql = "select pcode,nm from bas_pur where special LIKE '%2%' "
     cursor.execute(sql)
     # 供应商角色权限列表
     purList = cursor.fetchall()

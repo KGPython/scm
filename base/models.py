@@ -429,6 +429,7 @@ class BasSupplier(models.Model):
     sstyle = models.CharField(db_column='Sstyle', max_length=2, blank=True, null=True)  # Field name made lowercase.
     mastervenderid = models.CharField(db_column='Mastervenderid', max_length=8, blank=True, null=True)  # Field name made lowercase.
     concode = models.CharField(db_column='Concode', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    contracttype = models.CharField(db_column='contracttype', max_length=2, blank=True, null=True)  # Field name made lowercase.
 
     class Meta:
         managed = False

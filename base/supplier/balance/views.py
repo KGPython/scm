@@ -172,7 +172,6 @@ def applySave(request):
             params["kxcash"]=float(kxcash)      #扣项交款金额
             params["kxinvoice"]=float(kxinvoice)  #帐扣发票金额 (帐扣金额)
 
-
             if not sheetId:
                 #新增
                 type=0
@@ -808,6 +807,7 @@ def balance(request):
 
 def balanceArticle(request):
     grpCode = request.session.get('s_grpcode')   #用户所属单位
+    contracttype = request.session.get("s_contracttype")
     sheetId = request.GET.get('sheetid','')
     queryAction = request.POST.get('actionTxt','')
     #更新确认状态

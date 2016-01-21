@@ -62,14 +62,15 @@ def login(request):
                         if user.utype == "2":    #供应商
                             request.session["s_suppcode"] = user.grpcode
 
-                            sname = findGrpNameByCode(user.grpcode,user.utype)
-                            request.session["s_suppname"] = sname
+                            supp = findGrpNameByCode(user.grpcode,user.utype)
+                            request.session["s_suppname"] = supp.chnm
+                            request.session["s_contracttype"] = supp.contracttype
 
                             grpcode = findGrpCodeBySuppCode(user.grpcode)
                             request.session["s_grpcode"] = grpcode
 
-                            grpname = findGrpNameByCode(grpcode,"1")
-                            request.session["s_grpname"] = grpname
+                            grp = findGrpNameByCode(grpcode,"1")
+                            request.session["s_grpname"] = grp.grpnm
 
                             response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
 
@@ -78,8 +79,8 @@ def login(request):
                         else:    #零售商
                             request.session["s_grpcode"] = user.grpcode
 
-                            grpname = findGrpNameByCode(user.grpcode,user.utype)
-                            request.session["s_grpname"] = grpname
+                            grp = findGrpNameByCode(user.grpcode,user.utype)
+                            request.session["s_grpname"] = grp.grpnm
 
                             response_data['homeurl'] = Constants.URL_RETAILER_HOME
 
@@ -245,13 +246,11 @@ def findRoleByUcode(ucode):
 #根据供应商编码或供应商所属单位编码查询单位名称
 def findGrpNameByCode(grpcode,utype):
     if utype == '2':
-        supp =  BasSupplier.objects.get(suppcode=grpcode)
-        name = supp.chnm
+        obj =  BasSupplier.objects.get(suppcode=grpcode)
     else:
-        grp = BasGroup.objects.get(grpcode=grpcode)
-        name = grp.grpnm
+        obj = BasGroup.objects.get(grpcode=grpcode)
 
-    return name
+    return obj
 
 #验证码
 def vcode(request):
