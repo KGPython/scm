@@ -1,0 +1,70 @@
+{% load basefilter %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            供应商对账方式
+        </title>
+        <link rel="stylesheet" href="{{ static }}/css/reset.css" type="text/css">
+        <link rel="stylesheet" href="{{ static }}/css/main.css" type="text/css">
+    </head>
+    <body>
+        {% include 'common/nav.html' %}
+        <div class="mainConf">
+            <div class="confSide left">
+                <h3>
+                    供应商对账方式<b class="icon">+</b>
+                </h3>
+                <div class="confSide-cnt">
+                    <div class="sideBox">
+                        {% for rec in recList %}
+                         <a class="listTitle">{{ rec.rname }} </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            <div class="confCnt left">
+                <div class="tTitle">
+                    <h2>
+                        供应商对账方式管理
+                    </h2>
+                </div>
+                <div class="confCnt-box">
+                    <form class="confCnt-form" method="post" name="ReconForm">
+                        {% csrf_token %}
+                        <div class="conf baseInfo">
+                            <h3>
+                                供应商对账方式基本信息：
+                            </h3>
+                            <div class="payTypeBox">
+                                <p>
+                                    <label>对账方式名称：</label><input type="text" name="reconName" id="reconName">
+                                </p>
+                                <ul class="payTypeList">
+                                    {% for pay in PayList %}
+                                    <li>
+                                        <input name="payType" type="checkbox" value="{{ pay.id }}" /><label>{{ pay.name | encodeStr }}</label>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+
+                            </div>
+                        </div>
+                        <div class="btn">
+                            <input id="save" type="submit" value="新建提交" onclick="setAction('new')">
+                            <input id="save" type="submit" value="编辑提交" onclick="setAction('edit')">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!--[if IE]> <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
+        <![if !IE]><script type="text/javascript" src="{{ static }}/js/jquery-2.1.4.min.js"></script><![endif]>
+        <script type="text/javascript" src="{{ static }}/js/main.js"></script>
+        <script>
+            function setAction(action){
+                document.ReconForm.action = "{% url 'paytype' %}?action="+action;
+            }
+        </script>
+    </body>
+</html>

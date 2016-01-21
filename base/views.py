@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.http import HttpResponseRedirect,HttpResponse
 from django.template import loader,Context
 from base.models import BasShop, SerialNumber, BasOrg, BasKe, BasGoods
-
+from base.utils import MethodUtil
 
 def global_setting(request):
     grpcode = request.session.get("s_grpcode")
@@ -32,6 +32,14 @@ def global_setting(request):
     adBillDict = {"0": u"调整单", "2430": u"库存进价调整单", "2446": u"批次数量更正单", "2460": u"批次库存转移单"}
     qrStatusDict = {"Y":"已确认","N":"未确认"}
     gqStateDict = {"Y":"已过期","N":"未过期"}
+
+    #经营方式（结算方式）
+    conn = MethodUtil.getMssqlConn()
+    cur = conn.cursor()
+    sqlPay = "select id,name from paytype"
+    cur.execute(sqlPay)
+    payTypeList = cur.fetchall()
+
     return locals()
 
 

@@ -136,6 +136,11 @@ def checkTuple(tuple,key):
         except Exception as e:
             print(e)
     return ''
+
+@register.filter
+def encodeStr(str):
+    return str.encode('latin-1').decode('gbk')
+
 # register.filter('key',key)
 # register.filter('dtsub',dtsub)
 # register.filter('expired',expired)

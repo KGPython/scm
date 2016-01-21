@@ -83,9 +83,13 @@ urlpatterns = [
 	url(r'^base/msg/msgcreate/','base.message.views.msgCreate',name="msgCreate"),
 	url(r'^base/msg/msgpreview/','base.message.views.msgPreview',name="msgPreview"),
 
-    #供应商》发票
-    url(r'^base/supp/invioce/$','base.supplier.invioce.views.createInvioce',name='createInvioce'),
-    url(r'^base/supp/invioce/save','base.supplier.invioce.views.saveInvioce',name='saveInvioce'),
+    #供应商》发票(承接结算单)
+    url(r'^base/supp/invoice/$','base.supplier.invioce.views.createInvioce',name='createInvioce'),
+    url(r'^base/supp/invoice/save','base.supplier.invioce.views.saveInvioce',name='saveInvioce'),
+    #供应商》发票(新建)
+    url(r'^base/supp/invoice/new/$','base.supplier.invioce.views.newInvoice',name='newInvoice'),
+    url(r'^base/supp/invoice/new/query','base.supplier.invioce.views.queryBalance',name='queryBalance'),
+
 
 	#零售商&系统管理
     url(r'^base/admin/index/','base.admin.home.index'),
@@ -99,6 +103,8 @@ urlpatterns = [
     url(r'^base/admin/supp_addRole', 'base.admin.suppstatus.view.addRole'),
     url(r'^base/admin/supp_queryRole', 'base.admin.supprole.views.queryRole'),
     url(r'^base/admin/supp_savePur', 'base.admin.supprole.views.savePur'),
+    url(r'^base/admin/reconciltype', 'base.admin.reconcilType.views.reconcilType',name="paytype"),
+
 ]
 
 

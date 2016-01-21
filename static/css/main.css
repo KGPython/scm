@@ -697,7 +697,7 @@ tbody a{
 }
 .box-line p{
 	float: left;
-	width: 230px;
+	width: 240px;
 	margin-left: 100px;
 	text-align: right;
 }
@@ -710,11 +710,18 @@ tbody a{
 }
 .box-line p input[type=text]{
 	height: 30px;
-	width: 120px;
+	width: 140px;
 	text-indent: 10px;
 	background-color: #fff;
 	border-color: #ccc;
 	padding:0;
+	color: #333;
+	text-align: left;
+	font-size: 12px;
+}
+.box-line p select{
+	height: 30px;
+	width: 140px;
 }
 .inputBox .query-enter{
 	margin-top: 23px;
@@ -798,39 +805,42 @@ tbody a{
 	font-size: 16px;
 }
 
-/************************************blanceStyle*************************************/
-.blanceStyle{
-	height: 900px;
-	/*position: relative;
-	z-index: 10;*/
+/************************************ReconcilType*************************************/
+.payTypeBox{
+	width: 500px;
+	padding-top: 20px;
+	margin: 0 auto;
 }
-.blanceStyle .edit{
-	position: relative;
+.payTypeBox p{
+	width: 100%;
 }
-.editBox{
-	position: absolute;
-	z-index: 20;
-	top:0px;
-	right: 0px;
-	display: none;
-	padding:30px;
-	width: 190px;
-	height: 140px;
+.payTypeBox p label{
+	display: inline-block;
+}
+.payTypeList{
+	clear: both;
+	padding-left: 15px;
+	height: 400px;
+	width: 300px;
+	overflow-y: auto;
+	border: 1px solid #999;
 	background: #fff;
-	border:1px solid #ccc;
 }
-.editBox p{
-	margin-bottom: 10px;
-	text-align: left
+.payTypeList li label{
+	margin-left: 10px;
+	line-height: 25px;
 }
-.editBox p label{
-	display:block ;
-	margin-bottom: 10px;
-}
-.editBox p input[type="submit"]{
-	line-height: 23px;
-	height: 25px
-}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
