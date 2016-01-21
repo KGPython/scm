@@ -96,11 +96,13 @@
 			</tbody>
 		</table>
 		<div class="pageBottom-btn">
-            <input class="query-enter left" style="background-color: inherit;color:black;width: 20px;" type="text" id="rowNum" value=""/>
+            <label for="" class="left">增加</label>
+            <input class="query-enter left" type="text" id="rowNum" value="1"/>
+            <label class="left">行</label>
 			<input class="query-enter left" type="button" value="增加数据行" onclick="addRow()">
 			<input class="query-enter left" type="button" value="删除数据行" onclick="delRow()">
 			<p><input class="query-enter right" id="enterAjax" type="button" value="提交" ></p>
-			<p><input class="query-enter right" type="button" value="取消" ></p>
+			<p><input class="query-enter right" type="hidden" value="取消" ></p>
 		</div>
     </div>
 
