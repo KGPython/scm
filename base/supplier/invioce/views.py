@@ -1,6 +1,6 @@
 # -*- coding:utf-8 -*-
 __author__ = 'Administrator'
-from base.utils import MethodUtil
+from base.utils import MethodUtil,Constants
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -123,28 +123,31 @@ def saveInvioce(request):
     ############开始存储事务############
     res = {}
     conn.autocommit(False)
+    cur = conn.cursor()
     try:
         #保存发票主要信息
-        conn2.execute_non_query(sqlCR)
-        #保存custitem0表数据
+        cur.execute(sqlCR)
+        #保存custitem0表数据res2[i][12]
         for i in range(0,len(res2)):
             sqlCI = "insert into custitem0 " \
                     "values ('{SheetID}','{PayTypeSortID}','{PayableDate}','{RefSheetID}',{RefSheetType},{ManageDeptID},'{FromShopID}','{InShopID}','{CostValue}','{CostTaxValue}','{CostTaxRate}',{AgroFlag},'{SaleValue}',{BalanceBookSerialID})"\
                     .format(SheetID=sheetId,PayTypeSortID=res2[i][0],PayableDate=res2[i][11],RefSheetID=res2[i][1],RefSheetType=res2[i][2],ManageDeptID=res2[i][4],FromShopID=res2[i][13],InShopID=res2[i][5],
                             CostValue=res2[i][6],CostTaxValue=res2[i][8],CostTaxRate=res2[i][12],AgroFlag=res2[i][10],SaleValue=res2[i][9],BalanceBookSerialID=res2[i][16])
-            conn2.execute_non_query(sqlCI)
+            cur.execute(sqlCI)
         #保存用户录入发票详细
         if listData:
             for data in listData:
                 sqlCRI = "insert into CustReceiveItem0 values( '"+sheetId+"','"+data['cno']+"','"+suppName+"','"+data['cdno']+"','"+data['cdate']+"',"+data['cclass']+",'"+data['cgood']+"','"+data['ctaxrate']+"','"+data['cmoney']+"','"+data['csh']+"',"+data['paytype']+",'"+data['kmoney']+"','"+shopId+"')"
-                conn2.execute_non_query(sqlCRI)
+                cur.execute(sqlCRI)
             res['succ'] = True
         else:
             sql3 = "select a.jsdate,a.flag,a.fnotes,b.taxno,c.paytypeid from vendercard a,venderext b,vender c	where a.venderid=b.venderid and a.venderid=c.venderid and a.venderid={venderid}".format(venderid=suppCode)
             dict3 = conn2.execute_row(sql3)
             taxno = dict3["taxno"]
             sqlCRI = "insert into CustReceiveItem0 (sheetid,cno,cname,cdate,cclass,cgood,ctaxrate,cmoney,csh,cdno,PayType,kmoney,shopid) values( '"+sheetId+"','666666','"+suppName+"',getDate(),1,'货物',0.0,0.0,0.0,'"+taxno+"','1',0.0,'"+shopId+"')"
-            conn2.execute_non_query(sqlCRI)
+            cur.execute(sqlCRI)
+
+            MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
             res['succ'] = True
     except Exception as e:
         print(e)

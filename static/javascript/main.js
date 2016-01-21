@@ -182,6 +182,7 @@ $("#enterAjax").click(function(){
             success:function(data){
                 if(data.succ){
                     alert('保存成功')
+                    window.location.href="/scm/base/supp/home/"
                 }else{
                     alert('保存失败')
                 }

@@ -187,6 +187,7 @@ body{
 	display: inline-block;
 	padding: 6px 12px;
 	margin-top: 19px;
+	margin-left: 15px;
 	color: #FFF;
 	background-color: #337AB7;
 	border-color: #2E6DA4;
@@ -849,6 +850,15 @@ tbody a{
 .payTypeList li label{
 	margin-left: 10px;
 	line-height: 25px;
+}
+.pageBottom-btn label{
+	margin-top: 19px;
+	padding: 6px 12px;
+}
+#rowNum{
+	background:#fff;
+	width: 20px;
+	color: #333;
 }
 
 
