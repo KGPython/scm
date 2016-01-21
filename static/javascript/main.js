@@ -143,7 +143,7 @@ $("#enterAjax").click(function(){
         inputs = $(this).find('input');
         selects = $(this).find('select');
         if(inputs.length>0){
-            if(inputs.eq(0).val()>=0 && inputs.eq(0).val()<=100 && inputs.eq(1).val() ){
+            if(inputs.eq(0).val()>=0 && inputs.eq(0).val()<=100 && inputs.eq(1).val() && inputs.eq(1).val().length<10 ){
                 data.push({
                     "cclass":selects.eq(0).val(),
                     "paytype":selects.eq(1).val(),
@@ -157,7 +157,7 @@ $("#enterAjax").click(function(){
                     "cgood":inputs.eq(9).val()
                 })
             }else{
-                alert("发票进项税率必须在0-100之间,并且发票号不能为空，请核对！");
+                alert("发票进项税率必须在0-100之间，\n并且发票号不能为空(长度小于10位)，\n请核对！");
                 inputError++;
                 data=[];
                 return false;
