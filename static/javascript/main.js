@@ -181,8 +181,9 @@ $("#enterAjax").click(function(){
             dataType:"json",
             success:function(data){
                 if(data.succ){
-                    alert('保存成功')
-                    window.location.href="/scm/base/supp/home/"
+                    alert('保存成功');
+                    window.location.href="/scm/base/supp/home/";
+                    window.history.forward(1);
                 }else{
                     alert('保存失败')
                 }
