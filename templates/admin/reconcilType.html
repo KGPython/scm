@@ -18,7 +18,7 @@
                 <div class="confSide-cnt">
                     <div class="sideBox">
                         {% for rec in recList %}
-                         <a class="listTitle">{{ rec.rname }} </a>
+                         <a href="{% url 'reconciltype' %}?rid={{ rec.id }}" class="listTitle">{{ rec.rname }} </a>
                         {% endfor %}
                     </div>
                 </div>
@@ -43,7 +43,8 @@
                                 <ul class="payTypeList">
                                     {% for pay in PayList %}
                                     <li>
-                                        <input name="payType" type="checkbox" value="{{ pay.id }}" /><label>{{ pay.name | encodeStr }}</label>
+                                        <input name="payType" type="checkbox" value="{{ pay.id }}" {{ payTyleLoad | checkCode:pay.id }}/>
+                                        <label>{{ pay.name | encodeStr }}</label>
                                     </li>
                                     {% endfor %}
                                 </ul>
@@ -63,7 +64,7 @@
         <script type="text/javascript" src="{{ static }}/js/main.js"></script>
         <script>
             function setAction(action){
-                document.ReconForm.action = "{% url 'paytype' %}?action="+action;
+                document.ReconForm.action = "{% url 'reconciltype' %}?action="+action;
             }
         </script>
     </body>

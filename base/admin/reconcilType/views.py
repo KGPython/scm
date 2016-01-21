@@ -1,4 +1,6 @@
-__author__ = 'Administrator'
+# -*- coding:utf-8 -*-
+# __author__ = 'Administrator'
+
 from django.shortcuts import render
 from base.utils import MethodUtil
 def reconcilType(request):
@@ -70,5 +72,17 @@ def reconcilType(request):
             for payTpye in payTyleList:
                 sqlEdit3 = "insert into reconcilitem (rid,pid) values({rid},{pid})".format(rid=int(rid['id']),pid=int(payTpye))
                 curEdit3.execute(sqlEdit3)
+    else:
+        rid = request.GET.get('rid','')
+        if rid:
+            sqlShow1="select rname from reconcil where id={rid}".format(rid=rid)
+            curShow1 = conn2.cursor()
+            curShow1.execute(sqlShow1)
+            rname = curShow1.fetchone()
+
+            sqlShow2 = "select pid from reconcilitem where rid={rid}".format(rid=rid)
+            curShow2 = conn2.cursor()
+            curShow2.execute(sqlShow2)
+            payTyleLoad = curShow2.fetchall()
 
     return render(request,'admin/reconcilType.html',locals())

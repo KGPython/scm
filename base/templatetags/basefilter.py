@@ -126,6 +126,7 @@ def checkCode(d,key):
         except Exception as e:
             print(e)
     return ''
+
 @register.filter
 def checkTuple(tuple,key):
     str = "checked='checked'"

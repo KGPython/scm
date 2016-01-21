@@ -1,3 +1,4 @@
+# -*- coding:utf-8 -*-
 __author__ = 'Administrator'
 from base.utils import MethodUtil
 from django.shortcuts import render

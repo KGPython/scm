@@ -103,7 +103,7 @@ urlpatterns = [
     url(r'^base/admin/supp_addRole', 'base.admin.suppstatus.view.addRole'),
     url(r'^base/admin/supp_queryRole', 'base.admin.supprole.views.queryRole'),
     url(r'^base/admin/supp_savePur', 'base.admin.supprole.views.savePur'),
-    url(r'^base/admin/reconciltype', 'base.admin.reconcilType.views.reconcilType',name="paytype"),
+    url(r'^base/admin/reconciltype', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
 
 ]
 
