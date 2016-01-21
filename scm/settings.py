@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 """
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+#-*- coding:utf-8 -*-
 import os
 from datetime import timedelta
 import djcelery
@@ -150,7 +151,6 @@ STATICFILES_DIRS = [
 LOGIN_URL ="/scm/base/loginpage"
 LOGIN_EXEMPT_URLS=["scm/base/login","scm/base/logout","scm/base/vcode/","favicon.ico"]
 
-# ***自定义日志输出信息***
 # LOGGING = {
 #     'version': 1,
 #     'disable_existing_loggers': True,

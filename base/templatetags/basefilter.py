@@ -8,6 +8,14 @@ from django.template.defaultfilters import date,stringfilter
 register = template.Library()
 
 @register.filter
+def fillZero(value,n):
+    f = ["0" for i in range(n)]
+    s = "".join(f)
+
+    return s+str(value)
+
+
+@register.filter
 def getPur(plist,key):
     flag = False
     for item in plist:
@@ -42,6 +50,16 @@ def key(d,key_name):
     except KeyError:
         value = ""
     return value
+
+@register.filter
+def isYes(value):
+    if value:
+        if str(value)=="1":
+            return "是"
+        else:
+            return "否"
+    else:
+        return "否"
 
 #比较是否过期:d1
 @register.filter

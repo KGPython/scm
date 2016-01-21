@@ -56,7 +56,6 @@
 				<tr>
 					<td>
 						<select>
-                            <option value="0">收据</option>
 							<option value="1">普票</option>
 							<option value="2">税票</option>
 						</select>
@@ -71,7 +70,7 @@
 					<td>
                         <select name="" id="">
                             <option value="0">支票</option>
-                            <option value="1">电汇</option>
+                            <option value="1" selected >电汇</option>
                             <option value="2">汇票</option>
                             <option value="3">网银</option>
                             <option value="4">其他</option>
@@ -97,6 +96,7 @@
 			</tbody>
 		</table>
 		<div class="pageBottom-btn">
+            <input class="query-enter left" style="background-color: inherit;color:black;width: 20px;" type="text" id="rowNum" value=""/>
 			<input class="query-enter left" type="button" value="增加数据行" onclick="addRow()">
 			<input class="query-enter left" type="button" value="删除数据行" onclick="delRow()">
 			<p><input class="query-enter right" id="enterAjax" type="button" value="提交" ></p>
@@ -127,55 +127,63 @@
         function addRow(){
             var thead = document.getElementsByTagName('thead')[0];
             var tbody = document.getElementsByTagName('tbody')[0];
-            var rowsL = tbody.rows.length;
-            var columsL = thead.rows[0].cells.length;
-            var row = tbody.insertRow(rowsL-1);
-
-            for(i=0;i<columsL;i++){
-                var td=document.createElement("td");
-                if(i==0){
-                    var select = document.createElement("select");
-                    select.id="";
-                    select.options.add(new Option("收据","0"));
-                    select.options.add(new Option("普票","1"));
-                    select.options.add(new Option("税票","2"));
-                    td.appendChild(select)
-                }else if(i==8){
-                    var select = document.createElement("select");
-                    select.id="";
-                    select.options.add(new Option("支票","0"));
-                    select.options.add(new Option("电汇","1"));
-                    select.options.add(new Option("汇票","2"));
-                    select.options.add(new Option("网银","3"));
-                    select.options.add(new Option("其他","4"));
-                    td.appendChild(select)
-                }else{
-                    var input = document.createElement("input");
-                    if(i==1 || i==3 || i==4 || i==5 || i==6 || i==7){
-                        input.value="0.00"
-                    }
-                    if(i==3){
-                        input.name="cmoney"
-                    }
-                    if(i==4){
-                        input.name="csh"
-                    }
-                    if(i==5){
-                        input.name="jshj"
-                    }
-                    if(i==9){
-                        input.value="{{ timeNow }}"
-                    }
-                    if(i==10){
-                        input.value="{{ dict1.TaxNo }}"
-                    }
-                    if(i==11){
-                        input.value="货物"
-                    }
-                    td.appendChild(input)
-                }
-                row.appendChild(td)
+            var rowNum = $("#rowNum").val();
+            if(rowNum==''){
+                rowNum = "0"
             }
+
+            for(var j=0;j<parseInt(rowNum);j++){
+                var rowsL = tbody.rows.length;
+
+                var columsL = thead.rows[0].cells.length;
+                var row = tbody.insertRow(rowsL-1);
+
+                for(i=0;i<columsL;i++){
+                    var td=document.createElement("td");
+                    if(i==0){
+                        var select = document.createElement("select");
+                        select.id="";
+                        select.options.add(new Option("普票","1"));
+                        select.options.add(new Option("税票","2"));
+                        td.appendChild(select)
+                    }else if(i==8){
+                        var select = document.createElement("select");
+                        select.id="";
+                        select.options.add(new Option("支票","0"));
+                        select.options.add(new Option("电汇","1",'',true));
+                        select.options.add(new Option("汇票","2"));
+                        select.options.add(new Option("网银","3"));
+                        select.options.add(new Option("其他","4"));
+                        td.appendChild(select)
+                    }else{
+                        var input = document.createElement("input");
+                        if(i==1 || i==3 || i==4 || i==5 || i==6 || i==7){
+                            input.value="0.00"
+                        }
+                        if(i==3){
+                            input.name="cmoney"
+                        }
+                        if(i==4){
+                            input.name="csh"
+                        }
+                        if(i==5){
+                            input.name="jshj"
+                        }
+                        if(i==9){
+                            input.value="{{ timeNow }}"
+                        }
+                        if(i==10){
+                            input.value="{{ dict1.TaxNo }}"
+                        }
+                        if(i==11){
+                            input.value="货物"
+                        }
+                        td.appendChild(input)
+                    }
+                    row.appendChild(td)
+                }
+            }
+            $("#rowNum").val("");
         }
         //删除表格的一行
         function delRow(){

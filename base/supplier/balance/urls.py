@@ -19,4 +19,8 @@ from base.supplier.balance.views import *
 urlpatterns = [
     url(r'^balance/$', balance , name='balance'),
     url(r'^balance/balanceArticle/', balanceArticle, name='balanceArticle'),
+    #add by liubf at 2016/01/12
+    url(r'^balance/apply/edit/', applyEdit, name='applyEdit'),
+    url(r'^balance/apply/save/', applySave, name='applySave'),
+    #end by liubf at 2016/01/12
 ]

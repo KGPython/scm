@@ -62,12 +62,14 @@ def login(request):
                         if user.utype == "2":    #供应商
                             request.session["s_suppcode"] = user.grpcode
 
-                            suppname = findGrpNameByCode(user.grpcode,user.utype)
-                            request.session["s_suppname"] = suppname
+                            sname = findGrpNameByCode(user.grpcode,user.utype)
+                            request.session["s_suppname"] = sname
 
                             grpcode = findGrpCodeBySuppCode(user.grpcode)
                             request.session["s_grpcode"] = grpcode
-                            request.session["s_grpname"] = findGrpNameByCode(grpcode,"1")
+
+                            grpname = findGrpNameByCode(grpcode,"1")
+                            request.session["s_grpname"] = grpname
 
                             response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
 
@@ -248,6 +250,7 @@ def findGrpNameByCode(grpcode,utype):
     else:
         grp = BasGroup.objects.get(grpcode=grpcode)
         name = grp.grpnm
+
     return name
 
 #验证码

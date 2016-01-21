@@ -72,7 +72,17 @@ def test1():
     if isinstance(c,tuple):
         print("tuple-c")
 
+def testmssql():
+    conn = mdu.getMssqlConn()
+    cur = conn.cursor()
+    sql = "select top 10 [ID],[Name] from [Shop]"
+    cur.execute(sql)
+    list = cur.fetchall()
+    for row in list:
+        print(row["ID"],row["Name"])
+
 if __name__ == "__main__":
+    print(">>>main()")
     #tz = tz.timezone('Asia/Shanghai')
     #sh_dt = datetime.datetime.now(tz)
     #print(sh_dt)
@@ -95,18 +105,21 @@ if __name__ == "__main__":
     # c = [int(i) for i in b ]
     # print(c)
 
-    ls = ["2","3","a"]
-    try:
-        s_sadmin = ls.index("1")
-        print(s_sadmin)
-    except:
-        print(-1)
-
-    def cutStr(str,separator):
-        try:
-            index = str.index(separator)
-            return str[index+1:]
-        except:
-            return str
-    s = "23423sd.fsdfsdf"
-    print(cutStr(s,"."))
+    # ls = ["2","3","a"]
+    # try:
+    #     s_sadmin = ls.index("1")
+    #     print(s_sadmin)
+    # except:
+    #     print(-1)
+    #
+    # def cutStr(str,separator):
+    #     try:
+    #         index = str.index(separator)
+    #         return str[index+1:]
+    #     except:
+    #         return str
+    # s = "23423sd.fsdfsdf"
+    # print(cutStr(s,"."))
+    # testmssql()
+    s = "where {cond1}"
+    print(s.format(cond1="1=1"))

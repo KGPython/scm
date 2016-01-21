@@ -24,8 +24,9 @@ def getMssqlConn(as_dict=True):
                            as_dict=as_dict)
     return conn
 
-def getMssqlTranConn():
-    conn = _mssql.connect(server="192.168.122.141:1433",
+def get_MssqlConn():
+    conn = _mssql.connect(server="192.168.122.141",
+                           port=1433,
                            user="myshop",
                            password="oyf20140208HH",
                            database="mySHOPCMStock",
@@ -57,6 +58,7 @@ def close(conn,cur):
 def getDBVal(row,key):
 
     return row[key].encode('latin-1').decode('gbk')
+
 
 #md5
 def md5(str):
@@ -91,6 +93,15 @@ def getReqVal(request,key,default=None):
         val = request.GET.get(key,default)
     elif request.method=="POST":
         val = request.POST.get(key,default)
+
+    return val
+
+def getReqList(request,key,default=None):
+
+    if request.method=="GET":
+        val = request.GET.getlist(key,default)
+    elif request.method=="POST":
+        val = request.POST.getlist(key,default)
 
     return val
 
@@ -329,6 +340,13 @@ class PinYin(object):
         result = self.hanzi2pinyin(string=string)
         return split.join(result)
 
+def insertSysLog(conn,loginid,workstattionid,moduleid,eventid,note):
+
+    sql = """insert into SysLog(LoginID,WorkstationID,ModuleID,EventID,Note)
+             values({LoginID},{WorkstationID},{ModuleID},{EventID},'{Note}')
+             """.format(Note=note,LoginID=loginid,WorkstationID=workstattionid,ModuleID=moduleid,EventID=eventid)
+    conn.execute_non_query(sql)
+
 def testmssql():
     conn = getMssqlConn()
     cur = conn.cursor()
@@ -348,7 +366,15 @@ if __name__ == "__main__":
     # d1 = datetime.datetime.now()
     # d2 = datetime.datetime.strptime("2015-12-10",'%Y-%m-%d')
     # print(dtsub(d1,d2))
-    testmssql()
-    d = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y%m")
+    # testmssql()
+    # d = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y%m")
+    # print(datetime.timedelta(1))
+    # print(getDBVal({"Name":"we"},"Name"))
+
+    print((datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1))
+    print(datetime.date.today().replace(day=1))
     print(datetime.timedelta(1))
-    print(getDBVal({"Name":"we"},"Name"))
+    print(datetime.date.today().replace(day=1) - datetime.timedelta(1))
+
+    s = b"\xe5\x8f\x96\xe5\xae\xa1\xe6\xa0\xb8\xe5\x91\x98\xe7\x9a\x84\xe8\x8b\xb1\xe6\x96\x87\xe5\x90\x8d\xe5\x87\xba\xe9\x94\x99\xef\xbc\x8c\xe8\xaf\xb7\xe6\xa0\xb8\xe5\xae\x9e"
+    print(str(s,"utf-8"))

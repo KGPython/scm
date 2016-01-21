@@ -32,16 +32,19 @@ def global_setting(request):
     adBillDict = {"0": u"调整单", "2430": u"库存进价调整单", "2446": u"批次数量更正单", "2460": u"批次库存转移单"}
     qrStatusDict = {"Y":"已确认","N":"未确认"}
     gqStateDict = {"Y":"已过期","N":"未过期"}
+    #经营方式
+    contractTypeDict = {"g":"购销","d":"代销","l":"联营","z":"租赁"}
+	#结算方式
+    payTypeList = findPayType()
+    return locals()
 
-    #经营方式（结算方式）
+def findPayType():
     conn = MethodUtil.getMssqlConn()
     cur = conn.cursor()
     sqlPay = "select id,name from paytype"
     cur.execute(sqlPay)
     payTypeList = cur.fetchall()
-
-    return locals()
-
+    return payTypeList
 
 # 查询门店信息存储为一个字典
 def findShop(shopcode=None):

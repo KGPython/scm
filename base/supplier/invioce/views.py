@@ -12,7 +12,7 @@ def createInvioce(request):
     suppName = request.session.get('s_suppname','宽广主食厨房（05.08.80.85.86.87）')
     refSheetId = request.GET.get('sheetid','CM01201412260144')
 
-    conn2= MethodUtil.getMssqlTranConn()
+    conn2= MethodUtil.get_MssqlConn()
 
     #判断发票单据是否存在
     # sql = "select sheetid from CustReceive0 where venderid={venderid} and ShopID='CM01'".format(venderid=suppCode)
@@ -35,9 +35,9 @@ def createInvioce(request):
 def saveInvioce(request):
     conn = MethodUtil.getMssqlConn()
     cur = conn.cursor()
-    conn2= MethodUtil.getMssqlTranConn()
-    suppCode = request.session.get('s_suppcode','100008')
-    suppName = request.session.get('s_suppname','宽广主食厨房（05.08.80.85.86.87）  ')
+    conn2= MethodUtil.get_MssqlConn()
+    suppCode = request.session.get('s_suppcode')
+    suppName = request.session.get('s_suppname')
 
     ############接收表头相关数据（CustReceive0） ############
     planPayDate = request.POST.get('PlanPayDate')
@@ -131,14 +131,21 @@ def saveInvioce(request):
             sqlCI = "insert into custitem0 " \
                     "values ('{SheetID}','{PayTypeSortID}','{PayableDate}','{RefSheetID}',{RefSheetType},{ManageDeptID},'{FromShopID}','{InShopID}','{CostValue}','{CostTaxValue}','{CostTaxRate}',{AgroFlag},'{SaleValue}',{BalanceBookSerialID})"\
                     .format(SheetID=sheetId,PayTypeSortID=res2[i][0],PayableDate=res2[i][11],RefSheetID=res2[i][1],RefSheetType=res2[i][2],ManageDeptID=res2[i][4],FromShopID=res2[i][13],InShopID=res2[i][5],
-                            CostValue=res2[i][6],CostTaxValue=res2[i][7],CostTaxRate=res2[i][8],AgroFlag=res2[i][10],SaleValue=res2[i][9],BalanceBookSerialID=res2[i][16])
+                            CostValue=res2[i][6],CostTaxValue=res2[i][8],CostTaxRate=res2[i][12],AgroFlag=res2[i][10],SaleValue=res2[i][9],BalanceBookSerialID=res2[i][16])
             conn2.execute_non_query(sqlCI)
         #保存用户录入发票详细
-
-        for data in listData:
-            sqlCRI = "insert into CustReceiveItem0 values( '"+sheetId+"','"+data['cno']+"','"+suppName+"','"+data['cdno']+"','"+data['cdate']+"',"+data['cclass']+",'"+data['cgood']+"','"+data['ctaxrate']+"','"+data['cmoney']+"','"+data['csh']+"',"+data['paytype']+",'"+data['kmoney']+"','"+shopId+"')"
+        if listData:
+            for data in listData:
+                sqlCRI = "insert into CustReceiveItem0 values( '"+sheetId+"','"+data['cno']+"','"+suppName+"','"+data['cdno']+"','"+data['cdate']+"',"+data['cclass']+",'"+data['cgood']+"','"+data['ctaxrate']+"','"+data['cmoney']+"','"+data['csh']+"',"+data['paytype']+",'"+data['kmoney']+"','"+shopId+"')"
+                conn2.execute_non_query(sqlCRI)
+            res['succ'] = True
+        else:
+            sql3 = "select a.jsdate,a.flag,a.fnotes,b.taxno,c.paytypeid from vendercard a,venderext b,vender c	where a.venderid=b.venderid and a.venderid=c.venderid and a.venderid={venderid}".format(venderid=suppCode)
+            dict3 = conn2.execute_row(sql3)
+            taxno = dict3["taxno"]
+            sqlCRI = "insert into CustReceiveItem0 (sheetid,cno,cname,cdate,cclass,cgood,ctaxrate,cmoney,csh,cdno,PayType,kmoney,shopid) values( '"+sheetId+"','666666','"+suppName+"',getDate(),1,'货物',0.0,0.0,0.0,'"+taxno+"','1',0.0,'"+shopId+"')"
             conn2.execute_non_query(sqlCRI)
-        res['succ'] = True
+            res['succ'] = True
     except Exception as e:
         print(e)
         res['succ'] = False
@@ -148,12 +155,10 @@ def saveInvioce(request):
         cur.close()
     return HttpResponse(json.dumps(res))
 
-
-
 def newInvoice(request):
-    suppCode = request.session.get('s_suppcode','100008')
-    suppName = request.session.get('s_suppname','宽广主食厨房（05.08.80.85.86.87）')
-    conn2= MethodUtil.getMssqlTranConn()
+    suppCode = request.session.get('s_suppcode')
+    suppName = request.session.get('s_suppname')
+    conn2= MethodUtil.get_MssqlConn()
     timeNow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
     return render(request,'user_invoice_new.html',locals())
@@ -161,7 +166,7 @@ def newInvoice(request):
 @csrf_exempt
 def queryBalance(request):
     suppCode = request.session.get('s_suppcode','100008')
-    conn2 = MethodUtil.getMssqlTranConn()
+    conn2 = MethodUtil.get_MssqlConn()
     refSheetId = request.POST.get('refSheetId','')
     payStatus = request.POST.get('payStatus','')
     queryDict={}
