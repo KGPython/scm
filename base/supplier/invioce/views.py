@@ -7,10 +7,11 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
 
+@csrf_exempt
 def createInvioce(request):
     suppCode = request.session.get('s_suppcode','100008')
     suppName = request.session.get('s_suppname','宽广主食厨房（05.08.80.85.86.87）')
-    refSheetId = request.GET.get('sheetid','CM01201412260144')
+    refSheetId = MethodUtil.getReqVal(request,'sheetid','CM01201412260144')
 
     conn2= MethodUtil.get_MssqlConn()
 

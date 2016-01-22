@@ -25,10 +25,7 @@
     {% include "common/nav.html" %}
     <form id="billForm" method="post" action="/scm/base/balance/apply/save/">
         <input type="hidden" name="sheetId" value="{{ sheetId }}">
-        <input type="hidden" name="paytypeid" value="{{ paytypeid }}">
-        <input type="hidden" name="payTypeName" value="{{ payTypeName }}">
         <input type="hidden" name="balancePlaceId" value="{{ balancePlaceId }}">
-        <input type="hidden" name="balancePlaceName" value="{{ balancePlaceName }}">
         <input type="hidden" name="pstart" value="{{ pstart }}">
         <input type="hidden" name="pend" value="{{ pend }}">
         <input type="hidden" name="cstart" value="{{ cstart }}">
@@ -142,6 +139,9 @@
             </div>
         </div>
     </form>
+    <form id="invioceForm" action="/scm/base/supp/invoice/" method="post">
+           <input type="hidden" id="isheetid" name="sheetid" value="">
+    </form>
     {% include "common/footer.html" %}
 	<script type="text/javascript">
         $(function(){
@@ -182,7 +182,9 @@
                         if(status=='1'){
                             alert("结算申请单提交失败！");
                         }else{
-                            window.location.href="/scm/base/supp/invoice/?sheetid="+result.sheetId;
+                            alert("保存成功");
+                            $("#isheetid").val(result.sheetId);
+                            $("#invioceForm").submit();
                         }
                     }
                 }

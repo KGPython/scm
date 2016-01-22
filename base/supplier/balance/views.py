@@ -240,6 +240,7 @@ def applySave(request):
     # result["itemList"] = blist
     return HttpResponse(json.dumps(result))
 
+
 # def findBillHead0(conn2,sheetid):
 #     ##表头
 #     sql = """select a.*,b.vendername as spname,b.kkflag,b.fkflag venderfkflag  ,
