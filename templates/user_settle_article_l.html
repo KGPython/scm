@@ -1,0 +1,154 @@
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>        
+        {% include "common/nav.html" %}
+        <div class="query comWidth noprint">
+            <form id="queryForm" name="queryForm" method="post" action="{% url 'balanceArticle' %}?sheetid={{ sheetId }}">
+                {% csrf_token %}
+                <input type="hidden" id="actionTxt" name="actionTxt" value="">
+                <input class="query-print right" type="submit" value="确认" onclick="return confirmFun();">
+            </form>
+            <input class="query-print right" type="button" onclick=" javascript:print()" value="打印当前页" style="margin-right: 20px;margin-left: 20px"/>
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false; ">
+        </div>
+        <div class="comWidth">
+            <div class="tTitle">
+                <h1>{{ grpName }}统一联营结算单通知单</h1>
+                <div class="printHead">
+                     <p>
+                        <span>单据编号：{{ balance.sheetid }}</span>
+                        <span>结算地：{{ balance.shopid }}|{{ shopDict | key:balance.shopid }}</span>
+                        <span>结算方式：{{ payTypeDict | key:paytypeid }}</span>
+                    </p>
+                    <p>
+                        <span>供应商编号：{{ balance.venderid}}</span>
+                        <span>供应商名称：{{ s_suppname }}</span>
+                        <span>部类：{{ mdeptName }}</span>
+                    </p>
+                    <p>
+                        <span>本期应付金额：{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2 }}{% else %}{{ balance.curdxvalue  | floatformat:2 }}{% endif %}</span>
+                        <span>应开票金额：{{ invoicePay }}</span>
+                        <span>结算日期：{{ balance.begindate|date:'Y年m月d日'  }}至{{ balance.enddate|date:'Y年m月d日'  }}</span>
+                    </p>
+                    <p>
+                        <span>本次预付款金额：</span>
+                        <span>预付款余额：{% if balance.premoney %}{{ balance.premoney}}{% else %}0{% endif %}</span>
+                        <span>单据日期：{{ 0 }}至{{ 0 }}</span>
+                    </p>
+                    <p>
+                        <span>本期实付金额：{{ realPay }}</span>
+                        <span>本期实付大写金额：{{ realPayUpper }}</span>
+                        <span></span>
+                    </p>
+                    <p>
+                        <span>供应商开户银行：</span>
+                        <span>供应商开户银行帐号：</span>
+                        <span>打印时间：{{ printDate|date:'Y年m月d日' }}</span>
+                    </p>
+                    </div>
+                    <div class="tableBox">
+                        <table  width="50%">
+                            <thead>
+                                <tr>
+                                    <th>分店号</th>
+                                    <th>分店名称</th>
+                                    <th>含税金额</th>
+                                    <th>不含税金额</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+
+                                <tr>
+                                    <td></td>
+                                    <td>合计:</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div class="seal" >供应商盖章区</div>
+                    </div>
+                    <div class="checker">
+                        <span>制单人：&emsp;</span>
+                        <span>财务经理：&emsp;</span>
+                        <span>审核：&emsp;</span>
+                        <span>总监：&emsp;</span>
+                        <span>副总裁：&emsp;</span>
+                        <span>总裁：&emsp;</span>
+                        <span>供应商：&emsp;</span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="table2">
+                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                    <thead>
+                        <tr>
+                            <th>序号</th>
+                            <th>结算位置</th>
+                            <th>单据名称</th>
+                            <th>单据编号</th>
+                            <th>类别</th>
+                            <th>应付日期</th>
+                            <th>应结金额</th>
+                            <th>税金</th>
+                            <th>税率</th>
+                        </tr>
+                    </thead>
+                    {% for item in balanceItems %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            {{ shopDict | key:item.inshopid }}
+                        </td>
+                        <td>
+                            {{ billTypeDict | key:item.refsheettype }}
+                        </td>
+                        <td>{{ item.refsheetid }}</td>
+                        <td>
+                            {% for org in orgList %}
+                                {% if org.orgcode == item.managedeptid %}
+                                    {{ org.orgname }}
+                                {% endif %}
+                            {% endfor %}
+                        </td>
+                        <td>{{ item.payabledate | date:'Y-m-d' }}</td>
+                        <td>{{ item.costvalue }}</td>
+                        <td>{{ item.costtaxvalue }}</td>
+                        <td>{{ item.costtaxrate }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="6">合计</td>
+                        <td>{{ totalCostValue }}</td>
+                        <td>{{ totalCostTax }}</td>
+                        <td></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+         {% include "common/footer.html" %}
+        <script>
+            current = "jiesuan";
+            function confirmFun(){
+                if(confirm('是否确认该结算单？')){
+                   $("#actionTxt").attr({value:"check"})
+                    return true
+                }else{
+                    return false
+                }
+            }
+        </script>
+    </body>
+</html>
