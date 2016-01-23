@@ -301,6 +301,42 @@ def verifycode(request,key):
 
     return image
 
+def rmbupper(arg):
+    """
+    人名币小写转大写，整数部分处理到万亿,小数部分只处理2位
+    """
+    map  = ["零","壹","贰","叁","肆","伍","陆","柒","捌","玖"]
+    unit = ["分","角","元","拾","百","千","万","拾","百","千","亿",
+            "拾","百","千","万","拾","百","千","兆"]
+
+    nums = []   #取出每一位数字，整数用字符方式转换避大数出现误差
+    if type(arg) is float:
+        for i in range(len(unit)-3, -3, -1):
+            if arg >= 10**i or i < 1:
+                nums.append(int(round(arg/(10**i),2))%10)
+    else:
+        nums = [int(i) for i in str(arg)+'00']
+
+    words = []
+    zflag = 0   #标记连续0次数，以删除万字，或适时插入零字
+    start = len(nums)-3
+    for i in range(start, -3, -1):   #使i对应实际位数，负数为角分
+        if 0 != nums[start-i] or len(words) == 0:
+            if zflag:
+                words.append(map[0])
+                zflag = 0
+            words.append(map[nums[start-i]])
+            words.append(unit[i+2])
+        elif 0 == i or (0 == i%4 and zflag < 3): #控制‘万/元’
+            words.append(unit[i+2])
+            zflag = 0
+        else:
+            zflag += 1
+
+    if words[-1] != unit[0]:    #结尾非‘分’补整字
+        words.append("整")
+    return ''.join(words)
+
 class PinYin(object):
     def __init__(self, dict_file=Constants.WORD_DATA):
 

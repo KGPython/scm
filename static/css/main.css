@@ -807,7 +807,8 @@ tbody a{
 	margin-left: 200px;
 	width: 200px;
 	height: 200px;
-	border: 1px dotted #bbb;
+	line-height: 200px;
+	border: 1px solid #666;
 }
 .checker{
 	clear: both;

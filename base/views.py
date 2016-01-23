@@ -1,10 +1,9 @@
 #-*- coding:utf-8 -*-
 
 from django.db.models import Q
-from django.http import HttpResponseRedirect,HttpResponse
-from django.template import loader,Context
+from django.http import HttpResponseRedirect
 from base.models import BasShop, SerialNumber, BasOrg, BasKe, BasGoods
-from base.utils import MethodUtil
+from base.utils import MethodUtil,Constants
 
 def global_setting(request):
     grpcode = request.session.get("s_grpcode")
@@ -33,9 +32,10 @@ def global_setting(request):
     qrStatusDict = {"Y":"已确认","N":"未确认"}
     gqStateDict = {"Y":"已过期","N":"未过期"}
     #经营方式
-    contractTypeDict = {"g":"购销","d":"代销","l":"联营","z":"租赁"}
+    contractTypeDict = Constants.CONTRACT_TYPE_DICT
 	#结算方式
     payTypeList = findPayType()
+    payTypeDict = {str(int(row["id"])):MethodUtil.getDBVal(row,"name") for row in payTypeList}
     return locals()
 
 def findPayType():

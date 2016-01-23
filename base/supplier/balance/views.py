@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator  #分页查询
 
-from base.models import Billhead0,Billheaditem0
+from base.models import Billhead0,Billheaditem0,BasOrg
 from base.utils import MethodUtil as mtu,Constants
 
 # Create your views here.
@@ -804,11 +804,13 @@ def balance(request):
                    "grpName":grpName
                    })
 
-
-
 def balanceArticle(request):
-    grpCode = request.session.get('s_grpcode')   #用户所属单位
-    contracttype = request.session.get("s_contracttype")
+    grpCode = request.session.get('s_grpcode')       #用户所属单位
+    s_suppname = request.session.get('s_suppname')   #用户所属单
+    grpName = Constants.SCM_UNIT[grpCode]
+    contracttype = request.session.get("s_contracttype")   #经营方式
+    paytypeid = request.session.get("s_paytypeid")   #经营方式
+
     sheetId = request.GET.get('sheetid','')
     queryAction = request.POST.get('actionTxt','')
     #更新确认状态
@@ -817,31 +819,35 @@ def balanceArticle(request):
         balanceObj.status='Y'
         balanceObj.save()
 
-    #结算通知单汇总
-    balanceList = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
+    #结算通知单汇总      ,beginsdate,endsdate
+    balance = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
                                                "premoney","editor","checker","paychecker","contracttype")\
                                        .get(sheetid__contains=sheetId)
 
-    if balanceList.get('kxinvoice'):
-        cfpkx = float(round(balanceList.get('kxinvoice'),2))
+    #本期帐扣发票金额
+    if balance.get('kxinvoice'):
+        cfpkx = float(round(balance.get('kxinvoice'),2))
     else:
         cfpkx = 0
 
-    zkkx = float(round(balanceList.get('kxmoney')-balanceList.get('kxcash'),2))#帐扣扣项
+    #帐扣扣项 帐扣金额
+    zkkx = float(round(balance.get('kxmoney')-balance.get('kxcash'),2))
 
-    if balanceList.get('curdxvalue'):
-        curdxValue = balanceList.get('curdxvalue')
+     #本期应付金额
+    if balance.get('curdxvalue'):
+        curdxValue = balance.get('curdxvalue')
     else:
         curdxValue = 0
 
-    if balanceList.get('payablemoney'):
-        payableMoney = float(balanceList.get('payablemoney'))
+    if balance.get('payablemoney'):
+        payableMoney = float(balance.get('payablemoney'))
     else:
         payableMoney= 0
 
-    if balanceList.get('premoney'):
-        premoney = float(balanceList.get('premoney'))
+    #预付款余额
+    if balance.get('premoney'):
+        premoney = float(balance.get('premoney'))
     else:
         premoney = 0
 
@@ -852,23 +858,109 @@ def balanceArticle(request):
         invoicePay = round((curdxValue-cfpkx),2)
         realPay = round((curdxValue-zkkx-premoney),2)
 
+    #实付金额大写
+    realPayUpper = mtu.rmbupper(realPay)
+    #打印日期
+    printDate = datetime.date.today()
+
+    try:
+        conn = mtu.getMysqlConn()
+        cur = conn.cursor()
+        sql = ""
+        cur.execute(sql)
+        slist = cur.fetchall()
+
+    except Exception as e:
+        print(e)
 
     #结算通知明细
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
                                                 "costvalue","costtaxvalue","costtaxrate")\
                                         .filter(sheetid__contains=sheetId)\
                                         .order_by("refsheettype","refsheetid","inshopid")
-
+    #应结金额总额
     totalCostValue = 0
+    #税金总额
     totalCostTax = 0
-    i = 0
+    mdept = []
     for item in balanceItems:
-        totalCostValue += item.get('costvalue',0)   #应结金额总额
-        totalCostTax += item.get('costtaxvalue',0)  #税金总额
-        i+=1
-        item['lineIndex'] = i   #每条记录的行号
+        totalCostValue += item.get('costvalue',0)
+        totalCostTax += item.get('costtaxvalue',0)
         item['managedeptid'] = str(item.get('managedeptid',0))
+        mdept.append(item["managedeptid"])
 
-    payTypeDict = {"0":"其他","1":"支票","2":"电汇","3":"汇票"}
+    #查询管理部类：多个用逗号分隔
+    mdept = list(set(mdept))
+    orgList = BasOrg.objects.all().values("orgname", "orgcode")
+    mdeptNames = [x["orgname"] for x in orgList if x["orgcode"] in mdept]
+    mdeptName = ",".join(mdeptNames)
 
-    return render(request,'user_settle_article.html',locals())
+    return render(request,'user_settle_article_{ctype}.html'.format(ctype=contracttype),locals())
+
+# def balanceArticle(request):
+#     grpCode = request.session.get('s_grpcode')   #用户所属单位
+#     contracttype = request.session.get("s_contracttype")
+#     print(contracttype)
+#     sheetId = request.GET.get('sheetid','')
+#     queryAction = request.POST.get('actionTxt','')
+#     #更新确认状态
+#     if queryAction == 'check':
+#         balanceObj = Billhead0.objects.get(sheetid__contains=sheetId,grpcode=grpCode)
+#         balanceObj.status='Y'
+#         balanceObj.save()
+#
+#     #结算通知单汇总
+#     balanceList = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
+#                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
+#                                                "premoney","editor","checker","paychecker","contracttype")\
+#                                        .get(sheetid__contains=sheetId)
+#
+#     if balanceList.get('kxinvoice'):
+#         cfpkx = float(round(balanceList.get('kxinvoice'),2))
+#     else:
+#         cfpkx = 0
+#
+#     zkkx = float(round(balanceList.get('kxmoney')-balanceList.get('kxcash'),2))#帐扣扣项
+#
+#     if balanceList.get('curdxvalue'):
+#         curdxValue = balanceList.get('curdxvalue')
+#     else:
+#         curdxValue = 0
+#
+#     if balanceList.get('payablemoney'):
+#         payableMoney = float(balanceList.get('payablemoney'))
+#     else:
+#         payableMoney= 0
+#
+#     if balanceList.get('premoney'):
+#         premoney = float(balanceList.get('premoney'))
+#     else:
+#         premoney = 0
+#
+#     if curdxValue == 0:
+#         invoicePay = round((payableMoney-cfpkx),2)#应开票金额
+#         realPay = round((payableMoney-zkkx-premoney),2)#实付金额
+#     else:
+#         invoicePay = round((curdxValue-cfpkx),2)
+#         realPay = round((curdxValue-zkkx-premoney),2)
+#
+#
+#     #结算通知明细
+#     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
+#                                                 "costvalue","costtaxvalue","costtaxrate")\
+#                                         .filter(sheetid__contains=sheetId)\
+#                                         .order_by("refsheettype","refsheetid","inshopid")
+#
+#     totalCostValue = 0
+#     totalCostTax = 0
+#     i = 0
+#     for item in balanceItems:
+#         totalCostValue += item.get('costvalue',0)   #应结金额总额
+#         totalCostTax += item.get('costtaxvalue',0)  #税金总额
+#         i+=1
+#         item['lineIndex'] = i   #每条记录的行号
+#         item['managedeptid'] = str(item.get('managedeptid',0))
+#
+#     payTypeDict = {"0":"其他","1":"支票","2":"电汇","3":"汇票"}
+#
+#     return render(request,'user_settle_article.html',locals())
