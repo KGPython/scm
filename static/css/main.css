@@ -702,6 +702,10 @@ tbody a{
 	margin-left: 100px;
 	text-align: right;
 }
+.settleApply .box-line p{
+	margin-left: 50px;
+}
+
 .box-line .date{
 	width: 500px;
 }
@@ -709,11 +713,24 @@ tbody a{
 	margin-bottom:5px;
 	text-align: left;
 }
+.box-line p span{
+	display: inline-block;
+}
 .box-line p input[type=text]{
 	height: 30px;
 	width: 140px;
 	text-indent: 10px;
 	background-color: #fff;
+	border-color: #ccc;
+	padding:0;
+	color: #333;
+	text-align: left;
+	font-size: 12px;
+}
+.box-line p span{
+	height: 30px;
+	width: 150px;
+	text-indent: 10px;
 	border-color: #ccc;
 	padding:0;
 	color: #333;

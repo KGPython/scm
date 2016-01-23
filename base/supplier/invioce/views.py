@@ -147,8 +147,6 @@ def saveInvioce(request):
             taxno = dict3["taxno"]
             sqlCRI = "insert into CustReceiveItem0 (sheetid,cno,cname,cdate,cclass,cgood,ctaxrate,cmoney,csh,cdno,PayType,kmoney,shopid) values( '"+sheetId+"','666666','"+suppName+"',getDate(),1,'货物',0.0,0.0,0.0,'"+taxno+"','1',0.0,'"+shopId+"')"
             cur.execute(sqlCRI)
-
-            MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
             res['succ'] = True
     except Exception as e:
         print(e)
@@ -157,6 +155,17 @@ def saveInvioce(request):
     finally:
         conn.commit()
         cur.close()
+
+    sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
+              "values('{shId}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
+              .format(shid=sheetId,shType=res2[0][2],flag=0,operflag=0,checker=suppCode,chNo=1)
+    cur.execute(sqlFlow)
+    MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
+    conn.commit()
+    cur.close()
+    conn.close()
+    conn2.close()
+
     return HttpResponse(json.dumps(res))
 
 def newInvoice(request):

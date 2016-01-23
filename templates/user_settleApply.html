@@ -32,33 +32,32 @@
         <input type="hidden" name="cend" value="{{ cend }}">
         <input type="hidden" id="kxinvoice" value="{{ kxinvoice }}">
 
-        <div class="notice noticeOrder comWidth">
+        <div class="notice comWidth">
             <div class="tTitle">
                 <h1>结算申请单 </h1>
-                <div class="inputBox" >
+                <div class="inputBox settleApply" >
                     <div class="box-line">
-                        <p style="width:250px;margin-left:20px;"><label>结算地：</label>{{ balancePlaceId }}|{{ balancePlaceName }}</p>
-                        <p style="width:250px;margin-left:20px;"><label>结算方式：</label>{{ payTypeName }}</p>
-                        <p style="width:250px;margin-left:20px;">
-                            <label>结算日期：</label> {{ pstart }}至{{ pend }}
+                        <p><label>结算地：</label>
+                            <span>{{ balancePlaceId }}|{{ balancePlaceName }}</span>
                         </p>
-                        <p style="width:250px;margin-left:20px;">
-                            <label>单据日期：</label>{{ cstart }}至{{ cend }}
+                        <p><label>结算方式：</label>
+                            <span>{{ payTypeName }}</span>
                         </p>
-                        <p style="width:250px;margin-left:20px;">&nbsp;</p>
-                    </div>
-                    <div class="box-line">
-                        <p style="width:250px;margin-left:20px;"><label>应付金额：</label><span id="payablemoney">{{ payablemoney|default_if_none:0 }}</span></p>
-                        <p style="width:250px;margin-left:20px;"><label>实付金额：</label><span id="paidmoney">{{ paidmoney|default_if_none:0 }}</span></p>
-                        <p style="width:250px;margin-left:20px;"><label>应开票金额：</label><span id="paidinvoice">{{ paidmoney|default_if_none:0 }}</span></p>
-                        <p style="width:250px;margin-left:20px;"><label>帐扣金额：</label><span>{{ kxinvoice|default_if_none:0 }}</span></p>
-                        <p style="width:250px;margin-left:20px;"><label>帐扣可冲发票金额：</label><span>{{ zkinvoice|default_if_none:0 }}</span></p>
-                    </div>
-                    <div class="box-line">
                         <p>
-                            全选<input type="checkbox" id="billAll"  />
-                            反选<input type="checkbox" id="billReverse" />
+                            <label>结算日期：</label>
+                            <span>{{ pstart }}至{{ pend }}</span>
                         </p>
+                        <p>
+                            <label>单据日期：</label>
+                            <span>{{ cstart }}至{{ cend }}</span>
+                        </p>
+                    </div>
+                    <div class="box-line">
+                        <p><label>应付金额：</label><span id="payablemoney">{{ payablemoney|default_if_none:0 }}</span></p>
+                        <p><label>实付金额：</label><span id="paidmoney">{{ paidmoney|default_if_none:0 }}</span></p>
+                        <p><label>应开票金额：</label><span id="paidinvoice">{{ paidmoney|default_if_none:0 }}</span></p>
+                        <p><label>帐扣金额：</label><span>{{ kxinvoice|default_if_none:0 }}</span></p>
+                        <p><label>帐扣可冲发票金额：</label><span style="width: 60px">{{ zkinvoice|default_if_none:0 }}</span></p>
                     </div>
                 </div>
             </div>
@@ -66,23 +65,23 @@
             <table  border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                 <thead>
                     <tr>
-                        <th>本单是否结算<br/></th>
-                        <th>结算类型</th>
-                        <th>发生店</th>
+                        <th>全选<input type="checkbox" id="billAll" /></th>
+                        <th style="min-width: 70px;">结算类型</th>
+                        <th style="min-width: 50px;">发生店</th>
                         <th>发生店名称</th>
                         <th>相关单号</th>
-                        <th>应结金额（含税）</th>
-                        <th>不含税金额</th>
+                        <th>应结金额<br>（含税）</th>
+                        <th style="min-width: 80px;">不含税金额</th>
                         <th>税金</th>
-                        <th>单据名称</th>
-                        <th>管理类别编码</th>
+                        <th style="min-width: 60px;">单据名称</th>
+                        <th style="min-width: 60px;">管理类别<br>编码</th>
                         <th>销售金额</th>
-                        <th>进项税率</th>
-                        <th>是否农产品</th>
+                        <th>进项<br>税率</th>
+                        <th style="min-width: 50px;">是否<br>农产品</th>
                         <th>应付日期</th>
                         <th>发票接收单号</th>
-                        <th>倒扣率</th>
-                        <th>原始单号</th>
+                        <th style="min-width: 50px;">倒扣率</th>
+                        <th style="min-width: 60px;">原始单号</th>
                         <th>原始单据类型名称</th>
                     </tr>
                 </thead>
