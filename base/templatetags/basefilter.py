@@ -46,7 +46,10 @@ def cutNum(value):
 def key(d,key_name):
     value = ""
     try:
-        value = d[str(key_name)]
+        if isinstance(d,dict):
+            value = d[str(key_name)]
+        else:
+            value = d[key_name]
     except KeyError:
         value = ""
     return value

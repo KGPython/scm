@@ -65,6 +65,7 @@ def login(request):
                             supp = findGrpNameByCode(user.grpcode,user.utype)
                             request.session["s_suppname"] = supp.chnm
                             request.session["s_contracttype"] = supp.contracttype
+                            request.session["s_paytypeid"] = supp.paytypeid
 
                             grpcode = findGrpCodeBySuppCode(user.grpcode)
                             request.session["s_grpcode"] = grpcode

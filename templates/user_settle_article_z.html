@@ -19,127 +19,128 @@
             <div class="tTitle">
                 <h1>{{ grpName }}统一租赁结算单通知单</h1>
                 <div class="printHead">
-                     <p>
-                        <span>单据编号：{{ balance.sheetid }}</span>
+                    <table class="table-noborder">
+                        <tr>
+                            <td class="label">单据编号：</td> <td>{{ balance.sheetid }}</td>
+                            <td class="label">结算方式：</td> <td>{{ payTypeDict | key:paytypeid }}</td>
+                            <td class="label">结算地：</td> <td>{{ balance.shopid }}|{{ shopDict | key:balance.shopid }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">部&emsp;&emsp;类：</td> <td>{{ mdeptName }}</td>
+                            <td class="label">供应商编号：</td> <td>{{ balance.venderid}}</td>
+                            <td class="label">供应商名称：</td> <td>{{ s_suppname }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">应付金额：</td> <td class="money">{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2|default_if_none:'' }}{% else %}{{ balance.curdxvalue  | floatformat:2|default_if_none:'' }}{% endif %}</td>
+                            <td class="label">应开票金额：</td> <td class="money">{{ invoicePay|default_if_none:'' }}</td>
+                            <td class="label">结算日期：</td> <td>{{ balance.begindate|date:'Y-m-d'  }}至{{ balance.enddate|date:'Y-m-d'  }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label">预付款金额：</td> <td class="money">&nbsp;</td>
+                            <td class="label">预付款余额：</td> <td class="money">{% if balance.premoney %}{{ balance.premoney|default_if_none:''}}{% else %}&nbsp;{% endif %}</td>
+                            <td class="label">单据日期：</td> <td>1999-01-01至2999-12-31</td>
+                        </tr>
+                        <tr>
+                            <td class="label">实付金额：</td> <td class="money"> {{ realPay |default_if_none:''}}</td>
+                            <td class="label" >实付大写金额：</td> <td >{{ realPayUpper }}</td>
+                            <td ></td><td ></td>
+                        </tr>
+                        <tr>
+                            <td class="label">开户银行：</td> <td>&nbsp;</td>
+                            <td class="label">开户银行帐号：</td> <td>&nbsp;</td>
+                            <td class="label">打印时间：</td> <td>{{ printDate|date:'Y年m月d日' }}</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="tableBox">
+                    <table class="table50" width="50%">
+                        <thead>
+                            <tr>
+                                <th>分店号</th>
+                                <th>分店名称</th>
+                                <th>含税金额</th>
+                                <th>售价金额</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+							{% for row in slist %}
+                            <tr>
+                                <td>{{ row.InShopID }}</td>
+                                <td>{{ shopDict|key:row.InShopID }}</td>
+                                <td>{{ row.CostValue }}</td>
+                                <td>{{ row.SaleValue }}</td>
+                            </tr>
+                            {% endfor %}
+                            <tr>
+                                <td>合计:</td>
+                                <td></td>
+                                <td>{{ ssum1 }}</td>
+                                <td>{{ ssum3 }}</td>
+                            </tr>
 
-                          <span>结算地：{{ balance.shopid }}|{{ shopDict | key:balance.shopid }}</span>
-                        <span>结算方式：{{ payTypeDict | key:balance.paytype }}</span>
-                    </p>
-                    <p>
-                        <span>供应商编号：{{ balance.venderid}}</span>
-                        <span>供应商名称：{{ s_suppname }}</span>
-                        <span>部类：{{ mdeptName }}</span>
-                    </p>
-                    <p>
-                        <span>本期应付金额：{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2 }}{% else %}{{ balance.curdxvalue  | floatformat:2 }}{% endif %}</span>
-                        <span>应开票金额：{{ invoicePay }}</span>
-                        <span>结算日期：{{ balance.begindate|date:'Y年m月d日'  }}至{{ balance.enddate|date:'Y年m月d日'  }}</span>
-                    </p>
-                    <p>
-                        <span>本次预付款金额：</span>
-                        <span>预付款余额：{% if balance.premoney %}{{ balance.premoney}}{% else %}0{% endif %}</span>
-                        <span>单据日期：{{ 0 }}至{{ 0 }}</span>
-                    </p>
-                    <p>
-                        <span>本期实付金额：{{ realPay }}</span>
-                        <span>本期实付大写金额：{{ realPayUpper }}</span>
-                        <span></span>
-                    </p>
-                    <p>
-                        <span>供应商开户银行：</span>
-                        <span>供应商开户银行帐号：</span>
-                        <span>打印时间：{{ printDate|date:'Y年m月d日' }}</span>
-                    </p>
-                    </div>
-                    <div class="tableBox">
-                        <table  width="50%">
-                            <thead>
-                                <tr>
-                                    <th>分店号</th>
-                                    <th>分店名称</th>
-                                    <th>含税金额</th>
-                                    <th>不含税金额</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td></td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
+                        </tbody>
+                    </table>
+                    <div class="seal" >供应商盖章区</div>
+                </div>
+                <div class="checker">
+                    <span>制单人：&emsp;</span>
+                    <span class="long">财务经理：&emsp;</span>
+                    <span>审核：&emsp;</span>
+                    <span>总监：&emsp;</span>
+                    <span>副总裁：&emsp;</span>
+                    <span>总裁：&emsp;</span>
+                    <span>供应商：&emsp;</span>
+                </div>
+            </div>
 
-                                <tr>
-                                    <td></td>
-                                    <td>合计:</td>
-                                    <td></td>
-                                    <td></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                        <div class="seal" >供应商盖章区</div>
-                    </div>
-                    <div class="checker">
-                        <span>制单人：&emsp;</span>
-                        <span>财务经理：&emsp;</span>
-                        <span>审核：&emsp;</span>
-                        <span>总监：&emsp;</span>
-                        <span>副总裁：&emsp;</span>
-                        <span>总裁：&emsp;</span>
-                        <span>供应商：&emsp;</span>
+            <div class="table2">
+				{% for row in itemList %}
+                    <h2 style="text-align: center;font-weight: normal">{{ shopDict|key:row.0 }}</h2>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>分店号</th>
+                                <th>单据名称</th>
+                                <th>类别</th>
+                                <th>售价金额</th>
+                                <th>倒扣率</th>
+                                <th>含税金额</th>
+                                <th>进项税率</th>
+                                <th>应付日期</th>
+                                <th>发票接收单号</th>
+                            </tr>
+                        </thead>
+                        {% for item in row.1 %}
+                            <tr>
+                                <td>{{ item.inshopid }}</td>
+                                <td>{{ billTypeDict | key:item.refsheettype }}</td>
+                                <td>{{ orgDict|key:item.managedeptid }}</td>
+                                <td>{{ item.salevalue }}</td>
+                                <td>{{ item.dkrate }}</td>
+                                <td>{{ item.costvalue }}</td>
+                                <td>{{ item.costtaxrate }}</td>
+                                <td>{{ item.payabledate|date:'Y-m-d' }}</td>
+                                <td>{{ item.invoicesheetid|default_if_none:""}}</td>
+                            </tr>
+                        {% endfor %}
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td>售价金额合价：</td>
+                            <td>{{  sdict|key:shopid|key:2   }}</td>
+                            <td>应结金额合价：</td>
+                            <td>{{ sdict|key:shopid|key:0 }}</td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </table>
+                    {% endfor %}
                     </div>
                 </div>
-
             </div>
-            <div class="table2">
-                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-                    <thead>
-                        <tr>
-                            <th>序号</th>
-                            <th>结算位置</th>
-                            <th>单据名称</th>
-                            <th>单据编号</th>
-                            <th>类别</th>
-                            <th>应付日期</th>
-                            <th>应结金额</th>
-                            <th>税金</th>
-                            <th>税率</th>
-                        </tr>
-                    </thead>
-                    {% for item in balanceItems %}
-                    <tr>
-                        <td>{{ forloop.counter   }}</td>
-                        <td>
-                            {{ shopDict | key:item.inshopid }}
-                        </td>
-                        <td>
-                            {{ billTypeDict | key:item.refsheettype }}
-                        </td>
-                        <td>{{ item.refsheetid }}</td>
-                        <td>
-                            {% for org in orgList %}
-                                {% if org.orgcode == item.managedeptid %}
-                                    {{ org.orgname }}
-                                {% endif %}
-                            {% endfor %}
-                        </td>
-                        <td>{{ item.payabledate | date:'Y-m-d' }}</td>
-                        <td>{{ item.costvalue }}</td>
-                        <td>{{ item.costtaxvalue }}</td>
-                        <td>{{ item.costtaxrate }}</td>
-                    </tr>
-                    {% endfor %}
-                    <tr>
-                        <td colspan="6">合计</td>
-                        <td>{{ totalCostValue }}</td>
-                        <td>{{ totalCostTax }}</td>
-                        <td></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
 
-         {% include "common/footer.html" %}
+        {% include "common/footer.html" %}
         <script>
             current = "jiesuan";
             function confirmFun(){

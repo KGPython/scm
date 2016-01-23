@@ -803,12 +803,11 @@ tbody a{
 	background: #efefef;
 }
 .tableBox .seal{
-	float: left;
-	margin-left: 200px;
+	float: right;
+	margin-right: 200px;
 	width: 200px;
 	height: 200px;
 	line-height: 200px;
-	border: 1px solid #666;
 }
 .checker{
 	clear: both;

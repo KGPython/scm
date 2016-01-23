@@ -824,6 +824,23 @@ def balanceArticle(request):
                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
                                                "premoney","editor","checker","paychecker","contracttype")\
                                        .get(sheetid__contains=sheetId)
+    #结算通知明细
+    balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
+                                                "costvalue","costtaxvalue","costtaxrate","salevalue","dkrate","invoicesheetid")\
+                                        .filter(sheetid__contains=sheetId)\
+                                        .order_by("refsheettype","refsheetid","inshopid")
+    itemList = []
+    itemShopId = None
+    for item in balanceItems:
+        shopid = item["inshopid"]
+        if itemShopId != shopid:
+            vlist = []
+            itemList.append([shopid,vlist])
+
+        vlist.append(item)
+        itemShopId = item["inshopid"]
+
+    itemList = sorted(itemList)
 
     #本期帐扣发票金额
     if balance.get('kxinvoice'):
@@ -862,22 +879,25 @@ def balanceArticle(request):
     realPayUpper = mtu.rmbupper(realPay)
     #打印日期
     printDate = datetime.date.today()
-
+    ssum1 = decimal.Decimal(0.0)
+    ssum2 = decimal.Decimal(0.0)
+    ssum3 = decimal.Decimal(0.0)
     try:
         conn = mtu.getMysqlConn()
         cur = conn.cursor()
-        sql = ""
+        sql = """select InShopID,sum(CostValue) AS CostValue,SUM(CostTaxValue) AS CostTaxValue,sum(salevalue) AS SaleValue
+                 from billheaditem0 where SheetID ='{sheetId}' group by InShopID""".format(sheetId=sheetId)
         cur.execute(sql)
         slist = cur.fetchall()
-
+        sdict = {}
+        for row in slist:
+            ssum1 += row["CostValue"]
+            ssum2 += (row["CostValue"]-row["CostTaxValue"])
+            ssum3 += row["SaleValue"]
+            sdict[row["InShopID"]] = [ row["CostValue"],(row["CostValue"]-row["CostTaxValue"]),row["SaleValue"]]
     except Exception as e:
         print(e)
 
-    #结算通知明细
-    balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
-                                                "costvalue","costtaxvalue","costtaxrate")\
-                                        .filter(sheetid__contains=sheetId)\
-                                        .order_by("refsheettype","refsheetid","inshopid")
     #应结金额总额
     totalCostValue = 0
     #税金总额
