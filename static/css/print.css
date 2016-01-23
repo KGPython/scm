@@ -31,6 +31,13 @@ table td {
 }
 .table-noborder td{
     border-color:#fff ;
+    text-align: left;
+}
+.table-noborder .label{
+    text-align: right;
+}
+.table-noborder .money{
+    font-size: 18px;
 }
 .tableBox{
     min-height: 150px;

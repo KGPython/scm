@@ -21,33 +21,33 @@
                 <div class="printHead">
                     <table class="table-noborder">
                         <tr>
-                            <td>单据编号：</td> <td>{{ balance.sheetid }}</td>
-                            <td>结算地：</td> <td>{{ balance.shopid }}|{{ shopDict | key:balance.shopid }}</td>
-                            <td>结算方式：</td> <td>{{ payTypeDict | key:paytypeid }}</td>
+                            <td class="label">单据编号：</td> <td>{{ balance.sheetid }}</td>
+                            <td class="label">结算地：</td> <td>{{ balance.shopid }}|{{ shopDict | key:balance.shopid }}</td>
+                            <td class="label">结算方式：</td> <td>{{ payTypeDict | key:paytypeid }}</td>
                         </tr>
                         <tr>
-                            <td>部类：</td> <td>{{ mdeptName }}</td>
-                            <td>供应商编号：</td> <td>{{ balance.venderid}}</td>
-                            <td>供应商名称：</td> <td>{{ s_suppname }}</td>
+                            <td class="label">部类：</td> <td>{{ mdeptName }}</td>
+                            <td class="label">供应商编号：</td> <td>{{ balance.venderid}}</td>
+                            <td class="label">供应商名称：</td> <td>{{ s_suppname }}</td>
                         </tr>
                         <tr>
-                            <td>本期应付金额：</td> <td>{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2 }}{% else %}{{ balance.curdxvalue  | floatformat:2 }}{% endif %}</td>
-                            <td>应开票金额：</td> <td>{{ invoicePay }}</td>
-                            <td>结算日期：</td> <td>{{ balance.begindate|date:'Y-m-d'  }}至{{ balance.enddate|date:'Y-m-d'  }}</td>
+                            <td class="label">应付金额：</td> <td class="money">{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2 }}{% else %}{{ balance.curdxvalue  | floatformat:2 }}{% endif %}</td>
+                            <td class="label">应开票金额：</td> <td class="money">{{ invoicePay }}</td>
+                            <td class="label">结算日期：</td> <td>{{ balance.begindate|date:'Y-m-d'  }}至{{ balance.enddate|date:'Y-m-d'  }}</td>
                         </tr>
                         <tr>
-                            <td>本次预付款金额：</td> <td> </td>
-                            <td>预付款余额：</td> <td>{% if balance.premoney %}{{ balance.premoney}}{% else %}0{% endif %}</td>
-                            <td>单据日期：</td> <td>{{ 0 }}至{{ 0 }}</td>
+                            <td class="label">预付款金额：</td> <td class="money"> </td>
+                            <td class="label">预付款余额：</td> <td class="money">{% if balance.premoney %}{{ balance.premoney}}{% else %}0{% endif %}</td>
+                            <td class="label">单据日期：</td> <td>{{ 0 }}至{{ 0 }}</td>
                         </tr>
                         <tr>
-                            <td>本期实付金额：</td> <td colspan="2"> {{ realPay }}</td>
-                            <td>本期实付大写金额：</td> <td colspan="2">{{ realPayUpper }}</td>
+                            <td class="label">实付金额：</td> <td class="money" colspan="2"> {{ realPay }}</td>
+                            <td class="label">实付大写金额：</td> <td colspan="2">{{ realPayUpper }}</td>
                         </tr>
                         <tr>
-                            <td>供应商开户银行：</td> <td> {{ realPay }}</td>
-                            <td>供应商开户银行帐号：</td> <td>{{ realPayUpper }}</td>
-                             <td>打印时间：</td> <td>{{ printDate|date:'Y年m月d日' }}</td>
+                            <td class="label">开户银行：</td> <td> {{ realPay }}</td>
+                            <td class="label">开户银行帐号：</td> <td>{{ realPayUpper }}</td>
+                            <td class="label">打印时间：</td> <td>{{ printDate|date:'Y年m月d日' }}</td>
                         </tr>
                     </table>
                 </div>
