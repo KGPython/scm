@@ -7,14 +7,15 @@ from django.http import HttpResponseRedirect
 
 def reconcilType(request):
     #复选框列表
-    conn = MethodUtil.get_MssqlConn()
-
-    sqlPayList = "select id,name from paytype"
-    conn.execute_query(sqlPayList)
-    PayList = [ row for row in conn ]
 
     conn2 = MethodUtil.getMysqlConn()
     conn2.autocommit(True)
+    cur=conn2.cursor()
+    sqlPayList = "select id,name from bas_paytype"
+    cur.execute(sqlPayList)
+    PayList = cur.fetchall()
+
+
 
     #对账方式列表（页面左部）
     QsqlRec = "select id,rname from reconcil where status='1'"

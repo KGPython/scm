@@ -1,8 +1,10 @@
+body{font-size: 10px;}
 .noprint{display : none }
 .tTitle{
     text-align: center;
 }
 table{
+    width: 100%;
     font-family: verdana,arial,sans-serif;
     font-size:11px;
     color:#333333;
@@ -13,6 +15,7 @@ table{
 table th {
     border-width: 1px;
     /*padding: 8px;*/
+    font-weight: normal;
     border-style: solid;
     border-color: #666666;
     background-color: #dedede;
@@ -24,5 +27,37 @@ table td {
     border-color: #666666;
     background-color: #ffffff;
     text-align: left;
-    float:left;
+    /*float:left;*/
+}
+.table-noborder td{
+    border-color:#fff ;
+}
+.tableBox{
+    min-height: 150px;
+    margin-top: 20px;
+    overflow: hidden;
+}
+.table50{
+    width: 50%;
+    float: left;
+}
+.tableBox .seal {
+    float: left;
+    margin-left: 100px;
+    width: 150px;
+    height: 150px;
+    line-height: 150px;
+    border: 1px solid #666;
+}
+.table2{
+    margin-top: 30px;
+}
+.checker{
+    margin-top: 15px;
+    text-align: left;
+}
+.checker span{
+    text-align: left;
+    width: 12%;
+    display: inline-block;
 }

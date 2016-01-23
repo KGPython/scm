@@ -47,7 +47,6 @@
                                 </ul>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -87,7 +86,7 @@
                                     {% for pay in PayList %}
                                     <li>
                                         <input name="payType" type="checkbox" value="{{ pay.id }}" {{ payTyleLoad | checkPayType:pay.id }}/>
-                                        <label>{{ pay.name | encodeStr }}</label>
+                                        <label>{{ pay.name}}</label>
                                     </li>
                                     {% endfor %}
                                 </ul>
@@ -95,8 +94,8 @@
                             </div>
                         </div>
                         <div class="btn">
-                            <input id="save" type="submit" value="新建提交" onclick="setAction('new')">
                             <input id="save" type="submit" value="编辑提交" onclick="setAction('edit')">
+                            <input id="save" type="submit" value="新建提交" onclick="setAction('new')">
                         </div>
                     </form>
                 </div>

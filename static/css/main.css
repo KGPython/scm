@@ -21,6 +21,9 @@ input[type="submit"],
 	color: #fff;
 	text-decoration:none ;
 }
+.table-noborder{
+	border: 0;
+}
 /*
 ***************************************用户登录页****************************************
 */
@@ -712,6 +715,8 @@ tbody a{
 .box-line p label{
 	margin-bottom:5px;
 	text-align: left;
+	height: 30px;
+	line-height: 30px;
 }
 .box-line p span{
 	display: inline-block;
@@ -728,11 +733,11 @@ tbody a{
 	font-size: 12px;
 }
 .box-line p span{
-	height: 30px;
+	padding:0;
+	line-height: 30px;
 	width: 150px;
 	text-indent: 10px;
 	border-color: #ccc;
-	padding:0;
 	color: #333;
 	text-align: left;
 	font-size: 12px;
@@ -770,22 +775,17 @@ tbody a{
 	padding:10px;
 	border: 1px solid #bbb;
 }
-.printHead p{
-	margin-left: 30px;
-	line-height: 35px;
-	height: 35px;
-}
+/*.printHead p{*/
+	/*margin-left: 30px;*/
+	/*line-height: 35px;*/
+	/*height: 35px;*/
+/*}*/
 
-.printHead p span{
-	display: inline-block;
-	float: left;
-	width: 350px;
-	text-align: right;
-}
 .tableBox{
 	clear: both;
 	margin-top:15px;
 	overflow: hidden;
+	min-height: 200px;
 }
 .tableBox table{
 	width: 40%;
@@ -843,7 +843,7 @@ tbody a{
 	font-size: 14px;
 }
 .list ul{
-	display: none;
+	/*display: none;*/
 }
 .payTypeBox{
 	width: 500px;
