@@ -68,3 +68,6 @@ table td {
     width: 12%;
     display: inline-block;
 }
+.checker span.long{
+    min-width: 120px;
+}
