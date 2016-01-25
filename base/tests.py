@@ -81,8 +81,15 @@ def testmssql():
     for row in list:
         print(row["ID"],row["Name"])
 
+
+
+
 if __name__ == "__main__":
+
     print(">>>main()")
+
+    print(rmbupper(54322754.2))
+
     #tz = tz.timezone('Asia/Shanghai')
     #sh_dt = datetime.datetime.now(tz)
     #print(sh_dt)
@@ -121,5 +128,16 @@ if __name__ == "__main__":
     # s = "23423sd.fsdfsdf"
     # print(cutStr(s,"."))
     # testmssql()
-    s = "where {cond1}"
-    print(s.format(cond1="1=1"))
+    # s = "where {cond1}"
+    # print(s.format(cond1="1=1"))
+    #
+    # a =[]
+    # a.append("3")
+    # a.append("3")
+    # a.append("2")
+    # a.append("1")
+    # a = list(set(a))
+    # b = [{"orgcode":"1","orgname":"壹"},{"orgcode":"2","orgname":"贰"},{"orgcode":"3","orgname":"叁"},{"orgcode":"4","orgname":"肆"}]
+    # mdeptNames = [x["orgname"] for x in b if x["orgcode"] in a]
+    # mdeptName = ",".join(mdeptNames)
+    # print(mdeptName)

@@ -24,6 +24,7 @@ def global_setting(request):
     serialList = SerialNumber.objects.all().values("name", "serialid")
     # 商品类别组织结构信息
     orgList = BasOrg.objects.all().values("orgname", "orgcode")
+    orgDict = {row["orgcode"]:row["orgname"] for row in orgList}
     # 零售商管理员信息
     basKeList = BasKe.objects.all().values("kbcode", "kbname")
     # 单据类型
@@ -35,13 +36,13 @@ def global_setting(request):
     contractTypeDict = Constants.CONTRACT_TYPE_DICT
 	#结算方式
     payTypeList = findPayType()
-    payTypeDict = {str(int(row["id"])):MethodUtil.getDBVal(row,"name") for row in payTypeList}
+    payTypeDict = {str(int(row["id"])):row["name"] for row in payTypeList}
     return locals()
 
 def findPayType():
-    conn = MethodUtil.getMssqlConn()
+    conn = MethodUtil.getMysqlConn()
     cur = conn.cursor()
-    sqlPay = "select id,name from paytype"
+    sqlPay = "select id,name from bas_paytype"
     cur.execute(sqlPay)
     payTypeList = cur.fetchall()
     return payTypeList
