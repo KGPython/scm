@@ -782,6 +782,7 @@ tbody a{
 /*}*/
 
 .tableBox{
+	position: relative;
 	clear: both;
 	margin-top:15px;
 	overflow: hidden;
@@ -803,10 +804,13 @@ tbody a{
 	background: #efefef;
 }
 .tableBox .seal{
+	position: absolute;
+	right: 100px;
+	bottom: 0;
 	float: left;
 	margin-left: 200px;
-	width: 200px;
-	height: 200px;
+	width: 180px;
+	height: 180px;
 	line-height: 200px;
 	border: 1px solid #666;
 }

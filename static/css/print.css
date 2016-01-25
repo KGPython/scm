@@ -40,7 +40,8 @@ table td {
     font-size: 18px;
 }
 .tableBox{
-    min-height: 150px;
+    position: relative;
+    min-height: 155px;
     margin-top: 20px;
     overflow: hidden;
 }
@@ -49,6 +50,9 @@ table td {
     float: left;
 }
 .tableBox .seal {
+    position: absolute;
+    bottom: 0;
+    right: 0;
     float: left;
     margin-left: 100px;
     width: 150px;
