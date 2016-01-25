@@ -157,7 +157,7 @@ def saveInvioce(request):
               "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
               .format(shid=sheetId,shType=res2[0][2],flag=0,operFlag=0,checker=suppCode,chNo=1)
     cur.execute(sqlFlow)
-    print(sqlFlow)
+
     MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
     conn.commit()
     cur.close()
