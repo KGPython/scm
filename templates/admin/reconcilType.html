@@ -116,7 +116,7 @@
         <script>
             {% if succ %}
                 alert('数据提交成功');
-                window.location.href="{% url 'reconciltype' %}";
+                window.location.href="{% url 'reconciltype' %}?{% if rid %}rid={{ rid }}{% endif %}";
             {% endif %}
         </script>
     </body>
