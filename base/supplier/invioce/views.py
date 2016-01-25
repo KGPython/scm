@@ -12,7 +12,6 @@ def createInvioce(request):
     suppCode = request.session.get('s_suppcode','100008')
     suppName = request.session.get('s_suppname','宽广主食厨房（05.08.80.85.86.87）')
     refSheetId = MethodUtil.getReqVal(request,'sheetid','CM01201412260144')
-
     conn2= MethodUtil.get_MssqlConn()
 
     #判断发票单据是否存在
@@ -35,7 +34,6 @@ def createInvioce(request):
 @csrf_exempt
 def saveInvioce(request):
     conn = MethodUtil.getMssqlConn()
-    cur = conn.cursor()
     conn2= MethodUtil.get_MssqlConn()
     suppCode = request.session.get('s_suppcode')
     suppName = request.session.get('s_suppname')
@@ -154,12 +152,12 @@ def saveInvioce(request):
         conn.rollback()
     finally:
         conn.commit()
-        cur.close()
 
     sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
-              "values('{shId}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
-              .format(shid=sheetId,shType=res2[0][2],flag=0,operflag=0,checker=suppCode,chNo=1)
+              "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
+              .format(shid=sheetId,shType=res2[0][2],flag=0,operFlag=0,checker=suppCode,chNo=1)
     cur.execute(sqlFlow)
+
     MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
     conn.commit()
     cur.close()
