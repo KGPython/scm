@@ -35,13 +35,18 @@ def global_setting(request):
     #经营方式
     contractTypeDict = Constants.CONTRACT_TYPE_DICT
 	#结算方式
-    payTypeList = findPayType()
-    payTypeDict = {str(int(row["id"])):row["name"] for row in payTypeList}
+    payTypeList = findPayType(1)
+    payTypeDict = findPayType(2)
     return locals()
 
-def findPayType():
+
+def findPayType(type):
     payTypeList = BasPayType.objects.all().values("id","name")
-    return payTypeList
+    if type==1:
+        return payTypeList
+    else:
+        pdict = {str(int(row["id"])):row["name"] for row in payTypeList}
+        return pdict
 
 # 查询门店信息存储为一个字典
 def findShop(shopcode=None):

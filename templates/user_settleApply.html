@@ -53,11 +53,11 @@
                         </p>
                     </div>
                     <div class="box-line">
-                        <p><label>应付金额：</label><span id="payablemoney">{{ payablemoney|default_if_none:0 }}</span></p>
-                        <p><label>实付金额：</label><span id="paidmoney">{{ paidmoney|default_if_none:0 }}</span></p>
-                        <p><label>应开票金额：</label><span id="paidinvoice">{{ paidmoney|default_if_none:0 }}</span></p>
-                        <p><label>帐扣金额：</label><span>{{ kxinvoice|default_if_none:0 }}</span></p>
-                        <p><label>帐扣可冲发票金额：</label><span style="width: 60px">{{ zkinvoice|default_if_none:0 }}</span></p>
+                        <p><label>应付金额：</label><span id="payablemoney">{{ payablemoney|floatformat:2|default_if_none:"" }}</span></p>
+                        <p><label>实付金额：</label><span id="paidmoney">{{ paidmoney|floatformat:2|default_if_none:"" }}</span></p>
+                        <p><label>应开票金额：</label><span id="paidinvoice">{{ paidmoney|floatformat:2|default_if_none:"" }}</span></p>
+                        <p><label>帐扣金额：</label><span>{{ kxinvoice|floatformat:2|default_if_none:"" }}</span></p>
+                        <p><label>帐扣可冲发票金额：</label><span style="width: 60px">{{ zkinvoice|floatformat:2|default_if_none:"" }}</span></p>
                     </div>
                 </div>
             </div>
@@ -105,7 +105,7 @@
                             <td>{{ item.invoicesheetid }}</td>
                             <td>{{ item.Dkrate }}</td>
                             <td>{{ item.Adjustsheetid|default_if_none:"" }}</td>
-                            <td>{{ item.Adjustsheetname|default_if_none:"" }}</td>
+                            <td>{{ item.Adjustsheetname|encodeStr}}</td>
                         </tr>
                     {% endfor %}
                 </tbody>
@@ -211,9 +211,9 @@
                   costvalue = $("#costvalue_"+index).text();
                   costvalueSum += parseFloat(costvalue);
             });
-            $("#payablemoney").html(costvalueSum);
-            $("#paidmoney").html(costvalueSum-kxinvoice);
-            $("#paidinvoice").html(costvalueSum-kxinvoice);
+            $("#payablemoney").html(costvalueSum.toFixed(2));
+            $("#paidmoney").html((costvalueSum-kxinvoice).toFixed(2));
+            $("#paidinvoice").html((costvalueSum-kxinvoice).toFixed(2));
         }
 
 	  	!function(){

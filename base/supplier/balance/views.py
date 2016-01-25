@@ -10,6 +10,7 @@ from django.core.paginator import Paginator  #分页查询
 
 from base.models import Billhead0,Billheaditem0,BasOrg
 from base.utils import MethodUtil as mtu,Constants
+from base.views import findPayType
 
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
@@ -20,6 +21,8 @@ monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 ##编辑结算申请单
 def applyEdit(request):
     venderid = request.session.get("s_suppcode")
+    paytypeid = request.session.get("s_paytypeid")
+    contracttype = request.session.get("s_contracttype")
 
     result = {}
     rdict = {}
@@ -27,34 +30,16 @@ def applyEdit(request):
     try:
         conn = mtu.get_MssqlConn()
 
-        #查询供应商信息
-        vender = findVender(conn,venderid)
-        paytypeid = vender[0]
-        # mastervid = vender[1]
-
         #g-购销 l-联营 d-代销  z-租赁
-        contracttype = vender[4]
         pstart,pend,cstart,cend = getStartAndEndDate(contracttype)
 
         #供应商结算方式
-        payTypeName = findPayTypeName(conn,paytypeid)
-
-        #结算地
-        balancePlace = findBalancePlace(conn)
-        balancePlaceName = mtu.getDBVal(balancePlace,1)
-        balancePlaceId = balancePlace[0]
-
-        #上月销售信息
-        #lastmonthsaleinfo = findLastMonthSaleInfo(conn,venderid)
-        #上月销售金额
-        #lastmonthsalevalue = lastmonthsaleinfo[0]
-        #上月销售成本
-        #lastmonthcostvalue = lastmonthsaleinfo[1]
+        pdict = findPayType(2)
+        payTypeName = pdict[paytypeid]
 
         #查询单据信息（动态查询）
         rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend)
         kxinvoice = findKxInvoice(conn,venderid,pend)
-        kxinvoice = 300
         conn.close()
 
     except Exception as e:
@@ -62,8 +47,8 @@ def applyEdit(request):
 
     result["paytypeid"] = paytypeid   #结算方式ID
     result["payTypeName"] = payTypeName   #结算方式名称
-    result["balancePlaceName"] = balancePlaceName     #结算地名称
-    result["balancePlaceId"] = balancePlaceId         #结算地ID
+    result["balancePlaceName"] = Constants.SCM_BALANCE_NAME     #结算地名称
+    result["balancePlaceId"] = Constants.SCM_BALANCE_ID         #结算地ID
     result["cstart"] = cstart
     result["cend"] = cend
     result["pstart"] = pstart
@@ -73,8 +58,8 @@ def applyEdit(request):
     result["sum2"] = rdict["sum2"]
     result["sum3"] = rdict["sum3"]
     result["sum4"] = rdict["sum4"]
-    result["kxinvoice"] = kxinvoice
-    result["zkinvoice"] = kxinvoice
+    result["kxinvoice"] =  "%0.2f" % kxinvoice
+    result["zkinvoice"] = "%0.2f" % kxinvoice
 
     return render(request,"user_settleApply.html",result)
 
@@ -89,10 +74,8 @@ def applySave(request):
     cstart = mtu.getReqVal(request,"cstart",None)
     cend = mtu.getReqVal(request,"cend",None)
     refsheetids = mtu.getReqList(request,"refsheetid",None)
-    # paytypeid = mtu.getReqVal(request,"paytypeid")
-    # payTypeName = mtu.getReqVal(request,"payTypeName")
     balancePlaceId = mtu.getReqVal(request,"balancePlaceId")
-    # balancePlaceName = mtu.getReqVal(request,"balancePlaceName")
+
     params = {}
     result = {}
 
@@ -219,58 +202,7 @@ def applySave(request):
     finally:
         conn2.close()
 
-    #查询核算完后的数据
-    # headList = findBillHead0(conn2,sheetId)
-    # itemList = findBillHeadItem0(conn2,sheetId)
-
-    # result["paytypeid"] = paytypeid   #结算方式ID
-    # result["payTypeName"] = payTypeName   #结算方式名称
-    # result["balancePlaceName"] = balancePlaceName     #结算地名称
-    # result["balancePlaceId"] = balancePlaceId         #结算地ID
-    # result["payablemoney"] = payablemoney     #应付金额
-    # result["kxinvoice"] = kxinvoice         #帐扣金额
-    # result["paidmoney"] = payablemoney - kxinvoice    #实付金额
-    # result["zkinvoice"] = payablemoney - kxinvoice    #帐扣可充发票
-    #
-    # result["pstart"]=pstart
-    # result["pend"]=pend
-    # result["cstart"]=cstart
-    # result["cend"]=cend
-    # result["sheetId"] = sheetId
-    # result["itemList"] = blist
     return HttpResponse(json.dumps(result))
-
-
-# def findBillHead0(conn2,sheetid):
-#     ##表头
-#     sql = """select a.*,b.vendername as spname,b.kkflag,b.fkflag venderfkflag  ,
-#               d.Name,d.TaxRate,s.Address,s.LinkTele,s.TaxNo,s.KHBank,s.AccNo
-#               from billhead0 a,VenderCard b,VenderExt c,TaxPayer d,shop s
-#               where a.InvoiceShopID*=s.ID and a.venderid=b.venderid and a.flag=0
-#               and dbo.FunUserShopVenderPower(1,'8935',a.shopid,'',0)=1
-#               and a.VenderID=c.VenderID and c.TaxPayerID=d.ID
-#               and (sheetid='{sheetid}')  order by a.sheetid desc
-#             """.format(sheetid=sheetid)
-#     conn2.execute_query(sql)
-#     return [row for row in conn2]
-#
-# def findBillHeadItem0(conn2,sheetid):
-#
-#     sql = """select distinct a.SheetID,a.PayTypeSortID,a.PayableDate,a.RefSheetID,a.RefSheetType,a.ManageDeptID,
-#                 a.FromShopID,a.InShopID,a.CostValue,a.CostTaxValue,a.CostTaxRate,a.AgroFlag,a.SaleValue,a.InvoiceSheetID,
-#                 a.DKRate,a.SerialID,b.name as sheetname,(a.CostValue-a.CostTaxValue) NoTaxValue,c.refsheetid as Adjustsheetid,
-#                 c.refsheettype as Adjustsheettype,d.name as Adjustsheetname,1 as checkFlag , e.name as inshopname,
-#                 isnull(f.CheckDate,g.CheckDate) CheckDate from billheaditem0 a
-#                 left join serialnumber b on  a.refsheettype = b.serialid
-#                 left join UpdPayableTemp c on c.sheetid = a.refsheetid and a.refsheettype = 5205
-#                 left join serialnumber d on  c.refsheettype = d.serialid
-#                 left join shop e on a.inshopid = e.id
-#                 left join UnpaidSheet0 f on a.sheetid = f.BillheadSheetID and a.RefSheetType = f.SheetType and a.refsheetid = f.SheetID
-#                 left join UnpaidSheet g on a.sheetid = g.BillheadSheetID and a.RefSheetType = g.SheetType and a.refsheetid = g.SheetID
-#                 where a.sheetid='{sheetid}'
-#             """.format(sheetid=sheetid)
-#     conn2.execute_query(sql)
-#     return [row for row in conn2]
 
 def getSheetId(conn):
     #1.取单据号
@@ -469,16 +401,6 @@ def getStartAndEndDate(contracttype):
     return pstart,pend,cstart,cend
 
 
-def findVender(conn,venderid):
-     sql = "select paytypeid,MasterVenderID,clearflag,name,ContractType,ifdxgd from vender where venderid={venderid}".format(venderid=venderid)
-     return conn.execute_row(sql)
-
-def findPayTypeName(conn,paytypeid):
-    sql = "select id+'| '+name as name,runType from paytype where id={paytypeid}".format(paytypeid=paytypeid)
-    rs = conn.execute_row(sql)
-    payTypeName = mtu.getDBVal(rs,0)
-    return payTypeName
-
 def findBalancePlace(conn):
     sql = "SELECT a.id,a.name from shop a,config b where a.id=b.value and b.name='本店号'"
     rs = conn.execute_row(sql)
@@ -491,9 +413,11 @@ def findPayableCostValue(conn,balanceId,venderid):
         output  select @payvalue""".format(balanceId=balanceId,venderid=venderid)
    payvalue = conn.execute_scalar(sql)  #获得一个返回参数
    return payvalue
-#
+
+#  上月销售信息
 # def findLastMonthSaleInfo(conn,venderid):
 #     lastMonth =(datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y%m")
+#     上月销售金额，上月销售成本
 #     sql = """select sum(SaleValue),sum(costvalue) from RPT_PaymentNote
 #                   where monthid={lastMonth} and venderid={venderid}""".format(lastMonth=lastMonth,venderid=venderid)
 #     rs = conn.execute_row(sql)
