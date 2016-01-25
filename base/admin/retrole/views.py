@@ -11,7 +11,7 @@ from django.http import HttpResponseRedirect
 
 nowTime = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 def roleEdit(request):
-    userType =  request.session.get('s_utype','2')
+    userType =  request.session.get('s_utype','1')
 
     rcode = request.GET.get('rcode','')     #右侧表单数据展示
     grpCode = request.GET.get('grpcode','00069')
@@ -82,6 +82,7 @@ def roleEdit(request):
                     role.rcode = rcode
                     role.pcode = rolPower
                     role.pccode = '0'
+                    role.status = 0
                     role.save()
                 return HttpResponseRedirect('/scm/base/admin/retrole/edit/?rcode='+rcode+"&page="+str(page))
             else:
@@ -92,15 +93,18 @@ def roleEdit(request):
             form = retRoleForm(role)
 
             #权限列表
-            grpCode = role['grpcode']
-            sqlWhere = ''
-            if len(grpCode)==1:
-                if grpCode == 3:
-                    grpCode = 2
-                    sqlWhere = "b.special like '%"+grpCode+"%'"
-            else:
-                sqlWhere = "b.special like '%"+userType+"%'"
-            sql = "select distinct a.pcode,b.nm,c.spec,a.pccode from bas_pur_child a,bas_pur b,bas_pchild c where a.pcode=b.pcode  and a.pccode=c.pccode and "+sqlWhere+" order by pcode,pccode,spec"
+            #update start by liubf at 2016/01/25
+            # grpCode = role['grpcode']
+            # sqlWhere = ''
+            # if len(grpCode)==1:
+            #     if grpCode == 3:
+            #         grpCode = 2
+            #         sqlWhere = "b.special like '%"+grpCode+"%'"
+            # else:
+            #   sqlWhere = "b.special like '%"+userType+"%'"
+
+            sql = "SELECT DISTINCT pcode,nm FROM bas_pur  WHERE special like '%"+userType+"%' ORDER BY pcode"
+            #update end by liubf at 2016/01/25
             cursor = connection.cursor()
             cursor.execute(sql)
             rolPowerList = cursor.fetchall()

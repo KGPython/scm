@@ -1361,3 +1361,33 @@ class Vstocktransitem(models.Model):
         managed = False
         db_table = 'vstocktransitem'
         unique_together = (('sheetid', 'goodsid', 'goodscostid'),)
+
+class Reconcil(models.Model):
+    rname = models.CharField(db_column='rname',max_length=20)
+    status = models.CharField(db_column='status',max_length=2)
+
+    class Meta:
+        managed = False
+        db_table = 'reconcil'
+
+class ReconcilItem(models.Model):
+    rid = models.IntegerField(db_column='rid')
+    pid = models.CharField(db_column='pid',max_length=2)
+
+    class Meta:
+        managed = False
+        db_table = 'reconcilitem'
+
+class BasPayType(models.Model):
+    id = models.CharField(db_column='Id',max_length=2,primary_key=True)
+    name = models.CharField(db_column='Name',max_length=16)
+    paytypesortid = models.CharField(db_column='PayTypeSortID',max_length=1)
+    paytypeday = models.IntegerField(db_column='PayTypeDay')
+    style = models.IntegerField(db_column='Style')
+    pri = models.IntegerField(db_column='PRI')
+    runtype = models.IntegerField(db_column='RunType')
+    dkflag = models.IntegerField(db_column='DkFlag')
+
+    class Meta:
+        managed = False
+        db_table = 'bas_paytype'
