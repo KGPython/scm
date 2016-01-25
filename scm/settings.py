@@ -137,7 +137,7 @@ USE_TZ = False
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/
-#ÉÏ´«ÎÄ¼ş,scm.confĞèÒªÏàÓ¦ÅäÖÃ
+#ä¸Šä¼ æ–‡ä»¶,scm.conféœ€è¦ç›¸åº”é…ç½®
 MEDIA_URL = '/upload/'
 MEDIA_ROOT = os.path.join(BASE_DIR,  'upload')
 
