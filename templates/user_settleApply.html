@@ -168,27 +168,34 @@
             });
 
             $("#submitBtn").on("click",function(){
-                 var ajax_option= {
-                    url: "/scm/base/balance/apply/save/",
-                    data:$('#billForm').serialize(),
-                    type:'post',
-                    dataType:'json',
-                    async:false,
-                    cache: false,
-                    beforeSubmit:function(a,f,o){},
-                    success: function (result) {
-                        var status = result.status;
-                        if(status=='1'){
-                            alert("结算申请单提交失败！");
-                        }else{
-                            $("#isheetid").val(result.sheetId);
-                            $("#invioceForm").submit();
+                 var len = $("input:checkbox[name='refsheetid']:checked").length
+                 if(len<=0){
+                     alert("请选择要结算的单据！");
+                     return false;
+                 }else{
+                        var ajax_option= {
+                            url: "/scm/base/balance/apply/save/",
+                            data:$('#billForm').serialize(),
+                            type:'post',
+                            dataType:'json',
+                            async:false,
+                            cache: false,
+                            beforeSubmit:function(a,f,o){},
+                            success: function (result) {
+                                var status = result.status;
+                                if(status=='1'){
+                                    alert("结算申请单提交失败！");
+                                }else{
+                                    $("#isheetid").val(result.sheetId);
+                                    $("#invioceForm").submit();
+                                }
+                            }
                         }
-                    }
-                }
-                if(confirm("您确定提交吗")){
-                     $('#billForm').ajaxSubmit(ajax_option);
-                }
+                        if(confirm("您确定提交吗")){
+
+                            $('#billForm').ajaxSubmit(ajax_option);
+                        }
+                 }
             });
         });
 
