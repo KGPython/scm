@@ -21,12 +21,12 @@ class LoginMiddleware(object):
             #如果用户未登录，跳转到登录页面
             if 's_user' not in request.session or not request.session.get("s_user",default=None):
                     if not any(m.match(path) for m in EXEMPT_URLS):
-                        print(">>>>>>>>>用户未登录，地址不合法："+path)
+                        print(">>>>>>>>>user not logged in ，url invalid："+path)
                         return redirect(settings.LOGIN_URL)
                     else:
-                        print(">>>>>>>>>无限制地址："+path)
+                        print(">>>>>>>>>No permissions ："+path)
             else:
                 s_ucode =  request.session.get("s_ucode",default=None)
-                print(">>>>>>>>>登录用户："+s_ucode,path)
+                print(">>>>>>>>>Login user："+s_ucode,path)
         else:
-            print(">>>>>>>>>static文件地址，不过滤："+path)
+            print(">>>>>>>>>static url not filter："+path)

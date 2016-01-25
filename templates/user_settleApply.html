@@ -96,7 +96,7 @@
                             <td id="costvalue_{{ forloop.counter }}" val="{{ item.costvalue }}">{{ item.costvalue }}</td>
                             <td>{{ item.notaxvalue }}</td>
                             <td>{{ item.costtaxvalue }}</td>
-                            <td>{{ item.sheetname|encodeStr }}</td>
+                            <td>{{ item.sheetname }}</td>
                             <td>{{ item.managedeptid|fillZero:1 }}</td>
                             <td>{{ item.salevalue }}</td>
                             <td>{{ item.costtaxrate }}</td>
@@ -105,7 +105,7 @@
                             <td>{{ item.invoicesheetid }}</td>
                             <td>{{ item.Dkrate }}</td>
                             <td>{{ item.Adjustsheetid|default_if_none:"" }}</td>
-                            <td>{{ item.Adjustsheetname|encodeStr}}</td>
+                            <td>{{ item.Adjustsheetname|default_if_none:"" }}</td>
                         </tr>
                     {% endfor %}
                 </tbody>

@@ -79,16 +79,18 @@ def testmssql():
     cur.execute(sql)
     list = cur.fetchall()
     for row in list:
-        print(row["ID"],row["Name"])
-
+        print(row["ID"],mdu.getDBVal(row,"Name"))
 
 
 
 if __name__ == "__main__":
 
     print(">>>main()")
-
-    print(rmbupper(54322754.2))
+    s = -1832.6399999999998
+    s= "%0.2f" % s
+    print(s)
+    testmssql()
+    # print(rmbupper(54322754.2))
 
     #tz = tz.timezone('Asia/Shanghai')
     #sh_dt = datetime.datetime.now(tz)
@@ -141,3 +143,4 @@ if __name__ == "__main__":
     # mdeptNames = [x["orgname"] for x in b if x["orgcode"] in a]
     # mdeptName = ",".join(mdeptNames)
     # print(mdeptName)
+    print(str(b"\xe7\x99\xbb\xe5\xbd\x95\xe7\x94\xa8\xe6\x88\xb7\xef\xbc\x9a8340375 ","utf-8"))
