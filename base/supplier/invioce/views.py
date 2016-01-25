@@ -12,7 +12,6 @@ def createInvioce(request):
     suppCode = request.session.get('s_suppcode','100008')
     suppName = request.session.get('s_suppname','宽广主食厨房（05.08.80.85.86.87）')
     refSheetId = MethodUtil.getReqVal(request,'sheetid','CM01201412260144')
-
     conn2= MethodUtil.get_MssqlConn()
 
     #判断发票单据是否存在
@@ -139,29 +138,31 @@ def saveInvioce(request):
             for data in listData:
                 sqlCRI = "insert into CustReceiveItem0 values( '"+sheetId+"','"+data['cno']+"','"+suppName+"','"+data['cdno']+"','"+data['cdate']+"',"+data['cclass']+",'"+data['cgood']+"','"+data['ctaxrate']+"','"+data['cmoney']+"','"+data['csh']+"',"+data['paytype']+",'"+data['kmoney']+"','"+shopId+"')"
                 cur.execute(sqlCRI)
+            res['succ'] = True
         else:
             sql3 = "select a.jsdate,a.flag,a.fnotes,b.taxno,c.paytypeid from vendercard a,venderext b,vender c	where a.venderid=b.venderid and a.venderid=c.venderid and a.venderid={venderid}".format(venderid=suppCode)
             dict3 = conn2.execute_row(sql3)
             taxno = dict3["taxno"]
             sqlCRI = "insert into CustReceiveItem0 (sheetid,cno,cname,cdate,cclass,cgood,ctaxrate,cmoney,csh,cdno,PayType,kmoney,shopid) values( '"+sheetId+"','666666','"+suppName+"',getDate(),1,'货物',0.0,0.0,0.0,'"+taxno+"','1',0.0,'"+shopId+"')"
             cur.execute(sqlCRI)
-
-        #待完善
-        # sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
-        #       "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
-        #       .format(shid=sheetId,shType=res2[0][2],flag=0,operflag=0,checker=suppCode,chNo=1)
-        # cur.execute(sqlFlow)
-
-        MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
-        res['succ'] = True
+            res['succ'] = True
     except Exception as e:
         print(e)
         res['succ'] = False
         conn.rollback()
     finally:
         conn.commit()
-        cur.close()
-        conn2.close()
+
+    sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
+              "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
+              .format(shid=sheetId,shType=res2[0][2],flag=0,operFlag=0,checker=suppCode,chNo=1)
+    cur.execute(sqlFlow)
+
+    MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
+    conn.commit()
+    cur.close()
+    conn.close()
+    conn2.close()
 
     return HttpResponse(json.dumps(res))
 
