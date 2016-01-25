@@ -18,7 +18,12 @@
                     <li class="sideNav-list-item">
                         {{  request.session.s_umenu.system|getPur:"007" }}
                     </li>
-                    <li>SCM使用是否到期</li>
+                    <li style="margin-top: 20px;">
+                        {% if s_reclname %}
+                            您的对账日期：{{ s_reclname }}
+                        {% endif %}
+                    </li>
+                    {% comment %}<li>SCM使用是否到期</li>{% endcomment %}
                 </ul>
             </div>
             <div class="noticeHome right">

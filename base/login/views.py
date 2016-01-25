@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 
 from base.message.views import findPubInfoAllByCon
 from base.utils import MethodUtil as mtu,Constants
-from base.models import BasUser,BasUserRole,BasSupplier,BasGroup,BasFee,BasRole
+from base.models import BasUser,BasUserRole,BasSupplier,BasGroup,BasFee,BasRole,ReconcilItem,Reconcil
 
 __EACH_PAGE_SHOW_NUMBER = 10
 
@@ -41,7 +41,6 @@ def login(request):
     response_data = {}
     try:
         #判断是否过期：过期后不显示业务菜单，只显示首页、退出，提醒已经过期。
-
         if not olduser:
             if vcode==vcode2:
                 #查询用户信息
@@ -77,6 +76,14 @@ def login(request):
 
                             fee =  BasFee.objects.get(suppcode=user.grpcode,grpcode=grpcode)
                             request.session["s_fee"] = fee.toDict()
+
+                            #查询对账日期
+                            ritem = ReconcilItem.objects.filter(pid=supp.paytypeid).values("rid")
+                            if ritem:
+                                rid = ritem[0]["rid"]
+                                reconcil = Reconcil.objects.filter(id=rid,status=1).values("rname")
+                                recnames = [row["rname"] for row in reconcil]
+                                request.session["s_reclname"] = ",".join(recnames)
                         else:    #零售商
                             request.session["s_grpcode"] = user.grpcode
 
@@ -274,6 +281,8 @@ def logout(request):
         del request.session["s_utype"]
         del request.session["s_suppcode"]
         del request.session["s_suppname"]
+        del request.session["s_contracttype"]
+        del request.session["s_paytypeid"]
     except:
         print("session[s_user]不存在")
 

@@ -2,7 +2,7 @@
 
 from django.db.models import Q
 from django.http import HttpResponseRedirect
-from base.models import BasShop, SerialNumber, BasOrg, BasKe, BasGoods
+from base.models import BasShop, SerialNumber, BasOrg, BasKe, BasGoods,BasPayType
 from base.utils import MethodUtil,Constants
 
 def global_setting(request):
@@ -40,11 +40,7 @@ def global_setting(request):
     return locals()
 
 def findPayType():
-    conn = MethodUtil.getMysqlConn()
-    cur = conn.cursor()
-    sqlPay = "select id,name from bas_paytype"
-    cur.execute(sqlPay)
-    payTypeList = cur.fetchall()
+    payTypeList = BasPayType.objects.all().values("id","name")
     return payTypeList
 
 # 查询门店信息存储为一个字典
