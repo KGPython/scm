@@ -46,7 +46,7 @@
                         <label>经营方式：</label>
                         <select name="payTypeId" id="payTypeId">
                             {% for payType in payTypeList %}
-                            <option value="{{ payType.id }}">{{ payType.id }} | {{ payType.name | encodeStr }}</option>
+                            <option value="{{ payType.id }}">{{ payType.id }} | {{ payType.name }}</option>
                             {% endfor %}
                         </select>
                     </p>
