@@ -746,7 +746,7 @@ def balanceArticle(request):
     #结算通知单汇总      ,beginsdate,endsdate
     balance = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
-                                               "premoney","editor","checker","paychecker","contracttype")\
+                                               "premoney","editor","checker","paychecker","contracttype,beginsdate,endsdate")\
                                        .get(sheetid__contains=sheetId)
     #结算通知明细
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
