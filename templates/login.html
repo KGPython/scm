@@ -41,10 +41,15 @@
             </div>
         </div>
         {% include "common/footer.html" %}
+        <script type="text/javascript ">
+            <!--
+
+
+            //-->
+            </script>
         <script>
             $(function(){
                   $('#loginId').bind("click",function(){
-
                        var ajax_option= {
                             url: "/scm/base/login/",
                             data:$('#loginForm').serialize(),
@@ -53,7 +58,6 @@
                             async:false,
                             cache: false,
                             beforeSubmit:function(a,f,o){
-                                //$("#loginId").attr({ disabled: "disabled" });
                             },
                             success: function (result) {
                                 var status = result.status
@@ -68,7 +72,6 @@
                                 }else{
                                     window.location.href=result.homeurl
                                 }
-                                //$("#loginId").attr({ disabled: "none" });
                             }
                         }
 
@@ -76,7 +79,15 @@
                            $('#loginForm').ajaxSubmit(ajax_option);
                        }
                    });
+
+                  document.onkeydown = function(e){
+                      var ev = document.all ? window.event : e;
+                      if(ev.keyCode==13) {
+                          $('#loginId').click();
+                      }
+                  };
             });
+
             function checkForm(){
                 var ucode = $("#ucode");
                 var pwd = $("#password");

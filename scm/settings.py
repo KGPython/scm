@@ -14,15 +14,15 @@ https://docs.djangoproject.com/en/1.8/ref/settings/
 #-*- coding:utf-8 -*-
 import os
 from datetime import timedelta
+from celery.schedules import crontab
 import djcelery
 djcelery.setup_loader()
 CELERY_TIMEZONE="Asia/Shanghai"
 BROKER_URL = 'redis://127.0.0.1:6379/11'
 CELERYBEAT_SCHEDULE = {
     'every-seconds-1': {
-        'task': 'tasks.add',
-        'schedule': timedelta(seconds=3),
-        'args':(3,5)
+        'task': 'tasks.updateUser',
+        'schedule': crontab(hour=0,minute=1),
     },
 }
 
