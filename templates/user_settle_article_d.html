@@ -38,7 +38,7 @@
                         <tr>
                             <td class="label">预付款金额：</td> <td class="money">&nbsp;</td>
                             <td class="label">预付款余额：</td> <td class="money">{% if balance.premoney %}{{ balance.premoney|default_if_none:''}}{% else %}&nbsp;{% endif %}</td>
-                            <td class="label">单据日期：</td> <td>1999-01-01至2999-12-31</td>
+                            <td class="label">单据日期：</td> <td>{{ balance.beginsdate|date:'Y-m-d' }}至{{ balance.endsdate|date:'Y-m-d' }}</td>
                         </tr>
                         <tr>
                             <td class="label">实付金额：</td> <td class="money"> {{ realPay |default_if_none:''}}</td>
