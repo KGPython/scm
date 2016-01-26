@@ -597,8 +597,8 @@ class Billhead0(models.Model):
     premoney = models.DecimalField(db_column='PreMoney', max_digits=14, decimal_places=4)
     curdxvalue = models.CharField(db_column='CurDXValue', max_length=12)  # Field name made lowercase.
     curdxdiffvalue = models.CharField(db_column='CurDXDiffValue', max_length=12)  # Field name made lowercase.
-    # beginsdate = models.DateTimeField(db_column='BeginSDate')  # Field name made lowercase.
-    # endsdate = models.DateTimeField(db_column='EndSDate')  # Field name made lowercase.
+    beginsdate = models.DateTimeField(db_column='BeginSDate')  # Field name made lowercase.
+    endsdate = models.DateTimeField(db_column='EndSDate')  # Field name made lowercase.
 
     class Meta:
         managed = False
