@@ -194,6 +194,12 @@
     function passbid(bid,ucode,grpcode,suppcode,status,bsum,start,end,remark) {
         $('#bids').attr('value', bid);
         $('#bsum').attr('value', bsum);
+
+        var date = getCurrentDate();
+        if(start=='' || start.length<10)
+            start = date.start;
+        if(end=='' || end.length<10)
+            end = date.end;
         $('#start').attr('value', start);
         $('#end').attr('value', end);
         $('#remark').attr('value', remark);
@@ -201,6 +207,13 @@
         $('#grpcode').attr('value', grpcode);
         $('#supp_code').attr('value', suppcode);
         $('#suppUserStatus').find("option[value='"+status+"']").attr("selected", true);
+    }
+
+    function getCurrentDate(){
+        var date = new Date();
+        var start = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
+        var end = date.getFullYear() + "-12-31";
+        return {"start":start, "end":end};
     }
 
     function selRole(t, i) {
