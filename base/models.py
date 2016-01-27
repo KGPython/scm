@@ -10,7 +10,7 @@
 # into your database.
 from __future__ import unicode_literals
 
-import json,datetime
+import json,datetime,decimal
 from django.db import models
 
 
@@ -122,12 +122,17 @@ class BasFee(models.Model):
 
     def toDict(self):
         lst = []
-        for attr in [f.name for f in self._meta.fields]:
-            value = getattr(self, attr)
-            if isinstance(value,datetime.date):
-                value = value.strftime('%Y-%m-%d')
-            tup = (attr,value)
-            lst.append(tup)
+        try:
+            for attr in [f.name for f in self._meta.fields]:
+                value = getattr(self, attr)
+                if isinstance(value,datetime.date):
+                    value = value.strftime('%Y-%m-%d')
+                elif isinstance(value,decimal.Decimal):
+                    value = "%0.2f" % value
+                tup = (attr,value)
+                lst.append(tup)
+        except Exception as e:
+            print(e)
         return dict(lst)
 
     class Meta:
@@ -453,12 +458,15 @@ class BasUser(models.Model):
 
     def toDict(self):
         lst = []
-        for attr in [f.name for f in self._meta.fields]:
-            value = getattr(self, attr)
-            if isinstance(value,datetime.date):
-                value = value.strftime('%Y-%m-%d')
-            tup = (attr,value)
-            lst.append(tup)
+        try:
+            for attr in [f.name for f in self._meta.fields]:
+                value = getattr(self, attr)
+                if isinstance(value,datetime.date):
+                    value = value.strftime('%Y-%m-%d')
+                tup = (attr,value)
+                lst.append(tup)
+        except Exception as e:
+            print(e)
         return dict(lst)
 
     class Meta:

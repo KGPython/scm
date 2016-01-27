@@ -22,4 +22,4 @@ class SuppStatusForm(forms.Form):
     suppcode = forms.CharField()
     begindate = forms.DateField()
     enddate = forms.DateField()
-    remark = forms.CharField()
+    remark = forms.CharField(required=False)

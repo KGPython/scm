@@ -60,7 +60,7 @@
                             beforeSubmit:function(a,f,o){
                             },
                             success: function (result) {
-                                var status = result.status
+                                var status = result.status;
                                 if(status=='1'){
                                     setCnt("msg","用户名不存在","red");
                                 }else if(status=='2'){

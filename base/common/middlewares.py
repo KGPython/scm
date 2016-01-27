@@ -24,9 +24,9 @@ class LoginMiddleware(object):
                         print(">>>>>>>>>user not logged in ，url invalid："+path)
                         return redirect(settings.LOGIN_URL)
                     else:
-                        print(">>>>>>>>>No permissions ："+path)
+                        print(">>>>>>>>>begin login ："+path)
             else:
                 s_ucode =  request.session.get("s_ucode",default=None)
-                print(">>>>>>>>>Login user："+s_ucode,path)
+                print(">>>>>>>>>already login, user："+s_ucode,path)
         else:
             print(">>>>>>>>>static url not filter："+path)

@@ -23,7 +23,11 @@
                             您的对账日期：{{ s_reclname }}
                         {% endif %}
                     </li>
-                    {% comment %}<li>SCM使用是否到期</li>{% endcomment %}
+                    <li>
+                        {% if request.session.s_fee and request.session.s_fee.status == 'N' %}
+                            <span style="color:red;">您的账户已停用，请及时联系管理员。</span>
+                        {% endif %}
+                    </li>
                 </ul>
             </div>
             <div class="noticeHome right">

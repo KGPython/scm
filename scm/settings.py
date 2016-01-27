@@ -148,8 +148,8 @@ STATICFILES_DIRS = [
     #'/home/system/djangoapps/scm/static',
 ]
 
-LOGIN_URL ="/scm/base/loginpage"
-LOGIN_EXEMPT_URLS=["scm/base/login","scm/base/logout","scm/base/vcode/","favicon.ico"]
+LOGIN_URL ="/scm/base/loginpage/"
+LOGIN_EXEMPT_URLS=["scm/base/login/","scm/base/logout/","scm/base/vcode/","favicon.ico"]
 
 # LOGGING = {
 #     'version': 1,

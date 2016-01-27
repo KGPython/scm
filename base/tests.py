@@ -1,4 +1,27 @@
 #-*- coding:utf-8 -*-
+"""
+                       _oo0oo_
+                      o8888888o
+                      88" . "88
+                      (| -_- |)
+                      0\  =  /0
+                    ___/`---'\___
+                  .' \\|     | '.
+                 / \\|||  :  ||| \
+                / _||||| -:- |||||- \
+               |   | \\\  -  / |   |
+               | \_|  ''\---/''  |_/ |
+               \  .-\__  '-'  ___/-. /
+             ___'. .'  /--.--\  `. .'___
+          ."" '<  `.___\_<|>_/___.' >' "".
+         | | :  `- \`.;`\ _ /`;.`/ - ` : | |
+         \  \ `_.   \_ __\ /__ _/   .-` /  /
+     =====`-.____`.___ \_____/___.-`___.-'=====
+                       `=---='
+
+     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+               佛祖保佑         永无BUG
+"""
 from django.test import TestCase
 
 from numpy import array
@@ -86,10 +109,10 @@ def testmssql():
 if __name__ == "__main__":
 
     print(">>>main()")
-    s = -1832.6399999999998
-    s= "%0.2f" % s
-    print(s)
-    testmssql()
+    # s = -1832.6399999999998
+    # s= "%0.2f" % s
+    # print(s)
+    # testmssql()
     # print(rmbupper(54322754.2))
 
     #tz = tz.timezone('Asia/Shanghai')
@@ -143,4 +166,4 @@ if __name__ == "__main__":
     # mdeptNames = [x["orgname"] for x in b if x["orgcode"] in a]
     # mdeptName = ",".join(mdeptNames)
     # print(mdeptName)
-    print(str(b"\xe7\x99\xbb\xe5\xbd\x95\xe7\x94\xa8\xe6\x88\xb7\xef\xbc\x9a8340375 ","utf-8"))
+    # print(str(b"\xe7\x99\xbb\xe5\xbd\x95\xe7\x94\xa8\xe6\x88\xb7\xef\xbc\x9a8340375 ","utf-8"))

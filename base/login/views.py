@@ -59,6 +59,14 @@ def login(request):
                         #   如果utype==2，登录用户为供应商则grpname为供应商名称
                         #   如果utype==1，登录用户为零售商则grpname为零售商名称
                         if user.utype == "2":    #供应商
+                            grpcode = findGrpCodeBySuppCode(user.grpcode)
+                            request.session["s_grpcode"] = grpcode
+                            try:
+                                fee =  BasFee.objects.get(suppcode=user.grpcode,grpcode=grpcode,ucode=ucode)
+                                request.session["s_fee"] = fee.toDict()
+                            except Exception as e:
+                                print(e)
+                                request.session["s_fee"] = {"status":"N"}
                             request.session["s_suppcode"] = user.grpcode
 
                             supp = findGrpNameByCode(user.grpcode,user.utype)
@@ -66,16 +74,12 @@ def login(request):
                             request.session["s_contracttype"] = supp.contracttype
                             request.session["s_paytypeid"] = supp.paytypeid
 
-                            grpcode = findGrpCodeBySuppCode(user.grpcode)
-                            request.session["s_grpcode"] = grpcode
-
                             grp = findGrpNameByCode(grpcode,"1")
                             request.session["s_grpname"] = grp.grpnm
 
                             response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
 
-                            fee =  BasFee.objects.get(suppcode=user.grpcode,grpcode=grpcode)
-                            request.session["s_fee"] = fee.toDict()
+
 
                             #查询对账日期
                             ritem = ReconcilItem.objects.filter(pid=supp.paytypeid).values("rid")
@@ -89,7 +93,7 @@ def login(request):
 
                             grp = findGrpNameByCode(user.grpcode,user.utype)
                             request.session["s_grpname"] = grp.grpnm
-
+                            request.session["s_fee"] = {}
                             response_data['homeurl'] = Constants.URL_RETAILER_HOME
 
                         request.session["homeurl"] = response_data['homeurl']
@@ -118,7 +122,7 @@ def login(request):
                 response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
             else:
                 response_data['homeurl'] = Constants.URL_RETAILER_HOME
-            request.session["homeurl"] = response_data['homeurl']
+            #request.session["homeurl"] = response_data['homeurl']
     except Exception as e:
         print(e)
 
