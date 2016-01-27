@@ -96,7 +96,7 @@
                     {{ rows.grpcode }}
                 </td>
                 <td>
-                    {{ rows.bsum |default_if_none:'0' }}
+                    {{ rows.bsum|floatformat:2 |default_if_none:'0' }}
                 </td>
                 <td>
                     {{ rows.begindate|date:'Y-m-d' }}
