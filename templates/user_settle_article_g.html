@@ -111,7 +111,7 @@
                         {% for item in row.1 %}
                             <tr>
                                 <td>{{ billTypeDict | key:item.refsheettype }}</td>
-                                <td>{{ item.refsheetid  }}</td>
+                                <td><a href="javascript:void(0);" onclick="findSheetItem('{{ item.refsheettype }}','{{ item.refsheetid }}')">{{ item.refsheetid  }}</a></td>
                                 <td>{{ item.inshopid }}</td>
                                 <td>{{ shopDict|key:item.inshopid }}</td>
                                 <td>{{ item.costtaxvalue }}</td>
@@ -146,6 +146,10 @@
                 }else{
                     return false
                 }
+            }
+
+            function findSheetItem(sheetType,sheetId){
+                 window.location.href="/scm/base/balance/apply/findSheet/?sheetId="+sheetId+"&&sheetType="+sheetType;
             }
         </script>
     </body>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商业供应链系统</title>
+</head>
+<body>
+    {% include "common/nav.html" %}
+    <div class="mainSettle comWidth">
+        <div class="tTitle">
+        <h1>{{ grpname }}</h1>
+        <h3>{{ billTypeDict|key:sheettype }}</h3>
+        </div>
+        <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+            <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>商品编码</th>
+                  <th>商品条码</th>
+                  <th>商品名称</th>
+                  <th>规格</th>
+                  <th>单位</th>
+                  <th>件数</th>
+                  <th>件含数</th>
+                  <th>细数</th>
+                  <th>赠品数</th>
+                  <th>税率</th>
+                  <th>含税进价</th>
+                  <th>审核日期</th>
+                  <th>赠品数量</th>
+                  <th>含税进价金额</th>
+                  <th>不含税金额</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in itemList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ row.procode }}</td>
+                        <td>{{ row.salebn }}</td>
+                        <td>{{ row.pname }}</td>
+                        <td>{% comment %}{{ row.classes }}{% endcomment %}</td>
+                        <td>{{ row.unit }}</td>
+                        <td>{{ row.num }}</td>
+                        <td>{{ row.innums }}</td>
+                        <td>{{ row.denums }}</td>
+                        <td>{{ row.giftnum }}</td>
+                        <td>{{ row.taxrate }}</td>
+                        <td>{{ row.price_intax }}</td>
+                        <td>{{ row.chdate|date:"Y-m-d" }}</td>
+                        <td>{{ row.prnum }}</td>
+                        <td>{{ row.sum_tax }}</td>
+                        <td>{{ row.sum }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td>合计：</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ row.num }}</td>
+                    <td>{{ row.innums }}</td>
+                    <td>{{ row.denums }}</td>
+                    <td>{{ row.giftnum }}</td>
+                    <td></td>
+                    <td>{{ row.price_intax }}</td>
+                    <td></td>
+                    <td>{{ row.prnum }}</td>
+                    <td>{{ row.sum_tax }}</td>
+                    <td>{{ row.sum }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    {% include "common/footer.html" %}
+</body>
+</html>

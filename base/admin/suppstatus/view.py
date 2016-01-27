@@ -19,7 +19,7 @@ def index(request):
     posts = []
     page = request.GET.get('page', 1)
     sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm"
-    sql_topic += " from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode"
+    sql_topic += ",a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode"
     if request.method == 'GET':
         form = SuppQuery(request.GET)
         if form.is_valid():
@@ -34,7 +34,7 @@ def index(request):
                 sql_topic += " and a.status='" + status + "'"
             sql_topic += " order by suppcode"
         else:
-            sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode order by suppcode"
+            sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm,a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode order by suppcode"
         cursor = connection.cursor()
         cursor.execute(sql_topic)
         rslist = cursor.fetchall()
@@ -47,6 +47,9 @@ def index(request):
             post_dict['status'] = rowsList[3]
             post_dict['grpcode'] = rowsList[4]
             post_dict['bsum'] = rowsList[5]
+            post_dict['begindate'] = rowsList[7]
+            post_dict['enddate'] = rowsList[8]
+            post_dict['remark'] = rowsList[9]
             posts.append(post_dict)
         paginator = Paginator(posts, 10)  # 实例化一个分页对象
         try:
@@ -74,6 +77,15 @@ def suppStatusForm(request):
             ucode = form_status.cleaned_data['ucode']
             grpcode = form_status.cleaned_data['grpcode']
             suppcode = form_status.cleaned_data['suppcode']
+            begindate = form_status.cleaned_data['begindate']
+            enddate = form_status.cleaned_data['enddate']
+            remark = form_status.cleaned_data['remark']
+
+            if begindate:
+                begindate = begindate.strftime("%Y-%m-%d")
+            if enddate:
+                enddate = enddate.strftime("%Y-%m-%d")
+
             if bsum:
                 bsum = bsum
             else:
@@ -81,27 +93,28 @@ def suppStatusForm(request):
 
             # 数据库查询是否有记录
             supsum_sql = "select supsum from bas_feesum where bid=" + bid
-        try:
-            cursor = connection.cursor()
-            cursor.execute(supsum_sql)
-            supsum_list = cursor.fetchone()
-            sum = bsum
-            if supsum_list:
-                sum += supsum_list[0]
-                feesumup_sql = "update bas_feesum set supsum="+str(sum)+",bfdate=curdate() where bid="+bid
-                cursor.execute(feesumup_sql)
+            try:
+                cursor = connection.cursor()
+                cursor.execute(supsum_sql)
+                supsum_list = cursor.fetchone()
+                sum = bsum
+                if supsum_list:
+                    sum += supsum_list[0]
+                    feesumup_sql = "update bas_feesum set supsum="+str(sum)+",bfdate=curdate() where bid="+bid
+                    cursor.execute(feesumup_sql)
 
-            else:
-                feesum_sql = "insert into bas_feesum (bid, suppcode, grpcode, ucode, supsum, status, bfdate) values (" + bid +",'"+suppcode+"','"+grpcode+"','"+ucode+"','"+str(bsum)+"','"+status+"',curdate())"
-                cursor.execute(feesum_sql)
+                else:
+                    feesum_sql = "insert into bas_feesum (bid, suppcode, grpcode, ucode, supsum, status, bfdate) values (" + bid +",'"+suppcode+"','"+grpcode+"','"+ucode+"','"+str(bsum)+"','"+status+"',curdate())"
+                    cursor.execute(feesum_sql)
 
-            sql = "update bas_fee set status='" + status + "', bsum=" + str(bsum) + " where bid=" + bid
-            cursor.execute(sql)
-            rs["flag"] = '0'
-        except Exception as e:
-            print(e)
-            rs["flag"] = '1'
-        cursor.close()
+                sql = "update bas_fee set status='" + status + "', bsum=" + str(bsum) + ",begindate='"+begindate+"',enddate='"+enddate+"',remark='"+remark+"' where bid=" + bid
+                cursor.execute(sql)
+                rs["flag"] = '0'
+            except Exception as e:
+                print(e)
+                rs["flag"] = '1'
+            finally:
+                cursor.close()
         return HttpResponse(json.dumps(rs))
 
 

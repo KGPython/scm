@@ -20,3 +20,6 @@ class SuppStatusForm(forms.Form):
     ucode = forms.CharField()
     grpcode = forms.CharField()
     suppcode = forms.CharField()
+    begindate = forms.DateField()
+    enddate = forms.DateField()
+    remark = forms.CharField()

@@ -47,6 +47,9 @@ CONTRACT_TYPE_DICT = {"g":"购销","d":"代销","l":"联营","z":"租赁"}
 SCM_BALANCE_ID='CM01'
 SCM_BALANCE_NAME='宽广超市业务中心'
 
+SCM_SHEET_TYPE={"2301":"RK","2323":"RT","2430":"KCJJ","2446":"PCSL","2460":"PCZY"}
+
+
 
 
 

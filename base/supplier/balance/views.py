@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator  #分页查询
 
-from base.models import Billhead0,Billheaditem0,BasOrg
+from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced
 from base.utils import MethodUtil as mtu,Constants
 from base.views import findPayType
 
@@ -18,6 +18,51 @@ time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 
 #add by liubf at 2016/01/12
+#查询单据明细
+def findSheet(request):
+    """
+    code = prefix+sheetID
+    RK -2301- 验收单
+    RT -2323- 退货单
+    SELECT * FROM bill_ind  where code={code}
+
+    --- 单据调整单 ---
+    KCJJ -2430- 库存成本调整
+    PCSL -2446- 批次更正调整
+    PCZY -2460- 批次转移调整
+    code = prefix+sheetID
+    select * from adpriced where code={code} and spercode={spercode}
+    """
+    sheetid = mtu.getReqVal(request,"sheetId")
+    sheettype = mtu.getReqVal(request,"sheetType")
+    venderid = request.session.get("s_suppcode")
+    prefix = Constants.SCM_SHEET_TYPE[sheettype]
+
+    code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=sheetid)
+
+    targetPage = ""
+    result = {}
+    result["sheettype"] = sheettype
+    sum1 = decimal.Decimal(0)
+    sum2 = decimal.Decimal(0)
+    sum3 = decimal.Decimal(0)
+    sum4 = decimal.Decimal(0)
+    sum5 = decimal.Decimal(0)
+    sum6 = decimal.Decimal(0)
+    sum7 = decimal.Decimal(0)
+    sum8 = decimal.Decimal(0)
+    if sheettype in ["2301","2323"]:
+        slist = BillInd.objects.filter(code=code)
+        result["itemList"] = slist;
+        targetPage = "user_settle_article_g_detail1.html"
+    elif sheettype in ["2430","2446","2460"]:
+        slist2 = Adpriced.objects.filter(code=code,spercode=venderid)
+        result["itemList"] = slist2;
+        targetPage = "user_settle_article_g_detail2.html"
+
+    return render(request,targetPage,result)
+
+
 ##编辑结算申请单
 def applyEdit(request):
     venderid = request.session.get("s_suppcode")
@@ -37,8 +82,16 @@ def applyEdit(request):
         pdict = findPayType(2)
         payTypeName = pdict[paytypeid]
 
+        """
+        根据结算方式限制供应商提交结算申请单的次数
+        月结：账期内只能提交 1 次结算申请单
+        半月结：账期内只能提交 2 次结算申请单
+        日结：不限制
+        提供未结算账单信息，及明细查看
+        """
+
         #查询单据信息（动态查询）
-        rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend)
+        rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,contracttype)
         kxinvoice = findKxInvoice(conn,venderid,pend)
         conn.close()
 
@@ -497,16 +550,17 @@ def findAdvance(conn,venderid):
     return item
 
 
-def findBillItem(conn,venderid,pstart,pend,cstart,cend,refsheetidList=None):
+def findBillItem(conn,venderid,pstart,pend,cstart,cend,refsheetidList=None,contracttype=None):
     #创建结算明细
     createTempheaditemTable(conn)
 
-    #1.插入单据数据:验收单、退货单、往来单据调整单
-    for i in range(1,5):
-        insertBillSheet(conn,venderid,pstart,pend,cstart,cend,i)
-
-    #5.联营\代销结算流水  101=销售流水\ 102=分摊流水 \104=促销折扣流水\2413=报损单\2423=行政领用单\2451=批发通知单/批发单
-    insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend)
+    if contracttype=="g":
+        #1.购销结算单据:验收单、退货单、往来单据调整单
+        for i in range(1,5):
+            insertBillSheet(conn,venderid,pstart,pend,cstart,cend,i)
+    else:
+        #5.联营\代销\租赁结算流水  101=销售流水\ 102=分摊流水 \104=促销折扣流水\2413=报损单\2423=行政领用单\2451=批发通知单/批发单
+        insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend)
 
     #6.删除赠品入库
     deleteGiftInStorage(conn)
@@ -746,7 +800,7 @@ def balanceArticle(request):
     #结算通知单汇总      ,beginsdate,endsdate
     balance = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
-                                               "premoney","editor","checker","paychecker","contracttype,beginsdate,endsdate")\
+                                               "premoney","editor","checker","paychecker","contracttype","beginsdate","endsdate")\
                                        .get(sheetid__contains=sheetId)
     #结算通知明细
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
@@ -907,4 +961,4 @@ def balanceArticle(request):
 #
 #     payTypeDict = {"0":"其他","1":"支票","2":"电汇","3":"汇票"}
 #
-#     return render(request,'user_settle_article.html',locals())
+#     return render(request,'user_settle_article_g_detail1.html',locals())
