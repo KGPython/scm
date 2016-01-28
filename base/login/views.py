@@ -79,8 +79,6 @@ def login(request):
 
                             response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
 
-
-
                             #查询对账日期
                             ritem = ReconcilItem.objects.filter(pid=supp.paytypeid).values("rid")
                             if ritem:
@@ -122,7 +120,6 @@ def login(request):
                 response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
             else:
                 response_data['homeurl'] = Constants.URL_RETAILER_HOME
-            #request.session["homeurl"] = response_data['homeurl']
     except Exception as e:
         print(e)
 
