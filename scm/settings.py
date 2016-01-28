@@ -18,11 +18,11 @@ from celery.schedules import crontab
 import djcelery
 djcelery.setup_loader()
 CELERY_TIMEZONE="Asia/Shanghai"
-BROKER_URL = 'redis://127.0.0.1:6379/11'
+BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERYBEAT_SCHEDULE = {
-    'every-seconds-1': {
+    'every-day-1': {
         'task': 'tasks.updateUser',
-        'schedule': crontab(hour=0,minute=1),
+        'schedule': crontab(hour=13,minute=59), #crontab(hour=0,minute=1)
     },
 }
 
@@ -42,7 +42,6 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 
 
 # Application definition
-
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
@@ -50,9 +49,11 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'djcelery',
     'base',
+    'djcelery',
+    'base.timer',
 )
+
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
