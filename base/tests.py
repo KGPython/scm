@@ -167,3 +167,11 @@ if __name__ == "__main__":
     # mdeptName = ",".join(mdeptNames)
     # print(mdeptName)
     # print(str(b"\xe7\x99\xbb\xe5\xbd\x95\xe7\x94\xa8\xe6\x88\xb7\xef\xbc\x9a8340375 ","utf-8"))
+
+    def test():
+        for i in range(10):
+            if i%2==0:
+                yield i
+    print(list(test()))
+
+

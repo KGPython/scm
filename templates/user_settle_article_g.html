@@ -127,8 +127,8 @@
                             <td></td>
                             <td></td>
                             <td></td>
-                            <td>{{ sdict|key:shopid|key:0 }}</td>
-                            <td>{{  sdict|key:shopid|key:1   }}</td>
+                            <td>{{ sdict|key:row.0|key:0 }}</td>
+                            <td>{{  sdict|key:row.0|key:1   }}</td>
                         </tr>
                     </table>
                     {% endfor %}

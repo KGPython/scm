@@ -123,7 +123,7 @@
                             {{ shopDict | key:balance.shopid }}
                         </td>
                         <td>{{ balance.venderid }}</td>
-                        <td>{{ balance.vendername }}</td>
+                        <td>{{ vendername }}</td>
                         <td>
                             <a href="{% url 'balanceArticle' %}?sheetid={{ balance.sheetid }}">
                                 {{ balance.sheetid }}

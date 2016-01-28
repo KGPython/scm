@@ -5,7 +5,12 @@
 	<title>商业供应链系统</title>
 </head>
 <body>
+    {% load basefilter %}
     {% include "common/nav.html" %}
+     <div class="query comWidth noprint">
+            <input class="query-print right" type="button" onclick=" javascript:print()" value="打印当前页" style="margin-right: 20px;margin-left: 20px"/>
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false; ">
+     </div>
     <div class="mainSettle comWidth">
         <div class="tTitle">
         <h1>{{ grpname }}</h1>
@@ -41,16 +46,16 @@
                         <td>{{ row.pname }}</td>
                         <td>{% comment %}{{ row.classes }}{% endcomment %}</td>
                         <td>{{ row.unit }}</td>
-                        <td>{{ row.num }}</td>
-                        <td>{{ row.innums }}</td>
-                        <td>{{ row.denums }}</td>
-                        <td>{{ row.giftnum }}</td>
-                        <td>{{ row.taxrate }}</td>
-                        <td>{{ row.price_intax }}</td>
+                        <td>{{ row.num|floatformat:2 }}</td>
+                        <td>{{ row.innums|floatformat:2 }}</td>
+                        <td>{{ row.denums|floatformat:2 }}</td>
+                        <td>{{ row.giftnum|default_if_none:0|floatformat:2}}</td>
+                        <td>{{ row.taxrate|floatformat:0 }}</td>
+                        <td>{{ row.price_intax|floatformat:2 }}</td>
                         <td>{{ row.chdate|date:"Y-m-d" }}</td>
-                        <td>{{ row.prnum }}</td>
-                        <td>{{ row.sum_tax }}</td>
-                        <td>{{ row.sum }}</td>
+                        <td>{{ row.prnum|floatformat:0 }}</td>
+                        <td>{{ row.sum_tax|floatformat:2 }}</td>
+                        <td>{{ row.sum|floatformat:2 }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
@@ -60,16 +65,16 @@
                     <td></td>
                     <td></td>
                     <td></td>
-                    <td>{{ row.num }}</td>
-                    <td>{{ row.innums }}</td>
-                    <td>{{ row.denums }}</td>
-                    <td>{{ row.giftnum }}</td>
+                    <td>{{ sum1|floatformat:2 }}</td>
+                    <td>{{ sum2|floatformat:2 }}</td>
+                    <td>{{ sum3|floatformat:2 }}</td>
+                    <td>{{ sum4|floatformat:2 }}</td>
                     <td></td>
-                    <td>{{ row.price_intax }}</td>
+                    <td>{{ sum5|floatformat:2 }}</td>
                     <td></td>
-                    <td>{{ row.prnum }}</td>
-                    <td>{{ row.sum_tax }}</td>
-                    <td>{{ row.sum }}</td>
+                    <td>{{ sum6|floatformat:0 }}</td>
+                    <td>{{ sum7|floatformat:2 }}</td>
+                    <td>{{ sum8|floatformat:2 }}</td>
                 </tr>
             </tbody>
         </table>

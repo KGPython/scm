@@ -26,7 +26,7 @@ def findSheet(request):
     RT -2323- 退货单
     SELECT * FROM bill_ind  where code={code}
 
-    --- 单据调整单 ---
+    --- 单据调整单 5205 ---
     KCJJ -2430- 库存成本调整
     PCSL -2446- 批次更正调整
     PCZY -2460- 批次转移调整
@@ -36,13 +36,9 @@ def findSheet(request):
     sheetid = mtu.getReqVal(request,"sheetId")
     sheettype = mtu.getReqVal(request,"sheetType")
     venderid = request.session.get("s_suppcode")
-    prefix = Constants.SCM_SHEET_TYPE[sheettype]
-
-    code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=sheetid)
-
     targetPage = ""
     result = {}
-    result["sheettype"] = sheettype
+
     sum1 = decimal.Decimal(0)
     sum2 = decimal.Decimal(0)
     sum3 = decimal.Decimal(0)
@@ -51,17 +47,92 @@ def findSheet(request):
     sum6 = decimal.Decimal(0)
     sum7 = decimal.Decimal(0)
     sum8 = decimal.Decimal(0)
+
+    result["sheettype"] = sheettype
     if sheettype in ["2301","2323"]:
-        slist = BillInd.objects.filter(code=code)
+        prefix = Constants.SCM_SHEET_TYPE[sheettype]
+        code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=sheetid)
+
+        #"classes",
+        slist = BillInd.objects.filter(code=code).values("code", "rid","procode","salebn","pname","unit","num","innums","denums",
+                                                         "giftnum","taxrate","price_intax","chdate","prnum","sum_tax","sum","rowno","grpcode","orderstyle")
+        for item in slist:
+            if item["num"]:
+                sum1 += item["num"]
+            if item["innums"]:
+                sum2 += item["innums"]
+            if item["denums"]:
+                sum3 += item["denums"]
+            if item["giftnum"]:
+                sum4 += item["giftnum"]
+            if item["price_intax"]:
+                sum5 += item["price_intax"]
+            if item["prnum"]:
+                sum6 += item["prnum"]
+            if item["sum_tax"]:
+                sum7 += item["sum_tax"]
+            if item["sum"]:
+                sum8 += item["sum"]
+
+        result["sum1"] = sum1;
+        result["sum2"] = sum2;
+        result["sum3"] = sum3;
+        result["sum4"] = sum4;
+        result["sum5"] = sum5;
+        result["sum6"] = sum6;
+        result["sum7"] = sum7;
+        result["sum8"] = sum8;
         result["itemList"] = slist;
         targetPage = "user_settle_article_g_detail1.html"
-    elif sheettype in ["2430","2446","2460"]:
-        slist2 = Adpriced.objects.filter(code=code,spercode=venderid)
+    elif sheettype in ["5205"]:
+        srow = findRefSheetId(sheetid,venderid)
+        if srow:
+            refsheetid = srow["refsheetid"]
+            refsheettype = srow["refsheettype"]
+            prefix = Constants.SCM_SHEET_TYPE[refsheettype]
+            code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
+
+            slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "Code","Grpcode","Pcode","Barcode","Pname","Spec","Unit","Newtax","Dqhsjj",
+                                                                                  "Adbatchseq","Mll","Tzje","Spercode","Cprice_Notax","Sprice","Anum",
+                                                                                  "Anum_Notax","Anum_Intax","Anum_Stock","Anum_Stock_Intax",
+                                                                                  "Anum_Stock_Notax","Anum_Sale","Anum_Sale_Intax","Anum_Sale_Notax",
+                                                                                  "Anum_Other","Anum_Other_Iitax","Anum_Other_Notax","Chdate",)
+        else:
+            slist2 = []
+
+        # for item in slist2:
+        #     sum1 += item["num"]
+        #     sum2 += item["innums"]
+        #     sum3 += item["denums"]
+        #     sum4 += item["giftnum"]
+        #     sum5 += item["price_intax"]
+        #     sum6 += item["prnum"]
+        #     sum7 += item["sum_tax"]
+        #     sum8 += item["sum"]
+        #
+        # result["sum1"] = sum1;
+        # result["sum2"] = sum2;
+        # result["sum3"] = sum3;
+        # result["sum4"] = sum4;
+        # result["sum5"] = sum5;
+        # result["sum6"] = sum6;
+        # result["sum7"] = sum7;
+        # result["sum8"] = sum8;
         result["itemList"] = slist2;
         targetPage = "user_settle_article_g_detail2.html"
 
     return render(request,targetPage,result)
 
+def findRefSheetId(sheetid,venderid):
+    try:
+        conn = mtu.getMssqlConn()
+        cur = conn.cursor()
+        sql = "select refsheetid,refsheettype from UpdPayableTemp where sheetid='{sheetid}' and venderid='{venderid}'".format(sheetid=sheetid,venderid=venderid)
+        cur.execute(sql)
+        item = cur.fetchone()
+    except Exception as e:
+        print(e)
+    return item
 
 ##编辑结算申请单
 def applyEdit(request):
@@ -776,6 +847,7 @@ def balance(request):
                    "shopCodeStr":shopCodeStr,
                    # "shopCodedistinct":shopCodedistinct,
                    "status":status,
+                   "vendername":request.session.get("s_suppname"),
                    "orderStyle":orderStyle,
                    "balanceList":balanceList,
                    "page":page,
@@ -806,7 +878,7 @@ def balanceArticle(request):
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
                                                 "costvalue","costtaxvalue","costtaxrate","salevalue","dkrate","invoicesheetid")\
                                         .filter(sheetid__contains=sheetId)\
-                                        .order_by("refsheettype","refsheetid","inshopid")
+                                        .order_by("inshopid","refsheettype","refsheetid")
     itemList = []
     itemShopId = None
     for item in balanceItems:

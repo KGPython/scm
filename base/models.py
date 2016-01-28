@@ -531,7 +531,7 @@ class BillInd(models.Model):
     procode = models.CharField(db_column='Procode', max_length=20)  # Field name made lowercase.
     salebn = models.CharField(db_column='Salebn', max_length=20, blank=True, null=True)  # Field name made lowercase.
     pname = models.CharField(db_column='Pname', max_length=64, blank=True, null=True)  # Field name made lowercase.
-    class_field = models.CharField(db_column='Class', max_length=20, blank=True, null=True)  # Field name made lowercase. Field renamed because it was a Python reserved word.
+    # classes = models.CharField(db_column='Class', max_length=20, blank=True, null=True)  # Field name made lowercase. Field renamed because it was a Python reserved word.
     unit = models.CharField(db_column='Unit', max_length=20, blank=True, null=True)  # Field name made lowercase.
     num = models.DecimalField(db_column='Num', max_digits=18, decimal_places=3, blank=True, null=True)  # Field name made lowercase.
     innums = models.DecimalField(db_column='Innums', max_digits=18, decimal_places=3, blank=True, null=True)  # Field name made lowercase.

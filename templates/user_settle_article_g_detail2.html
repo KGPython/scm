@@ -2,258 +2,93 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>结算</title>
-	<link rel="stylesheet" href="css/reset.css"/>
-  <link rel="stylesheet" href="css/main.css"/>
-  <script type="text/javascript" src="js/laydate.js"></script>
-	<!--[if IE 6]>
-	<script type="text/javascript" src="js/DD_belatedPNG_0.0.8a-min.js"></script>
-	<script type="text/javascript" src="js/ie6fixpng.js"></script>
-	<![endif]-->
-  <style type="text/css">
-    
-  </style>
+	<title>商业供应链系统</title>
 </head>
 <body>
-  <div class="header">
-    <div class="logo"></div>
-    <div class="nav comWidth">
-      <ul class="nav-list" style="display:block">
-        <li class="nav-list-item"><a href="index.html">首页</a></li>
-        <li class="nav-list-item"><a href="user_base.html">基本资料</a></li>
-        <li class="nav-list-item"><a href="user_order.html">订货</a></li>
-        <li class="nav-list-item"><a href="user_saile.html">销售</a></li>
-        <li class="nav-list-item"><a href="user_stock.html">库存</a></li>
-        <li class="nav-list-item"><a href="user_bill.html">单据</a></li>
-        <li class="nav-list-item"><a class="active" href="user_settle.html">结算</a></li>
-        <li class="nav-list-item"><a href="user_notice.html">通知</a></li>
-        <li class="nav-list-item"><a href="/">退出</a></li>
-      </ul>
+    {% load basefilter %}
+    {% include "common/nav.html" %}
+     <div class="query comWidth noprint">
+            <input class="query-print right" type="button" onclick=" javascript:print()" value="打印当前页" style="margin-right: 20px;margin-left: 20px"/>
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false; ">
+     </div>
+    <div class="mainSettle comWidth">
+        <div class="tTitle">
+        <h1>{{ grpname }}</h1>
+        <h3>{{ billTypeDict|key:sheettype }}</h3>
+        </div>
+        <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+            <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>入库单号</th>
+                  <th>商品ID</th>
+                  <th>商品名称</th>
+                  <th>新含税单价</th>
+                  <th>批次号</th>
+                  <th>当前不含税进价</th>
+                  <th>售价</th>
+                  <th>调整数量</th>
+                  <th>不含税进货调整</th>
+                  <th>含税进货调整</th>
+                  <th>库存调整数量</th>
+                  <th>库存含税调整数量</th>
+                  <th>库存不含税调整数量</th>
+                  <th>销售调整数量</th>
+                  <th>销售含税调整数量</th>
+                  <th>销售不含税调整数量</th>
+                  <th>其它调整数量</th>
+                  <th>其他含税调整数量</th>
+                  <th>其他不含税调整数量</th>
+                  <th>审核日期</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in itemList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ row.code }}</td>
+                        <td>{{ row.pcode }}</td>
+                        <td>{{ row.pname }}</td>
+                        <td>{{ row.dqhsjj }}</td>
+                        <td>{{ row.adbatchseq }}</td>
+                        <td>{{ row.cprice_notax }}</td>
+                        <td>{{ row.sprice }}</td>
+                        <td>{{ row.anum }}</td>
+                        <td>{{ row.anum_notax }}</td>
+                        <td>{{ row.anum_intax }}</td>
+                        <td>{{ row.anum_stock }}</td>
+                        <td>{{ row.anum_stock_notax}}</td>
+                        <td>{{ row.anum_stock_intax }}</td>
+                        <td>{{ row.anum_sale }}</td>
+                        <td>{{ row.anum_sale_notax}}</td>
+                        <td>{{ row.anum_sale_intax }}</td>
+                        <td>{{ row.anum_other }}</td>
+                        <td>{{ row.anum_other_notax}}</td>
+                        <td>{{ row.anum_other_intax }}</td>
+                        <td>{{ row.chdate }}</td>
+                    </tr>
+                {% endfor %}
+              {% comment %}  <tr>
+                    <td>合计：</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>{{ sum1 }}</td>
+                    <td>{{ sum2 }}</td>
+                    <td>{{ sum3 }}</td>
+                    <td>{{ sum4 }}</td>
+                    <td></td>
+                    <td>{{ sum5 }}</td>
+                    <td></td>
+                    <td>{{ sum6 }}</td>
+                    <td>{{ sum7 }}</td>
+                    <td>{{ sum8 }}</td>
+                </tr>{% endcomment %}
+            </tbody>
+        </table>
     </div>
-  </div>
-  <div class="query comWidth">
-    <form class="query-list">
-      <p><label>结算位置代码：</label><input type="text"></p>
-      <p class="date">
-        <p>
-          <label for="start">制单开始日期：</label>
-          <input class="inline laydate-icon" id="start" name="start" type="text" style="width:180px; margin-right:10px;">
-        </p>
-        <p>
-          <label for="end">制单结束日期：</label>
-          <input class="inline laydate-icon" id="end" name="end" type="text" style="width:180px;">
-        </p>      
-      </p>
-      <p><label>单号：</label><input type="text"></p>
-      <p>
-        <label>确认状态：</label>
-        <select name="orderstyle" class="input" value="">
-          <option selected="selected" value="">全部</option>
-          <option value="Y">已确认</option>
-          <option value="N">未确认</option>          
-        </select>
-      </p>
-      <p>
-        <label>查询条件：</label>
-        <select name="orderstyle" class="input" value="">
-          <option value="spercode">供应商编码</option>
-          <option selected="selected" value="checkdate">审核日期</option>
-          <option value="ordercode">订单编码</option>
-          <option value="shopcode">交货门店</option>          
-        </select>
-      </p>
-      <p><input class="query-enter" type="submit" value="查询" ></p>
-      <p><input class="query-print" type="button" value="确认" ></p>
-      <p><input class="query-print" type="button" value="打印" ></p>
-    </form>
-    <form class="shopList-cnt" action="">
-      <p class="shopList-cnt-tit">
-        <span>门店：</span>
-        <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
-        <input type="submit" value="确定">
-        <input class="close" type="button" value="放弃">
-      </p>
-      <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-        <thead>
-          <tr>
-            <th>选择</th>
-            <th>门店编码</th>
-            <th>门店名称</th>
-            <th>经营方式</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-          <tr>
-            <td><input type="checkbox" name="" id=""></td>
-            <td>门店编码</td>
-            <td>门店名称</td>
-            <td>经营方式</td>
-          </tr>
-        </tbody>
-      </table>
-    </form>     
-  </div>
-  <div class="mainSettle comWidth">
-      <div class="tTitle">
-        <h1>承德宽广</h1>
-        <h3>结算通知单汇总</span></h3>
-      </div> 
-	    <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-  		  <tbody>
-    			<tr>
-    				<td>单据编号</td>
-    				<td>CM01201511130031</td>
-    				<td>分店号</td>
-    				<td>CM01|宽广超市业务中心 </td>
-    				<td>支付方式</td>
-    				<td>支票</td>
-          </tr>
-          <tr>
-            <td>供应商编号</td>           
-    				<td colspan="2">120021|自采蔬菜（01.02.03.04.05.06.08.81.85.86）</td>
-    				<td>结算日期范围</td>
-    				<td colspan="2">2012-10-14 至 2015-11-13 </td>
-    			</tr>
-          <tr>
-            <td>本期应付金额</td>
-            <td>1321.0</td>
-            <td>应开支票金额</td>
-            <td>132132.0</td>
-            <td>本期买付金额</td>
-            <td>1213.0</td>
-          </tr>
-          <tr>
-            <td >本期扣项</td>
-            <td colspan="2">1321.0</td>
-            <td>预付款</td>
-            <td colspan="2">132132.0</td>
-          </tr>
-  		  </tbody>
-	    </table>
-      <div class="tTitle">
-        <h1>承德宽广</h1>
-        <h3>结算通知单明细</span></h3>
-      </div> 
-      <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-        <tbody>
-          <thead>
-            <tr>
-              <th>序号</th>
-              <th>结算位置</th>
-              <th>单据名称</th>
-              <th>单据编号</th>
-              <th>类别</th>
-              <th>应付日期</th>
-              <th>应结金额</th>
-              <th>税金</th>
-              <th>税率</th>
-            </tr>
-          </thead>
-          <tr>
-            <td>1</td>
-            <td>围场</td>
-            <td>验收单</td>
-            <td>C00801132212 </td>
-            <td>生鲜</td>
-            <td>2015-10-1</td>
-            <td>1321.0</td>
-            <td>3445</td>
-            <td>0.5</td>
-          </tr>
-          <tr>
-            <td></td>
-            <td colspan="5">合计</td>
-            <td>3454235</td>
-            <td>21</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>制单人</td>
-            <td>甲</td>
-            <td>制单日期</td>
-            <td>2014-10-2</td>
-            <td>审核人</td>
-            <td>乙</td>
-            <td>付款审批</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td></td>
-            <td>收款人</td>
-            <td>甲</td>
-            <td>收款日期</td>
-            <td>2014-10-2</td>
-            <td>备注</td>
-            <td colspan="3">乙</td>
-          </tr>
-        </tbody>
-      </table>
-  </div>
-<!--[if IE]> <script type="text/javascript" src="js/jquery-1.9.1.js"></script><![endif]--> 
-<![if !IE]><script type="text/javascript" src="js/jquery-2.1.4.min.js"></script><![endif]> 
-<script type="text/javascript">
-  !function(){
-    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
-    laydate({elem: '#demo'});//绑定元素
-  }();
-
-  //日期范围限制
-  var start = {
-      elem: '#start',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(), //设定最小日期为当前日期
-      max: '2099-06-16', //最大日期
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-           end.min = datas; //开始日选好后，重置结束日的最小日期
-           end.start = datas //将结束日的初始值设定为开始日
-      }
-  };
-
-  var end = {
-      elem: '#end',
-      format: 'YYYY-MM-DD',
-      min: laydate.now(),
-      max: '2099-06-16',
-      istime: true,
-      istoday: false,
-      choose: function(datas){
-          start.max = datas; //结束日选好后，充值开始日的最大日期
-      }
-  };
-  laydate(start);
-  laydate(end);
-
-  //自定义日期格式
-  laydate({
-      elem: '#test1',
-      format: 'YYYY年MM月DD日',
-      festival: true, //显示节日
-      choose: function(datas){ //选择日期完毕的回调
-          alert('得到：'+datas);
-      }
-  });
-
-  //日期范围限定在昨天到明天
-  laydate({
-      elem: '#hello3',
-      min: laydate.now(-1), //-1代表昨天，-2代表前天，以此类推
-      max: laydate.now(+1) //+1代表明天，+2代表后天，以此类推
-  });
-  </script>
+    {% include "common/footer.html" %}
 </body>
 </html>
