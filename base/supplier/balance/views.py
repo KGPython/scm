@@ -153,13 +153,7 @@ def applyEdit(request):
         pdict = findPayType(2)
         payTypeName = pdict[paytypeid]
 
-        """
-        根据结算方式限制供应商提交结算申请单的次数
-        月结：账期内只能提交 1 次结算申请单
-        半月结：账期内只能提交 2 次结算申请单
-        日结：不限制
-        提供未结算账单信息，及明细查看
-        """
+        #判断是否可以提交结算单
 
         #查询单据信息（动态查询）
         rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,contracttype)
@@ -187,9 +181,10 @@ def applyEdit(request):
 
     return render(request,"user_settleApply.html",result)
 
-#保存结算申请单
+
 @csrf_exempt
 def applySave(request):
+    """保存结算申请单"""
     s_ucode = request.session.get("s_ucode")
     venderid = request.session.get("s_suppcode")
     sheetId = mtu.getReqVal(request,"sheetId",None)
@@ -327,6 +322,39 @@ def applySave(request):
         conn2.close()
 
     return HttpResponse(json.dumps(result))
+
+def countSheetNum(payTypeName,paytypeid,venderid):
+    """
+    计算当月内供应商提交单据次数
+    """
+    """
+    根据结算方式限制供应商提交结算申请单的次数
+    月结：账期内只能提交 1 次结算申请单
+    半月结：账期内只能提交 2 次结算申请单
+    日结：不限制
+    提供未结算账单信息，及明细查看
+    """
+    #限制提交次数
+    now = datetime.date.today()
+    #半月结
+    if "半月结" in payTypeName:
+        limitNum=2
+        #上半月
+        if now<16:
+            pass
+        #下半月
+        else:
+            pass
+    #月结
+    elif "月结" in payTypeName:
+        limitNum=1
+    #日结
+    else:
+        limitNum=31
+
+    #制定日期
+    dateS = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+    sql = ""
 
 def getSheetId(conn):
     #1.取单据号
@@ -673,18 +701,18 @@ def insertBillSheet(conn,venderid,pstart,pend,cstart,cend,type):
 
     condition = "and 1=1 "
     if type==1:      #1.验收单据
-        condition = """and convert(char(8),a.payabledate,112)  between '{pstart}' and '{pend}'
-                    and convert(char(8),a.CheckDate,112) between '{cstart}' and '{cend}'
+        condition = """and convert(char(8),a.payabledate,112) <= '{pend}'
+                    and convert(char(8),a.CheckDate,112) <= '{cend}'
                     and  a.sheettype<>2323 and a.sheettype<>5205
                     """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
     elif type==2:    #2.退货单
-        condition = """and  convert(char(8),a.payabledate,112)<= '{pend}'
-                    and  convert(char(8),a.CheckDate,112)<= '{cend}'
+        condition = """and  convert(char(8),a.payabledate,112) <= '{pend}'
+                    and  convert(char(8),a.CheckDate,112) <= '{cend}'
                     and  a.sheettype=2323
                     """.format(pend=pend,cend=cend)
     elif type==3:    #3.供应商往来单据金额调整单  单据金额>=0
-        condition = """and convert(char(8),a.payabledate,112)  between '{pstart}' and '{pend}'
-                    and convert(char(8),a.CheckDate,112) between '{cstart}' and '{cend}'
+        condition = """and convert(char(8),a.payabledate,112) <= '{pend}'
+                    and convert(char(8),a.CheckDate,112) <= '{cend}'
                     and  a.sheettype=5205 and a.costvalue > 0
                     """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
     elif type==4:    #4.供应商往来单据金额调整单  单据金额<=0
@@ -717,8 +745,8 @@ def insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend):
              sum(costvalue-costtaxvalue) notaxvalue, sum(costtaxvalue), sum(a.salevalue),a.agroflag,a.costtaxrate,a.fromshopid,
              isnull(a.invoicesheetid,''),isnull(a.Dkrate,0) as DkRate
              from balancebook0 a,paytype b,serialnumber c
-             where  a.refsheettype*=c.serialid  and convert(char(8),a.payabledate,112) between '{pstart}' and '{pend}'
-             and convert(char(8),a.SDate,112) between '{cstart}' and '{cend}' and a.paytypeid=b.id and a.payflag=0
+             where  a.refsheettype*=c.serialid  and convert(char(8),a.payabledate,112) <=  '{pend}'
+             and convert(char(8),a.SDate,112) <= '{cend}' and a.paytypeid=b.id and a.payflag=0
              and a.venderid in ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
              group by b.paytypesortid,a.refsheettype,c.name,a.managedeptid,a.shopid,a.agroflag,a.costtaxrate,a.fromshopid,a.invoicesheetid,a.Dkrate
              order by shopid,PayableDate

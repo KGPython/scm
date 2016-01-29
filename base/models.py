@@ -1373,7 +1373,8 @@ class Vstocktransitem(models.Model):
 class Reconcil(models.Model):
     rname = models.CharField(db_column='rname',max_length=20)
     status = models.CharField(db_column='status',max_length=2)
-
+    beginday = models.IntegerField(db_column='beginday')
+    endday = models.IntegerField(db_column='endday')
     class Meta:
         managed = False
         db_table = 'reconcil'

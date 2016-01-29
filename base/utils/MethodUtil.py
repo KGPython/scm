@@ -377,11 +377,21 @@ class PinYin(object):
         return split.join(result)
 
 def insertSysLog(conn,loginid,workstattionid,moduleid,eventid,note):
-
+    """保存操作日志"""
     sql = """insert into SysLog(LoginID,WorkstationID,ModuleID,EventID,Note)
              values({LoginID},{WorkstationID},{ModuleID},{EventID},'{Note}')
              """.format(Note=note,LoginID=loginid,WorkstationID=workstattionid,ModuleID=moduleid,EventID=eventid)
     conn.execute_non_query(sql)
+
+def getCurrentMonthDay(currentday):
+    currentMonth = currentday.strftime('%m')
+    currentYear = currentday.strftime('%Y')
+    d1 = datetime.datetime(int(currentYear),int(currentMonth),1)
+    d2 = datetime.datetime(int(currentYear),int(currentMonth)+1,1)
+    days = d2 - d1
+    day = days.days
+    return datetime.date(int(currentYear),int(currentMonth),1),\
+           datetime.date(int(currentYear),int(currentMonth),day),day
 
 def testmssql():
     conn = getMssqlConn()
@@ -407,10 +417,11 @@ if __name__ == "__main__":
     # print(datetime.timedelta(1))
     # print(getDBVal({"Name":"we"},"Name"))
 
-    print((datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1))
-    print(datetime.date.today().replace(day=1))
-    print(datetime.timedelta(1))
-    print(datetime.date.today().replace(day=1) - datetime.timedelta(1))
-
-    s = b"\xe5\x8f\x96\xe5\xae\xa1\xe6\xa0\xb8\xe5\x91\x98\xe7\x9a\x84\xe8\x8b\xb1\xe6\x96\x87\xe5\x90\x8d\xe5\x87\xba\xe9\x94\x99\xef\xbc\x8c\xe8\xaf\xb7\xe6\xa0\xb8\xe5\xae\x9e"
-    print(str(s,"utf-8"))
+    # print((datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1))
+    # print(datetime.date.today().replace(day=1))
+    # print(datetime.timedelta(1))
+    # print(datetime.date.today().replace(day=1) - datetime.timedelta(1))
+    #
+    # s = b"\xe5\x8f\x96\xe5\xae\xa1\xe6\xa0\xb8\xe5\x91\x98\xe7\x9a\x84\xe8\x8b\xb1\xe6\x96\x87\xe5\x90\x8d\xe5\x87\xba\xe9\x94\x99\xef\xbc\x8c\xe8\xaf\xb7\xe6\xa0\xb8\xe5\xae\x9e"
+    # print(str(s,"utf-8"))
+    print(GetCurrentMonthDay(datetime.date.today()))

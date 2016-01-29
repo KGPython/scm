@@ -5,8 +5,6 @@
         <title>
             供应商对账方式
         </title>
-        <link rel="stylesheet" href="{{ static }}/css/reset.css" type="text/css">
-        <link rel="stylesheet" href="{{ static }}/css/main.css" type="text/css">
     </head>
     <body>
         {% include 'common/nav.html' %}
@@ -65,12 +63,27 @@
                                 供应商对账方式基本信息：
                             </h3>
                             <div class="payTypeBox">
-                                    <input type="hidden" name="reconId" id="reconId" value="{{ reconList.id }}">
+                                <input type="hidden" name="reconId" id="reconId" value="{{ reconList.id }}">
                                 <p>
                                     <label>对账方式名称：</label>
                                     <input type="text" name="reconName" id="reconName" value="{{ reconList.rname }}">
                                 </p>
-                                <p>
+                               <p>
+                                    <label >开始日：</label>
+                                    <select id="beginday" name="beginday" style="width: 50px;">
+                                        {% for n in dayList %}
+                                            <option value="{{ n }}">{{ n }}</option>
+                                        {% endfor %}
+                                    </select>&nbsp;
+                                    至&nbsp;
+                                    <label >结束日：</label>
+                                     <select id="endday" name="endday" style="width: 50px;">
+                                        {% for n in dayList %}
+                                            <option value="{{ n }}">{{ n }}</option>
+                                        {% endfor %}
+                                    </select>
+                               </p>
+                               <p>
                                     <label>使&nbsp;&nbsp;用&nbsp;&nbsp;状&nbsp;&nbsp;态&nbsp;：</label>
                                     <select name="rstatus" id="">
                                         {% if reconList.status == '0' %}
@@ -102,9 +115,7 @@
                 </div>
             </div>
         </div>
-        <!--[if IE]> <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
-        <![if !IE]><script type="text/javascript" src="{{ static }}/js/jquery-2.1.4.min.js"></script><![endif]>
-        <script type="text/javascript" src="{{ static }}/js/main.js"></script>
+        {% include 'common/footer.html' %}
         <script>
             function setAction(action){
                 document.ReconForm.action = "{% url 'reconciltype' %}?action="+action;
@@ -112,6 +123,10 @@
             $(".listTitle").click(function(){
                 $(this).siblings(".list").find("ul").toggle()
             })
+           $(function(){
+               $('#beginday').find("option[value='{{ reconList.beginday }}']").attr("selected", true);
+               $('#endday').find("option[value='{{ reconList.endday }}']").attr("selected", true);
+           });
         </script>
         <script>
             {% if succ %}

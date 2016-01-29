@@ -168,10 +168,22 @@ if __name__ == "__main__":
     # print(mdeptName)
     # print(str(b"\xe7\x99\xbb\xe5\xbd\x95\xe7\x94\xa8\xe6\x88\xb7\xef\xbc\x9a8340375 ","utf-8"))
 
-    def test():
-        for i in range(10):
-            if i%2==0:
-                yield i
-    print(list(test()))
+    # def test():
+    #     for i in range(10):
+    #         if i%2==0:
+    #             yield i
+    # print(list(test()))
+    # s = "购销月结0.1天"
+    # a = "半月结"
+    # if a in s:
+    #     print(a)
+    # now = datetime.date.today().day
+    # print(type(now))
+    #
+    # s = 23.4
+    # print("%0.0f" % s)
+    # s = -2 * 4 + 3 ** 2
+    # print(s)
+
 
 
