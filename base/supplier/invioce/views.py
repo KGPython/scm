@@ -155,7 +155,7 @@ def saveInvioce(request):
 
     sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
               "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
-              .format(shid=sheetId,shType=res2[0][2],flag=0,operFlag=0,checker=suppCode,chNo=1)
+              .format(shid=sheetId,shType=res2[0][2],flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINNO,chNo=Constants.SCM_ACCOUNT_LOGINID)
     cur.execute(sqlFlow)
 
     MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"操作员:{suppCode}保存单据[{sheetId}]".format(suppCode=suppCode,sheetId=sheetId))
