@@ -171,7 +171,6 @@ def newInvoice(request):
     suppName = request.session.get('s_suppname')
     conn2= MethodUtil.get_MssqlConn()
     timeNow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
     return render(request,'user_invoice_new.html',locals())
 
 @csrf_exempt
