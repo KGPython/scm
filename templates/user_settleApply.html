@@ -30,6 +30,7 @@
         <input type="hidden" name="pend" value="{{ pend }}">
         <input type="hidden" name="cstart" value="{{ cstart }}">
         <input type="hidden" name="cend" value="{{ cend }}">
+        <input type="hidden" name="sequence" value="{{ sequence }}">
         <input type="hidden" id="kxinvoice" value="{{ kxinvoice }}">
 
         <div class="notice comWidth">
@@ -183,8 +184,10 @@
                             beforeSubmit:function(a,f,o){},
                             success: function (result) {
                                 var status = result.status;
-                                if(status=='1'){
+                                if(status=='1') {
                                     alert("结算申请单提交失败！");
+                                }else if(status=='2'){
+                                    alert("已过提交时间或结算申请单已经提交！");
                                 }else{
                                     $("#isheetid").val(result.sheetId);
                                     $("#invioceForm").submit();

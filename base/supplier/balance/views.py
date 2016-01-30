@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator  #分页查询
 
-from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced
+from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced,ReconcilItem,Reconcil
 from base.utils import MethodUtil as mtu,Constants
 from base.views import findPayType
 
@@ -153,8 +153,6 @@ def applyEdit(request):
         pdict = findPayType(2)
         payTypeName = pdict[paytypeid]
 
-        #判断是否可以提交结算单
-
         #查询单据信息（动态查询）
         rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,contracttype)
         kxinvoice = findKxInvoice(conn,venderid,pend)
@@ -162,6 +160,9 @@ def applyEdit(request):
 
     except Exception as e:
         print(e)
+
+    #判断是否可以提交结算单
+    sequence = allowCommit(paytypeid,venderid)
 
     result["paytypeid"] = paytypeid   #结算方式ID
     result["payTypeName"] = payTypeName   #结算方式名称
@@ -171,6 +172,7 @@ def applyEdit(request):
     result["cend"] = cend
     result["pstart"] = pstart
     result["pend"] = pend
+    result["sequence"] = sequence
     result["itemList"] = rdict["blist"]
     result["sum1"] = rdict["sum1"]
     result["sum2"] = rdict["sum2"]
@@ -192,142 +194,144 @@ def applySave(request):
     pend = mtu.getReqVal(request,"pend",None)
     cstart = mtu.getReqVal(request,"cstart",None)
     cend = mtu.getReqVal(request,"cend",None)
+    sequence = mtu.getReqVal(request,"sequence","1")
     refsheetids = mtu.getReqList(request,"refsheetid",None)
     balancePlaceId = mtu.getReqVal(request,"balancePlaceId")
 
     params = {}
     result = {}
 
-    params["pstart"]=pstart
-    params["pend"]=pend
-    params["cstart"]=cstart
-    params["cend"]=cend
-    params["planpaydate"]=datetime.date.today().strftime("%Y-%m-%d")
-    params["editor"]=s_ucode
-    params["editdate"]=datetime.date.today().strftime("%Y-%m-%d")
-    params["sheetid"] = sheetId
-    params["venderid"] = venderid
-    try:
-        conn2 = mtu.get_MssqlConn()
-        errors = 0
+    if sequence=="0":
+        params["pstart"]=pstart
+        params["pend"]=pend
+        params["cstart"]=cstart
+        params["cend"]=cend
+        params["planpaydate"]=datetime.date.today().strftime("%Y-%m-%d")
+        params["editor"]=s_ucode
+        params["editdate"]=datetime.date.today().strftime("%Y-%m-%d")
+        params["sheetid"] = sheetId
+        params["venderid"] = venderid
         try:
-            rdict = findBillItem(conn2,venderid,pstart,pend,cstart,cend,refsheetids)
-            if rdict:
-                blist = rdict["blist"]
+            conn2 = mtu.get_MssqlConn()
+            errors = 0
+            try:
+                rdict = findBillItem(conn2,venderid,pstart,pend,cstart,cend,refsheetids)
+                if rdict:
+                    blist = rdict["blist"]
+                else:
+                    blist = []
+
+                payableamt = findPayableCostValue(conn2,balancePlaceId,venderid)
+                if not payableamt:
+                    payableamt = decimal.Decimal(0.0)
+
+                costvalue = findCostValue(conn2,venderid)
+                if not costvalue:
+                    costvalue = decimal.Decimal(0.0)
+
+                unjsvalue = unbalancedCostValue(conn2,venderid,pstart)
+                if not unjsvalue:
+                    unjsvalue = decimal.Decimal(0.0)
+
+                undqvalue = undueCostValue(conn2,venderid,pend)
+                if not undqvalue:
+                    undqvalue = decimal.Decimal(0.0)
+
+                advance = findAdvance(conn2,venderid)
+                if not advance:
+                    advance = decimal.Decimal(0.0)
+
+                payablemoney = sum([row["costvalue"] for row in blist])
+                if not payablemoney:
+                    payablemoney = decimal.Decimal(0.0)
+
+                params["payablemoney"]=float(payablemoney)   #应付金额
+                params["advance"]=float(advance)        #预付款余额，预付款应扣金额(promoney)默认0 （写表billhead0）
+                params["costvalue"]=float(costvalue)    #库存金额 （写表billhead0）
+                params["undqvalue"]=float(undqvalue)    #未到期金额 （写表billhead0） 取不为空数据
+                params["payableamt"]=float(payableamt)  #应付账款金额 （写表billhead0）
+                params["unjsvalue"]=float(unjsvalue)    #应结未结金额 （写表billhead0） 取不为空数据
+
+                conn = mtu.getMssqlConn()
+                conn.autocommit(False)
+                cursor = conn.cursor()
+
+                klist = findKxsum(cursor,venderid,pend)
+                kxmoney = sum([row["kmoney"] for row in klist])
+                if not kxmoney:
+                    kxmoney = decimal.Decimal(0.0)
+
+                cashlist = filter(lambda row:row["kkflag"]==0,[row for row in klist])
+                invoicelist =  filter(lambda row:row["kkflag"]==1,[row for row in klist])
+
+                kxcash = sum([row["kmoney"] for row in cashlist])
+                if not kxcash:
+                    kxcash = decimal.Decimal(0.0)
+
+                kxinvoice = sum([row["kmoney"] for row in invoicelist])
+                if not kxinvoice:
+                    kxinvoice = decimal.Decimal(0.0)
+
+                #应付金额=实付金额+帐扣金额
+                #应开票金额=实付金额
+                params["kxmoney"]=float(kxmoney)    #扣项金额合计
+                params["kxcash"]=float(kxcash)      #扣项交款金额
+                params["kxinvoice"]=float(kxinvoice)  #帐扣发票金额 (帐扣金额)
+
+                if not sheetId:
+                    #新增
+                    type=0
+                    typeStr = "新增"
+                    sheetId = getSheetId(conn2)
+                    params["sheetid"] = sheetId
+                    saveBillHead0(cursor,params)
+                else:
+                    #修改
+                    type = 1
+                    typeStr = "修改"
+                    updateBillHead0(cursor,params)
+
+                #3.查询要保存的单据信息
+                saveBillHeadItem(cursor,blist,sheetId)
+                ##4 保存扣项明细
+                saveKxItem(cursor,klist,sheetId)
+
+                conn.commit()
+            except Exception as e:
+                errors += 1;
+                conn.rollback()
+                a,b = e.args
+                print(a,str(b,"utf-8"))
+            finally:
+                cursor.close()
+                conn.close()
+
+            if errors <= 0:
+                #执行保存存储过程
+                sql = """declare @Result int
+                       exec @Result=st_billheadsave '{sheetId}',{type},'{cname}','A001'
+                       select @Result""".format(sheetId=sheetId,type=type,cname = Constants.SCM_ACCOUNT_USER_NAME)
+                conn2.execute_scalar(sql)
+
+                #保存日志记录
+                note = "[SCM]操作员:[{operator}]{typeStr}单据[{sheetId}]".format(sheetId=sheetId,typeStr=typeStr,operator=s_ucode)
+                mtu.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[type],note)
+                result["status"] = "0"
+                result["sheetId"] = sheetId
             else:
-                blist = []
-
-            payableamt = findPayableCostValue(conn2,balancePlaceId,venderid)
-            if not payableamt:
-                payableamt = decimal.Decimal(0.0)
-
-            costvalue = findCostValue(conn2,venderid)
-            if not costvalue:
-                costvalue = decimal.Decimal(0.0)
-
-            unjsvalue = unbalancedCostValue(conn2,venderid,pstart)
-            if not unjsvalue:
-                unjsvalue = decimal.Decimal(0.0)
-
-            undqvalue = undueCostValue(conn2,venderid,pend)
-            if not undqvalue:
-                undqvalue = decimal.Decimal(0.0)
-
-            advance = findAdvance(conn2,venderid)
-            if not advance:
-                advance = decimal.Decimal(0.0)
-
-            payablemoney = sum([row["costvalue"] for row in blist])
-            if not payablemoney:
-                payablemoney = decimal.Decimal(0.0)
-
-            params["payablemoney"]=float(payablemoney)   #应付金额
-            params["advance"]=float(advance)        #预付款余额，预付款应扣金额(promoney)默认0 （写表billhead0）
-            params["costvalue"]=float(costvalue)    #库存金额 （写表billhead0）
-            params["undqvalue"]=float(undqvalue)    #未到期金额 （写表billhead0） 取不为空数据
-            params["payableamt"]=float(payableamt)  #应付账款金额 （写表billhead0）
-            params["unjsvalue"]=float(unjsvalue)    #应结未结金额 （写表billhead0） 取不为空数据
-
-            conn = mtu.getMssqlConn()
-            conn.autocommit(False)
-            cursor = conn.cursor()
-
-            klist = findKxsum(cursor,venderid,pend)
-            kxmoney = sum([row["kmoney"] for row in klist])
-            if not kxmoney:
-                kxmoney = decimal.Decimal(0.0)
-
-            cashlist = filter(lambda row:row["kkflag"]==0,[row for row in klist])
-            invoicelist =  filter(lambda row:row["kkflag"]==1,[row for row in klist])
-
-            kxcash = sum([row["kmoney"] for row in cashlist])
-            if not kxcash:
-                kxcash = decimal.Decimal(0.0)
-
-            kxinvoice = sum([row["kmoney"] for row in invoicelist])
-            if not kxinvoice:
-                kxinvoice = decimal.Decimal(0.0)
-
-            #应付金额=实付金额+帐扣金额
-            #应开票金额=实付金额
-            params["kxmoney"]=float(kxmoney)    #扣项金额合计
-            params["kxcash"]=float(kxcash)      #扣项交款金额
-            params["kxinvoice"]=float(kxinvoice)  #帐扣发票金额 (帐扣金额)
-
-            if not sheetId:
-                #新增
-                type=0
-                typeStr = "新增"
-                sheetId = getSheetId(conn2)
-                params["sheetid"] = sheetId
-                saveBillHead0(cursor,params)
-            else:
-                #修改
-                type = 1
-                typeStr = "修改"
-                updateBillHead0(cursor,params)
-
-            #3.查询要保存的单据信息
-            saveBillHeadItem(cursor,blist,sheetId)
-            ##4 保存扣项明细
-            saveKxItem(cursor,klist,sheetId)
-
-            conn.commit()
+                result["status"] = "1"
         except Exception as e:
-            errors += 1;
-            conn.rollback()
-            a,b = e.args
-            print(a,str(b,"utf-8"))
+            print(e)
         finally:
-            cursor.close()
-            conn.close()
-
-        if errors <= 0:
-            #执行保存存储过程
-            sql = """declare @Result int
-                   exec @Result=st_billheadsave '{sheetId}',{type},'{cname}','A001'
-                   select @Result""".format(sheetId=sheetId,type=type,cname = Constants.SCM_ACCOUNT_USER_NAME)
-            conn2.execute_scalar(sql)
-
-            #保存日志记录
-            note = "[SCM]操作员:[{operator}]{typeStr}单据[{sheetId}]".format(sheetId=sheetId,typeStr=typeStr,operator=s_ucode)
-            mtu.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[type],note)
-            result["status"] = "0"
-            result["sheetId"] = sheetId
-        else:
-            result["status"] = "1"
-    except Exception as e:
-        print(e)
-    finally:
-        conn2.close()
+            conn2.close()
+    else:
+        result["status"] = "2"
 
     return HttpResponse(json.dumps(result))
 
-def countSheetNum(payTypeName,paytypeid,venderid):
+def allowCommit(paytypeid,venderid):
     """
     计算当月内供应商提交单据次数
-    """
-    """
     根据结算方式限制供应商提交结算申请单的次数
     月结：账期内只能提交 1 次结算申请单
     半月结：账期内只能提交 2 次结算申请单
@@ -335,26 +339,61 @@ def countSheetNum(payTypeName,paytypeid,venderid):
     提供未结算账单信息，及明细查看
     """
     #限制提交次数
-    now = datetime.date.today()
-    #半月结
-    if "半月结" in payTypeName:
-        limitNum=2
-        #上半月
-        if now<16:
-            pass
-        #下半月
-        else:
-            pass
-    #月结
-    elif "月结" in payTypeName:
-        limitNum=1
-    #日结
-    else:
-        limitNum=31
+    try:
+        rlist = findReconcil(paytypeid)
+        if rlist:
+            type = rlist[0]
+            reconcil = rlist[1]
+            if type==0:
+                status=0
+            else:
+                begin = reconcil["beginday"]
+                karrs = {"venderid":venderid}
 
-    #制定日期
-    dateS = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
-    sql = ""
+                if begin > 15:
+                    n = 1
+                else:
+                    n = 15
+
+                start = datetime.date.today().replace(n).strftime("%Y-%m-%d")
+                start += "00:00:00"
+                karrs.setdefault("editdate__gte",start)
+
+                end = datetime.date.today().replace(begin).strftime("%Y-%m-%d")
+                end += "23:59:59"
+
+                karrs.setdefault("editdate__lte",end)
+
+                bitem = Billhead0.objects.filter(**karrs).count()
+                if bitem:
+                    status = 1    #单据已经存在，无法再次提交
+                else:
+                    status = 0
+        else:
+            status = 1
+    except Exception as e:
+        status = 1
+        print(e)
+
+    return status
+
+def findReconcil(paytypeid):
+    reconcilItem = ReconcilItem.objects.filter(pid=paytypeid).values("rid")
+    rid = reconcilItem[0]["rid"]
+    rlist = Reconcil.objects.filter(id=rid,status=1).values("beginday","endday")
+    for row in rlist:
+        now = datetime.date.today()
+        begin = row["beginday"]
+        end =  row["endday"]
+        num = end - begin
+        if num<30:
+            if now.day < begin:
+                return (1,row)
+            else:
+                return None
+        else:
+           #随时结账
+           return (0,row)
 
 def getSheetId(conn):
     #1.取单据号

@@ -128,14 +128,13 @@ def findRole(request):
         roleList = BasRole.objects.filter(grpcode__in=[utype, grpcode], status='1').values("rcode", "nm")
     else:
         roleList = BasRole.objects.filter(grpcode__in=[utype], status='1').values("rcode", "nm")
-    sql = "SELECT rcode FROM bas_user_role WHERE ucode='" + str(userid) + "'"
-    cursor = connection.cursor()
-    cursor.execute(sql)
-    codelist = cursor.fetchall()
-    ct = [list(c) for c in codelist]
+
+    urlist = BasUserRole.objects.filter(ucode=str(userid)).values("rcode")
+
+    ct = [dict(c) for c in urlist]
     rt = [dict(d) for d in roleList]
 
-    rs["codelist"] = ct
+    rs["urlist"] = ct
     rs["rolelist"] = rt
     try:
         rsjson = json.dumps(rs)
@@ -155,7 +154,7 @@ def addRole(request):
         sql = "delete from bas_user_role where ucode=" + ucode
         cursor.execute(sql)
         for row in check_choices:
-            sql = "insert into bas_user_role(ucode, rcode, status,brdate) values (" + ucode + "," + row + ", 0, curdate())"
+            sql = "insert into bas_user_role(ucode, rcode, status,brdate) values ('" + ucode + "','" + row + "', 0, curdate())"
             cursor.execute(sql)
         rs["flag"] = '0'
     except Exception as e:

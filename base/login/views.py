@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 
 from base.message.views import findPubInfoAllByCon
 from base.utils import MethodUtil as mtu,Constants
-from base.models import BasUser,BasUserRole,BasSupplier,BasGroup,BasFee,BasRole,ReconcilItem,Reconcil
+from base.models import BasUser,BasUserRole,BasSupplier,BasGroup,BasFee,BasRole
 
 __EACH_PAGE_SHOW_NUMBER = 10
 
@@ -79,13 +79,6 @@ def login(request):
 
                             response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
 
-                            #查询对账日期
-                            ritem = ReconcilItem.objects.filter(pid=supp.paytypeid).values("rid")
-                            if ritem:
-                                rid = ritem[0]["rid"]
-                                reconcil = Reconcil.objects.filter(id=rid,status=1).values("rname")
-                                recnames = [row["rname"] for row in reconcil]
-                                request.session["s_reclname"] = ",".join(recnames)
                         else:    #零售商
                             request.session["s_grpcode"] = user.grpcode
 

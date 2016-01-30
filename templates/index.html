@@ -19,8 +19,16 @@
                         {{  request.session.s_umenu.system|getPur:"007" }}
                     </li>
                     <li style="margin-top: 20px;">
-                        {% if s_reclname %}
-                            您的对账日期：{{ s_reclname }}
+                        {% if rdays %}
+                            您的对账日期：每月{{ rdays }}日<br/>
+                        {% endif %}
+                        {% if rdays %}
+                            您编辑结算单日期：每月{{ tdays }}日
+                        {% endif %}
+                    </li>
+                    <li>
+                        {% if request.session.s_rdict > 0 %}
+                            <a href="/scm/base/balance/apply/edit/" style="color:red;">您有未结算单据</a>
                         {% endif %}
                     </li>
                     <li>
