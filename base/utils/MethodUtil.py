@@ -8,10 +8,22 @@ from PIL import Image, ImageDraw, ImageFont
 from django.conf import settings
 
 from base.utils import Constants
+import configparser
 
 import pymysql
 import pymssql
 import _mssql
+
+def getProperties(module,key):
+    """根据key读取配置文件value"""
+    try:
+        config = configparser.ConfigParser()
+        config.read("ConfigParser.conf")
+        val = config.get(module,key)
+    except Exception as e:
+        val = ""
+        print(e)
+    return val
 
 #获取mysql数据库连接
 def getMssqlConn(as_dict=True):
@@ -424,4 +436,5 @@ if __name__ == "__main__":
     #
     # s = b"\xe5\x8f\x96\xe5\xae\xa1\xe6\xa0\xb8\xe5\x91\x98\xe7\x9a\x84\xe8\x8b\xb1\xe6\x96\x87\xe5\x90\x8d\xe5\x87\xba\xe9\x94\x99\xef\xbc\x8c\xe8\xaf\xb7\xe6\xa0\xb8\xe5\xae\x9e"
     # print(str(s,"utf-8"))
-    print(getCurrentMonthDay(datetime.date.today()))
+    # print(getCurrentMonthDay(datetime.date.today()))
+    print(getProperties("bill","scm.bill.islimit"))

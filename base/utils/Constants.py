@@ -52,6 +52,9 @@ SCM_BALANCE_NAME='宽广超市业务中心'
 
 SCM_SHEET_TYPE={"2301":"RK","2323":"RT","2430":"KCJJ","2431":"KCJJ","2446":"PCSL","2460":"PCZY"}
 
+SCM_CONFIG_MODULE = "system"
+SCM_CONFIG_BILL_ISLIMIT = "scm.bill.islimit"
+
 
 
 

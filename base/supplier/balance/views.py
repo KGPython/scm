@@ -202,7 +202,13 @@ def applySave(request):
     result = {}
 
     #判断是否可以提交结算单
-    sequence = allowCommit(paytypeid,venderid)
+
+    islimit = mtu.getProperties(Constants.SCM_CONFIG_MODULE,Constants.SCM_CONFIG_BILL_ISLIMIT)
+    if islimit == 'True':
+        sequence = allowCommit(paytypeid,venderid)
+    else:
+        sequence = "0"
+
     if sequence=="0":
         params["pstart"]=pstart
         params["pend"]=pend
