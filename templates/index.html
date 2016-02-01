@@ -32,8 +32,9 @@
                         {% endif %}
                     </li>
                     <li>
+                        您的账户有效期截止到：<span style="color:red;">{{ endDate|date:'Y-m-d' }}</span>
                         {% if request.session.s_fee and request.session.s_fee.status == 'N' %}
-                            <span style="color:red;">您的账户已停用，请及时联系管理员。</span>
+                            <span style="color:red;">现已停用，请及时联系管理员：0314-2064525。</span>
                         {% endif %}
                     </li>
                 </ul>

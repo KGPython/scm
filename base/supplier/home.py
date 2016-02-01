@@ -7,8 +7,8 @@ from django.views.decorators.csrf import csrf_exempt
 from base.supplier.forms import ChangepwdForm
 from base.utils import MethodUtil as mtu
 from base.message.views import findPubInfoAllByCon
-from base.models import ReconcilItem,Reconcil
-from base.supplier.balance.views import findPayType,getStartAndEndDate,findBillItem
+from base.models import ReconcilItem,Reconcil,BasFee
+from base.supplier.balance.views import getStartAndEndDate,findBillItem
 
 from django.core.paginator import Paginator
 
@@ -22,6 +22,7 @@ def index(request):
 
     user = request.session.get("s_user",None)
     suppcode = request.session.get("s_suppcode")
+    s_grpcode = request.session.get("s_grpcode")
     paytypeid = request.session.get("s_paytypeid")
     contracttype = request.session.get("s_contracttype")
     if user:
@@ -58,15 +59,23 @@ def index(request):
         rds = ",".join(rdays)
         tds = ",".join(tdays)
 
+    fee = BasFee.objects.get(suppcode=suppcode,grpcode=s_grpcode,ucode=user["ucode"])
+    endDate = fee.enddate
+
     conn = mtu.get_MssqlConn()
     #g-购销 l-联营 d-代销  z-租赁
     pstart,pend,cstart,cend = getStartAndEndDate(contracttype)
     #查询单据信息（动态查询）
-    rdict = findBillItem(conn,suppcode,pstart,pend,cstart,cend,contracttype)
-    request.session["s_rdict"] = len(rdict["blist"])
+    rdict = findBillItem(conn,suppcode,pstart,pend,cstart,cend,None,contracttype)
+    if rdict and  rdict["blist"]:
+        blist = rdict["blist"]
+        blen = len(blist)
+        request.session["s_rdict"] = blen
+    else:
+        request.session["s_rdict"] = 0
     conn.close()
 
-    return render(request,"index.html",{"page":page,"pageNum":pageNum,"pwdInit":pwdInit,"rdays":rds,"tdays":tds})
+    return render(request,"index.html",{"page":page,"pageNum":pageNum,"pwdInit":pwdInit,"rdays":rds,"tdays":tds,"endDate":endDate})
 
 #供应商修改密码
 @csrf_exempt

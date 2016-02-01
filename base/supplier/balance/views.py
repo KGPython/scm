@@ -154,7 +154,8 @@ def applyEdit(request):
         payTypeName = pdict[paytypeid]
 
         #查询单据信息（动态查询）
-        rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,contracttype)
+
+        rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,None,contracttype)
         kxinvoice = findKxInvoice(conn,venderid,pend)
         conn.close()
 
@@ -188,6 +189,7 @@ def applyEdit(request):
 def applySave(request):
     """保存结算申请单"""
     s_ucode = request.session.get("s_ucode")
+    s_contracttype = request.session.get("s_contracttype")
     venderid = request.session.get("s_suppcode")
     sheetId = mtu.getReqVal(request,"sheetId",None)
     pstart = mtu.getReqVal(request,"pstart",None)
@@ -215,7 +217,8 @@ def applySave(request):
             conn2 = mtu.get_MssqlConn()
             errors = 0
             try:
-                rdict = findBillItem(conn2,venderid,pstart,pend,cstart,cend,refsheetids)
+
+                rdict = findBillItem(conn2,venderid,pstart,pend,cstart,cend,refsheetids,s_contracttype)
                 if rdict:
                     blist = rdict["blist"]
                 else:
@@ -355,12 +358,12 @@ def allowCommit(paytypeid,venderid):
                 else:
                     n = 15
 
-                start = datetime.date.today().replace(n).strftime("%Y-%m-%d")
-                start += "00:00:00"
+                start = datetime.date.today().replace(day=n).strftime("%Y-%m-%d")
+                start += " 00:00:00"
                 karrs.setdefault("editdate__gte",start)
 
-                end = datetime.date.today().replace(begin).strftime("%Y-%m-%d")
-                end += "23:59:59"
+                end = datetime.date.today().replace(day=begin).strftime("%Y-%m-%d")
+                end += " 23:59:59"
 
                 karrs.setdefault("editdate__lte",end)
 
