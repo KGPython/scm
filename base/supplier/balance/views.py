@@ -162,8 +162,7 @@ def applyEdit(request):
     except Exception as e:
         print(e)
 
-    #判断是否可以提交结算单
-    sequence = allowCommit(paytypeid,venderid)
+
 
     result["paytypeid"] = paytypeid   #结算方式ID
     result["payTypeName"] = payTypeName   #结算方式名称
@@ -173,7 +172,6 @@ def applyEdit(request):
     result["cend"] = cend
     result["pstart"] = pstart
     result["pend"] = pend
-    result["sequence"] = sequence
     result["itemList"] = rdict["blist"]
     result["sum1"] = rdict["sum1"]
     result["sum2"] = rdict["sum2"]
@@ -188,6 +186,7 @@ def applyEdit(request):
 @csrf_exempt
 def applySave(request):
     """保存结算申请单"""
+    paytypeid = request.session.get("s_paytypeid")
     s_ucode = request.session.get("s_ucode")
     s_contracttype = request.session.get("s_contracttype")
     venderid = request.session.get("s_suppcode")
@@ -196,13 +195,14 @@ def applySave(request):
     pend = mtu.getReqVal(request,"pend",None)
     cstart = mtu.getReqVal(request,"cstart",None)
     cend = mtu.getReqVal(request,"cend",None)
-    sequence = mtu.getReqVal(request,"sequence","1")
     refsheetids = mtu.getReqList(request,"refsheetid",None)
     balancePlaceId = mtu.getReqVal(request,"balancePlaceId")
 
     params = {}
     result = {}
 
+    #判断是否可以提交结算单
+    sequence = allowCommit(paytypeid,venderid)
     if sequence=="0":
         params["pstart"]=pstart
         params["pend"]=pend
@@ -353,7 +353,7 @@ def allowCommit(paytypeid,venderid):
                 begin = reconcil["beginday"]
                 karrs = {"venderid":venderid}
 
-                if begin > 15:
+                if begin < 15:
                     n = 1
                 else:
                     n = 15
@@ -389,11 +389,18 @@ def findReconcil(paytypeid):
         begin = row["beginday"]
         end =  row["endday"]
         num = end - begin
+
         if num<30:
-            if now.day < begin:
-                return (1,row)
+            if begin<=15:
+                if now.day < begin:
+                    return (1,row)
+                else:
+                    return None
             else:
-                return None
+                if now.day < begin and now.day > 15:
+                    return (1,row)
+                else:
+                    return None
         else:
            #随时结账
            return (0,row)
