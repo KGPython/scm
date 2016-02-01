@@ -26,9 +26,9 @@ def index(request):
     paytypeid = request.session.get("s_paytypeid")
     contracttype = request.session.get("s_contracttype")
     if user:
-     pubList = findPubInfoAllByCon(user)
+        pubList = findPubInfoAllByCon(user)
     else:
-     pubList = []
+        pubList = []
 
     pageNum = int(request.GET.get("pageNum",1))
 
@@ -38,7 +38,7 @@ def index(request):
     pwd = mtu.md5(suppcode)
     pwdInit = False
     if upwd == pwd:
-     pwdInit = True
+        pwdInit = True
 
     #查询对账日期
     ritem = ReconcilItem.objects.filter(pid=paytypeid).values("rid")

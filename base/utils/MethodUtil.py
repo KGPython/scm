@@ -18,7 +18,11 @@ def getProperties(module,key):
     """根据key读取配置文件value"""
     try:
         config = configparser.ConfigParser()
-        config.read("ConfigParser.conf")
+        #linux
+        file = "{base_root}/ConfigParser.conf".format(base_root=Constants.BASE_ROOT)
+        config.read(file)
+        #windows
+        #config.read("ConfigParser.conf")
         val = config.get(module,key)
     except Exception as e:
         val = ""

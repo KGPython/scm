@@ -162,8 +162,6 @@ def applyEdit(request):
     except Exception as e:
         print(e)
 
-
-
     result["paytypeid"] = paytypeid   #结算方式ID
     result["payTypeName"] = payTypeName   #结算方式名称
     result["balancePlaceName"] = Constants.SCM_BALANCE_NAME     #结算地名称
@@ -179,7 +177,7 @@ def applyEdit(request):
     result["sum4"] = rdict["sum4"]
     result["kxinvoice"] =  "%0.2f" % kxinvoice
     result["zkinvoice"] = "%0.2f" % kxinvoice
-
+    print("edit",7)
     return render(request,"user_settleApply.html",result)
 
 
@@ -302,6 +300,7 @@ def applySave(request):
 
                 #3.查询要保存的单据信息
                 saveBillHeadItem(cursor,blist,sheetId)
+
                 ##4 保存扣项明细
                 saveKxItem(cursor,klist,sheetId)
 
@@ -327,6 +326,7 @@ def applySave(request):
                 mtu.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[type],note)
                 result["status"] = "0"
                 result["sheetId"] = sheetId
+
             else:
                 result["status"] = "1"
         except Exception as e:
@@ -470,7 +470,7 @@ def saveKxItem(cursor,rlist,sheetid):
                 """.format(serialid=row["SerialID"],sheetid=sheetid,kno=row["kno"],ktype=row["ktype"],
                            payabledate=row["receivabledate"],fromshopid=row["fromshopid"],inshopid=row["inshopid"],
                            managedeptid=row["managedeptid"],kmoney=float(row["kmoney"]),kkflag=row["kkflag"],
-                           style=row["style"],monthid=row["monthid"],note=mtu.getDBVal(row,"note"))
+                           style=row["style"],monthid=row["monthid"],note=row["note"])
         cursor.execute(sql)
 
 def saveBillHead0(cursor,params):
