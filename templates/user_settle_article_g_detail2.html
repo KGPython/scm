@@ -51,21 +51,21 @@
                         <td>{{ row.pname }}</td>
                         <td>{{ row.dqhsjj }}</td>
                         <td>{{ row.adbatchseq }}</td>
-                        <td>{{ row.cprice_notax }}</td>
-                        <td>{{ row.sprice }}</td>
-                        <td>{{ row.anum }}</td>
-                        <td>{{ row.anum_notax }}</td>
-                        <td>{{ row.anum_intax }}</td>
-                        <td>{{ row.anum_stock }}</td>
-                        <td>{{ row.anum_stock_notax}}</td>
-                        <td>{{ row.anum_stock_intax }}</td>
-                        <td>{{ row.anum_sale }}</td>
-                        <td>{{ row.anum_sale_notax}}</td>
-                        <td>{{ row.anum_sale_intax }}</td>
-                        <td>{{ row.anum_other }}</td>
-                        <td>{{ row.anum_other_notax}}</td>
-                        <td>{{ row.anum_other_intax }}</td>
-                        <td>{{ row.chdate }}</td>
+                        <td>{{ row.cprice_notax|floatformat:2 }}</td>
+                        <td>{{ row.sprice|floatformat:2 }}</td>
+                        <td>{{ row.anum |floatformat:2}}</td>
+                        <td>{{ row.anum_notax |floatformat:2}}</td>
+                        <td>{{ row.anum_intax |floatformat:2}}</td>
+                        <td>{{ row.anum_stock |floatformat:2}}</td>
+                        <td>{{ row.anum_stock_notax|floatformat:2}}</td>
+                        <td>{{ row.anum_stock_intax|floatformat:2 }}</td>
+                        <td>{{ row.anum_sale |floatformat:2}}</td>
+                        <td>{{ row.anum_sale_notax|floatformat:2}}</td>
+                        <td>{{ row.anum_sale_intax |floatformat:2}}</td>
+                        <td>{{ row.anum_other|floatformat:2 }}</td>
+                        <td>{{ row.anum_other_notax|floatformat:2}}</td>
+                        <td>{{ row.anum_other_iitax|floatformat:2 }}</td>
+                        <td>{{ row.chdate|date:'Y-m-d' }}</td>
                     </tr>
                 {% endfor %}
               {% comment %}  <tr>

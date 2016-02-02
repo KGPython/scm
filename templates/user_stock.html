@@ -113,7 +113,7 @@
                 {% for stock in stockList %}
                     <tr>
                         <td>
-                            <a href="{% url 'stockArticle' %}?shopcode={{ stock.shopcode }}">
+                            <a href="{% url 'stockArticle' %}?shopcode={{ stock.shopcode }}&proCode={{ proCode }}&num1={{ num1 }}&num2={{ num2 }}&scCode={{ scCode }}&proName={{ proName }}&orderStyle={{ orderStyle }}">
                                 {{ shopDict | key:stock.shopcode }}
                             </a>
                         </td>

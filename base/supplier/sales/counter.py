@@ -61,12 +61,12 @@ def query(request):
     sql += "WHERE grpcode='"+grpcode+"' AND ("+codes+") AND supercode='"+spercode+"'  and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' ) a "     #
     sql += "LEFT JOIN(SELECT tb2.shopcode,SUM(tb2.svalue) svalue,SUM(tb2.scost)scost,SUM(tb2.num)num, "
     sql += "SUM(tb2.discount) discount, SUM(tb2.zzk) zzk FROM (SELECT shopcode,svalue,scost,num,discount,zzk FROM sales_pro "
-    sql += "WHERE grpcode='"+grpcode+"' AND sdate>='"+start+"' AND sdate<='"+end+"'  and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' "
+    sql += "WHERE grpcode='"+grpcode+"' AND DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"' AND DATE_FORMAT(sdate,'%Y-%m-%d')<='"+end+"'  and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' "
     sql += "AND ("+codes+") AND (sstyle is not null and sstyle<>'' ) AND supercode='"+spercode+"' "   #
     sql += ") tb2 GROUP BY tb2.shopcode)b ON a.shopcode=b.shopcode) tb1 "
 
     sum1,sum2,sum3 = decimal.Decimal('0.0'),decimal.Decimal('0.0'),decimal.Decimal('0.0')
-    # print(sql)
+
     try:
         cursor = connection.cursor()
         cursor.execute(sql)
@@ -88,7 +88,7 @@ def query(request):
         else:
             rslist = []
 
-        # cursor.close()
+        cursor.close()
         # connection.close()
     except Exception as e:
         print(e)
@@ -170,7 +170,7 @@ def detail(request):
         #销售成本总和
         sql = "select sum(IFNULL(scost,0)) scost "
         sql += " from sales_pro where grpcode = '"+grpcode+"' and ("+codes+") and sstyle<>''"
-        sql += " and sdate >= '"+start+"' and sdate <= '"+end+"' and teamcode like '%"+teamcode.strip()+"%'"
+        sql += " and DATE_FORMAT(sdate,'%Y-%m-%d') >= '"+start+"' and DATE_FORMAT(sdate,'%Y-%m-%d') <= '"+end+"' and teamcode like '%"+teamcode.strip()+"%'"
         sql += " and supercode='"+spercode+"' and teamname like '%"+teamname.strip()+"%' "
 
         cursor = connection.cursor()
@@ -186,8 +186,8 @@ def detail(request):
         sql2 += "    from(select sum(tb1.zzk) as zzk,sum(tb1.discount) as discount,sum(tb1.svalue) as svalue,sum(tb1.num) as num,"
         sql2 += "    sum(tb1.scost) as scost,tb1.bccode,date_format(tb1.sdate,'%Y-%m-%d') as sdate from("
         sql2 += "        select zzk,discount,svalue,num,scost,bccode,sdate "
-        sql2 += "            from sales_pro  where grpcode='"+grpcode+"' and ("+codes+") and sstyle<>'' and sdate >= '"+start+"' "
-        sql2 += "            and sdate <= '"+end+"' and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' "
+        sql2 += "            from sales_pro  where grpcode='"+grpcode+"' and ("+codes+") and sstyle<>'' and DATE_FORMAT(sdate,'%Y-%m-%d') >= '"+start+"' "
+        sql2 += "            and DATE_FORMAT(sdate,'%Y-%m-%d') <= '"+end+"' and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' "
         sql2 += "            and supercode='"+spercode+"' and bccode is not null"
         sql2 += "     ) tb1  "
         sql2 += "     group by tb1.bccode,date_format(tb1.sdate,'%Y-%m-%d')"

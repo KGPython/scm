@@ -34,11 +34,12 @@ def supplierStock(request):
                 shopCode =shopCode.split(',')
                 kwargs.setdefault("shopcode__in",shopCode)
             if proCode:
-                kwargs.setdefault("procode",proCode)
+                kwargs.setdefault("procode__contains",proCode.strip())
             if scCode:
-                kwargs.setdefault("sccode",scCode)
+                kwargs.setdefault("sccode__contains",scCode.strip())
             if proName:
-                kwargs.setdefault("proname__contains",proName)
+                kwargs.setdefault("proname__contains",proName.strip())
+
             kwargs.setdefault("num__gte",num1)
             kwargs.setdefault("num__lte",num2)
             kwargs.setdefault("suppcode",suppCode)
@@ -87,11 +88,11 @@ def stockArticle(request):
 
             kwargs = {}
             if proCode:
-                kwargs.setdefault("procode",proCode)
+                kwargs.setdefault("procode__contains",proCode.strip())
             if scCode:
-                kwargs.setdefault("sccode",scCode)
+                kwargs.setdefault("sccode__contains",scCode.strip())
             if proName:
-                kwargs.setdefault("proname__contains",proName)
+                kwargs.setdefault("proname__contains",proName.strip())
             kwargs.setdefault("shopcode",shopCode)
             kwargs.setdefault("suppcode",suppCode)
             kwargs.setdefault("grpcode",grpCode)
@@ -109,20 +110,37 @@ def stockArticle(request):
             if request.GET.get('action', None)!="outQuery":
                 title = shopName+'库存明细表 '
                 keyList = ['procode','proname','barcode','sccode','scname','classes','unit','num','sums_intax','clearflag']#由excel展现字段决定
-                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'规格',u'单位',u'数量',u'含税进价金额',u'状态']
-                rowTotal = ['',u'合计','','','','','',totalNum,totalSumsIntax,'']
+                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'单位',u'数量',u'含税进价金额',u'状态']
+                rowTotal = ['',u'合计','','','','',totalNum,totalSumsIntax,'']
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
-        form = StockForm()
+        form = StockForm(request.GET)
         kwargs = {}
+        proCode =request.GET.get('proCode')
+        num1 =request.GET.get('num1')
+        num2 =request.GET.get('num2')
+        scCode =request.GET.get('scCode')
+        proName =request.GET.get('proName')
+        orderStyle =request.GET.get('orderStyle')
+        if not orderStyle:
+            orderStyle='sums_intax'
+
+        kwargs = {}
+        if proCode:
+            kwargs.setdefault("procode__contains",proCode.strip())
+        if scCode:
+            kwargs.setdefault("sccode__contains",scCode.strip())
+        if proName:
+            kwargs.setdefault("proname__contains",proName.strip())
         kwargs.setdefault("shopcode",shopCode)
         kwargs.setdefault("suppcode",suppCode)
         kwargs.setdefault("grpcode",grpCode)
 
         stockList = Stock.objects.values("shopcode","clearflag","sccode","scname","procode","proname",'classes',"unit","barcode","suppcode")\
                                      .filter(**kwargs)\
-                                     .annotate(num=Sum('num'),sums_intax=Sum('sums_intax')).order_by('sums_intax')
+                                     .annotate(num=Sum('num'),sums_intax=Sum('sums_intax'))\
+                                     .filter(num__gte=num1,num__lte=num2).order_by(orderStyle)
         totalNum = 0
         totalSumsIntax = 0
         for stock in stockList:
@@ -159,9 +177,9 @@ def stockDetail(request):
                 shopCode = shopCode[0:len(shopCode)-2]
 
 
-                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag  from stock where shopcode in ("+shopCode+") and procode like '%"+proCode+"%' and sccode like '%"+scCode+"%' and proname like '%"+proName+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag  from stock where shopcode in ("+shopCode+") and procode like '%"+proCode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
             else:
-                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag from stock where procode like '%"+proCode+"%' and sccode like '%"+scCode+"%' and proname like '%"+proName+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag from stock where procode like '%"+proCode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
 
             cursor = connection.cursor()
             cursor.execute(sql)

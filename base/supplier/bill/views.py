@@ -47,7 +47,7 @@ def supplierBill(request):
         shopCodeList = shopCodeStr.split(',')
         kwargs.setdefault("shopcode__in",shopCodeList)
     kwargs.setdefault("chdate__gte",start)
-    kwargs.setdefault("chdate__lte",end)
+    kwargs.setdefault("chdate__lte","{end} 23:59:59".format(end=end))
     kwargs.setdefault("orderstyle","2301")
     kwargs.setdefault("spercode",sperCode)
     kwargs.setdefault("grpcode",grpCode)
@@ -152,9 +152,9 @@ def billAdjust(request):
             shopCode +=str(item)
             shopCode +="','"
         shopCode = shopCode[0:len(shopCode)-2]
-        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum from adprice,adpriced where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+"' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum from adprice,adpriced where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
     else:
-        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum,cstyle,csname,bdate,edate,remark,status,sum(anum) anum from adprice,adpriced where adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+"' and adprice.code=adpriced.code and  adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum,cstyle,csname,bdate,edate,remark,status,sum(anum) anum from adprice,adpriced where adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.code=adpriced.code and  adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
 
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -270,7 +270,7 @@ def billBack(request):
         shopCodeList = shopCodeStr.split(',')
         kwargs.setdefault("shopcode__in",shopCodeList)
     kwargs.setdefault("chdate__gte",start)
-    kwargs.setdefault("chdate__lte",end)
+    kwargs.setdefault("chdate__lte","{end} 23:59:59".format(end=end))
     kwargs.setdefault("orderstyle","2323")
     kwargs.setdefault("spercode",sperCode)
 

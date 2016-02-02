@@ -89,14 +89,14 @@ def findSheet(request):
         if srow:
             refsheetid = srow["refsheetid"]
             refsheettype = srow["refsheettype"]
-            prefix = Constants.SCM_SHEET_TYPE[refsheettype]
+            prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
             code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
 
-            slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "Code","Grpcode","Pcode","Barcode","Pname","Spec","Unit","Newtax","Dqhsjj",
-                                                                                  "Adbatchseq","Mll","Tzje","Spercode","Cprice_Notax","Sprice","Anum",
-                                                                                  "Anum_Notax","Anum_Intax","Anum_Stock","Anum_Stock_Intax",
-                                                                                  "Anum_Stock_Notax","Anum_Sale","Anum_Sale_Intax","Anum_Sale_Notax",
-                                                                                  "Anum_Other","Anum_Other_Iitax","Anum_Other_Notax","Chdate",)
+            slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
+                                                                                  "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
+                                                                                  "anum_notax","anum_intax","anum_stock","anum_stock_intax",
+                                                                                  "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
+                                                                                  "anum_other","anum_other_iitax","anum_other_notax","chdate",)
         else:
             slist2 = []
 
@@ -898,7 +898,7 @@ def balance(request):
         shopId =shopId.split(',')
         kwargs.setdefault('shopid__in',shopId)
     kwargs.setdefault('editdate__gte',start)
-    kwargs.setdefault('editdate__lte',end)
+    kwargs.setdefault('editdate__lte',"{end} 23:59:59".format(end=end))
     kwargs.setdefault('venderid',sperCode)
     kwargs.setdefault('grpcode',grpCode)
 

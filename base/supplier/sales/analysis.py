@@ -59,7 +59,7 @@ def query(request):
     sum4 = decimal.Decimal('0.0')
     try:
         sql1 = "select sum(ifnull(tb1.svalue,0)) from (select svalue from sales_pro " \
-               " where grpcode='"+grpcode+"'  and ("+codes+") and sdate>='"+start+"'  and sdate<= '"+end+"' " \
+               " where grpcode='"+grpcode+"'  and ("+codes+") and DATE_FORMAT(sdate,'%Y-%m-%d')>>='"+start+"'  and DATE_FORMAT(sdate,'%Y-%m-%d')><= '"+end+"' " \
                " and (sstyle <> '') and supercode='"+spercode+"' ) tb1"
 
         cursor = connection.cursor()
@@ -72,7 +72,7 @@ def query(request):
         sql2 = "select date_format(tb1.sdate,'%Y-%m-%d') AS sdate,sum(tb1.svalue) AS svalue,sum(tb1.scost) AS scost," \
                "sum(tb1.num) AS num,sum(tb1.discount) AS discount " \
                "from (select * from sales_pro " \
-               " where grpcode='"+grpcode+"'  and ("+codes+") and sdate>='"+start+"'  and sdate<= '"+end+"' "\
+               " where grpcode='"+grpcode+"'  and ("+codes+") and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"'  and DATE_FORMAT(sdate,'%Y-%m-%d')<= '"+end+"' "\
                " and (sstyle <> '') and supercode='"+spercode+"' )tb1 group by tb1.sdate order by tb1.sdate desc"
 
         cursor.execute(sql2)

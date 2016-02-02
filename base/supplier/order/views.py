@@ -84,9 +84,9 @@ def query(request):
         karrs.setdefault("checkdate__gte",(datetime.datetime.now() - datetime.timedelta(days = 7)).strftime("%Y-%m-%d"))
 
     if end:
-        karrs.setdefault("checkdate__lte",(end))
+        karrs.setdefault("checkdate__lte","{end} 23:59:59".format(end=end))
     else:
-        karrs.setdefault("checkdate__lte",(datetime.datetime.now().strftime("%Y-%m-%d")))
+        karrs.setdefault("checkdate__lte","{end} 23:59:59".format(end=datetime.datetime.now().strftime("%Y-%m-%d")))
 
     #设置默认排序方式
     orderby = orderstyle
