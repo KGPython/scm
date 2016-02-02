@@ -12,7 +12,7 @@ from django.core.paginator import Paginator
 
 from base.message.views import findPubInfoAllByCon
 from base.utils import MethodUtil as mtu,Constants
-from base.models import BasUser,BasUserRole,BasSupplier,BasGroup,BasFee,BasRole,ReconcilItem,Reconcil
+from base.models import BasUser,BasUserRole,BasSupplier,BasGroup,BasFee,BasRole,BasSuppLand
 
 __EACH_PAGE_SHOW_NUMBER = 10
 
@@ -79,13 +79,6 @@ def login(request):
 
                             response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
 
-                            #查询对账日期
-                            ritem = ReconcilItem.objects.filter(pid=supp.paytypeid).values("rid")
-                            if ritem:
-                                rid = ritem[0]["rid"]
-                                reconcil = Reconcil.objects.filter(id=rid,status=1).values("rname")
-                                recnames = [row["rname"] for row in reconcil]
-                                request.session["s_reclname"] = ",".join(recnames)
                         else:    #零售商
                             request.session["s_grpcode"] = user.grpcode
 
@@ -106,6 +99,42 @@ def login(request):
                             request.session["s_urole"] = urole
                             request.session["s_umenu"] = getMenu(purlist)
                             response_data['status'] = "0"
+
+                            #添加登录日志
+                            if user.utype=="2":
+                                lastlandtime = datetime.date.today().strftime("%Y-%m-%d")
+                                slist = BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime=lastlandtime).values("landcs")
+                                if slist and slist[0]:
+                                    sland = slist[0]
+                                    landcs=sland["landcs"]+1
+                                    BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime=datetime.date.today()).update(landcs=landcs)
+                                else:
+                                    fee =  request.session.get("s_fee")
+                                    if fee:
+                                        status = fee["status"]
+                                    else:
+                                        status = "N"
+                                    suppname =  request.session.get("s_suppname")
+                                    lastLand = BasSuppLand.objects.values("allcs").latest("allcs")
+                                    if lastLand:
+                                        allcs = lastLand["allcs"]+1
+                                    else:
+                                        allcs = 1
+
+                                    bs =  BasSuppLand()
+                                    bs.grpcode = "00069"
+                                    bs.utype = "2"
+                                    bs.suppcode = user.grpcode
+                                    bs.landcs = 1
+                                    bs.lastlandtime = datetime.date.today()
+                                    bs.status = status
+                                    bs.supname = suppname
+                                    bs.remark=""
+                                    bs.ylzd1=""
+                                    bs.ylzd2=""
+                                    bs.allcs= allcs
+                                    bs.save()
+
                         else:
                             response_data['status'] = "4"
                     else:

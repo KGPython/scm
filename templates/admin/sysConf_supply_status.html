@@ -223,8 +223,8 @@
             var rs = JSON.parse(result);
             $(rs.rolelist).each(function (index, item) {
                  flag = false;
-                 $(rs.codelist).each(function (index, item2) {
-                     if(item.rcode==item2){
+                 $(rs.urlist).each(function (index, item2) {
+                     if(item.rcode==item2.rcode){
                          flag = true;
                          return true;
                      }

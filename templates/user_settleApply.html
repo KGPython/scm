@@ -183,8 +183,10 @@
                             beforeSubmit:function(a,f,o){},
                             success: function (result) {
                                 var status = result.status;
-                                if(status=='1'){
+                                if(status=='1') {
                                     alert("结算申请单提交失败！");
+                                }else if(status=='2'){
+                                    alert("当前时间不在编辑结算申请单的时间范围内或结算申请单已经提交,不可重复提交！");
                                 }else{
                                     $("#isheetid").val(result.sheetId);
                                     $("#invioceForm").submit();
