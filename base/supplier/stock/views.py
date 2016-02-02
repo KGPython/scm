@@ -85,7 +85,7 @@ def stockArticle(request):
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
             orderStyle = form.cleaned_data['orderStyle']
-
+            print(proCode)
             kwargs = {}
             if proCode:
                 kwargs.setdefault("procode__contains",proCode.strip())
@@ -110,16 +110,16 @@ def stockArticle(request):
             if request.GET.get('action', None)!="outQuery":
                 title = shopName+'库存明细表 '
                 keyList = ['procode','proname','barcode','sccode','scname','classes','unit','num','sums_intax','clearflag']#由excel展现字段决定
-                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'单位',u'数量',u'含税进价金额',u'状态']
-                rowTotal = ['',u'合计','','','','',totalNum,totalSumsIntax,'']
+                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'规格',u'单位',u'数量',u'含税进价金额',u'状态']
+                rowTotal = ['',u'合计','','','','','',totalNum,totalSumsIntax,'']
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
-        form = StockForm(request.GET)
+        form = StockForm()
         kwargs = {}
         proCode =request.GET.get('proCode')
-        num1 =request.GET.get('num1')
-        num2 =request.GET.get('num2')
+        num1 =request.GET.get('num1',0)
+        num2 =request.GET.get('num2',100000)
         scCode =request.GET.get('scCode')
         proName =request.GET.get('proName')
         orderStyle =request.GET.get('orderStyle')
