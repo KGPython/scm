@@ -68,7 +68,7 @@ def retOrder(request):
     kwargs.setdefault('checkdate__lte',end)
     kwargs.setdefault('grpcode',grpCode)
     retOrderList = {}
-    if 0 in userRoleList:
+    if 1 in userRoleList:
         retOrderList = Ord.objects.values('ordercode','checkdate','state','status').filter(**kwargs).order_by("-"+orderStyle)
     else:
         shopRole = BasUserClass.objects.values('orgcode').filter(ucode__in=userRoleList,tablecode='roleshop')
