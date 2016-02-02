@@ -96,7 +96,7 @@ def stockArticle(request):
             kwargs.setdefault("suppcode",suppCode)
             kwargs.setdefault("grpcode",grpCode)
 
-            stockList = Stock.objects.values("shopcode","clearflag","sccode","scname","procode","proname","unit","barcode","suppcode")\
+            stockList = Stock.objects.values("shopcode","clearflag","sccode","scname","procode","proname","classes","unit","barcode","suppcode")\
                                      .filter(**kwargs)\
                                      .annotate(num=Sum('num'),sums_intax=Sum('sums_intax'))\
                                      .filter(num__gte=num1,num__lte=num2)\
@@ -108,9 +108,9 @@ def stockArticle(request):
                 totalSumsIntax += stock.get('sums_intax',0)
             if request.GET.get('action', None)!="outQuery":
                 title = shopName+'库存明细表 '
-                keyList = ['procode','proname','barcode','sccode','scname','unit','num','sums_intax','clearflag']#由excel展现字段决定
-                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'单位',u'数量',u'含税进价金额',u'状态']
-                rowTotal = ['',u'合计','','','','',totalNum,totalSumsIntax,'']
+                keyList = ['procode','proname','barcode','sccode','scname','classes','unit','num','sums_intax','clearflag']#由excel展现字段决定
+                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'规格',u'单位',u'数量',u'含税进价金额',u'状态']
+                rowTotal = ['',u'合计','','','','','',totalNum,totalSumsIntax,'']
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
@@ -120,7 +120,7 @@ def stockArticle(request):
         kwargs.setdefault("suppcode",suppCode)
         kwargs.setdefault("grpcode",grpCode)
 
-        stockList = Stock.objects.values("shopcode","clearflag","sccode","scname","procode","proname","unit","barcode","suppcode")\
+        stockList = Stock.objects.values("shopcode","clearflag","sccode","scname","procode","proname",'classes',"unit","barcode","suppcode")\
                                      .filter(**kwargs)\
                                      .annotate(num=Sum('num'),sums_intax=Sum('sums_intax')).order_by('sums_intax')
         totalNum = 0
@@ -159,9 +159,9 @@ def stockDetail(request):
                 shopCode = shopCode[0:len(shopCode)-2]
 
 
-                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,class,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,class,unit,num,sums_intax,barcode,fprocode,clearflag  from stock where shopcode in ("+shopCode+") and procode like '%"+proCode+"%' and sccode like '%"+scCode+"%' and proname like '%"+proName+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,class,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag  from stock where shopcode in ("+shopCode+") and procode like '%"+proCode+"%' and sccode like '%"+scCode+"%' and proname like '%"+proName+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
             else:
-                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,class,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,class,unit,num,sums_intax,barcode,fprocode,clearflag from stock where procode like '%"+proCode+"%' and sccode like '%"+scCode+"%' and proname like '%"+proName+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,class,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag from stock where procode like '%"+proCode+"%' and sccode like '%"+scCode+"%' and proname like '%"+proName+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
 
             cursor = connection.cursor()
             cursor.execute(sql)
@@ -177,7 +177,7 @@ def stockDetail(request):
                 dic['scname']=obj[4]
                 dic['procode']=obj[5]
                 dic['proname']=obj[6]
-                dic['class']=obj[7]
+                dic['classes']=obj[7]
                 dic['unit']=obj[8]
                 dic['num']=obj[10]
                 dic['sums_intax']=obj[11]
@@ -186,9 +186,9 @@ def stockDetail(request):
                 stockList.append(dic)
             if request.GET.get('action', None)!="outQuery":
                 title = '全部库存明细列表 '
-                keyList = ['procode','proname','barcode','sccode','scname','unit','num','sums_intax']#由excel展现字段决定
-                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'单位',u'数量',u'含税进价金额']
-                rowTotal = ['',u'合计','','','','','',total_sums_intax]
+                keyList = ['procode','proname','barcode','sccode','scname','classes','unit','num','sums_intax']#由excel展现字段决定
+                rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'规格',u'单位',u'数量',u'含税进价金额']
+                rowTotal = ['',u'合计','','','','','','',total_sums_intax]
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:

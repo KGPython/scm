@@ -376,7 +376,7 @@ class Stock(models.Model):
     shopcode = models.CharField(db_column='Shopcode', max_length=20)  # Field name made lowercase.
     sccode = models.CharField(db_column='Sccode', max_length=20, blank=True, null=True)  # Field name made lowercase.
     scname = models.CharField(db_column='Scname', max_length=60, blank=True, null=True)  # Field name made lowercase.
-    class_field = models.CharField(db_column='Class', max_length=20, blank=True, null=True)  # Field name made lowercase. Field renamed because it was a Python reserved word.
+    classes = models.CharField(db_column='Classes', max_length=20, blank=True, null=True)  # Field name made lowercase. Field renamed because it was a Python reserved word.
     unit = models.CharField(db_column='Unit', max_length=20, blank=True, null=True)  # Field name made lowercase.
     num = models.DecimalField(db_column='Num', max_digits=18, decimal_places=3, blank=True, null=True)  # Field name made lowercase.
     avprice_intax = models.DecimalField(db_column='Avprice_Intax', max_digits=18, decimal_places=3, blank=True, null=True)  # Field name made lowercase.
