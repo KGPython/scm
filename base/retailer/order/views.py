@@ -10,7 +10,6 @@ nowTime = time.strftime('%Y-%m-%d',time.localtime(time.time()))
 def retOrder(request):
     grpCode = request.session.get('s_grpcode','')
     grpName = request.session.get('s_grpname','')
-    userType = 0    #判断用户权限（如果为1，则用户为超级管理员，可以查询所有门店）
     userRoleList = request.session.get('s_rcodes',[])
 
     status=''
@@ -69,7 +68,7 @@ def retOrder(request):
     kwargs.setdefault('checkdate__lte',end)
     kwargs.setdefault('grpcode',grpCode)
     retOrderList = {}
-    if userType == 1:
+    if 0 in userRoleList:
         retOrderList = Ord.objects.values('ordercode','checkdate','state','status').filter(**kwargs).order_by("-"+orderStyle)
     else:
         shopRole = BasUserClass.objects.values('orgcode').filter(ucode__in=userRoleList,tablecode='roleshop')
