@@ -37,7 +37,7 @@ def retOrder(request):
     else:
         status = request.GET.get('status','')
         state  = request.GET.get('state','')
-        sperCode  = request.GET.get('spercode')
+        sperCode  = request.GET.get('spercode','')
         orderCode  = request.GET.get('ordercode','')
         start = request.GET.get('start',(datetime.datetime.now() - datetime.timedelta(days = 2)).strftime("%Y-%m-%d"))
         end = request.GET.get('end',nowTime)
@@ -89,12 +89,13 @@ def retOrder(request):
         retOrderList = paginator.page(page)
     except Exception as e:
         print(e)
+
     return render(request,
                   'admin/retail_order.html',
                   {
                     "status":status,
                     "state":state,
-                    "sperCode" :sperCode,
+                    "sperCode":sperCode,
                     "orderCode":orderCode,
                     "start":str(start),
                     "end":str(end),
