@@ -85,7 +85,7 @@ def stockArticle(request):
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
             orderStyle = form.cleaned_data['orderStyle']
-            print(proCode)
+
             kwargs = {}
             if proCode:
                 kwargs.setdefault("procode__contains",proCode.strip())

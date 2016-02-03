@@ -56,16 +56,16 @@ def retOrder(request):
         kwargs.setdefault('sdate__gte',nowTime)
 
     if sperCode:
-        kwargs.setdefault('spercode',sperCode)
+        kwargs.setdefault('spercode__contains',sperCode.strip())
     if orderCode:
-        kwargs.setdefault('ordercode__contains',orderCode)
+        kwargs.setdefault('ordercode__contains',orderCode.strip())
     if len(shopCode):
         shopStr= shopCode[0:(len(shopCode)-1)]
         shopList =shopStr.split(',')
         kwargs.setdefault('shopcode__in',shopList)
 
     kwargs.setdefault('checkdate__gte',start)
-    kwargs.setdefault('checkdate__lte',end)
+    kwargs.setdefault('checkdate__lte',"{end} 23:59:59".format(end=end))
     kwargs.setdefault('grpcode',grpCode)
     retOrderList = {}
     print(userRoleList)

@@ -3,7 +3,7 @@ from django.shortcuts import render
 import logging
 from .forms import *
 from django.db.models import Q
-from base.models import Billhead0,Billheaditem0
+from base.models import Billhead0,Billheaditem0,BasSupplier
 from django.core.paginator import Paginator  #分页查询
 import time,datetime
 
@@ -42,7 +42,7 @@ def balance(request):
         sheetId = request.GET.get('sheetid','')
         venderId = request.GET.get('venderId','')
         status = request.GET.get('status','')
-        orderStyle = request.GET.get('orderstyle','editdate')
+        orderStyle = request.GET.get('orderstyle','-editdate')
         form = BillInForm({"start":start,"end":end,"sheetid":sheetId,"venderId":venderId,"shopid":shopId,"status":status,"orderStyle":orderStyle})
     
     kwargs = {}
@@ -63,6 +63,11 @@ def balance(request):
 
     balanceList = Billhead0.objects.values("shopid","venderid","vendername","sheetid","begindate","enddate","editdate","flag","status","seenum","contracttype")\
                                    .filter(**kwargs).order_by(orderStyle)
+    for row in balanceList:
+        venderid = row["venderid"]
+        supp = BasSupplier.objects.filter(suppcode=venderid).values("chnm")
+        if supp:
+            row["vendername"] = supp[0]["chnm"]
 
     paginator=Paginator(balanceList,20)
     try:
