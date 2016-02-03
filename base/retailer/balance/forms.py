@@ -24,4 +24,4 @@ class BillInForm(forms.Form):
         ('-enddate', u'本次结算日期'),
         ('flag', u'审核状态'),
     )
-    orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"id":"orderStyle","name":"orderStyle",}),choices=ORDER_CHOICES,initial='-enddate')
+    orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"id":"orderStyle","name":"orderStyle",}),choices=ORDER_CHOICES)
