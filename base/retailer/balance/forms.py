@@ -18,12 +18,10 @@ class BillInForm(forms.Form):
     )
     status = forms.ChoiceField(widget=forms.Select(attrs={"id":"status","name":"status"}),choices=STATUS_CHOICES,required=False)
     ORDER_CHOICES = (
-        ('-editdate', u'制单日期'),
-        ('sheetid', u'编码'),
+        ('sheetid', u'编号'),
         ('shopid', u'结算位置'),
         ('-begindate', u'上次结算日期'),
         ('-enddate', u'本次结算日期'),
-        ('flag', u'结算状态'),
-        ('seenum', u'查看次数'),
+        ('flag', u'审核状态'),
     )
-    orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"id":"orderStyle","name":"orderStyle",}),choices=ORDER_CHOICES)
+    orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"id":"orderStyle","name":"orderStyle",}),choices=ORDER_CHOICES,initial='-enddate')

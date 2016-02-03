@@ -42,7 +42,7 @@ def balance(request):
         sheetId = request.GET.get('sheetid','')
         venderId = request.GET.get('venderId','')
         status = request.GET.get('status','')
-        orderStyle = request.GET.get('orderstyle','-editdate')
+        orderStyle = request.GET.get('orderstyle','-enddate')
         form = BillInForm({"start":start,"end":end,"sheetid":sheetId,"venderId":venderId,"shopid":shopId,"status":status,"orderStyle":orderStyle})
     
     kwargs = {}
@@ -57,8 +57,8 @@ def balance(request):
         shopId = shopId[0:(len(shopId)-1)]
         shopId =shopId.split(',')
         kwargs.setdefault('shopid__in',shopId)
-    kwargs.setdefault('editdate__gte',start)
-    kwargs.setdefault('editdate__lte',end)
+    kwargs.setdefault('begindate__gte',start)
+    kwargs.setdefault('enddate__lte',"{end} 23:59:59".format(end=end))
     kwargs.setdefault('grpcode',grpCode)
 
     balanceList = Billhead0.objects.values("shopid","venderid","vendername","sheetid","begindate","enddate","editdate","flag","status","seenum","contracttype")\
