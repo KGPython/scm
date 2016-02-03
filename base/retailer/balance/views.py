@@ -50,9 +50,9 @@ def balance(request):
         if status=="Y":
             kwargs.setdefault('status__contains',status)
     if sheetId:
-        kwargs.setdefault('sheetid__contains',sheetId)
+        kwargs.setdefault('sheetid__contains',sheetId.strip())
     if venderId:
-        kwargs.setdefault('venderid__contains',venderId)
+        kwargs.setdefault('venderid__contains',venderId.strip())
     if len(shopId):
         shopId = shopId[0:(len(shopId)-1)]
         shopId =shopId.split(',')
