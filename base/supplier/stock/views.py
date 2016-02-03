@@ -85,7 +85,7 @@ def stockArticle(request):
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
             orderStyle = form.cleaned_data['orderStyle']
-            print(proCode)
+
             kwargs = {}
             if proCode:
                 kwargs.setdefault("procode__contains",proCode.strip())
@@ -115,7 +115,7 @@ def stockArticle(request):
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
-        form = StockForm()
+        form = StockForm(request.GET)
         kwargs = {}
         proCode =request.GET.get('proCode')
         num1 =request.GET.get('num1',0)
