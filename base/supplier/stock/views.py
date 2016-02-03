@@ -115,11 +115,11 @@ def stockArticle(request):
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
-        form = StockForm()
+        form = StockForm(request.GET)
         kwargs = {}
         proCode =request.GET.get('proCode')
-        num1 =request.GET.get('num1',0)
-        num2 =request.GET.get('num2',100000)
+        num1 =request.GET.get('num1')
+        num2 =request.GET.get('num2')
         scCode =request.GET.get('scCode')
         proName =request.GET.get('proName')
         orderStyle =request.GET.get('orderStyle')
