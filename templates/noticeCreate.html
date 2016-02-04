@@ -128,9 +128,9 @@
                                   <input name="accesstype" checked="" value="13" type="radio">全部
                                   <input name="accesstype" value="11" type="radio">指定编码(多个可逗号分隔)
                                   {% if action == 'answer' %}
-                                      <input class="txt" type="text" name="depart" value="{{ userGrpCode }}">
+                                      <input class="txt" type="text" name="depart" id="depart" value="{{ userGrpCode }}">
                                   {% else %}
-                                      <input class="txt" type="text" name="depart" id="depart" style="width: 400px;height: 30px" value="{{ info.depart }}">
+                                      <input class="txt" type="text" name="depart" id="depart" style="width: 400px;height: 30px" value="{{ info.depart }}" readonly>
                                   {% endif %}
                               {% endif %}
                           </td>
@@ -166,6 +166,15 @@
 
         $(function(){
              $('#depart').find("option[value='{{ info.depart }}']").attr("selected", true);
+             $('input[name="accesstype"]').on("change",function(){
+                 var atype = $(this).val()
+                 if(atype==13){
+                      $('#depart').val('');
+                      $('#depart').prop('readonly', true);
+                 }else{
+                     $('#depart').prop('readonly', false);
+                 }
+             });
         });
 
         function add(){

@@ -67,13 +67,13 @@ def findPubInfoAllByCon(user):
     #供应商查询已接收通知
     if utype=="2":
         result = Pubinfo.objects.filter(Q(infotype=0) & ((Q(accesstype=11) & Q(depart=user["grpcode"])) | (Q(accesstype=13) & Q(depart=""))))\
-            .order_by("-infocode")\
+            .order_by("-subtime")\
             .values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath")
 
     else:
         #零售商查询已发送出通知
         result = Pubinfo.objects.filter(Q(checker=user["ucode"]))\
-            .order_by("-infocode")\
+            .order_by("-subtime")\
             .values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath")
 
     return result
@@ -124,11 +124,11 @@ def msglist(request):
 
                 #获取数据列表
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
             if flag == 'msgOut':
                 q.add(Q(checker=userCode),Q.AND)
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
     else:
         infoCode = request.GET.get('infocode','')
         start = request.GET.get('start','')
@@ -169,12 +169,12 @@ def msglist(request):
 
             #获取数据列表
             infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
 
         if flag == 'msgOut':
             q.add(Q(checker=userCode),Q.AND)
             infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
 
     paginator=Paginator(infoList,20)
     try:
@@ -258,39 +258,70 @@ def msgCreate(request):
         if fileObj:
             mailpath=uploadFile(fileObj)
 
-        #编辑
-        if infoCode and action!="answer":
-            Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,depart=depart,mailpath=mailpath,subtime=timestr)
-            succ = "1" #设置提交成功返回信息，在前端展现
-            # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
-        #创建
+        #指定编码
+        if (accessType=='11' or accessType=='21') and depart:
+            import re
+            departList = re.split(r'[,，]', depart)
+            if departList:
+                for dept in departList:
+                    #编辑
+                    if infoCode and action!="answer":
+                        Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,depart=dept,mailpath=mailpath,subtime=timestr)
+                        succ = "1" #设置提交成功返回信息，在前端展现
+                        # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
+                    #创建
+                    else:
+                        info = Pubinfo()
+                        #session中user信息
+                        info.checker = userCode
+                        info.grpcode = grpCode
+                        info.username = userName
+                        info.usergrpcode = userGrpCode
+                        info.usergrpname = userGrpName
+
+                        #表单提交信息
+                        info.infotype = infoType
+                        info.accesstype = accessType
+                        info.depart = dept
+                        info.title = title
+                        info.content = content
+                        info.mailpath = mailpath
+                        info.subtime = timestr
+
+                        newcode = getInfoCode(request,'pubinfoid')
+                        info.infocode= newcode
+
+                        info.save()
         else:
-            info = Pubinfo()
-            #session中user信息
-            info.checker = userCode
-            info.grpcode = grpCode
-            info.username = userName
-            info.usergrpcode = userGrpCode
-            info.usergrpname = userGrpName
-
-            #表单提交信息
-            info.infotype = infoType
-            info.accesstype = accessType
-            info.depart = depart
-            info.title = title
-            info.content = content
-            info.mailpath = mailpath
-            info.subtime = timestr
-
-            infoCode = getInfoCode(request,'pubinfoid')
-            info.infocode= infoCode
-
-            info.save()
-            # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
-            if action=="answer":
-                succ = "3"
+            if infoCode and action!="answer":
+                Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,mailpath=mailpath,subtime=timestr)
+                succ = "1" #设置提交成功返回信息，在前端展现
+            #创建
             else:
-                succ = "2" #设置提交成功返回信息，在前端展现
+                info = Pubinfo()
+                #session中user信息
+                info.checker = userCode
+                info.grpcode = grpCode
+                info.username = userName
+                info.usergrpcode = userGrpCode
+                info.usergrpname = userGrpName
+
+                #表单提交信息
+                info.infotype = infoType
+                info.accesstype = accessType
+                info.title = title
+                info.content = content
+                info.mailpath = mailpath
+                info.subtime = timestr
+
+                newcode = getInfoCode(request,'pubinfoid')
+                info.infocode= newcode
+
+                info.save()
+        if action=="answer":
+            succ = "3"
+        else:
+            succ = "2" #设置提交成功返回信息，在前端展现
     return render(request, 'noticeCreate.html',locals())
 
 def uploadFile(fileObj):
