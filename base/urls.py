@@ -96,7 +96,7 @@ urlpatterns = [
     url(r'^base/admin/supprole/','base.admin.supprole.views.index'),
     url(r'^base/admin/supprole_form/','base.admin.supprole.views.add_form'),
  	url(r'^base/admin/supprole_changepasswd', 'base.admin.suppmanager.views.change_passwd'),
-    url(r'^base/admin/suppmanager/', 'base.admin.suppmanager.views.change_passwd'),
+    url(r'^base/admin/suppmanager/', 'base.admin.suppmanager.views.querySupp'),
     url(r'^base/admin/suppstatus/', 'base.admin.suppstatus.view.index'),
     url(r'^base/admin/supp_sta_form', 'base.admin.suppstatus.view.suppStatusForm'),
     url(r'^base/admin/supp_findRole', 'base.admin.suppstatus.view.findRole'),

@@ -32,6 +32,7 @@ def global_setting(request):
     adBillDict = {"0": u"调整单", "2430": u"库存进价调整单", "2446": u"批次数量更正单", "2460": u"批次库存转移单"}
     qrStatusDict = {"Y":"已确认","N":"未确认"}
     gqStateDict = {"Y":"已过期","N":"未过期"}
+    userStatus = Constants.USER_STATUS
     #经营方式
     contractTypeDict = Constants.CONTRACT_TYPE_DICT
 	#结算方式

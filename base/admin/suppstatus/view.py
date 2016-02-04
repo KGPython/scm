@@ -27,13 +27,16 @@ def index(request):
             suppcode = form.cleaned_data['suppcode']
             status = form.cleaned_data['status']
             if bid:
-                sql_topic += " and bid='" + bid + "'"
+                sql_topic += " and bid like '%" + bid.strip() + "%'"
             if suppcode:
-                sql_topic += " and a.suppcode like '%" + suppcode + "%'"
+                sql_topic += " and a.suppcode like '%" + suppcode.strip() + "%'"
             if status:
                 sql_topic += " and a.status='" + status + "'"
             sql_topic += " order by suppcode"
         else:
+            bid = ''
+            suppcode = ''
+            status=''
             sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm,a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode order by suppcode"
         cursor = connection.cursor()
         cursor.execute(sql_topic)

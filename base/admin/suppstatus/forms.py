@@ -8,8 +8,7 @@ class SuppQuery(forms.Form):
     bid = forms.CharField(widget=forms.TextInput(attrs={"id": "bid", "name": "bid"}), required=False)
     suppcode = forms.CharField(widget=forms.TextInput(attrs={"id": "suppcode", "name": "suppcode"}), required=False,
                                max_length=20)
-    status = forms.CharField(widget=forms.TextInput(attrs={"id": "status", "name": "status"}), required=False,
-                             max_length=20)
+    status = forms.ChoiceField(widget=forms.Select(attrs={"name": "status"}), choices=(('', '全部'),('N', '已禁用'), ('Y', '已启用')))
 
 
 class SuppStatusForm(forms.Form):

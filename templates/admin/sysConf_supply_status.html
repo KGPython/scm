@@ -15,17 +15,18 @@
     </style>
 </head>
 <body>
+{% load basefilter %}
 {% include "common/nav.html" %}
 <div class="supply_admin comWidth">
     <h1 class="tTitle">
-        供应商开户
+        供应商开户状态
     </h1>
 
     <div class="query comWidth">
-        <h2 style="margin-bottom: 15px">
+      {% comment %}  <h2 style="margin-bottom: 15px">
             查询 供应商开户记录
         </h2>
-
+{% endcomment %}
         <form action="/scm/base/admin/suppstatus/" class="query-list" method="get">
             <p>
                 <label>单号：</label>{{ form.bid }}
@@ -90,7 +91,7 @@
                     {{ rows.chnm }}
                 </td>
                 <td>
-                    {{ rows.status }}
+                    {{ userStatus|key:rows.status }}
                 </td>
                 <td>
                     {{ rows.grpcode }}

@@ -10,7 +10,7 @@ from base.utils import MethodUtil as mtu
 
 
 @csrf_exempt
-def change_passwd(request):
+def querySupp(request):
     posts = []
     if request.method == "POST":
         form = ChangeGrpPass(request.POST)
@@ -28,7 +28,7 @@ def change_passwd(request):
 
         sql = "select u.ucode, u.nm, u.grpcode, g.chnm as gnm from bas_user as u, bas_user_role as r,"
         sql += "bas_supplier as g where u.ucode = r.ucode and u.grpcode = g.suppcode and u.utype = '2' "
-        sql += "and u.grpcode = '" + grpcode + "'"
+        sql += "and u.grpcode like '%" + grpcode.strip() + "%'"
         cursor = connection.cursor()
         cursor.execute(sql)
         rsobj = cursor.fetchall()
