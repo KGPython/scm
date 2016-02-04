@@ -140,9 +140,7 @@
 {#                $(".browserDownload").css({"display":"block"})#}
 {#            }#}
 
-
-
-            var is_IE=myBrowser();
+            var is_IE=checkBrowser();
             if(is_IE){
                 alert("尊敬的用户您好，由于您的IE版本过低，为了更好的使用此系统，请您使用火狐、谷歌、360浏览器（IE9及以上版本IE）进行登录，如需下载可点击登录按钮下方链接。")
                 $(".browserDownload").css({"display":"block"})

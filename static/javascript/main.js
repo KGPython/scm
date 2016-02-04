@@ -4,6 +4,7 @@ function myBrowser(){
     var isIE = userAgent.indexOf("compatible") > -1 && userAgent.indexOf("MSIE") > -1 && !isOpera; //判断是否IE浏览器
     var isFF = userAgent.indexOf("Firefox") > -1; //判断是否Firefox浏览器
     var isSafari = userAgent.indexOf("Safari") > -1; //判断是否Safari浏览器
+
     if (isIE) {
         var IE5 = IE55 = IE6 = IE7 = IE8 = false;
         var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
@@ -24,6 +25,22 @@ function myBrowser(){
     //if (isOpera) {
     //    return "Opera";
     //}
+}
+
+function checkBrowser(){
+    var Sys = {};
+    var ua = navigator.userAgent.toLowerCase();
+    var s;
+    (s = ua.match(/rv:([\d.]+)\) like gecko/)) ? Sys.ie = s[1] :
+    (s = ua.match(/msie ([\d.]+)/)) ? Sys.ie = s[1] :
+    (s = ua.match(/firefox\/([\d.]+)/)) ? Sys.firefox = s[1] :
+    (s = ua.match(/chrome\/([\d.]+)/)) ? Sys.chrome = s[1] :
+    (s = ua.match(/opera.([\d.]+)/)) ? Sys.opera = s[1] :
+    (s = ua.match(/version\/([\d.]+).*safari/)) ? Sys.safari = s[1] : 0;
+
+    if (Sys.ie <= 8.0) {
+        return true;
+    };
 }
 
  //导航
