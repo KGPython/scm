@@ -10,17 +10,14 @@ import base.utils.Constants as constants
 import os
 from .forms import *
 import time,datetime
-import sys
+import os
 from django.core.paginator import Paginator,Page
 from django.conf import settings
 
 #读取文件
-def readFile(fn, buf_size=262144):
+def readFile(filePath, buf_size=262144):
     #存放文件路径
-    path = os.getcwd()#本地测试
-    path = constants.BASE_ROOT
-    file = path+fn
-    f = open(file,"rb")
+    f = open(filePath,"rb")
     while True:
         c = f.read(buf_size)
         if c:
@@ -33,21 +30,33 @@ def readFile(fn, buf_size=262144):
 def download(request):
     file = request.GET.get("filename","")
     filename = file.split("/")
-
-    response = StreamingHttpResponse(readFile(file))
-    response['Content-Type']='application/octet-stream'
-    response['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename[len(filename)-1])
-    response['Pragma'] = "no-cache"
-    response['Expires'] = "0"
-    return response
+    path = os.getcwd()#本地测试
+    #path = constants.BASE_ROOT
+    filePath = path+file
+    if not os.path.isfile(filePath):
+         pindex = request.GET.get("pindex")
+         request.message='no_file'
+         if pindex=='1':
+             return info(request)
+         else:
+             return msgPreview(request)
+    else:
+        response = StreamingHttpResponse(readFile(filePath))
+        response['Content-Type']='application/octet-stream'
+        response['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename[len(filename)-1])
+        response['Pragma'] = "no-cache"
+        response['Expires'] = "0"
+        return response
 
 def info(request):
     infocode = str(request.GET.get("infocode"))
     if infocode:
-        pub = Pubinfo.objects.values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath").get(Q(infocode=infocode))
+        pub = Pubinfo.objects.values("title","content","checker","subtime","mailpath","username","infocode",'infotype').get(Q(infocode=infocode))
+        infoTypeName = constants.PUBINFO_TYPE[pub['infotype']]
     else:
         pub = Pubinfo()
-    return render(request,"notice_article.html",{"pub":pub,"infoTypeName":constants.PUBINFO_TYPE[pub['infotype']]})
+        infoTypeName = ""
+    return render(request,"notice_article.html",{"pub":pub,"infoTypeName":infoTypeName})
 
 #根据条件查询协同信息
 def findPubInfoAllByCon(user):
@@ -101,7 +110,7 @@ def msglist(request):
             q = Q()
             kwargs = {}
             if infoCode:
-                kwargs.setdefault('infocode__contains',infoCode)
+                kwargs.setdefault('infocode__contains',infoCode.strip())
             kwargs.setdefault('subtime__gte',start.strftime("%Y-%m-%d")+" 00:00:00")
             kwargs.setdefault('subtime__lte',end.strftime("%Y-%m-%d")+" 23:59:59")
             kwargs.setdefault('grpcode',grpCode)
@@ -194,7 +203,11 @@ time = time.time()
 def msgPreview(request):
     userCode = request.session.get('s_ucode')
     infoCode = request.GET.get("infocode","")
-    infoObj = Pubinfo.objects.values("title","content","checker","subtime","mailpath").get(infocode=infoCode)
+    flag = request.GET.get("flag")
+    q_infocode = request.GET.get("q_infocode")
+    start = request.GET.get("start")
+    end = request.GET.get("end")
+    infoObj = Pubinfo.objects.values("title","content","checker","subtime","mailpath","infocode").get(infocode=infoCode)
     return render(request,'notice_preview.html',locals())
 
 def msgCreate(request):

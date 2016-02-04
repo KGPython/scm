@@ -10,7 +10,13 @@
         <h1 class="tTitle">
             <span >{{ infoTypeName }}</span>
             <span ><input type="button" value="下载附件" onclick="download('{{ pub.mailpath }}')"></span>
-            <span ><input type="button" value="返回" onclick="javascript:window.history.go(-1)"></span>
+            <span >
+                {% if request.session.s_utype == '1' %}
+                    <input type="button" value="返回" onclick="javascript:window.location.href='/scm/base/admin/index/'">
+                {% else %}
+                    <input type="button" value="返回" onclick="javascript:window.location.href='/scm/base/supp/home/'">
+                {% endif %}
+            </span>
         </h1>
         <div class="articleNotice comWidth">
             <h3>
@@ -30,7 +36,12 @@
             current="shouye"
 
             function download(fileName){
-                window.location.href='/scm/base/msg/download/?filename='+fileName
+                window.location.href='/scm/base/msg/download/?filename='+fileName+'&infocode={{ pub.infocode }}&pindex=1'
+            }
+
+            var flag = "{{ request.message }}"
+            if(flag=='no_file'){
+                alert("附件不存在！");
             }
         </script>
     </body>
