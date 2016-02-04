@@ -37,7 +37,8 @@ def index(request):
             bid = ''
             suppcode = ''
             status=''
-            sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm,a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode order by suppcode"
+            sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm," \
+                        "a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode order by suppcode"
         cursor = connection.cursor()
         cursor.execute(sql_topic)
         rslist = cursor.fetchall()
@@ -107,7 +108,8 @@ def suppStatusForm(request):
                     cursor.execute(feesumup_sql)
 
                 else:
-                    feesum_sql = "insert into bas_feesum (bid, suppcode, grpcode, ucode, supsum, status, bfdate) values (" + bid +",'"+suppcode+"','"+grpcode+"','"+ucode+"','"+str(bsum)+"','"+status+"',curdate())"
+                    feesum_sql = "insert into bas_feesum (bid, suppcode, grpcode, ucode, supsum, status, bfdate) " \
+                                 "values (" + bid +",'"+suppcode+"','"+grpcode+"','"+ucode+"','"+str(bsum)+"','"+status+"',curdate())"
                     cursor.execute(feesum_sql)
 
                 sql = "update bas_fee set status='" + status + "', bsum=" + str(bsum) + ",begindate='"+begindate+"',enddate='"+enddate+"',remark='"+remark+"' where bid=" + bid
