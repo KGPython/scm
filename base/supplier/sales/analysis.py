@@ -59,7 +59,7 @@ def query(request):
     sum4 = decimal.Decimal('0.0')
     try:
         sql1 = "select sum(ifnull(tb1.svalue,0)) from (select svalue from sales_pro " \
-               " where grpcode='"+grpcode+"'  and ("+codes+") and DATE_FORMAT(sdate,'%Y-%m-%d')>>='"+start+"'  and DATE_FORMAT(sdate,'%Y-%m-%d')><= '"+end+"' " \
+               " where grpcode='"+grpcode+"'  and ("+codes+") and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"'  and DATE_FORMAT(sdate,'%Y-%m-%d')<= '"+end+"' " \
                " and (sstyle <> '') and supercode='"+spercode+"' ) tb1"
 
         cursor = connection.cursor()
@@ -106,6 +106,7 @@ def query(request):
         cursor.close()
     except Exception as e:
         print(e)
+        rslist = []
 
     #折线图
     #imgfile = analysisImg(rslist,spercode,start,end)
