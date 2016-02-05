@@ -15,24 +15,24 @@
             <div class="query comWidth">
                 <form action="" class="query-list" id="changePasswdForm" name="changePasswdForm" method="post">
                     <p>
-                        <label>供应商编码：</label>{{ form.grpcode }}{{ form.grpcode.errors }}
+                        <label>供应商编码：</label>
+                        <input type="text" name="grpcode" value="{{ grpcode }}">
                     </p>
                     <p>
-                        <label>用户：</label>{{ form.ucode }}
+                        <label>登录名：</label>{{ form.ucode }}{{ form.ucode.errors }}
                     </p>
                     <p>
-                        <label>新密码：</label>{{ form.passwd }}
+                        <label>新密码：</label>{{ form.passwd }}{{ form.passwd.errors }}
                     </p>
                     <p>
-                        <label>确认密码：</label>{{ form.confirmpass }}
+                        <label>确认密码：</label>{{ form.confirmpass }}{{ form.confirmpass.errors }}
                     </p>
                     <p class="btn">
                         <input class="query-enter" type="button" id="btnQuery" name="btnQuery" value="查询管理员" onclick="queryUser()">
                     </p>
                     <p class="btn">
-                        <input class="query-enter" type="button" id="btnSave" name="btnSave" value="重新生成密码" onclick="updatePwd()">
+                        <input class="query-enter" type="button" id="btnSave" name="btnSave" value="重新生成密码" >
                     </p>
-                    <input type="hidden" id="action" name="action">
                 </form>
             </div>
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
@@ -42,13 +42,13 @@
                             选择
                         </th>
                         <th>
-                            姓名
-                        </th>
-                        <th>
                             登录名
                         </th>
                         <th>
-                            单位
+                            供应商编码
+                        </th>
+                        <th>
+                            供应商名称
                         </th>
                     </tr>
                 </thead>
@@ -59,12 +59,12 @@
                             <a href="javascript:void(0);" id="addUcode" name="addUcode" onclick="addUcode('{{ rows.ucode }}')">+</a>
                         </td>
                         <td>
-                            {{ rows.gnm }}
-                        </td>
-                        <td>
                             {{ rows.ucode }}
                         </td>
-                        <td></td>
+                        <td>{{ rows.grpcode }}</td>
+                        <td>
+                            {{ rows.gnm }}
+                        </td>
                     </tr>
                     {% empty %}
                         <tr><td colspan="4">无此条数据</td></tr>
@@ -78,7 +78,6 @@
      current="gongyingshangquanxian";
     function queryUser(){
         $("#changePasswdForm").attr("action", '/scm/base/admin/suppmanager/');
-        $("#action").attr("value","btnQuery");
         $("#changePasswdForm").submit();
     }
     function updatePwd() {
@@ -109,18 +108,69 @@
             return false;
         }
 
-        $("#changePasswdForm").attr("action", '/scm/base/admin/suppmanager/');
-        $("#action").attr("value","btnSave");
+        $("#changePasswdForm").attr("action", '/scm/base/admin/supp_updatepwd/');
         $("#changePasswdForm").submit();
     }
     function addUcode(ucode) {
         $("#uCode").attr("value", ucode);
+        $("#id_passwd").val("");
+        $("#id_confirmpass").val("");
     }
 </script>
-    <script>
-        $(function(){
-            $(".errorlist").css({"margin-top":"30px","margin-left":"-150px"})
-        });
+<script>
+    $(function(){
+        $('#btnSave').bind("click",function(){
+            var ajax_option= {
+                url: "/scm/base/admin/supp_updatepwd/",
+                data:$('#changePasswdForm').serialize(),
+                type:'post',
+                dataType:'json',
+                async:false,
+                cache: false,
+                beforeSubmit:function(a,f,o){
+                    var ucode = $("#uCode");
+                    var pwd = $("#id_passwd");
+                    var repwd = $("#id_confirmpass");
 
-    </script>
+                    if(ucode.val()==''){
+                         alert("用户不能为空，请选择用户");
+                         ucode.focus();
+                         return false;
+                    }
+
+                    if(pwd.val()==''){
+                         alert("新密码不能为空");
+                         pwd.focus();
+                         return false;
+                    }
+                    if(repwd.val()==''){
+                        alert("确认密码不能为空");
+                        repwd.focus();
+                        return false;
+                    }
+
+                    if(pwd.val()!==repwd.val()){
+                        alert("确认密码与新密码不一致");
+                        repwd.focus();
+                        return false;
+                    }
+                },
+                success: function (result) {
+                    var status = result.status;
+                    if(status=='0') {
+                        $("#id_passwd").val("");
+                        $("#id_confirmpass").val("");
+                        alert("操作成功");
+                    }else{
+                        alert("操作失败");
+                    }
+                }
+            }
+
+            $('#changePasswdForm').ajaxSubmit(ajax_option);
+        });
+        $(".errorlist").css({"margin-top":"30px","margin-left":"-150px"})
+    });
+
+</script>
 </html>
