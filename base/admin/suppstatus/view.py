@@ -27,10 +27,16 @@ def index(request):
         form = SuppQuery({"bid":bid,"suppcode":suppcode,"status":status})
         if bid:
             sql_topic += " and a.bid like '%" + bid.strip() + "%'"
+        else:
+            bid = ""
         if suppcode:
             sql_topic += " and a.suppcode like '%" + suppcode.strip() + "%'"
+        else:
+            suppcode = ""
         if status:
             sql_topic += " and a.status='" + status + "'"
+        else:
+            status = ""
         sql_topic += " order by a.suppcode"
 
         cursor = connection.cursor()

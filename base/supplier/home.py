@@ -58,22 +58,30 @@ def index(request):
 
         rds = ",".join(rdays)
         tds = ",".join(tdays)
-
-    fee = BasFee.objects.get(suppcode=suppcode,grpcode=s_grpcode,ucode=user["ucode"])
-    endDate = fee.enddate
-
-    conn = mtu.get_MssqlConn()
-    #g-购销 l-联营 d-代销  z-租赁
-    pstart,pend,cstart,cend = getStartAndEndDate(contracttype)
-    #查询单据信息（动态查询）
-    rdict = findBillItem(conn,suppcode,pstart,pend,cstart,cend,None,contracttype)
-    if rdict and  rdict["blist"]:
-        blist = rdict["blist"]
-        blen = len(blist)
-        request.session["s_rdict"] = blen
     else:
-        request.session["s_rdict"] = 0
-    conn.close()
+        rds = []
+        tds = []
+
+    endDate = ""
+    try:
+        fee = BasFee.objects.get(suppcode=suppcode,grpcode=s_grpcode,ucode=user["ucode"])
+        if fee:
+            endDate = fee.enddate
+
+        conn = mtu.get_MssqlConn()
+        #g-购销 l-联营 d-代销  z-租赁
+        pstart,pend,cstart,cend = getStartAndEndDate(contracttype)
+        #查询单据信息（动态查询）
+        rdict = findBillItem(conn,suppcode,pstart,pend,cstart,cend,None,contracttype)
+        if rdict and  rdict["blist"]:
+            blist = rdict["blist"]
+            blen = len(blist)
+            request.session["s_rdict"] = blen
+        else:
+            request.session["s_rdict"] = 0
+        conn.close()
+    except Exception as e:
+        print(e)
 
     return render(request,"index.html",{"page":page,"pageNum":pageNum,"pwdInit":pwdInit,"rdays":rds,"tdays":tds,"endDate":endDate})
 

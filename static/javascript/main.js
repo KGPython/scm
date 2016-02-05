@@ -182,6 +182,7 @@ $("#enterAjax").click(function(){
         }
     });
     console.log(data);
+
     if(inputError==0){
         jsonStr= JSON.stringify(data);
         $.ajax({

@@ -292,6 +292,11 @@ def applySave(request):
                     sheetId = getSheetId(conn2)
                     params["sheetid"] = sheetId
                     saveBillHead0(cursor,params)
+
+                    sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
+                              "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
+                              .format(shid=sheetId,shType=5203,flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINID,chNo=Constants.SCM_ACCOUNT_LOGINNO)
+                    cursor.execute(sqlFlow)
                 else:
                     #修改
                     type = 1
