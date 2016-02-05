@@ -93,7 +93,7 @@
                 <tbody>
                       <tr>
                           <td width="30%" colspan="2">作者: {{ userName }}</td>
-                          <td width="30%">时间:{{ time | date:'Y-m-d' }}</td>
+                          <td width="30%">时间:{{ nowtime | date:'Y-m-d H:i' }}</td>
                           <td align="left">
                               {% if action != 'answer' %}
                               <div class="fileBox">

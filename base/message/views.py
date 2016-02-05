@@ -199,7 +199,7 @@ def msglist(request):
 
 
 timestr = time.strftime("%Y-%m-%d %H:%M:%S")
-time = time.time()
+
 def msgPreview(request):
     userCode = request.session.get('s_ucode')
     infoCode = request.GET.get("infocode","")
@@ -217,7 +217,7 @@ def msgCreate(request):
     userCode = request.session.get('s_ucode')
     userName = request.session.get('s_uname')
     userType = request.session.get('s_utype')
-
+    nowtime = datetime.datetime.today()
     if userType=="2":
         userGrpName = request.session.get('s_suppname','')
         userGrpCode = request.session.get('s_suppcode')
@@ -322,6 +322,8 @@ def msgCreate(request):
             succ = "3"
         else:
             succ = "2" #设置提交成功返回信息，在前端展现
+
+
     return render(request, 'noticeCreate.html',locals())
 
 def uploadFile(fileObj):
@@ -329,10 +331,10 @@ def uploadFile(fileObj):
     UPLOAD_ROOT = constants.BASE_ROOT+'/upload/message/'
 
     # microsecond = datetime.datetime.now()
-
+    nowtime = time.time()
     file_name = fileObj.name #附件存储名称
     file_name_list = file_name.split(".")
-    timestr= str(int(time*1000000))
+    timestr= str(int(nowtime*1000000))
     file_name = timestr+"."+file_name_list[1]     #上传附件的存储名称
 
     file_full_path = os.path.join(UPLOAD_ROOT, file_name)
