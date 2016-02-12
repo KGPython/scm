@@ -286,7 +286,7 @@ def verifycode(request,key):
     image = Image.new('RGB', (width, height), (255, 255, 255))
     # 创建Font对象:
     root = settings.BASE_DIR+Constants.FONT_ARIAL
-    font = ImageFont.truetype(root, 36)
+    font = ImageFont.truetype(root, 50)     #36 - 字体大小，数值大字体大
     # 创建Draw对象:
     draw = ImageDraw.Draw(image)
     # 填充每个像素:
@@ -297,7 +297,8 @@ def verifycode(request,key):
     # 输出文字:
     chars=['0','1','2','3','4','5','6','7','8','9',
            #'a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-           'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',]
+           #'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+           ]
     y = [y for y in [random.randint(x-x, len(chars)-1) for x in range(4)] ]
     charlist = [chars[i] for i in y]
 
