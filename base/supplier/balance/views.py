@@ -177,7 +177,7 @@ def applyEdit(request):
     result["sum4"] = rdict["sum4"]
     result["kxinvoice"] =  "%0.2f" % kxinvoice
     result["zkinvoice"] = "%0.2f" % kxinvoice
-    print("edit",7)
+
     return render(request,"user_settleApply.html",result)
 
 

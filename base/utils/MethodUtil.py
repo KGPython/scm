@@ -51,12 +51,11 @@ def get_MssqlConn():
 
 #获取mysql数据库连接
 def getMysqlConn():
-
-    conn = pymysql.connect(host="192.168.122.146",
-                           port=3306,
-                           user="root",
-                           password="10233201sn",
-                           db="kgscm",
+    conn = pymysql.connect(host=Constants.SCM_DB_MYSQL_SERVER,
+                           port=Constants.SCM_DB_MYSQL_PORT,
+                           user=Constants.SCM_DB_MYSQL_USER,
+                           password=Constants.SCM_DB_MYSQL_PASSWORD,
+                           db=Constants.SCM_DB_MYSQL_DATABASE,
                            charset='utf8mb4',
                            cursorclass=pymysql.cursors.DictCursor)
     return conn

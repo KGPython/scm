@@ -27,7 +27,7 @@ function myBrowser(){
     //}
 }
 
-function checkBrowser(){
+function myBrowser2(){
     var Sys = {};
     var ua = navigator.userAgent.toLowerCase();
     var s;
@@ -40,7 +40,9 @@ function checkBrowser(){
 
     if (Sys.ie <= 8.0) {
         return true;
-    };
+    }else{
+        return false;
+    }
 }
 
  //导航
