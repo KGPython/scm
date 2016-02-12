@@ -706,7 +706,11 @@ def undueCostValue(conn,venderid,payabledate):
 def findAdvance(conn,venderid):
     sql = "select ShopID,VenderID,PreMoney,AccFlag,sDate,BillheadSheetID from PreMoney where venderid='{venderid}'".format(venderid=venderid)
     item = conn.execute_row(sql)
-    return item
+    if item:
+        advance = item[2]
+    else:
+        advance = None
+    return advance
 
 
 def findBillItem(conn,venderid,pstart,pend,cstart,cend,refsheetidList=None,contracttype=None):

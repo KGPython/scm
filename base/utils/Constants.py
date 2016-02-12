@@ -57,6 +57,20 @@ SCM_SHEET_TYPE={"2301":"RK","2323":"RT","2430":"KCJJ","2431":"KCJJ","2446":"PCSL
 SCM_CONFIG_MODULE = "system"
 SCM_CONFIG_BILL_ISLIMIT = "scm.bill.islimit"
 
+#数据库
+###正式库###
+# SCM_DB_SERVER = "192.168.250.11"
+# SCM_DB_PORT = 1433
+# SCM_DB_USER = "scm"
+# SCM_DB_PASSWORD = "Scm20140607PI"
+# SCM_DB_DATABASE = "myshopcmstock"
+###测试库###
+SCM_DB_SERVER = "192.168.122.141"
+SCM_DB_PORT = 1433
+SCM_DB_USER = "myshop"
+SCM_DB_PASSWORD = "oyf20140208HH"
+SCM_DB_DATABASE = "mySHOPCMStock"
+
 
 
 

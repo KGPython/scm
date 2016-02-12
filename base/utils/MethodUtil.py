@@ -31,21 +31,21 @@ def getProperties(module,key):
 
 #获取mysql数据库连接
 def getMssqlConn(as_dict=True):
-    conn = pymssql.connect(host="192.168.122.141",
-                           port=1433,
-                           user="myshop",
-                           password="oyf20140208HH",
-                           database="mySHOPCMStock",
+    conn = pymssql.connect(host=Constants.SCM_DB_SERVER,
+                           port=Constants.SCM_DB_PORT,
+                           user=Constants.SCM_DB_USER,
+                           password=Constants.SCM_DB_PASSWORD,
+                           database=Constants.SCM_DB_DATABASE,
                            charset='utf8',
                            as_dict=as_dict)
     return conn
 
 def get_MssqlConn():
-    conn = _mssql.connect(server="192.168.122.141",
-                           port=1433,
-                           user="myshop",
-                           password="oyf20140208HH",
-                           database="mySHOPCMStock",
+    conn = _mssql.connect(server=Constants.SCM_DB_SERVER,
+                           port=Constants.SCM_DB_PORT,
+                           user=Constants.SCM_DB_USER,
+                           password=Constants.SCM_DB_PASSWORD,
+                           database=Constants.SCM_DB_DATABASE,
                            charset='utf8')
     return conn
 
