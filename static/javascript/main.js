@@ -184,9 +184,9 @@ $("#enterAjax").click(function(){
         }
     });
 
-    if(console){
-        console.log(data);
-    }
+    //if(console){
+    //    console.log(data);
+    //}
 
     if(inputError==0){
         jsonStr= JSON.stringify(data);

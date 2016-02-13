@@ -599,16 +599,21 @@ def getStartAndEndDate(contracttype):
     #结算日期
     #erp系统使用的开始时间
     pstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
-    #当前日期
-    pend = datetime.datetime.now().strftime("%Y-%m-%d")
-    if contracttype=="g":   #购销
+
+    if contracttype == "d":
+        #上月底
+        pend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
+    else:
+        #当前日期
+        pend = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    if contracttype == "g":   #购销
         #单据日期
         cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
         cend = datetime.datetime.now().strftime("%Y-%m-%d")
     else:
         #单据日期 上月一整月
         cstart = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y-%m-%d")
-        cstart = "2012-01-01"
         cend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
     return pstart,pend,cstart,cend
 
