@@ -41,7 +41,7 @@
             </div>
         </div>
         {% include "common/footer.html" %}
-        <script>
+        <script type="text/javascript">
             $(function(){
 
                   $('#loginId').bind("click",function(){
@@ -65,7 +65,7 @@
                                 }else if(status=='4'){
                                     setCnt("msg","账号尚未分配权限，请与系统管理员联系","red");
                                 }else{
-                                    window.location.href=result.homeurl
+                                    window.location.href=result.homeurl;
                                 }
                             }
                         }

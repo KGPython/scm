@@ -50,15 +50,15 @@
             current ="tongzhi";
             function setAction(act){
                 var utype = "{{ request.session.s_utype }}";
-                var infotype = ""
+                var infotype = "";
                 if(utype=="2"){
-                    infotype = "1"
+                    infotype = "1";
                 }else{
-                    infotype = "0"
+                    infotype = "0";
                 }
                 window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype;
             }
-            var flag = "{{ request.message }}"
+            var flag = "{{ request.message }}";
             if(flag=='no_file'){
                 alert("附件不存在！");
             }

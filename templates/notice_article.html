@@ -33,13 +33,13 @@
         </div>
         {% include "common/footer.html" %}
         <script type="text/javascript">
-            current="shouye"
+            current="shouye";
 
             function download(fileName){
-                window.location.href='/scm/base/msg/download/?filename='+fileName+'&infocode={{ pub.infocode }}&pindex=1'
+                window.location.href='/scm/base/msg/download/?filename='+fileName+'&infocode={{ pub.infocode }}&pindex=1';
             }
 
-            var flag = "{{ request.message }}"
+            var flag = "{{ request.message }}";
             if(flag=='no_file'){
                 alert("附件不存在！");
             }

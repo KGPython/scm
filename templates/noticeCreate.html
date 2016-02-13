@@ -162,12 +162,12 @@
     </div>
      {% include "common/footer.html" %}
     <script>
-        current = "tongzhi"
+        current = "tongzhi";
 
         $(function(){
              $('#depart').find("option[value='{{ info.depart }}']").attr("selected", true);
              $('input[name="accesstype"]').on("change",function(){
-                 var atype = $(this).val()
+                 var atype = $(this).val();
                  if(atype==13){
                       $('#depart').val('');
                       $('#depart').prop('readonly', true);
@@ -182,7 +182,7 @@
         }
 
         $("#file").change(function(){
-            $("#fileName").html($(this).val())
+            $("#fileName").html($(this).val());
         });
         $("#enter").click(function(e) {
             var title = $.trim($("#title").val());
@@ -207,8 +207,6 @@
                 alert('回复成功');
                 window.location.href="{% url 'msglist' %}?flag=msgOut";
             {% endif %}
-
-
     </script>
 </body>
 </html>

@@ -16,7 +16,7 @@ function myBrowser(){
         IE8 = fIEVersion == 8.0;
 
         if (IE7 || IE8) {
-            return "IE7 AND IE8"
+            return "IE7 AND IE8";
         }
     }//isIE end
     //if (isFF) {
@@ -81,7 +81,7 @@ $(".shopList-cnt .close").click(function(){
     $(".shopList-cnt").hide();
 });
 $(".all").click(function(){
-    var check_status=$(this).prop('checked')
+    var check_status=$(this).prop('checked');
     // alert(check_status)
     if(check_status){
         $(this).parent().siblings().find("input").prop('checked',true);
@@ -93,10 +93,10 @@ $(".all").click(function(){
 
 //权限管理
 $(".powerSet").click(function(){
-    $(".powerSet-box").show()
+    $(".powerSet-box").show();
 });
 $(".powerSet-box .close").click(function(){
-    $(".powerSet-box").hide()
+    $(".powerSet-box").hide();
 });
 
 $(".roles").click(function(){
@@ -114,10 +114,10 @@ $(document).on('blur','input[name=cmoney]',function(){
     trs.each(function(){
         var cmoney = $(this).find('td').eq('3').find('input').val();
         if(cmoney){
-            cmoneySum += parseFloat(cmoney,2)
+            cmoneySum += parseFloat(cmoney,2);
         }
     });
-    $("#cmoneySum").text(parseFloat(cmoneySum).toFixed(2))
+    $("#cmoneySum").text(parseFloat(cmoneySum).toFixed(2));
 });
 //税额（csh）求和
 $(document).on('blur','input[name=csh]',function(){
@@ -126,10 +126,10 @@ $(document).on('blur','input[name=csh]',function(){
     trs.each(function(){
         var csh = $(this).find('td').eq('4').find('input').val();
         if(csh){
-            cshSum += parseFloat(csh,2)
+            cshSum += parseFloat(csh,2);
         }
     });
-    $("#cshSum").text(parseFloat(cshSum).toFixed(2))
+    $("#cshSum").text(parseFloat(cshSum).toFixed(2));
 });
 //税额（jshj）求和
 $(document).on('blur','input[name=jshj]',function(){
@@ -138,10 +138,10 @@ $(document).on('blur','input[name=jshj]',function(){
     trs.each(function(){
         var jshj = $(this).find('td').eq('5').find('input').val();
         if(jshj){
-            jshjSum += parseFloat(jshj,2)
+            jshjSum += parseFloat(jshj,2);
         }
     });
-    $("#jshjSum").text(parseFloat(jshjSum).toFixed(2))
+    $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 
 
@@ -183,7 +183,10 @@ $("#enterAjax").click(function(){
             }
         }
     });
-    console.log(data);
+
+    if(console){
+        console.log(data);
+    }
 
     if(inputError==0){
         jsonStr= JSON.stringify(data);
@@ -204,7 +207,7 @@ $("#enterAjax").click(function(){
                     alert('保存成功');
                     window.location.href="/scm/base/supp/home/";
                 }else{
-                    alert('保存失败')
+                    alert('保存失败');
                 }
             }
         })
