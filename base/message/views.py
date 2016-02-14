@@ -10,17 +10,14 @@ import base.utils.Constants as constants
 import os
 from .forms import *
 import time,datetime
-import sys
+import os
 from django.core.paginator import Paginator,Page
 from django.conf import settings
 
 #读取文件
-def readFile(fn, buf_size=262144):
+def readFile(filePath, buf_size=262144):
     #存放文件路径
-    path = os.getcwd()#本地测试
-    path = constants.BASE_ROOT
-    file = path+fn
-    f = open(file,"rb")
+    f = open(filePath,"rb")
     while True:
         c = f.read(buf_size)
         if c:
@@ -33,21 +30,33 @@ def readFile(fn, buf_size=262144):
 def download(request):
     file = request.GET.get("filename","")
     filename = file.split("/")
-
-    response = StreamingHttpResponse(readFile(file))
-    response['Content-Type']='application/octet-stream'
-    response['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename[len(filename)-1])
-    response['Pragma'] = "no-cache"
-    response['Expires'] = "0"
-    return response
+    path = os.getcwd()#本地测试
+    #path = constants.BASE_ROOT
+    filePath = path+file
+    if not os.path.isfile(filePath):
+         pindex = request.GET.get("pindex")
+         request.message='no_file'
+         if pindex=='1':
+             return info(request)
+         else:
+             return msgPreview(request)
+    else:
+        response = StreamingHttpResponse(readFile(filePath))
+        response['Content-Type']='application/octet-stream'
+        response['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename[len(filename)-1])
+        response['Pragma'] = "no-cache"
+        response['Expires'] = "0"
+        return response
 
 def info(request):
     infocode = str(request.GET.get("infocode"))
     if infocode:
-        pub = Pubinfo.objects.values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath").get(Q(infocode=infocode))
+        pub = Pubinfo.objects.values("title","content","checker","subtime","mailpath","username","infocode",'infotype').get(Q(infocode=infocode))
+        infoTypeName = constants.PUBINFO_TYPE[pub['infotype']]
     else:
         pub = Pubinfo()
-    return render(request,"notice_article.html",{"pub":pub,"infoTypeName":constants.PUBINFO_TYPE[pub['infotype']]})
+        infoTypeName = ""
+    return render(request,"notice_article.html",{"pub":pub,"infoTypeName":infoTypeName})
 
 #根据条件查询协同信息
 def findPubInfoAllByCon(user):
@@ -58,13 +67,13 @@ def findPubInfoAllByCon(user):
     #供应商查询已接收通知
     if utype=="2":
         result = Pubinfo.objects.filter(Q(infotype=0) & ((Q(accesstype=11) & Q(depart=user["grpcode"])) | (Q(accesstype=13) & Q(depart=""))))\
-            .order_by("-infocode")\
+            .order_by("-subtime")\
             .values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath")
 
     else:
         #零售商查询已发送出通知
         result = Pubinfo.objects.filter(Q(checker=user["ucode"]))\
-            .order_by("-infocode")\
+            .order_by("-subtime")\
             .values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath")
 
     return result
@@ -101,7 +110,7 @@ def msglist(request):
             q = Q()
             kwargs = {}
             if infoCode:
-                kwargs.setdefault('infocode__contains',infoCode)
+                kwargs.setdefault('infocode__contains',infoCode.strip())
             kwargs.setdefault('subtime__gte',start.strftime("%Y-%m-%d")+" 00:00:00")
             kwargs.setdefault('subtime__lte',end.strftime("%Y-%m-%d")+" 23:59:59")
             kwargs.setdefault('grpcode',grpCode)
@@ -115,11 +124,11 @@ def msglist(request):
 
                 #获取数据列表
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
             if flag == 'msgOut':
                 q.add(Q(checker=userCode),Q.AND)
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
     else:
         infoCode = request.GET.get('infocode','')
         start = request.GET.get('start','')
@@ -160,12 +169,12 @@ def msglist(request):
 
             #获取数据列表
             infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
 
         if flag == 'msgOut':
             q.add(Q(checker=userCode),Q.AND)
             infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
-                                          .filter(q,**kwargs)
+                                          .filter(q,**kwargs).order_by("-subtime")
 
     paginator=Paginator(infoList,20)
     try:
@@ -190,11 +199,15 @@ def msglist(request):
 
 
 timestr = time.strftime("%Y-%m-%d %H:%M:%S")
-time = time.time()
+
 def msgPreview(request):
     userCode = request.session.get('s_ucode')
     infoCode = request.GET.get("infocode","")
-    infoObj = Pubinfo.objects.values("title","content","checker","subtime","mailpath").get(infocode=infoCode)
+    flag = request.GET.get("flag")
+    q_infocode = request.GET.get("q_infocode")
+    start = request.GET.get("start")
+    end = request.GET.get("end")
+    infoObj = Pubinfo.objects.values("title","content","checker","subtime","mailpath","infocode").get(infocode=infoCode)
     return render(request,'notice_preview.html',locals())
 
 def msgCreate(request):
@@ -204,7 +217,7 @@ def msgCreate(request):
     userCode = request.session.get('s_ucode')
     userName = request.session.get('s_uname')
     userType = request.session.get('s_utype')
-
+    nowtime = datetime.datetime.today()
     if userType=="2":
         userGrpName = request.session.get('s_suppname','')
         userGrpCode = request.session.get('s_suppcode')
@@ -245,39 +258,72 @@ def msgCreate(request):
         if fileObj:
             mailpath=uploadFile(fileObj)
 
-        #编辑
-        if infoCode and action!="answer":
-            Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,depart=depart,mailpath=mailpath,subtime=timestr)
-            succ = "1" #设置提交成功返回信息，在前端展现
-            # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
-        #创建
+        #指定编码
+        if (accessType=='11' or accessType=='21') and depart:
+            import re
+            departList = re.split(r'[,，]', depart)
+            if departList:
+                for dept in departList:
+                    #编辑
+                    if infoCode and action!="answer":
+                        Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,depart=dept,mailpath=mailpath,subtime=timestr)
+                        succ = "1" #设置提交成功返回信息，在前端展现
+                        # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
+                    #创建
+                    else:
+                        info = Pubinfo()
+                        #session中user信息
+                        info.checker = userCode
+                        info.grpcode = grpCode
+                        info.username = userName
+                        info.usergrpcode = userGrpCode
+                        info.usergrpname = userGrpName
+
+                        #表单提交信息
+                        info.infotype = infoType
+                        info.accesstype = accessType
+                        info.depart = dept
+                        info.title = title
+                        info.content = content
+                        info.mailpath = mailpath
+                        info.subtime = timestr
+
+                        newcode = getInfoCode(request,'pubinfoid')
+                        info.infocode= newcode
+
+                        info.save()
         else:
-            info = Pubinfo()
-            #session中user信息
-            info.checker = userCode
-            info.grpcode = grpCode
-            info.username = userName
-            info.usergrpcode = userGrpCode
-            info.usergrpname = userGrpName
-
-            #表单提交信息
-            info.infotype = infoType
-            info.accesstype = accessType
-            info.depart = depart
-            info.title = title
-            info.content = content
-            info.mailpath = mailpath
-            info.subtime = timestr
-
-            infoCode = getInfoCode(request,'pubinfoid')
-            info.infocode= infoCode
-
-            info.save()
-            # return HttpResponseRedirect('/scm/base/msg/msgcreate/?infocode='+infoCode+"&infotype="+infoType)
-            if action=="answer":
-                succ = "3"
+            if infoCode and action!="answer":
+                Pubinfo.objects.filter(infocode=infoCode).update(title=title,content=content,mailpath=mailpath,subtime=timestr)
+                succ = "1" #设置提交成功返回信息，在前端展现
+            #创建
             else:
-                succ = "2" #设置提交成功返回信息，在前端展现
+                info = Pubinfo()
+                #session中user信息
+                info.checker = userCode
+                info.grpcode = grpCode
+                info.username = userName
+                info.usergrpcode = userGrpCode
+                info.usergrpname = userGrpName
+
+                #表单提交信息
+                info.infotype = infoType
+                info.accesstype = accessType
+                info.title = title
+                info.content = content
+                info.mailpath = mailpath
+                info.subtime = timestr
+
+                newcode = getInfoCode(request,'pubinfoid')
+                info.infocode= newcode
+
+                info.save()
+        if action=="answer":
+            succ = "3"
+        else:
+            succ = "2" #设置提交成功返回信息，在前端展现
+
+
     return render(request, 'noticeCreate.html',locals())
 
 def uploadFile(fileObj):
@@ -285,10 +331,10 @@ def uploadFile(fileObj):
     UPLOAD_ROOT = constants.BASE_ROOT+'/upload/message/'
 
     # microsecond = datetime.datetime.now()
-
+    nowtime = time.time()
     file_name = fileObj.name #附件存储名称
     file_name_list = file_name.split(".")
-    timestr= str(int(time*1000000))
+    timestr= str(int(nowtime*1000000))
     file_name = timestr+"."+file_name_list[1]     #上传附件的存储名称
 
     file_full_path = os.path.join(UPLOAD_ROOT, file_name)

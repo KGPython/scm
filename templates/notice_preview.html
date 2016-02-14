@@ -9,7 +9,14 @@
         {% load basefilter %}
         {% include "common/nav.html" %}
         <p class="comWidth">
-            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
+            <form action="/scm/base/msg/msglist/" method="post">
+                {% csrf_token %}
+                <input type="hidden" name="flag" value="{{ flag }}">
+                <input type="hidden" name="infocode" value="{{ q_infocode }}">
+                <input type="hidden" name="start" value="{{ start }}">
+                <input type="hidden" name="end" value="{{ end }}">
+                <input  class="query-enter right"  type="submit" value="返回" >
+            </form>
             {% if infoObj.checker != userCode %}
                <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">
             {% endif %}
@@ -22,7 +29,7 @@
             <h2>
                 {{ infoObj.title }}
                 {% if infoObj.mailpath %}
-                <a class="button right" href="/scm/base/msg/download/?filename={{ infoObj.mailpath }}">
+                <a class="button right" href="/scm/base/msg/download/?filename={{ infoObj.mailpath }}&infocode={{ infoObj.infocode }}&pindex=2&q_infocode={{ q_infocode }}&start={{ start }}&end={{ end }}&flag={{ flag }}">
                     下载附件
                 </a>
 
@@ -43,13 +50,17 @@
             current ="tongzhi";
             function setAction(act){
                 var utype = "{{ request.session.s_utype }}";
-                var infotype = ""
+                var infotype = "";
                 if(utype=="2"){
-                    infotype = "1"
+                    infotype = "1";
                 }else{
-                    infotype = "0"
+                    infotype = "0";
                 }
                 window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype;
+            }
+            var flag = "{{ request.message }}";
+            if(flag=='no_file'){
+                alert("附件不存在！");
             }
         </script>
     </body>

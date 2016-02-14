@@ -21,20 +21,24 @@ def index(request):
     sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm"
     sql_topic += ",a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode"
     if request.method == 'GET':
-        form = SuppQuery(request.GET)
-        if form.is_valid():
-            bid = form.cleaned_data['bid']
-            suppcode = form.cleaned_data['suppcode']
-            status = form.cleaned_data['status']
-            if bid:
-                sql_topic += " and bid='" + bid + "'"
-            if suppcode:
-                sql_topic += " and a.suppcode like '%" + suppcode + "%'"
-            if status:
-                sql_topic += " and a.status='" + status + "'"
-            sql_topic += " order by suppcode"
+        bid =  request.GET.get('bid')
+        suppcode =  request.GET.get('suppcode')
+        status =  request.GET.get('status')
+        form = SuppQuery({"bid":bid,"suppcode":suppcode,"status":status})
+        if bid:
+            sql_topic += " and a.bid like '%" + bid.strip() + "%'"
         else:
-            sql_topic = "select a.bid, a.ucode, a.suppcode as suppcode, a.status as status, a.grpcode as grpcode, a.bsum as bsum, b.chnm as chnm,a.begindate,a.enddate,a.remark from bas_fee as a, bas_supplier as b where a.suppcode = b.suppcode order by suppcode"
+            bid = ""
+        if suppcode:
+            sql_topic += " and a.suppcode like '%" + suppcode.strip() + "%'"
+        else:
+            suppcode = ""
+        if status:
+            sql_topic += " and a.status='" + status + "'"
+        else:
+            status = ""
+        sql_topic += " order by a.suppcode"
+
         cursor = connection.cursor()
         cursor.execute(sql_topic)
         rslist = cursor.fetchall()
@@ -60,6 +64,7 @@ def index(request):
             resultList = paginator.page(paginator.num_pages)  # 取最后一页的记录
     else:
         form = SuppQuery()
+
     return render(request, 'admin/sysConf_supply_status.html',
                   {'form': form, 'resultList': resultList, 'posts': posts, 'page': page, 'bid': bid,
                    'suppcode': suppcode, 'status': status})
@@ -104,7 +109,8 @@ def suppStatusForm(request):
                     cursor.execute(feesumup_sql)
 
                 else:
-                    feesum_sql = "insert into bas_feesum (bid, suppcode, grpcode, ucode, supsum, status, bfdate) values (" + bid +",'"+suppcode+"','"+grpcode+"','"+ucode+"','"+str(bsum)+"','"+status+"',curdate())"
+                    feesum_sql = "insert into bas_feesum (bid, suppcode, grpcode, ucode, supsum, status, bfdate) " \
+                                 "values (" + bid +",'"+suppcode+"','"+grpcode+"','"+ucode+"','"+str(bsum)+"','"+status+"',curdate())"
                     cursor.execute(feesum_sql)
 
                 sql = "update bas_fee set status='" + status + "', bsum=" + str(bsum) + ",begindate='"+begindate+"',enddate='"+enddate+"',remark='"+remark+"' where bid=" + bid

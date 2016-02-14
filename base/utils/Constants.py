@@ -12,6 +12,8 @@ ORG_STATUS = {"0":"有效","1":"无效"}
 
 PROM_FLAG = {"0":"正常","1":"促销"}
 
+USER_STATUS = {"Y":"已启用","N":"已禁用"}
+
 PWD_PREFIX = "www.ikuanguang.com"
 
 SALE_STATUS = {"0":"正常","1":"暂停订货","2":"暂停销售","3":"已清退","4":"清退","5":"暂停经营","6":"待清退","7":"待启用","8":"新品"}
@@ -54,6 +56,25 @@ SCM_SHEET_TYPE={"2301":"RK","2323":"RT","2430":"KCJJ","2431":"KCJJ","2446":"PCSL
 
 SCM_CONFIG_MODULE = "system"
 SCM_CONFIG_BILL_ISLIMIT = "scm.bill.islimit"
+
+#数据库
+SCM_DB_MYSQL_SERVER = "192.168.122.146"
+SCM_DB_MYSQL_PORT = 3306
+SCM_DB_MYSQL_USER = "root"
+SCM_DB_MYSQL_PASSWORD = "10233201sn"
+SCM_DB_MYSQL_DATABASE = "kgscm"
+###正式库###
+# SCM_DB_SERVER = "192.168.250.11"
+# SCM_DB_PORT = 1433
+# SCM_DB_USER = "scm"
+# SCM_DB_PASSWORD = "Scm20140607PI"
+# SCM_DB_DATABASE = "myshopcmstock"
+###测试库###
+SCM_DB_SERVER = "192.168.122.141"
+SCM_DB_PORT = 1433
+SCM_DB_USER = "myshop"
+SCM_DB_PASSWORD = "oyf20140208HH"
+SCM_DB_DATABASE = "mySHOPCMStock"
 
 
 

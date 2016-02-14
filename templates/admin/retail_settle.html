@@ -37,7 +37,7 @@
                     {{ form.status }}
                 </p>
                 <p>
-                    <label>查询条件：</label>
+                    <label>排序条件：</label>
                     {{ form.orderStyle }}
                 </p>
                 <p>
@@ -104,13 +104,12 @@
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                 <thead>
                     <tr>
-                        <th> 结算位置</th>
+                        <th>结算位置</th>
                         <th>供应商编码</th>
                         <th>供应商名称</th>
                         <th>结算单编号</th>
                         <th>上次结算日期</th>
                         <th>本次结算日期</th>
-                        <th>制表日期</th>
                         <th>审核状态</th>
                         <th>确认状态</th>
                         <th>查看次数</th>
@@ -131,7 +130,6 @@
                         </td>
                         <td>{{ balance.begindate | date:'Y-m-d' }}</td>
                         <td>{{ balance.enddate | date:'Y-m-d' }}</td>
-                        <td>{{ balance.editdate | date:'Y-m-d' }}</td>
                         <td>{% if balance.flag == 0 %}制单{% elif balance.flag == 1 %}制单审核{% elif balance.flag == 2 %}付款审核{% elif balance.flag == 3 %}缴款审核{% elif balance.flag == 100 %}确认{% endif %}</td>
                         <td>{% if balance.status %}{{ balance.status }}{% else %}未确认{% endif %}</td>
                         <td>{% if balance.seenum %}{{ balance.seenum }}{% else %}0{% endif %}</td>

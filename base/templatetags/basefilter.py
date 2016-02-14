@@ -21,12 +21,15 @@ def getPur(plist,key):
     for item in plist:
         if item[1]:
             for t in item[1]:
-                if t["pcode"] == "007":
+                if t["pcode"] == key:
                     flag = True
                     break;
 
     if flag:
-        pur = "<a href='/scm/base/supp/repwd/' title='修改密码'>修改密码</a>"
+        if key=="007":
+            pur = "<a href='/scm/base/supp/repwd/' title='修改密码'>修改密码</a>"
+        elif key == "277":
+            pur = "<a href='/scm/base/balance/apply/edit/' style='color:red;'>您有未结算单据</a>"
     else:
         pur = "&nbsp;"
     t = template.Template(pur)

@@ -95,15 +95,15 @@ urlpatterns = [
     url(r'^base/admin/index/','base.admin.home.index'),
     url(r'^base/admin/supprole/','base.admin.supprole.views.index'),
     url(r'^base/admin/supprole_form/','base.admin.supprole.views.add_form'),
- 	url(r'^base/admin/supprole_changepasswd', 'base.admin.suppmanager.views.change_passwd'),
-    url(r'^base/admin/suppmanager/', 'base.admin.suppmanager.views.change_passwd'),
+    url(r'^base/admin/suppmanager/', 'base.admin.suppmanager.views.query_supp'),
+    url(r'^base/admin/supp_updatepwd/', 'base.admin.suppmanager.views.update_pwd'),
     url(r'^base/admin/suppstatus/', 'base.admin.suppstatus.view.index'),
     url(r'^base/admin/supp_sta_form', 'base.admin.suppstatus.view.suppStatusForm'),
     url(r'^base/admin/supp_findRole', 'base.admin.suppstatus.view.findRole'),
     url(r'^base/admin/supp_addRole', 'base.admin.suppstatus.view.addRole'),
     url(r'^base/admin/supp_queryRole', 'base.admin.supprole.views.queryRole'),
     url(r'^base/admin/supp_savePur', 'base.admin.supprole.views.savePur'),
-    url(r'^base/admin/reconciltype', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
+    url(r'^base/admin/reconciltype/', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
 
 ]
 

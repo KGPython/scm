@@ -28,7 +28,8 @@
                     </li>
                     <li>
                         {% if request.session.s_rdict > 0 %}
-                            <a href="/scm/base/balance/apply/edit/" style="color:red;">您有未结算单据</a>
+
+                            {{  request.session.s_umenu.supplier|getPur:"277" }}
                         {% endif %}
                     </li>
                     <li>

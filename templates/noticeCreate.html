@@ -93,7 +93,7 @@
                 <tbody>
                       <tr>
                           <td width="30%" colspan="2">作者: {{ userName }}</td>
-                          <td width="30%">时间:{{ time | date:'Y-m-d' }}</td>
+                          <td width="30%">时间:{{ nowtime | date:'Y-m-d H:i' }}</td>
                           <td align="left">
                               {% if action != 'answer' %}
                               <div class="fileBox">
@@ -128,9 +128,9 @@
                                   <input name="accesstype" checked="" value="13" type="radio">全部
                                   <input name="accesstype" value="11" type="radio">指定编码(多个可逗号分隔)
                                   {% if action == 'answer' %}
-                                      <input class="txt" type="text" name="depart" value="{{ userGrpCode }}">
+                                      <input class="txt" type="text" name="depart" id="depart" value="{{ userGrpCode }}">
                                   {% else %}
-                                      <input class="txt" type="text" name="depart" id="depart" style="width: 400px;height: 30px" value="{{ info.depart }}">
+                                      <input class="txt" type="text" name="depart" id="depart" style="width: 400px;height: 30px" value="{{ info.depart }}" readonly>
                                   {% endif %}
                               {% endif %}
                           </td>
@@ -162,10 +162,19 @@
     </div>
      {% include "common/footer.html" %}
     <script>
-        current = "tongzhi"
+        current = "tongzhi";
 
         $(function(){
              $('#depart').find("option[value='{{ info.depart }}']").attr("selected", true);
+             $('input[name="accesstype"]').on("change",function(){
+                 var atype = $(this).val();
+                 if(atype==13){
+                      $('#depart').val('');
+                      $('#depart').prop('readonly', true);
+                 }else{
+                     $('#depart').prop('readonly', false);
+                 }
+             });
         });
 
         function add(){
@@ -173,7 +182,7 @@
         }
 
         $("#file").change(function(){
-            $("#fileName").html($(this).val())
+            $("#fileName").html($(this).val());
         });
         $("#enter").click(function(e) {
             var title = $.trim($("#title").val());
@@ -198,8 +207,6 @@
                 alert('回复成功');
                 window.location.href="{% url 'msglist' %}?flag=msgOut";
             {% endif %}
-
-
     </script>
 </body>
 </html>

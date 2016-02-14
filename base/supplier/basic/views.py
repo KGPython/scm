@@ -76,12 +76,11 @@ def query(request):
         .values("grpcode","name","unitname","spec","brandid","deptid","deptname","goodsid","shopid","venderid","cost",
                 "costtaxrate","dkrate","promflag","startdate","enddate","flag","price","barcodeid")
 
-    if not pubList:
-        pubList=[]
+    page = Paginator(pubList,__EACH_PAGE_SHOW_NUMBER,allow_empty_first_page=True).page(int(pageNum))
 
     if qtype=='1':
 
-        result = {"object_list":pubList,"gstatus":Constants.SALE_STATUS}
+        result = {"page":page,"pageNum":str(pageNum),"gstatus":Constants.SALE_STATUS}
         result.setdefault("promflag",Constants.PROM_FLAG)
         result.setdefault("shopCode",shopcode)
         result.setdefault("barcode",barcode)

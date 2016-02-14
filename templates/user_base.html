@@ -54,7 +54,7 @@
                 </p>
                 <p>
                     <input class="query-enter" type="button" value="查询" onclick="queryForm(1)">
-                    <input type="hidden" class="pageTxt"  id="pageNum" name="pageNum"  value="{{ pageNum }}">
+                    {% comment %}<input type="hidden" class="pageTxt"  id="pageNum" name="pageNum"  value="{{ pageNum }}">{% endcomment %}
                     <input type="hidden" class="pageTxt"  id="qtype" name="qtype">
                 </p>
                 <p>
@@ -169,11 +169,11 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for row in object_list %}
-                         <tr>
-                            <td class="col1">{{forloop.counter }}</td>
+                    {% for row in page.object_list %}
+                        <tr>
+                            <td class="col1">{{ forloop.counter }}</td>
                             <td class="col1">{{ row.shopid }}</td>
-                            <td class="col1">{{shopDict|key:row.shopid}}</td>
+                            <td class="col1">{{ shopDict|key:row.shopid }}</td>
                             <td class="col1">{{ row.barcodeid }}</td>
                             <td class="col1">{{ row.name }}</td>
                             <td class="col1">{{ row.spec | default_if_none:""}}</td>
@@ -192,7 +192,7 @@
                     {% endfor %}
                 </tbody>
             </table>
-        {% comment %}    <div class="page">
+            <div class="page">
                     <span>第<b>{{ pageNum }}</b>页/共<b>{{ page.paginator.num_pages }}</b>页</span>
                     <a href="/scm/base/supp/goods/query/?pageNum=1&shopCode={{ shopCode }}&barcode={{ barcode }}&goodsName={{ goodsName }}&orderstyle={{ orderstyle }}&flag={{ flag }}">首页</a>
                     {% if page.has_previous %}
@@ -218,7 +218,7 @@
                         <span class="totalPage">到第</span> <input type="text" class="pageTxt"  id="pageNum" name="pageNum"  value="{{ pageNum }}"> <span>页</span>
                         <input type="submit" id="pageEnter" value="确定" />
                     </form>
-            </div>{% endcomment %}
+            </div>
         </div>
          {% include "common/footer.html" %}
 

@@ -31,32 +31,31 @@ def getProperties(module,key):
 
 #获取mysql数据库连接
 def getMssqlConn(as_dict=True):
-    conn = pymssql.connect(host="192.168.122.141",
-                           port=1433,
-                           user="myshop",
-                           password="oyf20140208HH",
-                           database="mySHOPCMStock",
+    conn = pymssql.connect(host=Constants.SCM_DB_SERVER,
+                           port=Constants.SCM_DB_PORT,
+                           user=Constants.SCM_DB_USER,
+                           password=Constants.SCM_DB_PASSWORD,
+                           database=Constants.SCM_DB_DATABASE,
                            charset='utf8',
                            as_dict=as_dict)
     return conn
 
 def get_MssqlConn():
-    conn = _mssql.connect(server="192.168.122.141",
-                           port=1433,
-                           user="myshop",
-                           password="oyf20140208HH",
-                           database="mySHOPCMStock",
+    conn = _mssql.connect(server=Constants.SCM_DB_SERVER,
+                           port=Constants.SCM_DB_PORT,
+                           user=Constants.SCM_DB_USER,
+                           password=Constants.SCM_DB_PASSWORD,
+                           database=Constants.SCM_DB_DATABASE,
                            charset='utf8')
     return conn
 
 #获取mysql数据库连接
 def getMysqlConn():
-
-    conn = pymysql.connect(host="192.168.122.146",
-                           port=3306,
-                           user="root",
-                           password="10233201sn",
-                           db="kgscm",
+    conn = pymysql.connect(host=Constants.SCM_DB_MYSQL_SERVER,
+                           port=Constants.SCM_DB_MYSQL_PORT,
+                           user=Constants.SCM_DB_MYSQL_USER,
+                           password=Constants.SCM_DB_MYSQL_PASSWORD,
+                           db=Constants.SCM_DB_MYSQL_DATABASE,
                            charset='utf8mb4',
                            cursorclass=pymysql.cursors.DictCursor)
     return conn
@@ -286,7 +285,7 @@ def verifycode(request,key):
     image = Image.new('RGB', (width, height), (255, 255, 255))
     # 创建Font对象:
     root = settings.BASE_DIR+Constants.FONT_ARIAL
-    font = ImageFont.truetype(root, 36)
+    font = ImageFont.truetype(root, 50)     #36 - 字体大小，数值大字体大
     # 创建Draw对象:
     draw = ImageDraw.Draw(image)
     # 填充每个像素:
@@ -297,7 +296,8 @@ def verifycode(request,key):
     # 输出文字:
     chars=['0','1','2','3','4','5','6','7','8','9',
            #'a','b','c','d','e','f','g','h','i','j','k','m','n','o','p','q','r','s','t','u','v','w','x','y','z',
-           'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',]
+           #'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z',
+           ]
     y = [y for y in [random.randint(x-x, len(chars)-1) for x in range(4)] ]
     charlist = [chars[i] for i in y]
 

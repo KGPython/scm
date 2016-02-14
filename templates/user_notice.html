@@ -77,7 +77,7 @@
                         <td>{{ info.usergrpname }}</td>
                         <td>{{ info.username }}</td>
                         <td>
-                            <a href="{% url 'msgPreview' %}?infocode={{ info.infocode }}">浏览</a>
+                            <a href="{% url 'msgPreview' %}?infocode={{ info.infocode }}&flag={{ flag }}&start={{ start }}&end={{ end }}&q_infocode={{ infoCode }}">浏览</a>
                             {% if userCode == info.checker %}
                             <a href="{% url 'msgCreate' %}?infocode={{ info.infocode }}&infotype=1">修改</a>
                             <a href="{% url 'msglist' %}?action=del&infocode={{ info.infocode }}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}{% if flag %}&flag={{ flag }}{% endif %}" onclick="return confirmFun()">删除</a>

@@ -15,17 +15,18 @@
     </style>
 </head>
 <body>
+{% load basefilter %}
 {% include "common/nav.html" %}
 <div class="supply_admin comWidth">
     <h1 class="tTitle">
-        供应商开户
+        供应商开户状态
     </h1>
 
     <div class="query comWidth">
-        <h2 style="margin-bottom: 15px">
+      {% comment %}  <h2 style="margin-bottom: 15px">
             查询 供应商开户记录
         </h2>
-
+{% endcomment %}
         <form action="/scm/base/admin/suppstatus/" class="query-list" method="get">
             <p>
                 <label>单号：</label>{{ form.bid }}
@@ -90,7 +91,7 @@
                     {{ rows.chnm }}
                 </td>
                 <td>
-                    {{ rows.status }}
+                    {{ userStatus|key:rows.status }}
                 </td>
                 <td>
                     {{ rows.grpcode }}
@@ -108,7 +109,7 @@
                     {{ rows.remark|default_if_none:'' }}
                 </td>
                 <td class="click">
-                    <span class="powerSet" onclick="passbid('{{ rows.bid }}','{{ rows.ucode }}','{{ rows.grpcode }}','{{ rows.suppcode }}','{{ rows.status }}','{{ rows.bsum|default_if_none:'0'  }}','{{ rows.begindate|date:'Y-m-d' }}',' {{ rows.enddate|date:'Y-m-d' }}','{{ rows.remark|default_if_none:'' }}')">启用/禁用</span>&nbsp;&nbsp;<span class="roles"
+                    <span class="powerSet" onclick="javascript:passbid('{{ rows.bid }}','{{ rows.ucode }}','{{ rows.grpcode }}','{{ rows.suppcode }}','{{ rows.status }}','{{ rows.bsum|default_if_none:'0'  }}','{{ rows.begindate|date:'Y-m-d' }}',' {{ rows.enddate|date:'Y-m-d' }}','{{ rows.remark|default_if_none:'' }}')">启用/禁用</span>&nbsp;&nbsp;<span class="roles"
                                                                                                            id="roles"
                                                                                                            onclick="selRole(2,{{ rows.ucode }})">角色</span>
                 </td>
@@ -189,7 +190,7 @@
 </div>
 
 {% include "common/footer.html" %}
-<script>
+<script type="text/javascript">
     current="gongyingshangquanxian";
     function passbid(bid,ucode,grpcode,suppcode,status,bsum,start,end,remark) {
         $('#bids').attr('value', bid);
@@ -290,7 +291,7 @@
                         $('.powerSet-box').hide();
                         alert("操作失败");
                     }
-                },
+                }
             };
             $('#staForm').ajaxSubmit(ajax_option);
         });

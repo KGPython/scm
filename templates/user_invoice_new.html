@@ -4,9 +4,6 @@
 <head>
 	<meta charset="UTF-8">
 	<title>发票接收单</title>
-	<link rel="stylesheet" href="{{ static }}/css/reset.css"/>
-    <link rel="stylesheet" href="{{ static }}/css/main.css"/>
-    <script type="text/javascript" src="{{ static }}/js/laydate.js"></script>
 </head>
 <body>
     {% include 'common/nav.html' %}
@@ -80,7 +77,6 @@
 				<tr>
 					<td>
 						<select>
-                            <option value="0">收据</option>
 							<option value="1">普票</option>
 							<option value="2">税票</option>
 						</select>
@@ -95,7 +91,7 @@
 					<td>
                         <select name="" id="">
                             <option value="0">支票</option>
-                            <option value="1">电汇</option>
+                            <option value="1" selected >电汇</option>
                             <option value="2">汇票</option>
                             <option value="3">网银</option>
                             <option value="4">其他</option>
@@ -121,16 +117,17 @@
 			</tbody>
 		</table>
 		<div class="pageBottom-btn">
+            <label for="" class="left">增加</label>
+            <input class="query-enter left" type="text" id="rowNum" value="1"/>
+            <label class="left">行</label>
 			<input class="query-enter left actRow" type="button" value="增加数据行" onclick="addRow()">
 			<input class="query-enter left actRow" type="button" value="删除数据行" onclick="delRow()">
 			<p><input class="query-enter right" id="enterAjax" type="button" value="提交" ></p>
-			<p><input class="query-enter right" type="button" value="取消" ></p>
+			<p><input class="query-enter right" type="button" value="取消" onclick="javascript:window.history.back();"></p>
 		</div>
     </div>
 
-	<!--[if IE]> <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
-	<![if !IE]><script type="text/javascript" src="{{ static }}/js/jquery-2.1.4.min.js"></script><![endif]>
-	<script type="text/javascript" src="{{ static }}/js/main.js"></script>
+	{% include 'common/footer.html' %}
 	<script>
 	  	!function(){
 		    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
@@ -151,16 +148,22 @@
         function addRow(){
             var thead = document.getElementsByTagName('thead')[0];
             var tbody = document.getElementsByTagName('tbody')[0];
-            var rowsL = tbody.rows.length;
-            var columsL = thead.rows[0].cells.length;
-            var row = tbody.insertRow(rowsL-1);
+            var rowNum = $("#rowNum").val();
+            if(rowNum==''){
+                rowNum = "0";
+            }
+
+            for(var j=0;j<parseInt(rowNum);j++){
+                var rowsL = tbody.rows.length;
+
+                var columsL = thead.rows[0].cells.length;
+                var row = tbody.insertRow(rowsL-1);
 
             for(i=0;i<columsL;i++){
                 var td=document.createElement("td");
                 if(i==0){
                     var select = document.createElement("select");
                     select.id="";
-                    select.options.add(new Option("收据","0"));
                     select.options.add(new Option("普票","1"));
                     select.options.add(new Option("税票","2"));
                     td.appendChild(select)
@@ -168,7 +171,7 @@
                     var select = document.createElement("select");
                     select.id="";
                     select.options.add(new Option("支票","0"));
-                    select.options.add(new Option("电汇","1"));
+                    select.options.add(new Option("电汇","1",'',true));
                     select.options.add(new Option("汇票","2"));
                     select.options.add(new Option("网银","3"));
                     select.options.add(new Option("其他","4"));
@@ -208,11 +211,13 @@
                 row.appendChild(td)
             }
         }
+            $("#rowNum").val("");
+        }
         //删除表格的一行
         function delRow(){
             var tbody = document.getElementsByTagName('tbody')[0];
             var rowsL = tbody.rows.length;
-            if(rowsL>0){
+            if(rowsL>2){
                 tbody.deleteRow(rowsL-2)
             }
         }

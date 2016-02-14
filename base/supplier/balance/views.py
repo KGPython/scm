@@ -151,7 +151,10 @@ def applyEdit(request):
 
         #供应商结算方式
         pdict = findPayType(2)
-        payTypeName = pdict[paytypeid]
+        if pdict and paytypeid:
+            payTypeName = pdict[str(int(paytypeid))]
+        else:
+            payTypeName = ""
 
         #查询单据信息（动态查询）
 
@@ -177,7 +180,7 @@ def applyEdit(request):
     result["sum4"] = rdict["sum4"]
     result["kxinvoice"] =  "%0.2f" % kxinvoice
     result["zkinvoice"] = "%0.2f" % kxinvoice
-    print("edit",7)
+
     return render(request,"user_settleApply.html",result)
 
 
@@ -292,6 +295,11 @@ def applySave(request):
                     sheetId = getSheetId(conn2)
                     params["sheetid"] = sheetId
                     saveBillHead0(cursor,params)
+
+                    sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
+                              "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
+                              .format(shid=sheetId,shType=5203,flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINID,chNo=Constants.SCM_ACCOUNT_LOGINNO)
+                    cursor.execute(sqlFlow)
                 else:
                     #修改
                     type = 1
@@ -594,16 +602,21 @@ def getStartAndEndDate(contracttype):
     #结算日期
     #erp系统使用的开始时间
     pstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
-    #当前日期
-    pend = datetime.datetime.now().strftime("%Y-%m-%d")
-    if contracttype=="g":   #购销
+
+    if contracttype == "d":
+        #上月底
+        pend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
+    else:
+        #当前日期
+        pend = datetime.datetime.now().strftime("%Y-%m-%d")
+
+    if contracttype == "g":   #购销
         #单据日期
         cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
         cend = datetime.datetime.now().strftime("%Y-%m-%d")
     else:
         #单据日期 上月一整月
         cstart = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y-%m-%d")
-        cstart = "2012-01-01"
         cend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
     return pstart,pend,cstart,cend
 
@@ -701,7 +714,11 @@ def undueCostValue(conn,venderid,payabledate):
 def findAdvance(conn,venderid):
     sql = "select ShopID,VenderID,PreMoney,AccFlag,sDate,BillheadSheetID from PreMoney where venderid='{venderid}'".format(venderid=venderid)
     item = conn.execute_row(sql)
-    return item
+    if item:
+        advance = item[2]
+    else:
+        advance = None
+    return advance
 
 
 def findBillItem(conn,venderid,pstart,pend,cstart,cend,refsheetidList=None,contracttype=None):
