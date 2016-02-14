@@ -43,7 +43,6 @@
         {% include "common/footer.html" %}
         <script type="text/javascript">
             $(function(){
-
                   $('#loginId').bind("click",function(){
                        var ajax_option= {
                             url: "/scm/base/login/",
@@ -81,12 +80,6 @@
                           $('#loginId').click();
                       }
                   };
-
-                  var is_IE=myBrowser2();
-                  if(is_IE){
-                      alert("尊敬的用户您好，由于您的IE版本过低，为了更好的使用此系统，请您使用火狐、谷歌、360浏览器（IE9及以上版本IE）进行登录，如需下载可点击登录按钮下方链接。")
-                      $(".browserDownload").css({"display":"block"})
-                  }
             });
 
             function checkForm(){
@@ -136,12 +129,10 @@
             }
         </script>
         <script>
-{#            if(navigator.appName == "Microsoft Internet Explorer"&& navigator.appVersion.match(/7./i)=="7."){#}
-{#                alert("尊敬的您好，为了更好的应用此系统，请您使用火狐、谷歌、360浏览器（IE8以上版本IE）进行登录")#}
-{#                $(".browserDownload").css({"display":"block"})#}
-{#            }#}
-
-
+            if(myBrowser()){
+                alert('为了能够给您更好的使用效果，请您使用火狐、360、谷歌、IE9以上版本等浏览器登录');
+                $(".browserDownload").show();
+            }
         </script>
     </body>
 </html>

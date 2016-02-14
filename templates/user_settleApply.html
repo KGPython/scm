@@ -66,22 +66,22 @@
                 <thead>
                     <tr>
                         <th>全选<input type="checkbox" id="billAll" /></th>
-                        <th style="min-width: 70px;">结算类型</th>
-                        <th style="min-width: 50px;">发生店</th>
+                        <th>结算类型</th>
+                        <th>发生店</th>
                         <th>发生店名称</th>
                         <th>相关单号</th>
                         <th>应结金额<br>（含税）</th>
-                        <th style="min-width: 80px;">不含税金额</th>
+                        <th>不含税金额</th>
                         <th>税金</th>
-                        <th style="min-width: 60px;">单据名称</th>
-                        <th style="min-width: 60px;">管理类别<br>编码</th>
+                        <th>单据名称</th>
+                        <th>管理类别<br>编码</th>
                         <th>销售金额</th>
                         <th>进项<br>税率</th>
-                        <th style="min-width: 50px;">是否<br>农产品</th>
+                        <th>是否<br>农产品</th>
                         <th>应付日期</th>
                         <th>发票接收单号</th>
-                        <th style="min-width: 50px;">倒扣率</th>
-                        <th style="min-width: 60px;">原始单号</th>
+                        <th>倒扣率</th>
+                        <th>原始单号</th>
                         <th>原始单据类型名称</th>
                     </tr>
                 </thead>
@@ -108,27 +108,28 @@
                             <td>{{ item.Adjustsheetname|default_if_none:"" }}</td>
                         </tr>
                     {% endfor %}
+                    <tr >
+                        <td></td>
+                        <td></td>
+                        <td >合计：</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ sum1 }}</td>
+                        <td>{{ sum2 }}</td>
+                        <td>{{ sum3 }}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ sum4 }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                    </tr>
                 </tbody>
-                <tr >
-                    <td></td>
-                    <td></td>
-                    <td >合计：</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{ sum1 }}</td>
-                    <td>{{ sum2 }}</td>
-                    <td>{{ sum3 }}</td>
-                    <td></td>
-                    <td></td>
-                    <td>{{ sum4 }}</td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
-                </tr>
+
             </table>
             <div class="pageBottom-btn ">
                 <p>

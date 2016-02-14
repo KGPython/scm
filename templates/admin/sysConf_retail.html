@@ -97,10 +97,10 @@
                         </div>
                     </form>
 
-                    <form class="powerSet-box" action="{% url 'roleEdit' %}?action=powerSave&rcode={{ rcode }}{% if page %}&page={{ page }}{% endif %}" method="post" style="top:200px;right:0;height:300px;width:350px;overflow-y: auto">
+                    <form class="powerSet-box" action="{% url 'roleEdit' %}?action=powerSave&rcode={{ rcode }}{% if page %}&page={{ page }}{% endif %}" method="post" style="top:200px;right:0;left:auto;height:300px;overflow-y: auto">
                         {% csrf_token %}
                         <p class="title">
-                            <span>当前角色：</span> <input id="" class="all" type="checkbox" name="" checked="false"><label for="">全选/全不选</label> <input type="submit" value="确定"> <input class="close" type="button" value="放弃">
+                            <input id="" class="all" type="checkbox" name="" checked="false"><label for="">全选/全不选</label> <input type="submit" value="确定"> <input class="close" type="button" value="放弃">
                         </p>
                         <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                             <tbody>
@@ -124,10 +124,10 @@
                         </table>
                     </form>
 
-                    <form class="shopList-cnt" action="{% url 'roleEdit' %}?action=shopSave&rcode={{ rcode }}{% if page %}&page={{ page }}{% endif %}" method="post" style="top:200px;right:0;">
+                    <form class="shopList-cnt" action="{% url 'roleEdit' %}?action=shopSave&rcode={{ rcode }}{% if page %}&page={{ page }}{% endif %}" method="post" style="top:200px;right:0;left: auto;">
                         {% csrf_token %}
                         <p class="shopList-cnt-tit">
-                            <span>门店：</span> <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label> <input type="submit" value="确定"> <input class="close" type="button" value="放弃">
+                            <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label> <input type="submit" value="确定"> <input class="close" type="button" value="放弃">
                         </p>
                         <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                             <thead>

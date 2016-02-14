@@ -14,8 +14,6 @@ class PubInfoForm(forms.Form):
                   'accesstype', 'status','username','usergrpcode',
                   'usergrpname','departname','mailpath']
 class msgForm(forms.Form):
-    infocode = forms.CharField(widget=forms.TextInput(attrs={"name":"infocode","style":"width:200px"}),max_length=20,required=False)
-    start = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"start","name":"start",
-                                                          "style":"width:200px"}),required=True,error_messages={"required":"起始日期不能为空",})
-    end = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"end","name":"end",
-                                                        "style":"width:200px"}),required=True,error_messages={"required":"截止日期不能为空",})
+    infocode = forms.CharField(widget=forms.TextInput(attrs={"name":"infocode"}),max_length=20,required=False)
+    start = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"start","name":"start"}),required=True,error_messages={"required":"起始日期不能为空",})
+    end = forms.DateField(widget=forms.DateInput(attrs={"class":"inline laydate-icon","id":"end","name":"end"}),required=True,error_messages={"required":"截止日期不能为空",})

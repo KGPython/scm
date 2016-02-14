@@ -9,13 +9,13 @@
         {% load basefilter %}
         {% include "common/nav.html" %}
         <p class="comWidth">
-            <form action="/scm/base/msg/msglist/" method="post">
+            <form action="/scm/base/msg/msglist/" method="post" style="overflow: hidden">
                 {% csrf_token %}
                 <input type="hidden" name="flag" value="{{ flag }}">
                 <input type="hidden" name="infocode" value="{{ q_infocode }}">
                 <input type="hidden" name="start" value="{{ start }}">
                 <input type="hidden" name="end" value="{{ end }}">
-                <input  class="query-enter right"  type="submit" value="返回" >
+                <input  class="query-enter right"  type="submit" value="返回" style="margin-right: 200px">
             </form>
             {% if infoObj.checker != userCode %}
                <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">

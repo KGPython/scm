@@ -49,6 +49,7 @@ body{
 	margin-left:20px;
 	width: 250px;
 	height: 34px;
+	line-height: 34px;
 	text-indent: 5px;
 	border-radius:5px ;
 
@@ -123,7 +124,7 @@ body{
 }
 .nav-list2{
 	position: absolute;
-	top:59px;
+	top:58px;
 	+top:58px;
 	display: none;
 	width: 118px;
@@ -160,7 +161,7 @@ body{
 }
 .query .query-list p{
 	float: left;
-	margin-right: 20px;
+	margin-right: 19px;
 }
 
 .query .query-list p label{
@@ -171,7 +172,7 @@ body{
 	height: 30px;
 	line-height: 30px;
 	text-indent: 10px;
-	width: 100px;
+	width: 120px;
 }
 .query .query-list p input[type="text"],
 .query .query-list p input[type="password"]{
@@ -217,18 +218,17 @@ body{
 }
 .shopList .shopList-icon,
 .scList .scList-icon{
-	display: inline-block;
+	display: block;
 	+display:block;
-	/*+float:left;*/
-	/*+margin-top:-27px;*/
-	/*+margin-left:125px;*/
 	width: 20px;
 	height: 20px;
 	background: transparent url("../image/plus.gif") no-repeat center;
 	cursor: pointer;
+	float: right;
 }
 .shopList-cnt,
-.scList-cnt{
+.scList-cnt,
+.powerSet-box{
 	display: none;
 	position: absolute;
 	top:170px;
@@ -250,6 +250,7 @@ body{
 	height: 45px;
 	background: #ddd;
 	line-height: 45px;
+	padding-left: 5px;
 }
 
 .shopList-cnt-tit span,
@@ -290,7 +291,7 @@ body{
 	color: darkred;
 }
 .query-list #end,.query-list #start{
-	width: 200px;
+	width: 139px;
 }
 /*
 ***************************************表格模块****************************************
@@ -399,6 +400,7 @@ tbody a{
 ***************************************通知内容页****************************************
 */
 .articleNotice{
+	clear: both;
 	width: 50%;
 	padding:10px 20px;
 	background: #ccc
@@ -424,7 +426,98 @@ tbody a{
 	line-height: 35px;
 	color: #337AB7
 }
-
+/*
+***************************************通知新建页****************************************
+*/
+.noticeQuery table input:hover,
+.noticeQuery table input:focus{
+	box-shadow: none;
+	border: none;
+}
+.noticeQuery table textarea:hover,
+.noticeQuery table textarea:focus{
+	border: 1px solid #CCC;
+	box-shadow: none;
+}
+.noticeQuery .newNotice{
+	margin:19px 10px 0px 10px;
+	line-height: 30px;
+}
+.noticeCreate{
+	width: 900px;
+	margin: 0 auto;
+	font-family: verdana,arial,sans-serif;
+	font-size:14px;
+	color:#333333;
+	border-width: 1px;
+	border-color: #666666;
+	border-collapse: collapse;
+}
+.noticeCreate th {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #dedede;
+}
+.noticeCreate td {
+	border-width: 1px;
+	padding: 8px;
+	border-style: solid;
+	border-color: #666666;
+	background-color: #e5e5e5;
+	font-size: 16px;
+}
+.noticeQuery{
+	clear: both;
+	overflow: hidden;
+	width: 900px;
+	margin: 10px auto;
+}
+.noticeQuery input{
+	margin-left: 15px;
+}
+.noticeQuery textarea{
+	padding: 10px;
+	overflow-y: auto;
+}
+.title{
+	height:46px;
+	width: 100%;
+	text-indent: 15px;
+	border: none;
+}
+.fileBox{
+	position: relative;
+	display: inline-block;
+	padding: 6px 12px;
+	margin-left: 20px;
+	height: 34px;
+	width: 150px;
+	text-indent: 10px;
+	border-radius:5px ;
+	background-color: #337AB7;
+	border-color: #2E6DA4;
+	cursor: pointer;
+}
+.fileBox .fileTxt{
+	display: block;
+	width:100%;
+	line-height: 34px;
+	text-align: center;
+	font-size: 16px;
+	color: #fff
+}
+.file{
+	position:absolute;
+	top:0;
+	left:0;
+	width:100%;
+	height: 100%;
+	cursor: pointer;
+	filter:alpha(opacity:0);
+	opacity: 0;
+}
 /*
 ***************************************打印页面****************************************
 */
@@ -442,7 +535,6 @@ tbody a{
 .mainConf{
 	height: 100%;
 	margin-top:-25px ;
-	min-width: 1610px;
 }
 /******************左侧******************/
 .confSide{
@@ -896,61 +988,201 @@ tbody a{
 
 
 
-@media screen and (max-width: 1367px) and (min-width: 1206px){
+@media screen and (max-width: 1601px) and (min-width: 1206px){
+
+	body{
+		font-size: 12px;
+	}
+	/***********表单部分*************/
+	input[type="button"],
+	input[type="submit"],
+	.button{
+		height: 28px;
+		font-size: 12px;
+		text-indent: 0;
+	}
+	.button{
+		min-width: 30px;
+		min-height: 28px;
+		line-height: 28px;
+	}
+	.query .query-list p{
+		margin-right: 15px;
+		width: auto;
+	}
+	.query .query-list p input[type="text"],
+	.query .query-list p select,
+	.query-list #end,
+	.query-list #start{
+		height: 28px;
+		line-height: 28px;
+		width: 115px;
+		font-size: 10px;
+		text-indent: 5px;
+	}
+	.query .query-list .num{
+		width: 320px;
+	}
+	.query .query-list .num input[type="text"]{
+		width: 115px;
+	}
+	.query-enter,
+	.query-print,
+	.printBtn,
+	.outPut{
+		font-size: 12px;
+		margin-left: 0px;
+	}
+	.settleApply .box-line p {
+		margin-left: 20px;
+	}
+	.box-line p {
+		width: 230px;
+	}
+	.box-line p {
+		margin-left: 50px;
+	}
+
+	/************导航部分************/
 	.nav .nav-list .nav-list-item {
 		font-size: 14px;
 	}
-
+	/***********通知部分*************/
+	.noticeCreate td{
+		font-size: 12px;
+	}
+	.query input,
+	.query textarea{
+		margin-left: 0;
+		font-size: 12px;
+	}
+	.fileBox{
+		height: 24px;
+	}
+	.fileBox .fileTxt {
+		line-height: 24px;
+		font-size: 12px;
+	}
+	.title{
+		height: 30px;
+	}
+	.query .newNotice{
+		line-height: 20px;
+		font-size: 12px;
+	}
+	/************首页部分************/
 	.noticeHome{
 		width: 900px;
 		margin-right: 100px;
 	}
-	.query .query-list p{
-		margin-right: 10px;
-	}
-	.query .query-list p input{
-		width: 110px;
-	}
+
+	/************表格部分************/
 	table th{
 		font-size: 12px;
 	}
 	table td{
 		font-size: 10px;
 	}
+
+	.mainConf .confSide{
+		min-width: 200px;
+	}
+	.mainConf .confCnt {
+    	min-width: 750px;
+		padding-right: 0;
+		margin-left:50px;
+	}
+	.shopList-cnt,
+	.scList-cnt,
+	.powerSet-box{
+		width: 280px;
+	}
 }
-@media screen and (max-width: 1025px){
+@media screen and (max-width: 1205px){
 	body{
 		font-size: 10px;
 	}
-	input[type="button"], input[type="submit"], .button{
+	input[type="button"],
+	input[type="submit"],
+	.button{
 		height: 25px;
-		font-size: 12px;
+		font-size: 10px;
+		text-indent: 0;
 	}
-	.query .query-list p input[type="text"], .query .query-list p input[type="password"] {
+	.button{
+		min-width: 30px;
+		min-height: 25px;
+		line-height: 25px;
+	}
+	.query{
+		width: 1000px;
+	}
+	.query .query-list p input[type="text"],
+	.query .query-list p input[type="password"] {
 		height: 25px;
 		line-height: 25px;
 		width: 90px;
-		font-size: 12px;
+		font-size: 10px;
+		text-indent: 5px;
 	}
 	.query .query-list p select {
 		height: 25px;
 		line-height: 25px;
-		font-size: 12px;
-		width: 90px;
+		font-size: 10px;
+		width: 70px;
+		text-indent: 0;
 	}
 	.query-enter, .query-print, .printBtn, .outPut{
 		font-size: 12px;
+		margin-left: 0px;
 	}
-	.nav .nav-list .nav-list-item {
+	.query .query-list p{
+		margin-right: 9px;
+	}
+	.query .query-list p input{
+		width: auto;
+	}
+	.query-list #end,
+	.query-list #start {
+		width: 105px;
+	}
+	.box-row p {
+		width: 150px;
+	}
+	.box-line p {
+		/*width: 190px;*/
+		margin-left: 0;
+	}
+	.box-line p input[type="text"]{
+		height: 25px;
+		line-height: 25px;
 		font-size: 10px;
-		width: 100px;
+		width: auto;
 	}
+	.box-line p select {
+		height: 25px;
+		line-height: 25px;
+		font-size: 10px;
+	}
+	.settleApply .box-line p {
+		margin-left: 0;
+	}
+	.box-line p span{
+		font-size: 10px;
+		width: 130px;
+	}
+
 	.nav-list2{
 		width: 98px;
 	}
 	.nav-list2 li a{
 		font-size: 10px;
 	}
+	.nav .nav-list .nav-list-item {
+		font-size: 10px;
+		width: 100px;
+	}
+
 	.noticeHome{
 		width: 700px;
 		margin-right: 0px;
@@ -958,19 +1190,24 @@ tbody a{
 	.sideNav .sideNav-list .sideNav-list-item a{
 		font-size: 12px;
 	}
-	.query .query-list p{
-		margin-right: 10px;
-	}
-	.query .query-list p input{
-		width: auto;
-	}
+
 	table th{
-		font-size: 12px;
+		font-size: 10px;
+		padding: 4px;
 	}
 	table td{
 		font-size: 10px;
 	}
-	.shopList-cnt, .scList-cnt{
+	table td select,
+	table td input{
+		font-size: 10px;
+	}
+	.invioce table th{
+		font-size: 10px;
+	}
+	.shopList-cnt,
+	.scList-cnt,
+	.powerSet-box{
 		width: 250px;
 	}
 	.shopList-cnt-tit span, .scList-cnt-tit span{
@@ -978,5 +1215,51 @@ tbody a{
 	}
 	.shopList-cnt-tit label, .scList-cnt-tit label{
 		margin-right: 15px;
+	}
+
+	/********新建通知*******/
+	.noticeCreate td{
+		font-size: 10px;
+	}
+	.query input,
+	.query textarea{
+		margin-left: 0;
+		font-size: 10px;
+	}
+	.fileBox{
+		height: 24px;
+	}
+	.fileBox .fileTxt {
+		line-height: 24px;
+		font-size: 10px;
+	}
+	.title{
+		height: 30px;
+	}
+	.query .newNotice{
+		line-height: 20px;
+		font-size: 10px;
+	}
+
+	.page #pageEnter{
+		font-size: 10px
+	}
+
+	.mainConf .confSide{
+		min-width: 200px;
+	}
+	.mainConf .confCnt {
+    	min-width: 750px;
+		padding-right: 0;
+		margin-left:50px;
+	}
+
+	.confCnt-form p select {
+		width: 161px;
+		height: 25px;
+		font-size: 10px;
+	}
+	.confCnt-form p input {
+		font-size: 10px;
 	}
 }

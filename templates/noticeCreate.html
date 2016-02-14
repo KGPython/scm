@@ -7,89 +7,16 @@
     <link rel="stylesheet" href="{{ static }}/css/reset.css" type="text/css">
     <link rel="stylesheet" href="{{ static }}/css/main.css" type="text/css">
     <script type="text/javascript" src="{{ static }}/js/laydate.js"></script>
-    <style>
-        table{
-                width: 900px;
-                margin: 0 auto;
-                font-family: verdana,arial,sans-serif;
-                font-size:14px;
-                color:#333333;
-                border-width: 1px;
-                border-color: #666666;
-                border-collapse: collapse;
-            }
-            table th {
-                border-width: 1px;
-                padding: 8px;
-                border-style: solid;
-                border-color: #666666;
-                background-color: #dedede;
-            }
-            table td {
-                border-width: 1px;
-                padding: 8px;
-                border-style: solid;
-                border-color: #666666;
-                background-color: #ffffff;
-                font-size: 16px;
-            }
-        .query{
-            clear: both;
-            overflow: hidden;
-            width: 900px;
-            margin: 10px auto;
-        }
-        .query input{
-            margin-left: 15px;
-        }
-        .title{
-            height:46px;
-            width: 100%;
-            text-indent: 15px;
-            border: none;
-        }
-        .fileBox{
-			position: relative;
-            display: inline-block;
-			padding: 6px 12px;
-			margin-left: 20px;
-			height: 34px;
-			width: 150px;
-			text-indent: 10px;
-			border-radius:5px ;
-			background-color: #337AB7;
-			border-color: #2E6DA4;
-			cursor: pointer;
-		}
-        .fileBox .fileTxt{
-			display: block;
-			width:100%;
-			line-height: 34px;
-			text-align: center;
-			font-size: 16px;
-			color: #fff
-		}
-		.file{
-			position:absolute;
-			top:0;
-			left:0;
-			width:100%;
-			height: 100%;
-			cursor: pointer;
-			filter:alpha(opacity:0);
-			opacity: 0;
-		}
-    </style>
 </head>
 <body>
     {% include "common/nav.html" %}
-    <div class="query">
+    <div class="query noticeQuery">
         <form id="queryForm" name="queryForm" method="post" action="{% url 'msgCreate' %}"  enctype="multipart/form-data" >
             {% csrf_token %}
             <input type="hidden" name="infotype" value="{{ infoType }}">
             <input type="hidden" name="infocode" value="{{ infoCode }}">
             <input type="hidden" name="action" value="{{ action }}">
-            <table>
+            <table class="noticeCreate">
                 <tbody>
                       <tr>
                           <td width="30%" colspan="2">作者: {{ userName }}</td>
@@ -149,14 +76,14 @@
                       </tr>
                       <tr>
                           <td colspan="4">
-                              <textarea class="txt" name="content" id="content" cols="100" rows="20" style="padding: 10px;font-size: 14px;overflow: auto">{{ info.content | trim }}</textarea>
+                              <textarea class="txt" name="content" id="content" cols="100" rows="20">{{ info.content | trim }}</textarea>
                           </td>
                       </tr>
                 </tbody>
             </table>
             <input type="hidden" id="actionTxt" name="actionTxt" value="">
             <input class="query-print right" id="enter" type="submit" value="提交">
-			<input class="button right" onclick="add()" type="button"  style="margin-top: 19px" value="继续添加新通知">
+			<input class="button right newNotice" onclick="add()" type="button" value="继续添加新通知">
             <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
         </form>
     </div>

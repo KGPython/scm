@@ -6,25 +6,18 @@ function myBrowser(){
     var isSafari = userAgent.indexOf("Safari") > -1; //判断是否Safari浏览器
 
     if (isIE) {
-        var IE5 = IE55 = IE6 = IE7 = IE8 = false;
         var reIE = new RegExp("MSIE (\\d+\\.\\d+);");
         reIE.test(userAgent);
         var fIEVersion = parseFloat(RegExp["$1"]);
-        IE55 = fIEVersion == 5.5;
-        IE6 = fIEVersion == 6.0;
-        IE7 = fIEVersion == 7.0;
-        IE8 = fIEVersion == 8.0;
+        var IE55 = fIEVersion == 5.5;
+        var IE6 = fIEVersion == 6.0;
+        var IE7 = fIEVersion == 7.0;
+        var IE8 = fIEVersion == 8.0;
 
         if (IE7 || IE8) {
             return "IE7 AND IE8";
         }
-    }//isIE end
-    //if (isFF) {
-    //    return "FF";
-    //}
-    //if (isOpera) {
-    //    return "Opera";
-    //}
+    }
 }
 
 function myBrowser2(){
@@ -45,7 +38,7 @@ function myBrowser2(){
     }
 }
 
- //导航
+//导航
 $(".nav-list .nav-list-item").hover(function(){
     $(this).css({"background":"#fff"});
     $(this).find(".nav-list2").stop(true,true).show();
@@ -61,7 +54,7 @@ $(".shopList-icon").click(function(){
     $(".shopList-cnt").show();
 });
 $(".shopSet").click(function(){
-    $(".shopList-cnt").show();
+    $(".shopList-cnt").toggle();
 });
 $(".shopList-cnt .enter").click(function(){
     var checkVal='';
@@ -93,14 +86,14 @@ $(".all").click(function(){
 
 //权限管理
 $(".powerSet").click(function(){
-    $(".powerSet-box").show();
+    $(".powerSet-box").toggle();
 });
 $(".powerSet-box .close").click(function(){
     $(".powerSet-box").hide();
 });
 
 $(".roles").click(function(){
-    $(".roles-box").show();
+    $(".roles-box").toggle();
 });
 $(".roles-box .close").click(function(){
     $(".roles-box").hide();
