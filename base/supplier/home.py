@@ -41,26 +41,34 @@ def index(request):
         pwdInit = True
 
     #查询对账日期
-    ritem = ReconcilItem.objects.filter(pid=paytypeid).values("rid")
-    if ritem:
-        rid = ritem[0]["rid"]
-        reconcil = Reconcil.objects.filter(id=rid,status=1).values("rname","beginday","endday")
-        rdays =[]
-        tdays = []
-        for row in reconcil:
-            begin = row["beginday"]
-            end = row["endday"]
-            rdays.append("{begin}-{end}".format(begin=begin,end=end))
-            if begin<=15:
-                tdays.append("1-{begin}".format(begin=begin))
-            else:
-                tdays.append("15-{begin}".format(begin=begin))
+    ritemList = ReconcilItem.objects.filter(pid=paytypeid).values("rid")
+    rdays =[]
+    tdays = []
+    rlist = []
+    if ritemList:
+        for ritem in ritemList:
+            rid = ritem["rid"]
+            reconcil = Reconcil.objects.filter(id=rid,status=1).values("rname","beginday","endday")
+            if reconcil:
+                row = reconcil[0]
+                rlist.append(dict(row))
 
+    rlist = sorted(rlist,key=lambda row: row["beginday"])
+    if rlist:
+        for rw in rlist:
+            begin = rw["beginday"]
+            end = rw["endday"]
+
+            rdays.append("{begin}-{end}".format(begin=begin,end=end))
+            if "随时" in rw["rname"]:
+                 tdays.append("{begin}-{end}".format(begin=begin,end=end))
+            else:
+                if begin<=15:
+                    tdays.append("1-{begin}".format(begin=begin-1))
+                else:
+                    tdays.append("16-{begin}".format(begin=begin-1))
         rds = ",".join(rdays)
         tds = ",".join(tdays)
-    else:
-        rds = []
-        tds = []
 
     endDate = ""
     try:

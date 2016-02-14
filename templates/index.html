@@ -19,6 +19,12 @@
                         {{  request.session.s_umenu.system|getPur:"007" }}
                     </li>
                     <li style="margin-top: 20px;">
+                        您的账户有效期截止到：{{ endDate|date:'Y-m-d' }}
+                        {% if request.session.s_fee and request.session.s_fee.status == 'N' %}
+                            <span style="color:red;">现已停用，请及时联系管理员：0314-2064525。</span>
+                        {% endif %}
+                    </li>
+                    <li >
                         {% if rdays %}
                             您的对账日期：每月{{ rdays }}日<br/>
                         {% endif %}
@@ -33,9 +39,8 @@
                         {% endif %}
                     </li>
                     <li>
-                        您的账户有效期截止到：<span style="color:red;">{{ endDate|date:'Y-m-d' }}</span>
-                        {% if request.session.s_fee and request.session.s_fee.status == 'N' %}
-                            <span style="color:red;">现已停用，请及时联系管理员：0314-2064525。</span>
+                        {% if pwdInit %}
+                            <a href='/scm/base/supp/repwd/' title='修改密码' style="color: red;">请及时修改登录密码</a>
                         {% endif %}
                     </li>
                 </ul>
@@ -92,11 +97,7 @@
                         <input type="button" id="pageEnter" value="确定" />
                     </form>
                 </div>
-                <div>
-                    {% if pwdInit %}
-                        <a href='/scm/base/supp/repwd/' title='修改密码' style="color: red;">请及时修改登录密码</a>
-                    {% endif %}
-                </div>
+
             </div>
         </div>
         {% include "common/footer.html" %}
