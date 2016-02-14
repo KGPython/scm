@@ -1147,11 +1147,7 @@ tbody a{
 	.query-list #start {
 		width: 105px;
 	}
-	.box-row p {
-		width: 150px;
-	}
 	.box-line p {
-		/*width: 190px;*/
 		margin-left: 0;
 	}
 	.box-line p input[type="text"]{
@@ -1167,6 +1163,7 @@ tbody a{
 	}
 	.settleApply .box-line p {
 		margin-left: 0;
+		width: 190px;
 	}
 	.box-line p span{
 		font-size: 10px;
@@ -1210,6 +1207,14 @@ tbody a{
 	.scList-cnt,
 	.powerSet-box{
 		width: 250px;
+	}
+	.shopList-cnt th,
+	.scList-cnt th ,
+	.powerSet-box th,
+	.shopList-cnt td,
+	.scList-cnt td,
+	.powerSet-box td{
+		font-size: 9px;
 	}
 	.shopList-cnt-tit span, .scList-cnt-tit span{
 		margin-right: 0px;

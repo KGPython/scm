@@ -51,10 +51,10 @@ $(".nav-list .nav-list-item").hover(function(){
 
 //门店列表
 $(".shopList-icon").click(function(){
-    $(".shopList-cnt").show();
+    $(".shopList-cnt").toggle();
 });
 $(".shopSet").click(function(){
-    $(".shopList-cnt").toggle();
+    $(".shopList-cnt").hide();
 });
 $(".shopList-cnt .enter").click(function(){
     var checkVal='';

@@ -22,15 +22,15 @@
 					<p><label>门店名称：</label><input type="text" readonly="readonly" name="shopName" value="{{ shopDict | key:shopId }}"></p>
                     <p>
                         <label>付款日期：</label>
-                        <input class="inline laydate-icon" id="payDate" name="payDate" type="text" value="" style="width: 160px;">
+                        <input class="inline laydate-icon" id="payDate" name="payDate" type="text" value="" style="width: 140px;">
                     </p>
 				</div>
 				<div class="box-line">
                     <p><label>申请结算单：</label><input type="text" name="refSheetId" id="refSheetId" readonly="readonly" value="{{ refSheetId }}"></p>
                     <p><label>经营方式：</label><input type="text" name="paytypeid" readonly="readonly" value="{{ dict3.paytypeid }}"></p>
-                    <p style="margin-left: 121px">
+                    <p class="settleAdress">
                         <label>结算地：</label>
-                        <input type="text" readonly="readonly" value="CM01 |  宽广超市业务中心" style="width: 160px;">
+                        <input type="text" readonly="readonly" value="CM01 |  宽广超市业务中心">
                     </p>
 				</div>
 			</div>
