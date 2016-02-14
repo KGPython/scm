@@ -290,7 +290,8 @@ body{
 	height: 25px;
 	color: darkred;
 }
-.query-list #end,.query-list #start{
+.query-list #end,
+.query-list #start{
 	width: 139px;
 }
 /*
