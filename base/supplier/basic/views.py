@@ -79,7 +79,6 @@ def query(request):
     page = Paginator(pubList,__EACH_PAGE_SHOW_NUMBER,allow_empty_first_page=True).page(int(pageNum))
 
     if qtype=='1':
-
         result = {"page":page,"pageNum":str(pageNum),"gstatus":Constants.SALE_STATUS}
         result.setdefault("promflag",Constants.PROM_FLAG)
         result.setdefault("shopCode",shopcode)
