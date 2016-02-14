@@ -151,7 +151,10 @@ def applyEdit(request):
 
         #供应商结算方式
         pdict = findPayType(2)
-        payTypeName = pdict[paytypeid]
+        if pdict and paytypeid:
+            payTypeName = pdict[str(int(paytypeid))]
+        else:
+            payTypeName = ""
 
         #查询单据信息（动态查询）
 
