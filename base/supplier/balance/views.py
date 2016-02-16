@@ -211,11 +211,12 @@ def applySave(request):
         sequence = "0"
 
     if sequence=="0":
+        planpaydate = datetime.date.today().strftime("%Y-%m-%d")
         params["pstart"]=pstart
         params["pend"]=pend
         params["cstart"]=cstart
         params["cend"]=cend
-        params["planpaydate"]=datetime.date.today().strftime("%Y-%m-%d")
+        params["planpaydate"]=planpaydate
         params["editor"]=s_ucode
         params["editdate"]=datetime.date.today().strftime("%Y-%m-%d")
         params["sheetid"] = sheetId
@@ -297,8 +298,8 @@ def applySave(request):
                     saveBillHead0(cursor,params)
 
                     sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
-                              "values('{shid}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
-                              .format(shid=sheetId,shType=5203,flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINID,chNo=Constants.SCM_ACCOUNT_LOGINNO)
+                              "values('{sheetId}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
+                              .format(sheetId=sheetId,shType=5203,flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINID,chNo=Constants.SCM_ACCOUNT_LOGINNO)
                     cursor.execute(sqlFlow)
                 else:
                     #修改
