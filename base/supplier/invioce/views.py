@@ -209,7 +209,7 @@ def queryBalance(request):
     if refSheetId:
        try:
             conn2 = MethodUtil.get_MssqlConn()
-            sql0 = "select sheetid,begindate,enddate,PlanPayDate from billhead0 where sheetid='{sheetid}'".format(sheetid=refSheetId)
+            sql0 = "select sheetid,begindate,enddate,PlanPayDate from billhead0 where sheetid='{sheetid}'".format(sheetid=refSheetId.strip())
             billhead0 = conn2.execute_row(sql0)
             if billhead0:
                 #计划付款日期
