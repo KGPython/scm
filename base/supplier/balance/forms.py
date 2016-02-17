@@ -13,6 +13,16 @@ class BillInForm(forms.Form):
         ('', u'全部')
     )
     status = forms.ChoiceField(widget=forms.Select(attrs={"id":"status","name":"status"}),choices=STATUS_CHOICES,required=False)
+
+    FLAG_CHOICES = (
+        ('0', u'制单'),
+        ('1', u'制单审核'),
+        ('2', u'付款审核'),
+        ('3', u'缴款审核'),
+        ('100', u'确认'),
+        ('', u'全部')
+    )
+    flag = forms.ChoiceField(widget=forms.Select(attrs={"id":"status","name":"status"}),choices=FLAG_CHOICES,required=False)
     ORDER_CHOICES = (
         ('-editdate', u'制单日期'),
         ('sheetid', u'编码'),

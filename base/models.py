@@ -320,7 +320,7 @@ class BasSuppLand(models.Model):
     grpcode = models.CharField(db_column='GRPCODE', max_length=20)  # Field name made lowercase.
     suppcode = models.CharField(db_column='SUPPCODE', max_length=20)  # Field name made lowercase.
     landcs = models.IntegerField(db_column='LANDCS', blank=True, null=True)  # Field name made lowercase.
-    lastlandtime = models.DateField(db_column='LASTLANDTIME', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+    lastlandtime = models.DateTimeField(db_column='LASTLANDTIME', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
     status = models.CharField(db_column='STATUS', max_length=2, blank=True, null=True)  # Field name made lowercase.
     remark = models.CharField(db_column='REMARK', max_length=20, blank=True, null=True)  # Field name made lowercase.
     ylzd1 = models.CharField(db_column='YLZD1', max_length=20, blank=True, null=True)  # Field name made lowercase.

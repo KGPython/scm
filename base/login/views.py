@@ -103,11 +103,11 @@ def login(request):
                             #添加登录日志
                             if user.utype=="2":
                                 lastlandtime = datetime.date.today().strftime("%Y-%m-%d")
-                                slist = BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime=lastlandtime).values("landcs")
+                                slist = BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime__gte="{lastlandtime} 00:00:00".format(lastlandtime=lastlandtime)).values("landcs")
                                 if slist and slist[0]:
                                     sland = slist[0]
                                     landcs=sland["landcs"]+1
-                                    BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime=datetime.date.today()).update(landcs=landcs)
+                                    BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime__gte="{lastlandtime} 00:00:00".format(lastlandtime=lastlandtime)).update(landcs=landcs,lastlandtime=datetime.datetime.today())
                                 else:
                                     fee =  request.session.get("s_fee")
                                     if fee:

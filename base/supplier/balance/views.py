@@ -884,7 +884,7 @@ def balance(request):
     end = time
     shopId = []
     sheetId = ''
-    status = ''
+    flag = ''
     orderStyle = '-editdate'
     page = request.GET.get('page',1)
     if request.method== 'POST':
@@ -894,27 +894,30 @@ def balance(request):
             start = form.cleaned_data['start']
             end = form.cleaned_data['end']
             sheetId = form.cleaned_data['sheetId']
-            status = form.cleaned_data['status']
+            flag = form.cleaned_data['flag']
             orderStyle = form.cleaned_data['orderStyle']
     else:
         shopId = request.GET.get('shopcode','')
         start = request.GET.get('start',monthFrist)
         end = request.GET.get('end',time)
         sheetId = request.GET.get('sheetid','')
-        status = request.GET.get('status','')
+        flag = request.GET.get('flag','')
         orderStyle = request.GET.get('orderstyle','editdate')
-        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'status':status}
+        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'flag':flag}
         form = BillInForm(data)
 
     kwargs = {}
-    if status:
-        kwargs.setdefault('status__contains',status)
+    if flag:
+        kwargs.setdefault('flag',flag)
+
     if sheetId:
         kwargs.setdefault('sheetid__contains',sheetId)
+
     if len(shopId):
         shopId = shopId[0:(len(shopId)-1)]
         shopId =shopId.split(',')
         kwargs.setdefault('shopid__in',shopId)
+
     kwargs.setdefault('editdate__gte',start)
     kwargs.setdefault('editdate__lte',"{end} 23:59:59".format(end=end))
     kwargs.setdefault('venderid',sperCode)
@@ -947,7 +950,7 @@ def balance(request):
                    "sheetId":sheetId,
                    "shopCodeStr":shopCodeStr,
                    # "shopCodedistinct":shopCodedistinct,
-                   "status":status,
+                   "flag":flag,
                    "vendername":request.session.get("s_suppname"),
                    "orderStyle":orderStyle,
                    "balanceList":balanceList,

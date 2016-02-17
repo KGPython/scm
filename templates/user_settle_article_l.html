@@ -7,11 +7,11 @@
     <body>        
         {% include "common/nav.html" %}
         <div class="query comWidth noprint">
-            <form id="queryForm" name="queryForm" method="post" action="{% url 'balanceArticle' %}?sheetid={{ sheetId }}">
+           {% comment %} <form id="queryForm" name="queryForm" method="post" action="{% url 'balanceArticle' %}?sheetid={{ sheetId }}">
                 {% csrf_token %}
                 <input type="hidden" id="actionTxt" name="actionTxt" value="">
                 <input class="query-print right" type="submit" value="确认" onclick="return confirmFun();">
-            </form>
+            </form>{% endcomment %}
             <input class="query-print right" type="button" onclick=" javascript:print()" value="打印当前页" style="margin-right: 20px;margin-left: 20px"/>
             <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false; ">
         </div>

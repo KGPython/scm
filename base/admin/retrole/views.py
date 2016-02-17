@@ -154,7 +154,7 @@ def log(request):
     if supName:
         kwarg.setdefault('supname',supName)
     kwarg.setdefault('lastlandtime__gte',start)
-    kwarg.setdefault('lastlandtime__lte',end)
+    kwarg.setdefault('lastlandtime__lte',"{end} 23:59:59".format(end=end))
 
     retlandList = BasSuppLand.objects.values('suppcode','supname','lastlandtime','status','landcs')\
                                      .filter(**kwarg).order_by('-lastlandtime')

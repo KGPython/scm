@@ -13,11 +13,39 @@
 			<h1>发票接收单 </h1>
 			<div class="inputBox">
                 <input type="hidden" name="PlanPayDate" id="PlanPayDate" value="">
+                <input type="hidden" name="begindate" id="begindate" value="">
+                <input type="hidden" name="enddate" id="enddate" value="">
 				<div class="box-line">
                     <p><lable>单据编号：</lable><input type="text" readonly="readonly" name="sheetId" value=""></p>
                     <p>
+                        <label>经营方式：</label>
+                       {% comment %} <select name="payTypeId" id="payTypeId">
+                            {% for payType in payTypeList %}
+                            <option value="{{ payType.id }}">{{ payType.id }} | {{ payType.name }}</option>
+                            {% endfor %}
+                        </select>{% endcomment %}
+                        <input type="text"  readonly="readonly" value="{{ payTypeDict|key:paytypeid }}">
+                        <input type="hidden" name="paytypeid" readonly="readonly" value="{{ paytypeid }}">
+                    </p>
+                    <p>
+                        <label>结算地：</label>
+                        <input type="text" readonly="readonly" value="CM01 |  宽广超市业务中心" style="width: 160px;">
+                    </p>
+                  {% comment %}  <p style="width: 250px">
+                        <label>提取发票方式：</label>
+                        <select name="" id="payStatus">
+                            <option value="N">未结算</option>
+{#                            <option value="Y">已结算</option>#}
+{#                            <option value="">全部</option>#}
+                        </select>
+                    </p>{% endcomment %}
+				</div>
+				<div class="box-line">
+                    <p><label>申请结算单：</label><input type="text" name="refSheetId" id="refSheetId" ></p>
+                      <p>
                         <label>门店编号：</label>
                         <select name="shopId" id="shopId">
+                            <option value="">请选择</option>
                             {% for shop in shopList %}
                             <option value="{{ shop.shopcode }}">{{ shop.shopnm }}</option>
                             {% endfor %}
@@ -26,33 +54,8 @@
 
                     <p>
                         <label>付款日期：</label>
-                        <input class="inline laydate-icon" id="payDate" name="payDate" type="text" value="" style="width: 160px;">
+                        <input class="inline laydate-icon" id="payDate" name="payDate" type="text" value="{{ timeNow}}" style="width: 160px;">
                     </p>
-                    <p style="width: 250px">
-                        <label>提取发票方式：</label>
-                        <select name="" id="payStatus">
-                            <option value="N">未结算</option>
-{#                            <option value="Y">已结算</option>#}
-{#                            <option value="">全部</option>#}
-                        </select>
-                    </p>
-				</div>
-				<div class="box-line">
-                    <p><label>申请结算单：</label><input type="text" name="refSheetId" id="refSheetId" ></p>
-                    <p>
-                        <label>经营方式：</label>
-                        <select name="payTypeId" id="payTypeId">
-                            {% for payType in payTypeList %}
-                            <option value="{{ payType.id }}">{{ payType.id }} | {{ payType.name }}</option>
-                            {% endfor %}
-                        </select>
-                    </p>
-                    <p>
-                        <label>结算地：</label>
-                        <input type="text" readonly="readonly" value="CM01 |  宽广超市业务中心" style="width: 160px;">
-                    </p>
-
-
 				</div>
 			</div>
 		</div>
@@ -98,7 +101,7 @@
                         </select>
                     </td>
 					<td><input type="text" value="{{ timeNow }}"></td>
-					<td><input type="text" value="{{ dict1.TaxNo }}"></td>
+					<td><input type="text" value="{{ taxno }}"></td>
 					<td><input type="text" value="货物"></td>
 				</tr>
                 <tr>
@@ -131,19 +134,106 @@
 	<script>
 	  	!function(){
 		    laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
-		    laydate({elem: '#demo'});//绑定元素
 		}();
 		//自定义日期格式
 		laydate({
 			elem: '#payDate',
-			format: 'YYYY-MM-DD hh:mm:ss',
+			format: 'YYYY-MM-DD',
 		    festival: true, //显示节日
             max: '2099-06-16',
-            istime: true,
+            istime: false,
             istoday: true
 		});
   	</script>
     <script>
+        $(function(){
+            //发票信息提交
+            $("#enterAjax").click(function(){
+                //发票详细验证（发票进项税率和发票号）
+
+                //获取表头信息
+                var PlanPayDate = $("#PlanPayDate").val();
+                var shopId = $("#shopId").val();
+                var payDate = $("#payDate").val();
+                var refSheetId = $("#refSheetId").val();
+
+                var begindate = $("#begindate").val();
+                var enddate = $("#enddate").val();
+
+                var data=[];
+                var trs = $("#invoiceTable").find("tr");
+                var inputError = 0;
+
+                if(shopId===''){
+                     alert("请选择门店");
+                     return false;
+                }
+
+                trs.each(function(){
+                    inputs = $(this).find('input');
+                    selects = $(this).find('select');
+                    if(inputs.length>0){
+                        if(inputs.eq(0).val()>=0 && inputs.eq(0).val()<=100 && inputs.eq(1).val() && inputs.eq(1).val().length<10 ){
+                            data.push({
+                                "cclass":selects.eq(0).val(),
+                                "paytype":selects.eq(1).val(),
+                                "ctaxrate":inputs.eq(0).val(),
+                                "cno":inputs.eq(1).val(),
+                                "cmoney":inputs.eq(2).val(),
+                                "csh":inputs.eq(3).val(),
+                                "kmoney":inputs.eq(5).val(),
+                                "cdate":inputs.eq(7).val(),
+                                "cdno":inputs.eq(8).val(),
+                                "cgood":inputs.eq(9).val()
+                            })
+                        }else{
+                            alert("发票进项税率必须在0-100之间，\n并且发票号不能为空(长度小于10位)，\n请核对！");
+                            inputError++;
+                            data=[];
+                            return false;
+                        }
+                    }
+                });
+
+                //if(console){
+                //    console.log(data);
+                //}
+
+                if(inputError==0){
+                    jsonStr= JSON.stringify(data);
+                    $.ajax({
+                        type:"post",
+                        url:"/scm/base/supp/invoice/save",
+                        data:{
+                            "jsonStr":jsonStr,
+                            "PlanPayDate":PlanPayDate,
+                            "shopId":shopId,
+                            "payDate":payDate,
+                            "refSheetId":refSheetId,
+                            "begindate":begindate,
+                            "enddate":enddate
+                        },
+                        cache:false,
+                        async:false,
+                        dataType:"json",
+                        beforeSubmit:function(a,f,o){
+
+                        },
+                        success:function(data){
+                            if(data.succ=='0'){
+                                alert('保存成功');
+                                window.location.href='/scm/base/balance/';
+                            }else if(data.succ=='2'){
+                                alert('您已经有一份未审核的发票接收单【'+data.sheetid+'】，请待审核通过后再提交新单据');
+                            }else{
+                                alert('保存失败');
+                            }
+                        }
+                    })
+                }
+
+            });
+        });
         //表格操作，增加新的一行
         function addRow(){
             var thead = document.getElementsByTagName('thead')[0];
@@ -201,7 +291,7 @@
                         input.value="{{ timeNow }}"
                     }
                     if(i==10){
-                        input.value="{{ dict1.TaxNo }}"
+                        input.value="{{ taxno }}"
                     }
                     if(i==11){
                         input.value="货物"
@@ -211,7 +301,7 @@
                 row.appendChild(td)
             }
         }
-            $("#rowNum").val("");
+            $("#rowNum").val("1");
         }
         //删除表格的一行
         function delRow(){
@@ -239,8 +329,9 @@
                         var json = jQuery.parseJSON(data);
                         if(json.succ){
                             $("#PlanPayDate").val(json.PlanPayDate);
-                            $("#payTypeId").val(json.payTypeId);
                             $("#shopId").val(json.shopId)
+                            $("#begindate").val(json.begindate)
+                            $("#enddate").val(json.enddate)
                         }else{
                             alert("此结算单编号不存在，请核对。")
                         }
