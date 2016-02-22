@@ -15,8 +15,8 @@ def query_supp(request):
     posts = []
     grpcode = mtu.getReqVal(request,"grpcode","")
     if grpcode:
-        sql = "select u.ucode, u.nm, u.grpcode, g.chnm as gnm from bas_user as u, bas_user_role as r,"
-        sql += "bas_supplier as g where u.ucode = r.ucode and u.grpcode = g.suppcode and u.utype = '2' "
+        sql = "select u.ucode, u.nm, u.grpcode, g.chnm as gnm from bas_user as u,"
+        sql += "bas_supplier as g where u.grpcode = g.suppcode and u.utype = '2' "
         sql += "and u.grpcode like '%" + grpcode.strip() + "%'"
         cursor = connection.cursor()
         cursor.execute(sql)
