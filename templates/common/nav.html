@@ -77,3 +77,37 @@
         </ul>
     </div>
 </div>
+
+<script type="text/javascript">
+
+	function show_loading(loading_desc,isShow){
+		loading_desc = loading_desc||'数据提交中，请稍后...';
+		$('#loading_desc').text(loading_desc);
+		var wnd = $(window), doc = $(document);
+		var height = document.body.scrollHeight;
+		var width = document.body.scrollWidth;
+		var $load = $('#loading');
+	 	var left = doc.scrollLeft();
+	  	var top = doc.scrollTop();
+	 	left += (wnd.width() - $load.width())/2;
+	  	top += (wnd.height() - $load.height())/2;
+		$load.css({"left": left + "px","top":top + "px","display":"block"});
+
+		var $shelter = $('#loading_shelter');
+		$shelter.height($(document).height());
+		$shelter.width($(document).width());
+		if(isShow){
+			$shelter.show();
+			$load.show();
+		}else{
+			$shelter.hide();
+			$load.hide();
+		}
+	}
+</script>
+<div id="loading_shelter" class="shelter">
+</div>
+<div id="loading" class="common_load">
+  		<img style="margin-left:60px;" src="{{ static }}/image/loading2.gif" height="80" width="80" alt="数据提交中，请稍后..." />
+  		<span id="loading_desc" class="load_descript"></span>
+</div>

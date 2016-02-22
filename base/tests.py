@@ -22,21 +22,10 @@
      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
                佛祖保佑         永无BUG
 """
-from django.test import TestCase
 
-from numpy import array
-import numpy as np
-import matplotlib
-import matplotlib.pyplot as plt
-from matplotlib.ticker import MultipleLocator, FuncFormatter
-import matplotlib.ticker as ticker
-import decimal,time,datetime
-import base.utils.MethodUtil as mdu
+from base.utils import MethodUtil as mdu,DateUtil
+import pylab
 
-import pytz as tz
-
-import dateutil, pylab,random
-from pylab import *
 
 from datetime import timedelta
 
@@ -184,10 +173,15 @@ if __name__ == "__main__":
     # print("%0.0f" % s)
     # s = -2 * 4 + 3 ** 2
     # print(s)
-    w = ""
-    s = ["C024","C004","C001","C003",]
-    s.sort()
-    print(s)
+    # w = ""
+    # s = ["C024","C004","C001","C003",]
+    # s.sort()
+    # print(s)
+    print(DateUtil.get_firstday_month(-3))
+    print(DateUtil.get_lastday_month(-3))
+
+
+
 
 
 

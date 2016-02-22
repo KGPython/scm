@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^balance/apply/edit/', applyEdit, name='applyEdit'),
     url(r'^balance/apply/save/', applySave, name='applySave'),
     url(r'^balance/apply/findSheet/', findSheet, name='findSheet'),
+     url(r'^balance/apply/findKxlist/', findKxlist, name='findKxlist'),
     #end by liubf at 2016/01/12
 ]

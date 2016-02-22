@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator  #分页查询
 
 from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced,ReconcilItem,Reconcil
-from base.utils import MethodUtil as mtu,Constants
+from base.utils import MethodUtil as mtu,Constants,DateUtil
 from base.views import findPayType
 
 # Create your views here.
@@ -74,15 +74,15 @@ def findSheet(request):
             if item["sum"]:
                 sum8 += item["sum"]
 
-        result["sum1"] = sum1;
-        result["sum2"] = sum2;
-        result["sum3"] = sum3;
-        result["sum4"] = sum4;
-        result["sum5"] = sum5;
-        result["sum6"] = sum6;
-        result["sum7"] = sum7;
-        result["sum8"] = sum8;
-        result["itemList"] = slist;
+        result["sum1"] = sum1
+        result["sum2"] = sum2
+        result["sum3"] = sum3
+        result["sum4"] = sum4
+        result["sum5"] = sum5
+        result["sum6"] = sum6
+        result["sum7"] = sum7
+        result["sum8"] = sum8
+        result["itemList"] = slist
         targetPage = "user_settle_article_g_detail1.html"
     elif sheettype in ["5205"]:
         srow = findRefSheetId(sheetid,venderid)
@@ -110,15 +110,15 @@ def findSheet(request):
         #     sum7 += item["sum_tax"]
         #     sum8 += item["sum"]
         #
-        # result["sum1"] = sum1;
-        # result["sum2"] = sum2;
-        # result["sum3"] = sum3;
-        # result["sum4"] = sum4;
-        # result["sum5"] = sum5;
-        # result["sum6"] = sum6;
-        # result["sum7"] = sum7;
-        # result["sum8"] = sum8;
-        result["itemList"] = slist2;
+        # result["sum1"] = sum1
+        # result["sum2"] = sum2
+        # result["sum3"] = sum3
+        # result["sum4"] = sum4
+        # result["sum5"] = sum5
+        # result["sum6"] = sum6
+        # result["sum7"] = sum7
+        # result["sum8"] = sum8
+        result["itemList"] = slist2
         targetPage = "user_settle_article_g_detail2.html"
 
     return render(request,targetPage,result)
@@ -134,6 +134,31 @@ def findRefSheetId(sheetid,venderid):
         print(e)
     return item
 
+def findKxlist(request):
+    venderid = request.session.get("s_suppcode")
+    pend = mtu.getReqVal(request,"pend")
+
+    rlist = findKxListData(venderid,pend,1)
+    sum = decimal.Decimal(0.0)
+    for row in rlist:
+        sum += row["kmoney"]
+    return render(request,"user_settle_kx.html",{"rlist":rlist,"sum":sum})
+
+def findKxListData(venderid,pend,flag):
+    conn = mtu.getMssqlConn()
+    cursor = conn.cursor()
+    sql = """select a.SerialID,a.shopid as inshopid,a.managedeptid,a.kno,b.kname,a.ktype,a.kmoney,a.kkflag, a.style,a.monthid,
+                 a.receivabledate,a.note,a.fromshopid,b.prtflag, c.name as inshopname
+                 from kxsum0 a, kxd b  , shop c where a.venderid in
+                 ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
+                 and a.stoppay=0 and a.shopid *= c.id
+                 and  a.kno = b.kno and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
+                 and a.flag=0 and kkflag={kkflag} order by a.kno
+                 """.format(venderid=venderid,pend=pend,kkflag=flag)
+    cursor.execute(sql)
+    rlist = cursor.fetchall()
+    return rlist
+
 ##编辑结算申请单
 def applyEdit(request):
     venderid = request.session.get("s_suppcode")
@@ -146,8 +171,6 @@ def applyEdit(request):
     try:
         conn = mtu.get_MssqlConn()
 
-        #g-购销 l-联营 d-代销  z-租赁
-        pstart,pend,cstart,cend = getStartAndEndDate(contracttype)
 
         #供应商结算方式
         pdict = findPayType(2)
@@ -156,11 +179,20 @@ def applyEdit(request):
         else:
             payTypeName = ""
 
-        #查询单据信息（动态查询）
+        #g-购销 l-联营 d-代销  z-租赁
+        pstart,pend,cstart,cend = getStartAndEndDate(contracttype,payTypeName)
 
+        #查询单据信息（动态查询）
         rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,None,contracttype)
         kxinvoice = findKxInvoice(conn,venderid,pend)
         conn.close()
+
+        itemlist = findKxListData(venderid,pend,0)
+        jxsum = decimal.Decimal(0.0)
+        for kx in itemlist:
+            kkflag = kx["kkflag"]
+            if kkflag == 0:
+                jxsum+= kx["kmoney"]
 
     except Exception as e:
         print(e)
@@ -180,6 +212,7 @@ def applyEdit(request):
     result["sum4"] = rdict["sum4"]
     result["kxinvoice"] =  "%0.2f" % kxinvoice
     result["zkinvoice"] = "%0.2f" % kxinvoice
+    result["jxsum"] = "%0.2f" % jxsum
 
     return render(request,"user_settleApply.html",result)
 
@@ -315,7 +348,7 @@ def applySave(request):
 
                 conn.commit()
             except Exception as e:
-                errors += 1;
+                errors += 1
                 conn.rollback()
                 a,b = e.args
                 print(a,str(b,"utf-8"))
@@ -443,10 +476,10 @@ def findKxsum(cursor,venderid,pend):
                  a.receivabledate,a.note,a.fromshopid,b.prtflag, c.name as inshopname
                  from kxsum0 a, kxd b  , shop c where a.venderid in
                  ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
-                 and a.flag=0 and a.stoppay=0 and a.shopid *= c.id
+                 and a.stoppay=0 and a.shopid *= c.id
                  and  a.kno = b.kno and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
-                 order by a.kno
-                 """.format(venderid=venderid,pend=pend)
+                 and a.flag=0 order by a.kno
+                 """.format(venderid=venderid,pend=pend)   #
     cursor.execute(sql)
     rlist = cursor.fetchall()
     return rlist
@@ -597,7 +630,7 @@ def saveBillHeadItem(cursor,dlist,sheetId):
         cursor.execute(sql)
 
 #根据经营方式获得结算日期、单据日期
-def getStartAndEndDate(contracttype):
+def getStartAndEndDate(contracttype,payTypeName):
     stime = Constants.ERP_START_TIME
 
     #结算日期
@@ -616,9 +649,17 @@ def getStartAndEndDate(contracttype):
         cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
         cend = datetime.datetime.now().strftime("%Y-%m-%d")
     else:
-        #单据日期 上月一整月
-        cstart = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).replace(day=1).strftime("%Y-%m-%d")
-        cend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
+        #单据日期
+        if "月结30天" in payTypeName or "月结45天" in payTypeName:
+            n = -2   #前两个月一整月
+        elif "月结60天" in payTypeName:
+            n = -3   #前三个月一整月
+        else:
+            n = -1   #前一个月一整月
+
+        cstart = DateUtil.get_firstday_month(n)
+        cend = DateUtil.get_lastday_month(n)
+
     return pstart,pend,cstart,cend
 
 

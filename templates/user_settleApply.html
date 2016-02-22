@@ -59,6 +59,12 @@
                         <p><label>帐扣金额：</label><span>{{ kxinvoice|floatformat:2|default_if_none:"" }}</span></p>
                         <p><label>帐扣可冲发票金额：</label><span style="width: 60px">{{ zkinvoice|floatformat:2|default_if_none:"" }}</span></p>
                     </div>
+                    <div class="box-line">
+                        <p><label>缴款金额：</label><span>{{ jxsum|default_if_none:"" }}</span></p>
+                    </div>
+{#                    <a class="query-enter right" href="/scm/base/balance/apply/findKxlist/?pend={{ pend }}" target="_blank">查询帐扣明细</a>#}
+                      <input class="query-enter right" type="button" value="查询帐扣明细" style="margin-left: 10px;" onclick="openWin()">
+
                 </div>
             </div>
 
@@ -144,6 +150,7 @@
     </form>
     {% include "common/footer.html" %}
 	<script type="text/javascript">
+        current = "jiesuan";
         $(function(){
             count();
 
@@ -181,27 +188,32 @@
                             dataType:'json',
                             async:false,
                             cache: false,
-                            beforeSubmit:function(a,f,o){},
+                            beforeSubmit:function(a,f,o){
+                                show_loading("",true);
+                            },
                             success: function (result) {
+                                show_loading("",false);
                                 var status = result.status;
                                 if(status=='1') {
                                     alert("结算申请单提交失败！");
                                 }else if(status=='2'){
                                     alert("当前时间不在编辑结算申请单的时间范围内或结算申请单已经提交,不可重复提交！");
                                 }else{
-{#                                    $("#isheetid").val(result.sheetId);#}
-{#                                    $("#invioceForm").submit();#}
-                                     alert("操作成功,单据审核通过后请及时开发票并录入系统。");
+                                    alert("操作成功,单据审核通过后请及时开发票并录入系统。");
                                 }
                             }
                         }
-                        if(confirm("您确定提交吗")){
 
+                        if(confirm("请核实好实付金额，缴款总数，银行帐号等重要信息后再提交？")){
                             $('#billForm').ajaxSubmit(ajax_option);
                         }
                  }
             });
         });
+
+        function openWin(){
+            window.open("/scm/base/balance/apply/findKxlist/?pend={{ pend }}",'kxinfo')
+        }
 
         function clearAll(){
               $("input:checkbox[name='refsheetid']").each(function(){

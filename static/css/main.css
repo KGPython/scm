@@ -1269,3 +1269,36 @@ tbody a{
 		font-size: 10px;
 	}
 }
+
+.common_load{
+	width:200px;
+	hieght:100px;
+	display:none;
+	position:absolute;
+	border:1px solid red;
+	z-index:999;
+	-moz-box-shadow: 3px 3px 6px #000;
+	-webkit-box-shadow: 3px 3px 6px #000;
+	box-shadow: 3px 3px 6px #000;
+}
+
+.shelter{
+	background:#D5D5D5;
+	-moz-opacity: 0.6;
+	opacity:.6;
+	filter: alpha(opacity=60);
+	display:none;
+	position:absolute;
+	z-index:999;
+	left:0;
+	top:0;
+}
+.load_descript{
+	text-align:center;
+	padding-left:20px;
+	font-weight:bold;
+	font-size:14px;
+	color:#A40000;
+	display:block;
+	padding-bottom:10px;
+}

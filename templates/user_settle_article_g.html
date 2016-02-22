@@ -46,8 +46,8 @@
                             <td ></td><td ></td>
                         </tr>
                         <tr>
-                            <td class="label">开户银行：</td> <td>&nbsp;</td>
-                            <td class="label">开户银行帐号：</td> <td>&nbsp;</td>
+                            <td class="label">开户银行：</td> <td>{{ request.session.s_bank|default_if_none:"" }}</td>
+                            <td class="label">开户银行帐号：</td> <td>{{ request.session.s_accountno|default_if_none:"" }}</td>
                             <td class="label">打印时间：</td> <td>{{ printDate|date:'Y-m-d' }}</td>
                         </tr>
                     </table>

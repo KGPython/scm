@@ -1,0 +1,164 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            商业供应链系统
+        </title>
+    </head>
+    <body>
+        {% load basefilter %}
+        {% include "common/nav.html" %}
+         <div class="query comWidth noprint">
+            <input class="query-enter right" type="button" value="返回" onclick="window.close();return false; ">
+     </div>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    扣项明细
+                </h1>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th class="col1">
+                            序号
+                        </th>
+                        <th class="col1">
+                            扣项编码
+                        </th>
+                        <th class="col1">
+                            扣项名称
+                        </th>
+                        <th class="col1">
+                            扣项金额
+                        </th>
+                        <th class="col1">
+                            扣项类型
+                        </th>
+                        <th class="col1">
+                            扣项收取方式
+                        </th>
+                        <th class="col2_4">
+                            扣项应收日期
+                        </th>
+                        <th class="col1">
+                            计算方法
+                        </th>
+                        <th class="col2_4">
+                            年月
+                        </th>
+                        <th class="col1">
+                            管理部类编码
+                        </th>
+                        <th class="col1">
+                            发生机构
+                        </th>
+                        <th class="col1">
+                            发生机构名称
+                        </th>
+                        <th class="col1">
+                            备注
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in rlist %}
+                        <tr>
+                            <td class="col1">{{ forloop.counter }}</td>
+                            <td class="col1">{{ row.kno }}</td>
+                            <td class="col1">{{ row.kname }}</td>
+                            <td class="col1">{{ row.kmoney }}</td>
+                            <td class="col1">{{ kxTypeDict|key:row.ktype }}</td>
+                            <td class="col1">{{ kkflagDict|key:row.kkflag }}</td>
+                            <td class="col2_4">{{ row.receivabledate|date:"Y-m-d" }}</td>
+                            <td class="col1">{{ countMethodDict|key:row.style }}</td>
+                            <td class="col2_4">{{ row.monthid }}</td>
+                            <td class="col1">{{ row.managedeptid }}</td>
+                            <td class="col1">{{ row.inshopid }}</td>
+                            <td class="col1">{{ row.inshopname }}</td>
+                            <td class="col1">{{ row.note|default_if_none:'' }}</td>
+                        </tr>
+                    {% endfor %}
+                    <tr style="background-color: lightskyblue">
+                        <td class="col1">
+                            合计
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+                              {{ sum }}
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                        <td class="col1">
+
+                        </td>
+                         <td class="col1">
+
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+           {% comment %} <div class="page">
+                    <span>第<b>{{ pageNum }}</b>页/共<b>{{ page.paginator.num_pages }}</b>页</span>
+                    <a href="/scm/base/supp/goods/query/?pageNum=1&shopCode={{ shopCode }}&barcode={{ barcode }}&goodsName={{ goodsName }}&orderstyle={{ orderstyle }}&flag={{ flag }}">首页</a>
+                    {% if page.has_previous %}
+                        <a href="/scm/base/supp/goods/query/?pageNum={{ page.previous_page_number }}&shopCode={{ shopCode }}&barcode={{ barcode }}&goodsName={{ goodsName }}&orderstyle={{ orderstyle }}&flag={{ flag }}">上一页</a>
+                    {% else %}
+                        <a href="javascript:void(0)" >上一页</a>
+                    {% endif %}
+
+                    {% if page.has_next %}
+                         <a href="/scm/base/supp/goods/query/?pageNum={{ page.next_page_number }}&shopCode={{ shopCode }}&barcode={{ barcode }}&goodsName={{ goodsName }}&orderstyle={{ orderstyle }}&flag={{ flag }}">下一页</a>
+                    {% else %}
+                        <a href="javascript:void(0)" >下一页</a>
+                    {% endif %}
+
+                    <a href="/scm/base/supp/goods/query/?pageNum={{ page.paginator.num_pages }}&shopCode={{ shopCode }}&barcode={{ barcode }}&goodsName={{ goodsName }}&orderstyle={{ orderstyle }}&flag={{ flag }}">尾页</a>
+
+                    <form method="get" id="codeForm" action="/scm/base/supp/goods/query/" style="display: inline-block">
+                        <input type="hidden" name="shopCode" value="{{ shopCode }}">
+                        <input type="hidden" name="barcode" value="{{ barcode }}">
+                        <input type="hidden" name="goodsName" value="{{ goodsName }}">
+                        <input type="hidden" name="orderstyle" value="{{ orderstyle }}">
+                        <input type="hidden" name="flag" value="{{ flag }}">
+                        <span class="totalPage">到第</span> <input type="text" class="pageTxt"  id="pageNum" name="pageNum"  value="{{ pageNum }}"> <span>页</span>
+                        <input type="submit" id="pageEnter" value="确定" />
+                    </form>
+            </div>{% endcomment %}
+        </div>
+         {% include "common/footer.html" %}
+
+         <script type="text/javascript">
+            current = "jiesuan";
+            function queryForm(val){
+                $("#qtype").attr("value",val);
+                $("#queryForm").submit();
+            };
+
+        </script>
+    </body>
+</html>

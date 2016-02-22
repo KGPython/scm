@@ -73,6 +73,8 @@ def login(request):
                             request.session["s_suppname"] = supp.chnm
                             request.session["s_contracttype"] = supp.contracttype
                             request.session["s_paytypeid"] = supp.paytypeid
+                            request.session["s_bank"] = supp.bank
+                            request.session["s_accountno"] = supp.accountno
 
                             grp = findGrpNameByCode(grpcode,"1")
                             request.session["s_grpname"] = grp.grpnm
