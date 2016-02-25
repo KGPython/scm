@@ -19,7 +19,7 @@
         <div class="comWidth">
             <div class="tTitle">
                 <h1>{{ grpName }}统一租赁结算单通知单</h1>
-                <div class="printHead">
+               <div class="printHead">
                     <table class="table-noborder" >
                         <tr>
                             <td class="label" style="width:32%;text-align: left;">单据编号：{{ balance.sheetid }}</td>
@@ -31,17 +31,17 @@
                             <td class="label" colspan="2" style="text-align: left;">供应商名称：{{ s_suppname }}</td>
                         </tr>
                         <tr>
-                            <td class="label" style="text-align: left;">应付金额：<span class="money">{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2|default_if_none:'' }}{% else %}{{ balance.curdxvalue  | floatformat:2|default_if_none:'' }}{% endif %}</span></td>
-                            <td class="label" style="text-align: left;">应开票金额：<span class="money">{{ invoicePay|default_if_none:'' }}</span></td>
+                            <td class="label" style="text-align: left;">应付金额：<span class="money">{% if balance.curdxvalue == 0 %}{{ balance.payablemoney | floatformat:2 }}{% else %}{{ balance.curdxvalue  | floatformat:2 }}{% endif %}</span></td>
+                            <td class="label" style="text-align: left;">应开票金额：<span class="money">{{ invoicePay| floatformat:2}}</span></td>
                             <td class="label" style="text-align: left;">结算日期：<span>{{ balance.begindate|date:'Y-m-d'  }}至{{ balance.enddate|date:'Y-m-d'  }}</span></td>
                         </tr>
                         <tr>
                             <td class="label" style="text-align: left;">预付款金额：<span class="money">&nbsp;</span></td>
-                            <td class="label" style="text-align: left;">预付款余额：<span class="money">{% if balance.premoney %}{{ balance.premoney|default_if_none:''}}{% else %}&nbsp;{% endif %}</span></td>
+                            <td class="label" style="text-align: left;">预付款余额：<span class="money">{% if balance.premoney %}{{ balance.premoney| floatformat:2}}{% else %}&nbsp;{% endif %}</span></td>
                             <td class="label" style="text-align: left;">单据日期：<span>{{ balance.beginsdate|date:'Y-m-d' }}至{{ balance.endsdate|date:'Y-m-d' }}</span> </td>
                         </tr>
                         <tr>
-                            <td class="label" style="text-align: left;">实付金额：<span class="money">{{ realPay |default_if_none:''}}</span></td>
+                            <td class="label" style="text-align: left;">实付金额：<span class="money">{{ realPay| floatformat:2 }}</span></td>
                             <td class="label" colspan="2" style="text-align: left;">实付大写金额：<span >{{ realPayUpper }}</span></td>
                         </tr>
                         <tr>
@@ -69,15 +69,15 @@
                             <tr>
                                 <td>{{ row.InShopID }}</td>
                                 <td>{{ shopDict|key:row.InShopID }}</td>
-                                <td>{{ row.CostValue }}</td>
-                                <td>{{ row.SaleValue }}</td>
+                                <td>{{ row.CostValue| floatformat:2  }}</td>
+                                <td>{{ row.SaleValue| floatformat:2  }}</td>
                             </tr>
                             {% endfor %}
                             <tr>
                                 <td>合计:</td>
                                 <td></td>
-                                <td>{{ ssum1 }}</td>
-                                <td>{{ ssum3 }}</td>
+                                <td>{{ ssum1| floatformat:2  }}</td>
+                                <td>{{ ssum3| floatformat:2  }}</td>
                             </tr>
 
                         </tbody>
@@ -117,9 +117,9 @@
                                 <td>{{ item.inshopid }}</td>
                                 <td>{{ billTypeDict | key:item.refsheettype }}</td>
                                 <td>{{ orgDict|key:item.managedeptid }}</td>
-                                <td>{{ item.salevalue }}</td>
+                                <td>{{ item.salevalue | floatformat:2 }}</td>
                                 <td>{{ item.dkrate }}</td>
-                                <td>{{ item.costvalue }}</td>
+                                <td>{{ item.costvalue| floatformat:2  }}</td>
                                 <td>{{ item.costtaxrate }}</td>
                                 <td>{{ item.payabledate|date:'Y-m-d' }}</td>
                                 <td>{{ item.invoicesheetid|default_if_none:""}}</td>
@@ -129,9 +129,9 @@
                             <td></td>
                             <td></td>
                             <td>售价金额合价：</td>
-                            <td>{{  sdict|key:shopid|key:2   }}</td>
+                            <td>{{  sdict|key:shopid|key:2 | floatformat:2   }}</td>
                             <td>应结金额合价：</td>
-                            <td>{{ sdict|key:shopid|key:0 }}</td>
+                            <td>{{ sdict|key:shopid|key:0 | floatformat:2 }}</td>
                             <td></td>
                             <td></td>
                             <td></td>

@@ -3,9 +3,13 @@ body{font-size: 10px;}
 .tTitle{
     text-align: center;
 }
+a{
+    text-decoration:none;
+    color: #333333;
+}
 table{
     width: 100%;
-    font-family: verdana,arial,sans-serif;
+    font-family:SimSun; /* verdana,arial,sans-serif*/
     font-size:10px;
     color:#333333;
     border-width: 1px;
