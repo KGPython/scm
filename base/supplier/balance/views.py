@@ -363,12 +363,13 @@ def applySave(request):
                 saveKxItem(cursor,klist,sheetId)
 
                 conn.commit()
+
+                cursor.close()
             except Exception as e:
                 print(e)
                 errors += 1
                 conn.rollback()
             finally:
-                cursor.close()
                 conn.close()
 
             if errors <= 0:
@@ -611,58 +612,35 @@ def saveBillHead0(cursor,params):
 
 
 def saveBillHeadItem(cursor,dlist,sheetId):
-    #删除单据明细
-    # sql = "delete from billheaditem0 where SheetID='{sheetId}'".format(sheetId=sheetId)
-    # cursor.execute(sql)
-
     for row in dlist:
-        paytypesortid = row["paytypesortid"]
-        if paytypesortid not in ["g","d"]:
-            paytypesortid = "d"
+        fshopid = row["fromshopid"]
+        ishopid = row["inshopid"]
         ##保存单据明细
-        sql = """insert into billheaditem0
-                     (SheetID,         --1付款通知单号
-                      PayTypeSortID,   --2结算类型 g=购销 d=代销 d=其他
-                      PayableDate,     --3应付日期
-                      RefSheetID,      --4相关单号
-                      RefSheetType,    --5单据类型
-                      ManageDeptID,    --6管理部类
-                      FromShopID,      --7来源地（代销显示直通/配送金额）
-                      InShopID,        --8发生地商场号（代销显示各店应结明细/或不区分）
-                      CostValue,       --9应结金额（含税）
-                      CostTaxValue,    --10税金
-                      CostTaxRate,     --11进项税率
-                      AgroFlag,        --12免税农产品标志(0=不是 1=是)
-                      SaleValue,       --13销售金额
-                      InvoiceSheetID,  --14发票接收单号
-                      DKRate           --15倒扣率
-                      )values('{sheetid}','{paytypesortid}','{payabledate}','{refsheetid}',{refsheettype},{managedeptid},'{fromshopid}','{inshopid}',{costvalue},
-                       {costtaxvalue},{costtaxrate},{agroflag},{salevalue},'{invoicesheetid}','{dkrate}')
-                      """.format(sheetid=sheetId,paytypesortid=row["paytypesortid"],payabledate=row["payabledate"],refsheetid=row["refsheetid"],    #
-                                 refsheettype=row["refsheettype"],managedeptid=row["managedeptid"],fromshopid=row["fromshopid"],inshopid=row["inshopid"],
-                                 costvalue=float(row["costvalue"]),costtaxvalue=float(row["costtaxvalue"]),costtaxrate=float(row["costtaxrate"]),
-                                 agroflag=row["agroflag"],salevalue=float(row["salevalue"]),invoicesheetid=row["invoicesheetid"],dkrate=row["Dkrate"])
-        # sql = """ insert into billheaditem0
-        #              (SheetID,         --1付款通知单号
-        #               PayTypeSortID,   --2结算类型 g=购销 d=代销 d=其他
-        #               PayableDate,     --3应付日期
-        #               RefSheetID,      --4相关单号
-        #               RefSheetType,    --5单据类型
-        #               ManageDeptID,    --6管理部类
-        #               FromShopID,      --7来源地（代销显示直通/配送金额）
-        #               InShopID,        --8发生地商场号（代销显示各店应结明细/或不区分）
-        #               CostValue,       --9应结金额（含税）
-        #               CostTaxValue,    --10税金
-        #               CostTaxRate,     --11进项税率
-        #               AgroFlag,        --12免税农产品标志(0=不是 1=是)
-        #               SaleValue,       --13销售金额
-        #               InvoiceSheetID,  --14发票接收单号
-        #               DKRate           --15倒扣率
-        #               )values('{SheetID}','l','2015-06-01','',101,3,'D002','D002',80.35,
-        #                11.66,17.0,0,94.5,'','15.00')
-        # """.format(SheetID=sheetId)
+        sql = """
+            insert into billheaditem0
+             (SheetID,         --1付款通知单号
+              PayTypeSortID,   --2结算类型 g=购销 d=代销 d=其他
+              PayableDate,     --3应付日期
+              RefSheetID,      --4相关单号
+              RefSheetType,    --5单据类型
+              ManageDeptID,    --6管理部类
+              FromShopID,      --7来源地（代销显示直通/配送金额）
+              InShopID,        --8发生地商场号（代销显示各店应结明细/或不区分）
+              CostValue,       --9应结金额（含税）
+              CostTaxValue,    --10税金
+              CostTaxRate,     --11进项税率
+              AgroFlag,        --12免税农产品标志(0=不是 1=是)
+              SaleValue,       --13销售金额
+              InvoiceSheetID,  --14发票接收单号
+              DKRate           --15倒扣率
+              )values('{sheetid}','{paytypesortid}','{payabledate}','{refsheetid}',{refsheettype},{managedeptid},'{FromShopID}','{inshopid}',{costvalue},
+               {costtaxvalue},{costtaxrate},{agroflag},{salevalue},'{invoicesheetid}','{dkrate}')
+              """.format(sheetid=sheetId,paytypesortid=row["paytypesortid"],payabledate=row["payabledate"],refsheetid=row["refsheetid"],
+                         refsheettype=row["refsheettype"],managedeptid=row["managedeptid"],FromShopID=str(fshopid),inshopid=str(ishopid),
+                         costvalue=float(row["costvalue"]),costtaxvalue=float(row["costtaxvalue"]),costtaxrate=float(row["costtaxrate"]),
+                         agroflag=row["agroflag"],salevalue=float(row["salevalue"]),invoicesheetid=row["invoicesheetid"],dkrate=row["Dkrate"])
         cursor.execute(sql)
-        #cursor.execute_non_query(sql)
+
 #根据经营方式获得结算日期、单据日期
 def getStartAndEndDate(contracttype,payTypeName):
     stime = Constants.ERP_START_TIME

@@ -94,7 +94,7 @@
                 <tbody>
                     {% for item in itemList %}
                         <tr>
-                            <td><input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{{ item }}"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}></td>
+                            <td><input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{'paytypesortid':'{{item.paytypesortid}}','payabledate':'{{item.payabledate}}','refsheetid':'{{ item.refsheetid }}','refsheettype':{{ item.refsheettype }},'managedeptid':{{ item.managedeptid }},'fromshopid':'{{ item.fromshopid }}','inshopid':'{{ item.inshopid }}','costvalue':{{ item.costvalue }},'costtaxvalue':{{ item.costtaxvalue }},'costtaxrate':{{ item.costtaxrate }},'agroflag':{{ item.agroflag }},'salevalue':{{ item.salevalue }},'invoicesheetid':'{{ item.invoicesheetid }}','Dkrate':'{{ item.Dkrate }}' }"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}></td>
                             <td>{{ contractTypeDict|key:item.paytypesortid }}</td>
                             <td>{{ item.inshopid }}</td>
                             <td>{{ shopDict|key:item.inshopid }}</td>

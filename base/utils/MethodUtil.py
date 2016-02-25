@@ -14,6 +14,11 @@ import pymysql
 import pymssql
 import _mssql
 
+def encodeStr(str):
+    if str:
+        return str.encode('latin-1').decode('gbk')
+    else:
+        return ""
 def getProperties(module,key):
     """根据key读取配置文件value"""
     try:
@@ -22,7 +27,7 @@ def getProperties(module,key):
         file = "{base_root}/ConfigParser.conf".format(base_root=Constants.BASE_ROOT)
         config.read(file)
         #windows
-        #config.read("ConfigParser.conf")
+        # config.read("ConfigParser.conf")
         val = config.get(module,key)
     except Exception as e:
         val = ""
@@ -322,8 +327,8 @@ def rmbupper(arg):
     人名币小写转大写，整数部分处理到万亿,小数部分只处理2位
     """
     map  = ["零","壹","贰","叁","肆","伍","陆","柒","捌","玖"]
-    unit = ["分","角","元","拾","百","千","万","拾","百","千","亿",
-            "拾","百","千","万","拾","百","千","兆"]
+    unit = ["分","角","元","拾","佰","仟","","拾","佰","仟","亿",
+            "拾","佰","仟","万","拾","佰","仟","兆"]
 
     nums = []   #取出每一位数字，整数用字符方式转换避大数出现误差
     if type(arg) is float:
