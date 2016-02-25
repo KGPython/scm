@@ -34,6 +34,8 @@ def global_setting(request):
     gqStateDict = {"Y":"已过期","N":"未过期"}
     kxTypeDict = {"0":"固定","1":"临时"}
     kkflagDict = {"0":"交款","1":"扣款"}
+    prtflagDict = {"0":"不冲","1":"冲"}
+
     countMethodDict = {"0":"按结算单收取","1":"按月收取","2":"按年收取"}
     userStatus = Constants.USER_STATUS
     #经营方式

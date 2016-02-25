@@ -898,22 +898,22 @@ tbody a{
 }
 .tableBox .seal{
 	position: absolute;
-	right: 100px;
-	bottom: 0;
-	float: left;
-	margin-left: 200px;
-	width: 200px;
-	height: 200px;
-	line-height: 200px;
-	border: 1px solid #666;
+    bottom:30px;
+    right: 80px;
+    float: left;
+    margin-left:100px;
+    width: 80px;
+    height: 30px;
+    line-height:30px;
+    border: 1px dotted #666;
 }
 .checker{
 	clear: both;
 	height: 35px;
-	margin-top:15px;
+	margin-top:20px;
 }
 .checker span{
-	margin-right: 50px;
+	margin-right: 100px;
 	text-align: left;
 }
 .table2 table th{
@@ -1272,10 +1272,10 @@ tbody a{
 
 .common_load{
 	width:200px;
-	hieght:100px;
+	hieght:120px;
 	display:none;
 	position:absolute;
-	border:1px solid red;
+	background: #FFFFFF;
 	z-index:999;
 	-moz-box-shadow: 3px 3px 6px #000;
 	-webkit-box-shadow: 3px 3px 6px #000;
@@ -1301,4 +1301,11 @@ tbody a{
 	color:#A40000;
 	display:block;
 	padding-bottom:10px;
+}
+
+.noticeTemplate{
+	border: 1px solid #666;
+	width: 85%;
+	margin-left: auto;
+	margin-right: auto;
 }

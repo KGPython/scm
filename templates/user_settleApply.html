@@ -94,7 +94,7 @@
                 <tbody>
                     {% for item in itemList %}
                         <tr>
-                            <td><input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{{ item.refsheetid }}"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}></td>
+                            <td><input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{{ item }}"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}></td>
                             <td>{{ contractTypeDict|key:item.paytypesortid }}</td>
                             <td>{{ item.inshopid }}</td>
                             <td>{{ shopDict|key:item.inshopid }}</td>
@@ -107,7 +107,7 @@
                             <td>{{ item.salevalue }}</td>
                             <td>{{ item.costtaxrate }}</td>
                             <td>{{ item.agroflag|isYes }}</td>
-                            <td>{{ item.payabledate|date:'Y-m-d' }}</td>
+                            <td>{{ item.payabledate}}</td>
                             <td>{{ item.invoicesheetid }}</td>
                             <td>{{ item.Dkrate }}</td>
                             <td>{{ item.Adjustsheetid|default_if_none:"" }}</td>
@@ -148,6 +148,13 @@
     <form id="invioceForm" action="/scm/base/supp/invoice/" method="post">
            <input type="hidden" id="isheetid" name="sheetid" value="">
     </form>
+
+    <div id="loading_shelter" class="shelter"></div>
+    <div id="loading" class="common_load">
+            <img style="margin-left:60px;" src="{{ static }}/image/loading2.gif" height="80" width="80" alt="数据提交中，请稍后..." />
+            <span id="loading_desc" class="load_descript"></span>
+    </div>
+
     {% include "common/footer.html" %}
 	<script type="text/javascript">
         current = "jiesuan";
@@ -199,6 +206,7 @@
                                 }else if(status=='2'){
                                     alert("当前时间不在编辑结算申请单的时间范围内或结算申请单已经提交,不可重复提交！");
                                 }else{
+                                    window.location.reload();
                                     alert("操作成功,单据审核通过后请及时开发票并录入系统。");
                                 }
                             }
@@ -268,5 +276,31 @@
 	    laydate(start);
 	    laydate(end);
   	</script>
+    <script type="text/javascript">
+        function show_loading(loading_desc,isShow){
+            loading_desc = loading_desc||'数据提交中，请稍后...';
+            $('#loading_desc').text(loading_desc);
+            var wnd = $(window), doc = $(document);
+            var height = document.body.scrollHeight;
+            var width = document.body.scrollWidth;
+            var $load = $('#loading');
+            var left = doc.scrollLeft();
+            var top = doc.scrollTop();
+            left += (wnd.width() - $load.width())/2;
+            top += (wnd.height() - $load.height())/2;
+            $load.css({"left": left + "px","top":top + "px","display":"block"});
+
+            var $shelter = $('#loading_shelter');
+            $shelter.height($(document).height());
+            $shelter.width($(document).width());
+            if(isShow){
+                $shelter.show();
+                $load.show();
+            }else{
+                $shelter.hide();
+                $load.hide();
+            }
+        }
+    </script>
 </body>
 </html>

@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from base.supplier.forms import ChangepwdForm
 from base.utils import MethodUtil as mtu
 from base.message.views import findPubInfoAllByCon
-from base.models import ReconcilItem,Reconcil,BasFee
+from base.models import ReconcilItem,Reconcil,BasFee,BasPayType
 from base.supplier.balance.views import getStartAndEndDate,findBillItem
 
 from django.core.paginator import Paginator
@@ -77,11 +77,17 @@ def index(request):
             endDate = fee.enddate
 
         conn = mtu.get_MssqlConn()
+         #供应商结算方式
+        pdict = findPayType(2)
+        if pdict and paytypeid:
+            payTypeName = pdict[str(int(paytypeid))]
+        else:
+            payTypeName = ""
         #g-购销 l-联营 d-代销  z-租赁
-        pstart,pend,cstart,cend = getStartAndEndDate(contracttype)
+        pstart,pend,cstart,cend = getStartAndEndDate(contracttype,payTypeName)
         #查询单据信息（动态查询）
         rdict = findBillItem(conn,suppcode,pstart,pend,cstart,cend,None,contracttype)
-        if rdict and  rdict["blist"]:
+        if rdict and rdict["blist"]:
             blist = rdict["blist"]
             blen = len(blist)
             request.session["s_rdict"] = blen
@@ -93,6 +99,13 @@ def index(request):
 
     return render(request,"index.html",{"page":page,"pageNum":pageNum,"pwdInit":pwdInit,"rdays":rds,"tdays":tds,"endDate":endDate})
 
+def findPayType(type):
+    payTypeList = BasPayType.objects.all().values("id","name")
+    if type==1:
+        return payTypeList
+    else:
+        pdict = {str(int(row["id"])):row["name"] for row in payTypeList}
+        return pdict
 #供应商修改密码
 @csrf_exempt
 def repwd(request):
