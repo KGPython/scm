@@ -170,8 +170,6 @@ def applyEdit(request):
     kxinvoice = decimal.Decimal(0)
     try:
         conn = mtu.get_MssqlConn()
-
-
         #供应商结算方式
         pdict = findPayType(2)
         if pdict and paytypeid:
@@ -227,15 +225,12 @@ def applyEdit(request):
 
     return render(request,"user_settleApply.html",result)
 
-
 @csrf_exempt
 def applySave(request):
     """保存结算申请单"""
     paytypeid = request.session.get("s_paytypeid")
     s_ucode = request.session.get("s_ucode")
-    s_contracttype = request.session.get("s_contracttype")
     venderid = request.session.get("s_suppcode")
-    # sheetId = mtu.getReqVal(request,"sheetId",None)
     pstart = mtu.getReqVal(request,"pstart",None)
     pend = mtu.getReqVal(request,"pend",None)
     cstart = mtu.getReqVal(request,"cstart",None)
@@ -247,7 +242,6 @@ def applySave(request):
     result = {}
 
     #判断是否可以提交结算单
-
     islimit = mtu.getProperties(Constants.SCM_CONFIG_MODULE,Constants.SCM_CONFIG_BILL_ISLIMIT)
     if islimit == 'True':
         sequence = allowCommit(paytypeid,venderid)
@@ -269,15 +263,8 @@ def applySave(request):
             conn2 = mtu.get_MssqlConn()
             errors = 0
             try:
-
-                # rdict = findBillItem(conn2,venderid,pstart,pend,cstart,cend,None,s_contracttype)
-                # if rdict:
-                #     blist = rdict["blist"]
-                # else:
-                #     blist = []
                 blist = []
                 for row in refsheetids:
-                    #row = mtu.encodeStr(row)
                     ric = eval(row)
                     blist.append(ric)
 
@@ -312,11 +299,15 @@ def applySave(request):
                 params["payableamt"]=float(payableamt)  #应付账款金额 （写表billhead0）
                 params["unjsvalue"]=float(unjsvalue)    #应结未结金额 （写表billhead0） 取不为空数据
 
+                #新增
+                type=0
+                typeStr = "新增"
+                sheetId = getSheetId(conn2)
+
                 conn = mtu.getMssqlConn()
                 conn.autocommit(False)
-                cursor = conn.cursor()
 
-                klist = findKxsum(cursor,venderid,pend)
+                klist = findKxsum(conn,venderid,pend)
                 kxmoney = sum([row["kmoney"] for row in klist])
                 if not kxmoney:
                     kxmoney = decimal.Decimal(0.0)
@@ -337,33 +328,23 @@ def applySave(request):
                 params["kxmoney"]=float(kxmoney)    #扣项金额合计
                 params["kxcash"]=float(kxcash)      #扣项交款金额
                 params["kxinvoice"]=float(kxinvoice)  #帐扣发票金额 (帐扣金额)
-
-                #新增
-                type=0
-                typeStr = "新增"
-                sheetId = getSheetId(conn2)
                 params["sheetid"] = sheetId
-                saveBillHead0(cursor,params)
 
+                #保存单据信息
+                saveBillHead0(conn,params)
+
+                #保存单据明细
+                saveBillHeadItem(conn,blist,sheetId)
+
+                #保存扣项明细
+                saveKxItem(conn,klist,sheetId)
+
+                cursor = conn.cursor()
                 sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
                           "values('{sheetId}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
                           .format(sheetId=sheetId,shType=5203,flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINID,chNo=Constants.SCM_ACCOUNT_LOGINNO)
                 cursor.execute(sqlFlow)
-                # if not sheetId:
-                # else:
-                #     #修改
-                #     type = 1
-                #     typeStr = "修改"
-                #     updateBillHead0(cursor,params)
-
-                #3.查询要保存的单据信息
-                saveBillHeadItem(cursor,blist,sheetId)
-
-                ##4 保存扣项明细
-                saveKxItem(cursor,klist,sheetId)
-
                 conn.commit()
-
                 cursor.close()
             except Exception as e:
                 print(e)
@@ -383,18 +364,150 @@ def applySave(request):
                 note = "[SCM]操作员:[{operator}]{typeStr}单据[{sheetId}]".format(sheetId=sheetId,typeStr=typeStr,operator=s_ucode)
                 mtu.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[type],note)
                 result["status"] = "0"
-                result["sheetId"] = sheetId
-
+                conn2.close()
             else:
                 result["status"] = "1"
         except Exception as e:
             print(e)
-        finally:
-            conn2.close()
     else:
         result["status"] = "2"
 
     return HttpResponse(json.dumps(result))
+
+
+def saveBillHead0(conn,params):
+    try:
+        cursor = conn.cursor()
+        sql = """insert into billhead0
+                     (SheetID,            --1单号
+                      ShopID,             --2分店号,只能是区域中心 CM01
+                      VenderID,           --3供应商编码
+                      PayableMoney,       --4本期应付金额(sum billheaditem0.costvalue)
+                      KXMoney,            --5本期扣项金额合计(sum billheadkxitem0.kxmoney)
+                      KXCash,             --6本期扣项交款金额
+                      KXInVoice,          --7本期帐扣发票金额
+                      PayableAmt,         --8本期供应商应付帐款
+                      CloseValue,         --9本期供应商库存金额
+                      unjsvalue,          --10应该结未结金额
+                      undqvalue,          --11未到期结算金额
+                      HavInVoice,         --12是否有发票号码 0-没有发票 1-有发票
+                      Flag,               --13标志 0-制单 1-制单审核 2-付款审核 3-缴款审核 100-确认
+                      PayType,            --14  1=支票 2=电汇 3=汇票 0=其他
+                      BeginDate,          --15结算开始日期
+                      EndDate,            --16结算结束日期
+                      PlanPayDate,        --17计划付款日期
+                      Editor,             --18制单人
+                      EditDate,           --19制单日期
+                      Operator,           --20业务员
+                      Checker,            --21制单审核人，一旦确认后，不可再修改
+                      CheckDate,          --22制单审核日期
+                      PayChecker,         --23付款审批人，付款确认人可以取消该单
+                      PayCheckDate,       --24付款审批日期
+                      Receiver,           --25出纳，当供应商扣项缴现金时，出纳签字
+                      ReceivDate,         --26出纳收款日期
+                      Payer,              --27财务付款人
+                      PayDate,            --28财务付款日期
+                      PayAmt,             --29  '0'
+                      PayTaxAmt17,        --30  '0'
+                      PayTaxAmt13,        --31  '0'
+                      PayTaxAmt6,         --32  '0'
+                      PayTaxAmt4,         --33  '0'
+                      PrintCount,         --34打印次数
+                      FPrintCount,        --35付款通知书中加入打印次数打印次数
+                      Note,               --36备注
+                      OpenMoney,          --37上期余额
+                      CloseMoney,         --38转下期应付
+                      PreMoney,           --39预付款应扣金额
+                      InvoiceShopID,      --40商场门店
+                      BeginSDate,         --41单据开始日期
+                      EndSDate,           --42单据结束日期
+                      CurDXValue,         --43本期代销勾单金额
+                      CurDXDiffValue,     --44本期代销勾单差额
+                      LastDXDiffValue,    --45上期代销勾单差额
+                      NotDXFlag,          --46本次不勾单标志 0=勾单 1=不勾单
+                      Advance,            --47预付款余额
+                      Accounter,          --48 null
+                      AccountDate         --49 null
+                      )values('{sheetid}','{shopid}',{venderid},{payablemoney},{kxmoney},{kxcash},{kxinvoice},{payableamt},{costvalue},{unjsvalue},
+                       {undqvalue},0,0,1,'{pstart}', '{pend}','{planpaydate}','{editor}','{editdate}','{operator}',NULL,NULL,NULL,NULL,NULL,NULL,
+                       NULL,NULL, 0.0,0.0,0.0,0.0,0.0,0,0,NULL,0,0,0,NULL,'{cstart}','{cend}',0,0,0,0,{advance},NULL,NULL)
+            """.format(sheetid=params["sheetid"],shopid="CM01",venderid=params["venderid"],payablemoney=params["payablemoney"],
+                       kxmoney=params["kxmoney"],kxcash=params["kxcash"], kxinvoice=params["kxinvoice"],payableamt=params["payableamt"],
+                       costvalue=params["costvalue"],unjsvalue=params["unjsvalue"],undqvalue=params["undqvalue"],pstart=params["pstart"],
+                       pend=params["pend"],planpaydate=params["planpaydate"],editor=params["editor"],editdate=params["editdate"],
+                       operator=params["editor"],cstart=params["cstart"],cend=params["cend"],advance=params["advance"])
+        cursor.execute(sql)
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(">>>>>>saveBillHead0()",e)
+
+def saveBillHeadItem(conn,dlist,sheetId):
+    cursor = conn.cursor()
+    for row in dlist:
+        fshopid = row["fromshopid"]
+        ishopid = row["inshopid"]
+        ##保存单据明细
+        sql = """
+            insert into billheaditem0
+             (SheetID,         --1付款通知单号
+              PayTypeSortID,   --2结算类型 g=购销 d=代销 d=其他
+              PayableDate,     --3应付日期
+              RefSheetID,      --4相关单号
+              RefSheetType,    --5单据类型
+              ManageDeptID,    --6管理部类
+              FromShopID,      --7来源地（代销显示直通/配送金额）
+              InShopID,        --8发生地商场号（代销显示各店应结明细/或不区分）
+              CostValue,       --9应结金额（含税）
+              CostTaxValue,    --10税金
+              CostTaxRate,     --11进项税率
+              AgroFlag,        --12免税农产品标志(0=不是 1=是)
+              SaleValue,       --13销售金额
+              InvoiceSheetID,  --14发票接收单号
+              DKRate           --15倒扣率
+              )values('{sheetid}','{paytypesortid}','{payabledate}','{refsheetid}',{refsheettype},{managedeptid},'{FromShopID}','{inshopid}',{costvalue},
+               {costtaxvalue},{costtaxrate},{agroflag},{salevalue},'{invoicesheetid}','{dkrate}')
+              """.format(sheetid=sheetId,paytypesortid=row["paytypesortid"],payabledate=row["payabledate"],refsheetid=row["refsheetid"],
+                         refsheettype=row["refsheettype"],managedeptid=row["managedeptid"],FromShopID=str(fshopid),inshopid=str(ishopid),
+                         costvalue=float(row["costvalue"]),costtaxvalue=float(row["costtaxvalue"]),costtaxrate=float(row["costtaxrate"]),
+                         agroflag=row["agroflag"],salevalue=float(row["salevalue"]),invoicesheetid=row["invoicesheetid"],dkrate=row["Dkrate"])
+        cursor.execute(sql)
+    conn.commit()
+    cursor.close()
+
+ #保存扣项费用信息
+def saveKxItem(conn,rlist,sheetid):
+    try:
+        cursor = conn.cursor()
+        for row in rlist:
+            sql = """ insert into billheadkxitem0
+                     (SerialID,          --1扣项序号
+                      SheetID,           --2付款单号
+                      kno,               --3扣项代码
+                      Ktype,             --4扣项类型　0-固定 1-临时
+                      PayableDate,       --5应收日期
+                      FromShopID,        --6来源地（代销显示直通/配送金额）
+                      InShopID,          --7发生地商场号
+                      ManageDeptID,      --8管理部类
+                      kmoney,            --9扣款金额
+                      kkflag,            --10扣项交款方式，0=交款 1=扣款(从货款中扣) 2=供应商默认方式
+                      Style,             --11计算方法 0=按结算单收取 1=按月收取 2=按年收取
+                      MonthID,           --12年月(YYYYMM),计算方法等于1,2时写入
+                      ReceiptID,         --13收据号,打印收据时使用,生成的收据号保存到Receipt表中
+                      note               --14扣款备注
+                      )
+                    values({serialid},'{sheetid}',{kno},{ktype},'{payabledate}','{fromshopid}','{inshopid}',
+                    {managedeptid},{kmoney},{kkflag},{style},{monthid},NULL,'{note}')
+                    """.format(serialid=row["SerialID"],sheetid=sheetid,kno=row["kno"],ktype=row["ktype"],
+                               payabledate=row["receivabledate"],fromshopid=row["fromshopid"],inshopid=row["inshopid"],
+                               managedeptid=row["managedeptid"],kmoney=float(row["kmoney"]),kkflag=row["kkflag"],
+                               style=row["style"],monthid=row["monthid"],note=row["note"])
+            cursor.execute(sql)
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(">>>>>>saveKxItem()",e)
+
 
 def allowCommit(paytypeid,venderid):
     """
@@ -487,159 +600,24 @@ def findKxInvoice(conn,venderid,pend):
     return sum
 
 #取费用数据 (次表体)（写表billheadkxitem0）
-def findKxsum(cursor,venderid,pend):
-    sql = """select a.SerialID,a.shopid as inshopid,a.managedeptid,a.kno,b.kname,a.ktype,a.kmoney,a.kkflag, a.style,a.monthid,
-                 a.receivabledate,a.note,a.fromshopid,b.prtflag, c.name as inshopname
-                 from kxsum0 a, kxd b  , shop c where a.venderid in
-                 ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
-                 and a.stoppay=0 and a.shopid *= c.id
-                 and  a.kno = b.kno and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
-                 and a.flag=0 order by a.kno
-                 """.format(venderid=venderid,pend=pend)   #
-    cursor.execute(sql)
-    rlist = cursor.fetchall()
+def findKxsum(conn,venderid,pend):
+    try:
+        cursor = conn.cursor()
+        sql = """select a.SerialID,a.shopid as inshopid,a.managedeptid,a.kno,b.kname,a.ktype,a.kmoney,a.kkflag, a.style,a.monthid,
+                     a.receivabledate,a.note,a.fromshopid,b.prtflag, c.name as inshopname
+                     from kxsum0 a, kxd b  , shop c where a.venderid in
+                     ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
+                     and a.stoppay=0 and a.shopid *= c.id
+                     and  a.kno = b.kno and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
+                     and a.flag=0 order by a.kno
+                     """.format(venderid=venderid,pend=pend)   #
+        cursor.execute(sql)
+        rlist = cursor.fetchall()
+        conn.commit()
+        cursor.close()
+    except Exception as e:
+        print(">>>>>findKxsum()",e)
     return rlist
-
-#保存扣项费用信息
-def saveKxItem(cursor,rlist,sheetid):
-    ##删除扣项费用信息
-    # sql = "delete from billheadkxitem0 where SheetID='{sheetId}'".format(sheetId=sheetid)
-    # cursor.execute(sql)
-
-    for row in rlist:
-        sql = """ insert into billheadkxitem0
-                 (SerialID,          --1扣项序号
-                  SheetID,           --2付款单号
-                  kno,               --3扣项代码
-                  Ktype,             --4扣项类型　0-固定 1-临时
-                  PayableDate,       --5应收日期
-                  FromShopID,        --6来源地（代销显示直通/配送金额）
-                  InShopID,          --7发生地商场号
-                  ManageDeptID,      --8管理部类
-                  kmoney,            --9扣款金额
-                  kkflag,            --10扣项交款方式，0=交款 1=扣款(从货款中扣) 2=供应商默认方式
-                  Style,             --11计算方法 0=按结算单收取 1=按月收取 2=按年收取
-                  MonthID,           --12年月(YYYYMM),计算方法等于1,2时写入
-                  ReceiptID,         --13收据号,打印收据时使用,生成的收据号保存到Receipt表中
-                  note               --14扣款备注
-                  )
-                values({serialid},'{sheetid}',{kno},{ktype},'{payabledate}','{fromshopid}','{inshopid}',
-                {managedeptid},{kmoney},{kkflag},{style},{monthid},NULL,'{note}')
-                """.format(serialid=row["SerialID"],sheetid=sheetid,kno=row["kno"],ktype=row["ktype"],
-                           payabledate=row["receivabledate"],fromshopid=row["fromshopid"],inshopid=row["inshopid"],
-                           managedeptid=row["managedeptid"],kmoney=float(row["kmoney"]),kkflag=row["kkflag"],
-                           style=row["style"],monthid=row["monthid"],note=row["note"])
-        cursor.execute(sql)
-
-def saveBillHead0(cursor,params):
-
-     sql = """insert into billhead0
-                     (SheetID,            --1单号
-                      ShopID,             --2分店号,只能是区域中心 CM01
-                      VenderID,           --3供应商编码
-                      PayableMoney,       --4本期应付金额(sum billheaditem0.costvalue)
-                      KXMoney,            --5本期扣项金额合计(sum billheadkxitem0.kxmoney)
-                      KXCash,             --6本期扣项交款金额
-                      KXInVoice,          --7本期帐扣发票金额
-                      PayableAmt,         --8本期供应商应付帐款
-                      CloseValue,         --9本期供应商库存金额
-                      unjsvalue,          --10应该结未结金额
-                      undqvalue,          --11未到期结算金额
-                      HavInVoice,         --12是否有发票号码 0-没有发票 1-有发票
-                      Flag,               --13标志 0-制单 1-制单审核 2-付款审核 3-缴款审核 100-确认
-                      PayType,            --14  1=支票 2=电汇 3=汇票 0=其他
-                      BeginDate,          --15结算开始日期
-                      EndDate,            --16结算结束日期
-                      PlanPayDate,        --17计划付款日期
-                      Editor,             --18制单人
-                      EditDate,           --19制单日期
-                      Operator,           --20业务员
-                      Checker,            --21制单审核人，一旦确认后，不可再修改
-                      CheckDate,          --22制单审核日期
-                      PayChecker,         --23付款审批人，付款确认人可以取消该单
-                      PayCheckDate,       --24付款审批日期
-                      Receiver,           --25出纳，当供应商扣项缴现金时，出纳签字
-                      ReceivDate,         --26出纳收款日期
-                      Payer,              --27财务付款人
-                      PayDate,            --28财务付款日期
-                      PayAmt,             --29  '0'
-                      PayTaxAmt17,        --30  '0'
-                      PayTaxAmt13,        --31  '0'
-                      PayTaxAmt6,         --32  '0'
-                      PayTaxAmt4,         --33  '0'
-                      PrintCount,         --34打印次数
-                      FPrintCount,        --35付款通知书中加入打印次数打印次数
-                      Note,               --36备注
-                      OpenMoney,          --37上期余额
-                      CloseMoney,         --38转下期应付
-                      PreMoney,           --39预付款应扣金额
-                      InvoiceShopID,      --40商场门店
-                      BeginSDate,         --41单据开始日期
-                      EndSDate,           --42单据结束日期
-                      CurDXValue,         --43本期代销勾单金额
-                      CurDXDiffValue,     --44本期代销勾单差额
-                      LastDXDiffValue,    --45上期代销勾单差额
-                      NotDXFlag,          --46本次不勾单标志 0=勾单 1=不勾单
-                      Advance,            --47预付款余额
-                      Accounter,          --48 null
-                      AccountDate         --49 null
-                      )values('{sheetid}','{shopid}',{venderid},{payablemoney},{kxmoney},{kxcash},{kxinvoice},{payableamt},{costvalue},{unjsvalue},
-                       {undqvalue},0,0,1,'{pstart}', '{pend}','{planpaydate}','{editor}','{editdate}','{operator}',NULL,NULL,NULL,NULL,NULL,NULL,
-                       NULL,NULL, 0.0,0.0,0.0,0.0,0.0,0,0,NULL,0,0,0,NULL,'{cstart}','{cend}',0,0,0,0,{advance},NULL,NULL)
-            """.format(sheetid=params["sheetid"],shopid="CM01",venderid=params["venderid"],payablemoney=params["payablemoney"],
-                       kxmoney=params["kxmoney"],kxcash=params["kxcash"], kxinvoice=params["kxinvoice"],payableamt=params["payableamt"],
-                       costvalue=params["costvalue"],unjsvalue=params["unjsvalue"],undqvalue=params["undqvalue"],pstart=params["pstart"],
-                       pend=params["pend"],planpaydate=params["planpaydate"],editor=params["editor"],editdate=params["editdate"],
-                       operator=params["editor"],cstart=params["cstart"],cend=params["cend"],advance=params["advance"])
-     cursor.execute(sql)
-
-# def updateBillHead0(cursor,params):
-#      sql = """update billhead0 set
-#                       PayableMoney={payablemoney}, --4本期应付金额(sum billheaditem0.costvalue)
-#                       KXMoney={kxmoney},           --5本期扣项金额合计(sum billheadkxitem0.kxmoney)
-#                       KXCash={kxcash},             --6本期扣项交款金额
-#                       KXInVoice={kxinvoice},       --7本期帐扣发票金额
-#                       PayableAmt={payableamt},     --8本期供应商应付帐款
-#                       CloseValue={costvalue},      --9本期供应商库存金额
-#                       unjsvalue={unjsvalue},       --10应该结未结金额
-#                       undqvalue={undqvalue},       --11未到期结算金额
-#                       Advance={advance}            --47预付款余额
-#                       where SheetID='{sheetid}'
-#             """.format(sheetid=params["sheetid"],payablemoney=params["payablemoney"], kxmoney=params["kxmoney"],kxcash=params["kxcash"],
-#                        kxinvoice=params["kxinvoice"],payableamt=params["payableamt"],costvalue=params["costvalue"],unjsvalue=params["unjsvalue"],
-#                        undqvalue=params["undqvalue"],advance=params["advance"])
-#      cursor.execute(sql)
-
-
-def saveBillHeadItem(cursor,dlist,sheetId):
-    for row in dlist:
-        fshopid = row["fromshopid"]
-        ishopid = row["inshopid"]
-        ##保存单据明细
-        sql = """
-            insert into billheaditem0
-             (SheetID,         --1付款通知单号
-              PayTypeSortID,   --2结算类型 g=购销 d=代销 d=其他
-              PayableDate,     --3应付日期
-              RefSheetID,      --4相关单号
-              RefSheetType,    --5单据类型
-              ManageDeptID,    --6管理部类
-              FromShopID,      --7来源地（代销显示直通/配送金额）
-              InShopID,        --8发生地商场号（代销显示各店应结明细/或不区分）
-              CostValue,       --9应结金额（含税）
-              CostTaxValue,    --10税金
-              CostTaxRate,     --11进项税率
-              AgroFlag,        --12免税农产品标志(0=不是 1=是)
-              SaleValue,       --13销售金额
-              InvoiceSheetID,  --14发票接收单号
-              DKRate           --15倒扣率
-              )values('{sheetid}','{paytypesortid}','{payabledate}','{refsheetid}',{refsheettype},{managedeptid},'{FromShopID}','{inshopid}',{costvalue},
-               {costtaxvalue},{costtaxrate},{agroflag},{salevalue},'{invoicesheetid}','{dkrate}')
-              """.format(sheetid=sheetId,paytypesortid=row["paytypesortid"],payabledate=row["payabledate"],refsheetid=row["refsheetid"],
-                         refsheettype=row["refsheettype"],managedeptid=row["managedeptid"],FromShopID=str(fshopid),inshopid=str(ishopid),
-                         costvalue=float(row["costvalue"]),costtaxvalue=float(row["costtaxvalue"]),costtaxrate=float(row["costtaxrate"]),
-                         agroflag=row["agroflag"],salevalue=float(row["salevalue"]),invoicesheetid=row["invoicesheetid"],dkrate=row["Dkrate"])
-        cursor.execute(sql)
 
 #根据经营方式获得结算日期、单据日期
 def getStartAndEndDate(contracttype,payTypeName):
@@ -827,8 +805,8 @@ def insertBillSheet(conn,venderid,pstart,pend,cstart,cend,type):
 
     condition = "and 1=1 "
     if type==1:      #1.验收单据
-        condition = """and convert(char(8),a.payabledate,112) <= '{pend}'
-                    and convert(char(8),a.CheckDate,112) <= '{cend}'
+        condition = """and convert(char(8),a.payabledate,112) between '{pstart}' and '{pend}'
+                    and convert(char(8),a.CheckDate,112) between '{cstart}' and '{cend}'
                     and  a.sheettype<>2323 and a.sheettype<>5205
                     """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
     elif type==2:    #2.退货单
@@ -837,8 +815,8 @@ def insertBillSheet(conn,venderid,pstart,pend,cstart,cend,type):
                     and  a.sheettype=2323
                     """.format(pend=pend,cend=cend)
     elif type==3:    #3.供应商往来单据金额调整单  单据金额>=0
-        condition = """and convert(char(8),a.payabledate,112) <= '{pend}'
-                    and convert(char(8),a.CheckDate,112) <= '{cend}'
+        condition = """and convert(char(8),a.payabledate,112)  between '{pstart}' and '{pend}'
+                    and convert(char(8),a.CheckDate,112) between '{cstart}' and '{cend}'
                     and  a.sheettype=5205 and a.costvalue > 0
                     """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
     elif type==4:    #4.供应商往来单据金额调整单  单据金额<=0
@@ -871,8 +849,8 @@ def insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend):
              sum(costvalue-costtaxvalue) notaxvalue, sum(costtaxvalue), sum(a.salevalue),a.agroflag,a.costtaxrate,a.fromshopid,
              isnull(a.invoicesheetid,''),isnull(a.Dkrate,0) as DkRate
              from balancebook0 a,paytype b,serialnumber c
-             where  a.refsheettype*=c.serialid  and convert(char(8),a.payabledate,112) <=  '{pend}'
-             and convert(char(8),a.SDate,112) <= '{cend}' and a.paytypeid=b.id and a.payflag=0
+             where  a.refsheettype*=c.serialid  and convert(char(8),a.payabledate,112) between '{pstart}' and '{pend}'
+             and convert(char(8),a.SDate,112) between '{cstart}' and '{cend}' and a.paytypeid=b.id and a.payflag=0
              and a.venderid in ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
              group by b.paytypesortid,a.refsheettype,c.name,a.managedeptid,a.shopid,a.agroflag,a.costtaxrate,a.fromshopid,a.invoicesheetid,a.Dkrate
              order by shopid,PayableDate
