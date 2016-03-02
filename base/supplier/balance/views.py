@@ -627,12 +627,12 @@ def getStartAndEndDate(contracttype,payTypeName):
     #erp系统使用的开始时间
     pstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
 
-    if contracttype == "d":
-        #上月底
-        pend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
-    else:
-        #当前日期
-        pend = datetime.datetime.now().strftime("%Y-%m-%d")
+    # if contracttype == "d":
+    #     #上月底
+    #     pend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
+    # else:
+    #当前日期
+    pend = datetime.datetime.now().strftime("%Y-%m-%d")
 
     if contracttype == "g":   #购销
         #单据日期
