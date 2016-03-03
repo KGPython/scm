@@ -201,13 +201,14 @@
                             success: function (result) {
                                 show_loading("",false);
                                 var status = result.status;
+                                var sheetId = result.sheetId;
                                 if(status=='1') {
                                     alert("结算申请单提交失败！");
                                 }else if(status=='2'){
                                     alert("当前时间不在编辑结算申请单的时间范围内或结算申请单已经提交,不可重复提交！");
                                 }else{
                                     window.location.reload();
-                                    alert("操作成功,单据审核通过后请及时开发票并录入系统。");
+                                    alert("["+sheetId+"]操作成功,单据审核通过后请及时开发票并录入系统。");
                                 }
                             }
                         }

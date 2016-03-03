@@ -364,6 +364,7 @@ def applySave(request):
                 note = "[SCM]操作员:[{operator}]{typeStr}单据[{sheetId}]".format(sheetId=sheetId,typeStr=typeStr,operator=s_ucode)
                 mtu.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[type],note)
                 result["status"] = "0"
+                result["sheetId"] = sheetId
                 conn2.close()
             else:
                 result["status"] = "1"
