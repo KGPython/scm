@@ -806,18 +806,18 @@ def insertBillSheet(conn,venderid,pstart,pend,cstart,cend,type):
 
     condition = "and 1=1 "
     if type==1:      #1.验收单据
-        condition = """and convert(char(8),a.payabledate,112) between '{pstart}' and '{pend}'
-                    and convert(char(8),a.CheckDate,112) between '{cstart}' and '{cend}'
+        condition = """and convert(char(10),a.payabledate,120) between '{pstart}' and '{pend}'
+                    and convert(char(10),a.CheckDate,120) between '{cstart}' and '{cend}'
                     and  a.sheettype<>2323 and a.sheettype<>5205
                     """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
     elif type==2:    #2.退货单
-        condition = """and  convert(char(8),a.payabledate,112) <= '{pend}'
-                    and  convert(char(8),a.CheckDate,112) <= '{cend}'
+        condition = """and  convert(char(10),a.payabledate,120) <= '{pend}'
+                    and  convert(char(10),a.CheckDate,120) <= '{cend}'
                     and  a.sheettype=2323
                     """.format(pend=pend,cend=cend)
     elif type==3:    #3.供应商往来单据金额调整单  单据金额>=0
-        condition = """and convert(char(8),a.payabledate,112)  between '{pstart}' and '{pend}'
-                    and convert(char(8),a.CheckDate,112) between '{cstart}' and '{cend}'
+        condition = """and convert(char(10),a.payabledate,120)  between '{pstart}' and '{pend}'
+                    and convert(char(10),a.CheckDate,120) between '{cstart}' and '{cend}'
                     and  a.sheettype=5205 and a.costvalue > 0
                     """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
     elif type==4:    #4.供应商往来单据金额调整单  单据金额<=0
@@ -850,8 +850,8 @@ def insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend):
              sum(costvalue-costtaxvalue) notaxvalue, sum(costtaxvalue), sum(a.salevalue),a.agroflag,a.costtaxrate,a.fromshopid,
              isnull(a.invoicesheetid,''),isnull(a.Dkrate,0) as DkRate
              from balancebook0 a,paytype b,serialnumber c
-             where  a.refsheettype*=c.serialid  and convert(char(8),a.payabledate,112) between '{pstart}' and '{pend}'
-             and convert(char(8),a.SDate,112) between '{cstart}' and '{cend}' and a.paytypeid=b.id and a.payflag=0
+             where  a.refsheettype*=c.serialid  and convert(char(10),a.payabledate,120) between '{pstart}' and '{pend}'
+             and convert(char(10),a.SDate,120) between '{cstart}' and '{cend}' and a.paytypeid=b.id and a.payflag=0
              and a.venderid in ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
              group by b.paytypesortid,a.refsheettype,c.name,a.managedeptid,a.shopid,a.agroflag,a.costtaxrate,a.fromshopid,a.invoicesheetid,a.Dkrate
              order by shopid,PayableDate
