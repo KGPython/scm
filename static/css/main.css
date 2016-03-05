@@ -672,6 +672,27 @@ tbody a{
 	overflow: hidden;
 }
 
+.status-box{
+	display: none;
+	position: absolute;
+	padding:20px;
+	clear: both;
+	background:#eee;
+	color: #333;
+	border: 1px solid #999
+}
+.status-box p{
+	margin-bottom:15px;
+}
+.status-box{
+	top:300px;
+	right: 100px;
+	overflow: hidden;
+}
+.status-box .checkbox input{
+	margin-right:10px;
+}
+
 .roles-box .checkbox input{
 	margin-right:10px; 
 }

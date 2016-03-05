@@ -121,7 +121,7 @@
         {% endfor %}
         </tbody>
     </table>
-    <div class="powerSet-box" style="height: auto">
+    <div class="status-box" style="height: auto;position: absolute;right:100px;">
         <form action="/scm/base/admin/supp_sta_form" id="staForm" method="post">
             <p>
                 <label for="">状&emsp;&emsp;态：</label>&nbsp;<select name="status" id="suppUserStatus">
@@ -145,7 +145,7 @@
             <p><label>备&emsp;&emsp;注：</label>&nbsp;<input id="remark" name="remark" maxlength="25" size="12" value="{{ remark }}" style="height: 22px;"/></p>
             <p class="btn">
                 <input type="button" id="submit" value="提交">
-                <input type="button" class="close" value="关闭">
+                <input type="button" class="close" value="关闭" onclick="javascript: $('.status-box').hide();">
                 <input type="hidden" value="" name="bid" id="bids">
                 <input type="hidden" value="" name="ucode" id="ucode">
                 <input type="hidden" value="" name="grpcode" id="grpcode">
@@ -193,6 +193,8 @@
 <script type="text/javascript">
     current="gongyingshangquanxian";
     function passbid(bid,ucode,grpcode,suppcode,status,bsum,start,end,remark) {
+        $(".status-box").toggle();
+
         $('#bids').attr('value', bid);
         $('#bsum').attr('value', bsum);
 
@@ -284,11 +286,11 @@
                 success: function (f) {
                     obj = JSON.parse(f);
                     if (obj.flag == 0) {
-                        $('.powerSet-box').hide();
+                        $('.status-box').hide();
                         window.location.reload();
                         alert("操作成功");
                     } else {
-                        $('.powerSet-box').hide();
+                        $('.status-box').hide();
                         alert("操作失败");
                     }
                 }
