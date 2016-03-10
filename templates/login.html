@@ -9,6 +9,14 @@
     </head>
     <body>
         <div class="login-main">
+            <p class="browserDownload">
+                    <label>您的浏览器版本过低，点击链接升级浏览器：</label>
+                    <a href="http://rj.baidu.com/soft/detail/11843.html?ald" class="red" title="点击下载" target="_blank">火狐</a>&nbsp;|&nbsp;
+                <a href="http://rj.baidu.com/soft/detail/14744.html?ald" class="red" title="点击下载" target="_blank">谷歌</a>&nbsp;|&nbsp;
+                <a href="http://se.360.cn/" class="red" title="点击下载" target="_blank">360</a>&nbsp;|&nbsp;
+                <a href="http://rj.baidu.com/soft/detail/14917.html?ald" class="red" title="点击下载" target="_blank">IE10</a><br/>
+                <lable>360、IE浏览器请取消：兼容模式</lable>
+            </p>
             <div class="l-main-title">
                 <h1 style="margin-top: 15px;">
                     商业供应链管理系统
@@ -36,7 +44,6 @@
                         <input type="button" class="enter" id="loginId" value="登&nbsp;&nbsp;&nbsp;&nbsp;录">
                     </p>
                 </form>
-                <p class="browserDownload red"><a href="http://rj.baidu.com/soft/detail/11843.html?ald" class="red">点击下载SCM系统推荐使用的浏览器</a></p>
                 <p style="font-size:14px;margin-top:40px;padding-left: 50px; ">承德宽广超市集团有限公司 技术咨询电话：0314-2064525</p>
             </div>
         </div>
@@ -108,7 +115,6 @@
                 }else{
                     setCnt("vcode","","")
                 }
-
                 return true;
             }
 
@@ -129,8 +135,8 @@
             }
         </script>
         <script>
-            if(myBrowser()){
-                alert('为了能够给您更好的使用效果，请您使用火狐、360、谷歌、IE9以上版本等浏览器登录');
+            if(myBrowser2()){
+                alert('为了能够给您带来更好的使用体验，请使用火狐、谷歌、360最新版及IE9以上版本的浏览器。');
                 $(".browserDownload").show();
             }
         </script>

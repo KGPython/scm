@@ -1,37 +1,23 @@
-body{font-size:9pt;margin:0;padding:0;}
-.noticeTemplate{
-	margin-left: auto;
-	margin-right: auto;
-    width:100%!important;
-}
+body{font-size: 10px;}
 .noprint{display : none }
 .tTitle{
     text-align: center;
-    clear: both;
-}
-.printHead{
-    width: 100%!important;
 }
 a{
     text-decoration:none;
     color: #333333;
 }
 table{
-    width: 100%!important;
+    width: 100%;
     font-family:SimSun; /* verdana,arial,sans-serif*/
-    font-size: 9pt;
+    font-size:10px;
     color:#333333;
-    /*  border-width: 1pt;
+    border-width: 1px;
     border-color: #666666;
-    border-collapse: collapse;*/
     border-collapse: collapse;
-    margin-left:auto;
-	margin-right: auto;
-    border-width: 1pt;
-    border-color: #666666;
 }
 table th {
-    border-width: 1pt;
+    border-width: 1px;
     /*padding: 8px;*/
     font-weight: normal;
     border-style: solid;
@@ -39,7 +25,7 @@ table th {
     background-color: #dedede;
 }
 table td {
-    border-width: 1pt;
+    border-width: 1px;
    /*padding: 8px;*/
     border-style: solid;
     border-color: #666666;
@@ -57,40 +43,42 @@ table td {
 
 }
 .table-noborder .money{
-    font-size: 16pt;
+    font-size: 18px;
     font-family:SimSun;
     font-weight: bold;
 }
 .tableBox{
     position: relative;
-    min-height: 155pt;
-    margin-top: 20pt;
+    min-height: 155px;
+    margin-top: 20px;
     overflow: hidden;
-    clear: both;
 
 }
 .table50{
-    width: 50%!important;;
-    margin-left: 10pt;
+    width: 50%;
+    float: left;
+    margin-left: 10px;
 }
 .tableBox .seal {
     position: absolute;
-    bottom:30pt;
-    right: 80pt;
-    margin-left:100pt;
-    width: 80pt;
-    height: 30pt;
-    line-height:30pt;
+    bottom:30px;
+    right: 80px;
+    float:right;
+    margin-left:80px;
+    width: 80px;
+    height: 30px;
+    line-height:30px;
     border: 1px dotted #666;
 }
 .table2{
-    margin-top: 30pt;
+    margin-top: 30px;
     clear:both;
+    margin-left: 10px;
 }
 .checker{
     clear:both;
-    margin-top: 15pt;
-    margin-left: 10pt;
+    margin-top: 15px;
+    margin-left: 10px;
     text-align: left;
 }
 .checker span{
@@ -99,5 +87,9 @@ table td {
     display: inline-block;
 }
 .checker span.long{
-    min-width: 120pt;
+    min-width: 120px;
+}
+
+.noticeTemplate{
+	width:100%;
 }
