@@ -7,7 +7,7 @@
     <body>        
         {% include "common/nav.html" %}
         <div class="noticeTemplate" >
-        <div class="query comWidth noprint">
+        <div class="query comWidth noprint" style="width: 94%;">
            {% comment %} <form id="queryForm" name="queryForm" method="post" action="{% url 'balanceArticle' %}?sheetid={{ sheetId }}">
                 {% csrf_token %}
                 <input type="hidden" id="actionTxt" name="actionTxt" value="">
@@ -19,7 +19,7 @@
         <div class="comWidth">
             <div class="tTitle">
                 <h1>{{ grpName }}统一代销结算单通知单</h1>
-                 <div class="printHead">
+                 <div class="printHead" style="width: 94%;">
                     <table class="table-noborder" >
                         <tr>
                             <td class="label" style="width:32%;text-align: left;">单据编号：{{ balance.sheetid }}</td>
@@ -97,7 +97,7 @@
                 </div>
             </div>
 
-            <div class="table2">
+            <div class="table2" style="width: 94%;margin-left: 10px;">
 				{% for row in itemList %}
                     <h2 style="text-align: center;font-weight: normal">{{ shopDict|key:row.0 }}</h2>
                     <table>
