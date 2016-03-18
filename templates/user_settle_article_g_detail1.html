@@ -13,8 +13,7 @@
      </div>
     <div class="mainSettle comWidth">
         <div class="tTitle">
-        <h1>{{ grpname }}</h1>
-        <h3>{{ billTypeDict|key:sheettype }}</h3>
+            <h1>{{ grpName }}{{ billTypeDict|key:sheettype }}</h1>
         </div>
         <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
             <thead>
@@ -44,7 +43,7 @@
                         <td>{{ row.procode }}</td>
                         <td>{{ row.salebn }}</td>
                         <td>{{ row.pname }}</td>
-                        <td>{% comment %}{{ row.classes }}{% endcomment %}</td>
+                        <td>{{ row.classes|default_if_none:"" }}</td>
                         <td>{{ row.unit }}</td>
                         <td>{{ row.num|floatformat:2 }}</td>
                         <td>{{ row.innums|floatformat:2 }}</td>

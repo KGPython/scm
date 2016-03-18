@@ -34,6 +34,7 @@ def findSheet(request):
     code = prefix+sheetID
     select * from adpriced where code={code} and spercode={spercode}
     """
+    grpName = request.session.get('s_grpname')     #用户所属单位
     sheetid = mtu.getReqVal(request,"sheetId")
     sheettype = mtu.getReqVal(request,"sheetType")
     venderid = request.session.get("s_suppcode")
@@ -56,7 +57,7 @@ def findSheet(request):
 
         #"classes",
         slist = BillInd.objects.filter(code=code).values("code", "rid","procode","salebn","pname","unit","num","innums","denums",
-                                                         "giftnum","taxrate","price_intax","chdate","prnum","sum_tax","sum","rowno","grpcode","orderstyle")
+                                                         "giftnum","taxrate","price_intax","chdate","prnum","sum_tax","sum","rowno","grpcode","orderstyle","classes")
         for item in slist:
             if item["num"]:
                 sum1 += item["num"]
@@ -83,6 +84,7 @@ def findSheet(request):
         result["sum6"] = sum6
         result["sum7"] = sum7
         result["sum8"] = sum8
+        result["grpName"] = grpName
         result["itemList"] = slist
         targetPage = "user_settle_article_g_detail1.html"
     elif sheettype in ["5205"]:

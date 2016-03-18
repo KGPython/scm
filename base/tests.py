@@ -98,87 +98,9 @@ def testmssql():
 if __name__ == "__main__":
 
     print(">>>main()")
-    # s = -1832.6399999999998
-    # s= "%0.2f" % s
-    # print(s)
-    # testmssql()
-    # print(rmbupper(54322754.2))
-
-    #tz = tz.timezone('Asia/Shanghai')
-    #sh_dt = datetime.datetime.now(tz)
-    #print(sh_dt)
-    #test2()
-    # print(datetime.datetime.today().strftime("%Y"))
-    # print(datetime.datetime.today().strftime("%m"))
-    # print(datetime.datetime.today().strftime("%d"))
-    # list = [("2015-11-11",23.1),("2015-11-4",5.1),("2015-12-5",13.25),("2015-12-21",653.25)]
-    # dict= sorted(list, key=lambda d:d[1])
-    # print(dict)
-    #
-    # print(datetime.datetime.strptime("2015-11-11",'%Y-%m-%d').timestamp())
-    # print(time.strftime('%Y-%m-%d',time.localtime(1447171200)))
-
-    # a = arange(datetime.datetime.strptime("2015-11-01",'%Y-%m-%d').timestamp(),
-    #            datetime.datetime.strptime("2015-11-30",'%Y-%m-%d').timestamp(),7*24*60*60*1000)
-    # print(a)
-    # b = linspace(-10,10,10)
-    # print(b)
-    # c = [int(i) for i in b ]
-    # print(c)
-
-    # ls = ["2","3","a"]
-    # try:
-    #     s_sadmin = ls.index("1")
-    #     print(s_sadmin)
-    # except:
-    #     print(-1)
-    #
-    # def cutStr(str,separator):
-    #     try:
-    #         index = str.index(separator)
-    #         return str[index+1:]
-    #     except:
-    #         return str
-    # s = "23423sd.fsdfsdf"
-    # print(cutStr(s,"."))
-    # testmssql()
-    # s = "where {cond1}"
-    # print(s.format(cond1="1=1"))
-    #
-    # a =[]
-    # a.append("3")
-    # a.append("3")
-    # a.append("2")
-    # a.append("1")
-    # a = list(set(a))
-    # b = [{"orgcode":"1","orgname":"壹"},{"orgcode":"2","orgname":"贰"},{"orgcode":"3","orgname":"叁"},{"orgcode":"4","orgname":"肆"}]
-    # mdeptNames = [x["orgname"] for x in b if x["orgcode"] in a]
-    # mdeptName = ",".join(mdeptNames)
-    # print(mdeptName)
-    # print(str(b"\xe7\x99\xbb\xe5\xbd\x95\xe7\x94\xa8\xe6\x88\xb7\xef\xbc\x9a8340375 ","utf-8"))
-
-    # def test():
-    #     for i in range(10):
-    #         if i%2==0:
-    #             yield i
-    # print(list(test()))
-    # s = "购销月结0.1天"
-    # a = "半月结"
-    # if a in s:
-    #     print(a)
-    # now = datetime.date.today().day
-    # print(type(now))
-    #
-    # s = 23.4
-    # print("%0.0f" % s)
-    # s = -2 * 4 + 3 ** 2
-    # print(s)
-    # w = ""
-    # s = ["C024","C004","C001","C003",]
-    # s.sort()
-    # print(s)
-    print(DateUtil.get_firstday_month(-3))
-    print(DateUtil.get_lastday_month(-3))
+    print(DateUtil.get_firstday_month(-2))
+    print(DateUtil.get_lastday_month(-2))
+    print("月结30天" in "")
 
 
 
