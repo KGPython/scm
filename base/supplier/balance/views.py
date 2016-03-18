@@ -14,7 +14,8 @@ from base.views import findPayType
 
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
-time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+
+time = datetime.datetime.today().strftime("%Y-%m-%d")
 monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 
 #add by liubf at 2016/01/12

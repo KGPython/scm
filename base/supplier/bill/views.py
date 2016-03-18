@@ -10,7 +10,7 @@ from django.db import connection
 
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
-time = time.strftime('%Y-%m-%d',time.localtime(time.time()))
+time = datetime.datetime.today().strftime("%Y-%m-%d")
 monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 def supplierBill(request):
     sperCode = request.session.get('s_suppcode')   #用户所属单位
