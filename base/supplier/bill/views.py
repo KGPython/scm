@@ -101,7 +101,7 @@ def billArticle(request):
     shopName = BasShop.objects.values('shopnm').get(shopcode=shopCode)
 
     #入库单明细
-    billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate")\
+    billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate","salebn","classes")\
                               .filter(code=code,orderstyle__in=('2323','2301'),grpcode=grpCode)\
                               .order_by('pname','unit')#order_by('pname','class'，'unit')
 
@@ -318,7 +318,7 @@ def backArticle(request):
     shopCode = suppiler.get('shopcode')
     shopName = BasShop.objects.values('shopnm').get(shopcode=shopCode)
 
-    billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate")\
+    billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate","salebn","classes")\
                               .filter(code=code,orderstyle__in=('2323','2301'),grpcode=grpCode)\
                               .order_by('pname','unit')#order_by('pname','class'，'unit')
 

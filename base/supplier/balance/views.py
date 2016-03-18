@@ -1108,7 +1108,30 @@ def balanceArticle(request):
     for item in kxlist:
         kxsum += item["kmoney"]
 
+    jxList = findJxListBySheetId(sheetId)
+    jxsum = decimal.Decimal(0.0)
+    for item2 in jxList:
+        jxsum += item2["kmoney"]
+
     return render(request,'user_settle_article_{ctype}.html'.format(ctype=contracttype),locals())
+
+def findJxListBySheetId(sheetId):
+    try:
+        conn = mtu.getMysqlConn()
+        cur = conn.cursor()
+        sql = """SELECT b.inshopid,b.kno,k.kname,b.kmoney,b.note,k.prtflag
+                  FROM  billheadkxitem0 b LEFT JOIN kxd k ON k.kno = b.kno
+                  WHERE b.kkflag=0 and b.sheetid='{sheetId}' order by b.inshopid
+              """.format(sheetId=sheetId)      #
+        cur.execute(sql)
+        kxlist = cur.fetchall()
+    except Exception as e:
+        print(e)
+        kxlist = []
+    finally:
+        cur.close()
+        conn.close()
+    return kxlist
 
 def findKxListBySheetId(sheetId):
     try:

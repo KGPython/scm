@@ -59,9 +59,9 @@
                         <p><label>帐扣金额：</label><span>{{ kxinvoice|floatformat:2|default_if_none:"" }}</span></p>
                         <p><label>帐扣可冲发票金额：</label><span style="width: 60px">{{ zkinvoice|floatformat:2|default_if_none:"" }}</span></p>
                     </div>
-                    <div class="box-line">
+                    {% comment %}  <div class="box-line">
                         <p><label>缴款金额：</label><span>{{ jxsum|default_if_none:"" }}</span></p>
-                    </div>
+                    </div>{% endcomment %}
 {#                    <a class="query-enter right" href="/scm/base/balance/apply/findKxlist/?pend={{ pend }}" target="_blank">查询帐扣明细</a>#}
                       <input class="query-enter right" type="button" value="查询帐扣明细" style="margin-left: 10px;" onclick="openWin()">
 

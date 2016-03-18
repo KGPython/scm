@@ -31,6 +31,7 @@
                     <tr>
                         <th>序号</th>
                         <th>商品代码</th>
+                        <th>商品条码</th>
                         <th>规格</th>
                         <th>品名</th>
                         <th>单位</th>
@@ -47,7 +48,8 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ bill.procode }}</td>
-                        <td>{{ bill.chdate }}</td>
+                        <td>{{ bill.salebn }}</td>
+                        <td>{{ bill.classes|default_if_none:"" }}</td>
                         <td>{{ bill.pname }}</td>
                         <td>{{ bill.unit }}</td>
                         <td>{{ bill.taxrate | floatformat:2 }}</td>

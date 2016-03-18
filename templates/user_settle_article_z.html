@@ -51,7 +51,11 @@
                                 <span style="float: right;">打印时间：{{ printDate|date:'Y-m-d' }}</span>
                             </td>
                         </tr>
-
+                         <tr class="noprint">
+                            <td class="label" style="text-align: left;">缴款金额：{{ jxsum | floatformat:2}}</td>
+                            <td class="label" style="text-align: left;"></td>
+                            <td class="label" style="text-align: left;"></td>
+                        </tr>
                     </table>
                 </div>
                 <div class="tableBox">
