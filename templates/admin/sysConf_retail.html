@@ -64,8 +64,8 @@
                         <div class="conf baseInfo">
                             <h3>
                                 基本信息&nbsp;--&nbsp;编号：<span>{{ role.rcode }}</span>
-                                <input class="powerSet" type="button" value="权限">
-                                <input class="shopSet" type="button" value="门店">
+                                <input class="powerSet" type="button" value="权限" >
+                                <input class="shopSet" type="button" value="门店" id="shopSetId">
                             </h3>
                             <div class="baseInfo-box">
                                 <p class="red">
@@ -164,8 +164,12 @@
             $(function(){
                 $(".errorlist").css({
                     "margin-left": "-400px",
-                    "margin-top":"25px"})
-            })
+                    "margin-top":"25px"});
+                //权限管理
+                $("#shopSetId").click(function(){
+                    $(".shopList-cnt").toggle();
+                });
+            });
             function setAction(action){
                 document.retRoleForm.action = "{% url 'roleEdit' %}?action="+action+"{% if page %}&page={{ page }}{% endif %}";
             }

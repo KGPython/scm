@@ -87,7 +87,8 @@
             </form>
             <form class="powerSet-box" name="powerSet-box" id="powerSet-box" action="/scm/base/admin/supp_chmodRole" style="top:200px;left: auto">
                 <p class="title">
-                    <span>当前角色：</span> <input id="" class="all" type="checkbox" name="" checked="false"><label for="">全选/全不选</label>
+                    {% comment %}<span>当前角色：</span>{% endcomment %}
+                    <input id="" class="all" type="checkbox" name="" checked="false"><label for="">全选/全不选</label>
                     <input type="button" id="purBtn" value="确定"> <input class="close" type="button" value="放弃">
                     <input type="hidden" name="rcode" value="{{ rcode }}">
                 </p>

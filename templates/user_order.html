@@ -90,7 +90,7 @@
             </form>
            <div class="shopList-cnt">
                 <p class="shopList-cnt-tit">
-                    <span>门店：</span>
+                   {% comment %} <span>门店：</span>{% endcomment %}
                     <input type="checkbox" name="scode" class="all"><label for="">全选/全不选</label>
                     <input class="enter" type="button" value="确定" >
                     <input class="close" type="button" value="放弃">
@@ -107,9 +107,9 @@
                             <th>
                                 门店名称
                             </th>
-                            <th>
+                         {% comment %}   <th>
                                 经营方式
-                            </th>
+                            </th>{% endcomment %}
                         </tr>
                     </thead>
                     <tbody>
@@ -124,9 +124,9 @@
                             <td>
                                  {{ shop.shopnm }}
                             </td>
-                            <td>
+                          {% comment %}  <td>
                                  {{ shop.shopcode }}
-                            </td>
+                            </td>{% endcomment %}
                         </tr>
                         {% endfor %}
                     </tbody>

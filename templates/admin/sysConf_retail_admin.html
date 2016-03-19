@@ -12,7 +12,7 @@
         <div class="mainConf">
             <div class="confSide left">
                 <h3>
-                    用户 列表
+                    用户列表
                     <a class="icon" href="/scm/base/admin/retuser/index/?action=new&page={{ page }}" style="text-decoration: none" title="新建">+</a>
                 </h3>
                 <div class="confSide-cnt">
@@ -153,10 +153,10 @@
                         </div>
                     </form>
 
-                    <div class="powerSet-box" id="roleBoxId" style="top:200px">
+                    <div class="powerSet-box" id="roleBoxId" style="top:180px;right:0;left:auto;height:300px;overflow-y: auto;">
                          <form  id="saveRoleForm" method="post">
                           <p class="title">
-                                <span>当前用户：{{ user.nm|default_if_none:"" }}</span>
+                                {% comment %}<span>当前用户：{{ user.nm|default_if_none:"" }}</span>{% endcomment %}
                                 <input id="roleAll" type="checkbox" value=""><label for="">全选/全不选</label>
                                 <input type="button" value="确定" id="save_role_btn">&nbsp;
                                 <input type="button" value="放弃" id="roleCloseBtn">
