@@ -129,7 +129,7 @@ def query(request):
         rslist = []
         if list:
             for row in list:
-                item = ["","","","","","","","","","","","","",""]
+                item = ["","","","","","","","","","","",""]
 
                 if sum:
                     radio = (row[10] / sum * 100)   #占比
