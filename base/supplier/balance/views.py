@@ -1124,16 +1124,16 @@ def findJxListBySheetId(sheetId):
         sql = """SELECT b.inshopid,b.kno,k.kname,b.kmoney,b.note,k.prtflag
                   FROM  billheadkxitem0 b LEFT JOIN kxd k ON k.kno = b.kno
                   WHERE b.kkflag=0 and b.sheetid='{sheetId}' order by b.inshopid
-              """.format(sheetId=sheetId)      #
+              """.format(sheetId=sheetId)
         cur.execute(sql)
-        kxlist = cur.fetchall()
+        jxlist = cur.fetchall()
     except Exception as e:
         print(e)
-        kxlist = []
+        jxlist = []
     finally:
         cur.close()
         conn.close()
-    return kxlist
+    return jxlist
 
 def findKxListBySheetId(sheetId):
     try:

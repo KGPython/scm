@@ -68,7 +68,6 @@
 					<th>不含税金额</th>
 					<th>税额</th>
 					<th>价税合计</th>
-					<th>扣项金额</th>
 					<th>实际付款</th>
 					<th>付款<br>方式</th>
 					<th>发票日期</th>
@@ -89,8 +88,7 @@
 					<td><input type="text" value="0.00 " name="cmoney"></td>
 					<td><input type="text" value="0.00 " name="csh"></td>
 					<td><input type="text" value="0.00 " name="jshj"></td>
-					<td><input type="text" value="0.00 "></td>
-					<td><input type="text" value="0.00 "></td>
+					<td><input type="text" value="0.00 " name="sjfk"></td>
 					<td>
                         <select name="" id="">
                             <option value="0">支票</option>
@@ -109,7 +107,6 @@
                     <td id="cmoneySum">0.00</td>
                     <td id="cshSum">0.00</td>
                     <td id="jshjSum">0</td>
-                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -181,10 +178,9 @@
                                 "cno":inputs.eq(1).val(),
                                 "cmoney":inputs.eq(2).val(),
                                 "csh":inputs.eq(3).val(),
-                                "kmoney":inputs.eq(5).val(),
-                                "cdate":inputs.eq(7).val(),
-                                "cdno":inputs.eq(8).val(),
-                                "cgood":inputs.eq(9).val()
+                                "cdate":inputs.eq(6).val(),
+                                "cdno":inputs.eq(7).val(),
+                                "cgood":inputs.eq(8).val()
                             })
                         }else{
                             alert("发票进项税率必须在0-100之间，\n并且发票号不能为空(长度小于10位)，\n请核对！");
@@ -249,58 +245,60 @@
                 var columsL = thead.rows[0].cells.length;
                 var row = tbody.insertRow(rowsL-1);
 
-            for(i=0;i<columsL;i++){
-                var td=document.createElement("td");
-                if(i==0){
-                    var select = document.createElement("select");
-                    select.id="";
-                    select.options.add(new Option("普票","1"));
-                    select.options.add(new Option("税票","2"));
-                    td.appendChild(select)
-                }else if(i==8){
-                    var select = document.createElement("select");
-                    select.id="";
-                    select.options.add(new Option("支票","0"));
-                    select.options.add(new Option("电汇","1",'',true));
-                    select.options.add(new Option("汇票","2"));
-                    select.options.add(new Option("网银","3"));
-                    select.options.add(new Option("其他","4"));
-                    td.appendChild(select)
-                }else{
-                    var input = document.createElement("input");
-                    if(i==1 || i==3 || i==4 || i==5 || i==6 || i==7){
-                        input.value="0.00"
+                for(i=0;i<columsL;i++){
+                    var td=document.createElement("td");
+                    if(i==0){
+                        var select = document.createElement("select");
+                        select.id="";
+                        select.options.add(new Option("普票","1"));
+                        select.options.add(new Option("税票","2"));
+                        td.appendChild(select)
+                    }else if(i==7){
+                        var select = document.createElement("select");
+                        select.id="";
+                        select.options.add(new Option("支票","0"));
+                        select.options.add(new Option("电汇","1",'',true));
+                        select.options.add(new Option("汇票","2"));
+                        select.options.add(new Option("网银","3"));
+                        select.options.add(new Option("其他","4"));
+                        td.appendChild(select)
+                    }else{
+                        var input = document.createElement("input");
+                        if(i==1 || i==3 || i==4 || i==5 || i==6 ){
+                            input.value="0.00"
+                        }
+                        if(i==1){
+                            input.name="ctaxrate"
+                        }
+                        if(i==2){
+                            input.name="cno"
+                        }
+                        if(i==3){
+                            input.name="cmoney"
+                        }
+                        if(i==4){
+                            input.name="csh"
+                        }
+                        if(i==5){
+                            input.name="jshj"
+                        }
+                        if(i==6){
+                            input.name="sjfk"
+                        }
+                        if(i==8){
+                            input.value="{{ timeNow }}"
+                        }
+                        if(i==9){
+                            input.value="{{ taxno }}"
+                        }
+                        if(i==10){
+                            input.value="货物"
+                        }
+                        td.appendChild(input)
                     }
-                    if(i==1){
-                        input.name="ctaxrate"
-                    }
-                    if(i==2){
-                        input.name="cno"
-                    }
-                    if(i==3){
-                        input.name="cmoney"
-                    }
-                    if(i==4){
-                        input.name="csh"
-                    }
-                    if(i==5){
-                        input.name="jshj"
-                    }
-
-                    if(i==9){
-                        input.value="{{ timeNow }}"
-                    }
-                    if(i==10){
-                        input.value="{{ taxno }}"
-                    }
-                    if(i==11){
-                        input.value="货物"
-                    }
-                    td.appendChild(input)
+                    row.appendChild(td)
                 }
-                row.appendChild(td)
             }
-        }
             $("#rowNum").val("1");
         }
         //删除表格的一行

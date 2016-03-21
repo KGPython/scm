@@ -101,7 +101,8 @@ def saveInvioce(request):
             listData = json.loads(jsonStr)
             if listData:
                 for data in listData:
-                    sqlCRI = "insert into CustReceiveItem0 values( '"+sheetId+"','"+data['cno']+"','"+suppName+"','"+data['cdno']+"','"+data['cdate']+"',"+data['cclass']+",'"+data['cgood']+"','"+data['ctaxrate']+"','"+data['cmoney']+"','"+data['csh']+"',"+data['paytype']+",'"+data['kmoney']+"','"+shopId+"')"
+                    #kmoney默认为0无需录入
+                    sqlCRI = "insert into CustReceiveItem0 values( '"+sheetId+"','"+data['cno']+"','"+suppName+"','"+data['cdno']+"','"+data['cdate']+"',"+data['cclass']+",'"+data['cgood']+"','"+data['ctaxrate']+"','"+data['cmoney']+"','"+data['csh']+"',"+data['paytype']+",'0.0','"+shopId+"')"
                     cur.execute(sqlCRI)
             else:
                 sql3 = "select a.jsdate,a.flag,a.fnotes,b.taxno,c.paytypeid from vendercard a,venderext b,vender c	where a.venderid=b.venderid and a.venderid=c.venderid and a.venderid={venderid}".format(venderid=suppCode)

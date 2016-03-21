@@ -104,25 +104,51 @@ $(".roles-box .close").click(function(){
 $(document).on('blur','input[name=cmoney]',function(){
     var trs = $("#invoiceTable").find("tr");
     cmoneySum=0.00;
+    jshjSum=0.00;
     trs.each(function(){
         var cmoney = $(this).find('td').eq('3').find('input').val();
         if(cmoney){
             cmoneySum += parseFloat(cmoney,2);
         }
+        var csh = $(this).find('td').eq('4').find('input').val();
+        if(!csh){
+            csh = 0.0;
+        }
+        var jsum = parseFloat(csh)+parseFloat(cmoney);
+        if(jsum){
+             jshjSum += parseFloat(jsum,2);
+        }
+
+        $(this).find('td').eq('6').find('input').val(cmoney);
+        $(this).find('td').eq('5').find('input').val(jsum);
     });
     $("#cmoneySum").text(parseFloat(cmoneySum).toFixed(2));
+    $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 //税额（csh）求和
 $(document).on('blur','input[name=csh]',function(){
     var trs = $("#invoiceTable").find("tr");
     cshSum=0.00;
+    jshjSum=0.00;
     trs.each(function(){
         var csh = $(this).find('td').eq('4').find('input').val();
         if(csh){
             cshSum += parseFloat(csh,2);
         }
+
+        var cmoney = $(this).find('td').eq('3').find('input').val();
+        if(!cmoney){
+            cmoney = 0.0;
+        }
+        var jsum =  parseFloat(csh)+parseFloat(cmoney);
+        if(jsum){
+             jshjSum += parseFloat(jsum,2);
+        }
+
+        $(this).find('td').eq('5').find('input').val(jsum);
     });
     $("#cshSum").text(parseFloat(cshSum).toFixed(2));
+    $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 //税额（jshj）求和
 $(document).on('blur','input[name=jshj]',function(){
