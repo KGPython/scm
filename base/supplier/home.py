@@ -54,6 +54,8 @@ def index(request):
                 rlist.append(dict(row))
 
     rlist = sorted(rlist,key=lambda row: row["beginday"])
+    rds = ""
+    tds = ""
     if rlist:
         for rw in rlist:
             begin = rw["beginday"]
