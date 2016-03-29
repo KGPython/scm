@@ -7,35 +7,35 @@
     </head>
     <body>       
         {% include "common/nav.html" %}
-        <div class="query retail_notice comWidth">
+        <div class="query retail_notice comWidth" style="height: 55px;">
             <form class="query-list" action="{% url 'msglist' %}" method="post">
                 {% csrf_token %}
-                <p>
+                <p class="input">
                     <label>编号：</label>
                     {{ form.infocode }}
                 </p>
-                <p class="date">
+                <p class="date input">
                     <label for="start">提交日期：</label>
                     {{ form.start }}
                     {{ form.start.errors }}
                 </p>
-                <p class="date">
+                <p class="date input">
                     <label for="start">结束日期：</label>
                     {{ form.end }}
                     {{ form.start.errors }}
                 </p>
-                <input type="hidden" id="flag" name="flag" value="">
-                <p>
-                    <input type="submit" value="收到信息查询" onclick="flagFun('msgIn')">
+                <input class="query-enter" type="hidden" id="flag" name="flag" value="">
+                <p class="input">
+                    <input  class="query-enter" type="submit" value="收到信息查询" onclick="flagFun('msgIn')">
                 </p>
-                <p>
-                    <input type="submit" value="发出信息查询" onclick="flagFun('msgOut')">
+                <p class="input">
+                    <input  class="query-enter" type="submit" value="发出信息查询" onclick="flagFun('msgOut')">
                 </p>
-                <p>
+                <p class="input">
                     {% if userType == "2" %}
-                        <a class="button" href="{% url 'msgCreate' %}?infotype=1">新建</a>
+                        <a class="button" href="{% url 'msgCreate' %}?infotype=1" style="margin-top: 19px">新建</a>
                     {% elif userType == "1" %}
-                        <a class="button" href="{% url 'msgCreate' %}?infotype=0">新建</a>
+                        <a class="button" href="{% url 'msgCreate' %}?infotype=0" style="margin-top: 19px">新建</a>
                     {% endif %}
                 </p>
             </form>

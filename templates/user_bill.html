@@ -9,65 +9,66 @@
         <div class="query comWidth">
             <form class="query-list" method="post" action="{% url 'supplierBill' %}">
                 {% csrf_token %}
-                <p>
+                <p class="input">
                     <label>入库单号：</label>
                     {{ form.code }}
                 </p>
-                <p class="shopList">
+                <div class="shopList input">
                     <label>门店：</label>
                     {{ form.shopcode }}
                     <span class="shopList-icon"></span>
-                </p>
-                <p class="date"></p>
-                <p>
+                    <div class="shopList-cnt">
+                        <p class="shopList-cnt-tit">
+                           {% comment %} <span>门店：</span>{% endcomment %}
+                            <input type="checkbox" name="" id="" class="all"><label for="" style="display: inline">全选/全不选</label>
+                            <input class="enter" type="button" value="确定">
+                            <input class="close" type="button" value="放弃">
+                        </p>
+                        <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;" >
+                            <thead>
+                                <tr>
+                                    <th>选择</th>
+                                    <th>门店编码</th>
+                                    <th>门店名称</th>
+                                  {% comment %}  <th>经营方式</th>{% endcomment %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for shop in shopList %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="" id="" value="{{ shop.shopcode }}">
+                                    </td>
+                                    <td>
+                                        {{ shop.shopcode }}
+                                    </td>
+                                    <td class="shopnm">
+                                        {{ shop.shopnm }}
+                                    </td>
+                                  {% comment %}  <td>
+                                    </td>{% endcomment %}
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <p class="input">
                     <label for="start">开始日：</label>
                     {{ form.start }}
                     {{ form.start.errors }}
                 </p>
-                <p>
+                <p class="input">
                     <label for="end">结束日：</label>
                      {{ form.end }}
                      {{ form.end.errors }}
                 </p>
-                <p>
+                <p class="input">
                     <input class="query-enter" type="submit" value="查询">
                 </p>
             </form>
-            <div class="shopList-cnt">
-                <p class="shopList-cnt-tit">
-                   {% comment %} <span>门店：</span>{% endcomment %}
-                    <input type="checkbox" name="" id="" class="all"><label for="">全选/全不选</label>
-                    <input class="enter" type="button" value="确定">
-                    <input class="close" type="button" value="放弃">
-                </p>
-                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;" >
-                    <thead>
-                        <tr>
-                            <th>选择</th>
-                            <th>门店编码</th>
-                            <th>门店名称</th>
-                          {% comment %}  <th>经营方式</th>{% endcomment %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for shop in shopList %}
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="" id="" value="{{ shop.shopcode }}">
-                            </td>
-                            <td>
-                                {{ shop.shopcode }}
-                            </td>
-                            <td class="shopnm">
-                                {{ shop.shopnm }}
-                            </td>
-                          {% comment %}  <td>
-                            </td>{% endcomment %}
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+
         </div>
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">

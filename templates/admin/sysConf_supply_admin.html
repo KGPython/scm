@@ -12,25 +12,25 @@
             <h2 class="tTitle">
                 维护供应商系统管理员
             </h2>
-            <div class="query comWidth">
+            <div class="query comWidth" style="height: 55px;">
                 <form action="" class="query-list" id="changePasswdForm" name="changePasswdForm" method="post">
-                    <p>
+                    <p class="input">
                         <label>供应商编码：</label>
                         <input type="text" name="grpcode" value="{{ grpcode }}">
                     </p>
-                    <p>
+                    <p class="input">
                         <label>登录名：</label>{{ form.ucode }}{{ form.ucode.errors }}
                     </p>
-                    <p>
+                    <p class="input">
                         <label>新密码：</label>{{ form.passwd }}{{ form.passwd.errors }}
                     </p>
-                    <p>
+                    <p class="input">
                         <label>确认密码：</label>{{ form.confirmpass }}{{ form.confirmpass.errors }}
                     </p>
-                    <p class="btn">
+                    <p class="btn input">
                         <input class="query-enter" type="button" id="btnQuery" name="btnQuery" value="查询管理员" onclick="queryUser()">
                     </p>
-                    <p class="btn">
+                    <p class="btn input">
                         <input class="query-enter" type="button" id="btnSave" name="btnSave" value="重新生成密码" >
                     </p>
                 </form>

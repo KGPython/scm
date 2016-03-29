@@ -22,25 +22,25 @@
         供应商开户状态
     </h1>
 
-    <div class="query comWidth">
+    <div class="query comWidth" style="height: 55px;">
       {% comment %}  <h2 style="margin-bottom: 15px">
             查询 供应商开户记录
         </h2>
 {% endcomment %}
         <form action="/scm/base/admin/suppstatus/" class="query-list" method="get">
-            <p>
+            <p class="input">
                 <label>单号：</label>{{ form.bid }}
             </p>
 
-            <p>
+            <p class="input">
                 <label>供应商编号：</label>{{ form.suppcode }}
             </p>
 
-            <p>
+            <p class="input">
                 <label>状态：</label>{{ form.status }}
             </p>
 
-            <p class="btn">
+            <p class="btn input">
                 <input class="query-enter" id="quetyBtn" name="queryBtn" type="submit" value="开始查询">
             </p>
         </form>

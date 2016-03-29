@@ -9,99 +9,97 @@
         {% include "common/nav.html" %}
         <div class="query comWidth">
             <form class="query-list sale-pro" method="post" id="queryForm" action="/scm/base/supp/sale/product/query/">
+                <div class="shopList input">
+                    <label>门店：</label>
+                    <input type="text" id="shopCode" name="shopCode" value="{{ shopCode }}">
+                    <span class="shopList-icon"></span>
+                     <div class="shopList-cnt">
+                        <p class="shopList-cnt-tit">
+                            <input type="checkbox" name="scode" class="all"><label for="" style="display: inline">全选/全不选</label>
+                            <input class="enter" type="button" value="确定" >
+                            <input class="close" type="button" value="放弃">
+                        </p>
+                        <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        选择
+                                    </th>
+                                    <th>
+                                        门店编码
+                                    </th>
+                                    <th>
+                                        门店名称
+                                    </th>
 
-                          <p class="shopList">
-                                <label>门店：</label>
-                                <input type="text" id="shopCode" name="shopCode" value="{{ shopCode }}">
-                                <span class="shopList-icon"></span>
-                            </p>
-                            <p class="scList">
-                                <label>商品类别：</label>
-                                <input type="text" id="sccode" name="sccode" value="{{ sccode }}">
-                                <span class="scList-icon"></span>
-                            </p>
-                            <p class="date"></p>
-                            <p>
-                                <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}">
-                            </p>
-                            <p>
-                                <label for="end">结束日期：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}">
-                            </p>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for shop in  shopList %}
+                                <tr>
+                                    <td>
+                                        <input type="checkbox" name="scode" value="{{ shop.shopcode }}">
+                                    </td>
+                                    <td>
+                                        {{ shop.shopcode }}
+                                    </td>
+                                    <td>
+                                         {{ shop.shopnm }}
+                                    </td>
 
-                           <p>
-                                <label>商品名称：</label><input type="text" name="pname" value="{{ pname }}">
-                           </p>
-                           <p>
-                                <label>商品编码：</label><input type="text" name="pcode" value="{{ pcode }}">
-                           </p>
-                           <p>
-                                <label>商品条码：</label><input type="text" name="barcode" value="{{ barcode }}">
-                           </p>
-                           <p>
-                                <label>排序条件：</label>
-                                <select name="orderstyle" class="input">
-                                    <option value="pcode" {% ifequal orderstyle "pcode" %}selected="selected" {% endifequal %}>
-                                        商品编码
-                                    </option>
-                                    <option value="pname" {% ifequal orderstyle "pname" %}selected="selected" {% endifequal %}>
-                                        商品名称
-                                    </option>
-                                    <option value="num" {% ifequal orderstyle "num" %}selected="selected" {% endifequal %}>
-                                        销售数量
-                                    </option>
-                                    <option value="scost"  {% ifequal orderstyle "scost" %}selected="selected" {% endifequal %}>
-                                        进价金额
-                                    </option>
-
-                                </select>
-                           </p>
-                           <p>
-                                <input class="query-enter" type="button" value="查询"  onclick="queryForm(1)">
-                                 <input type="hidden" id="qtype" name="qtype">
-                           </p>
-                           <p>
-                                <input class="query-enter" type="button" value="导出到excel"  onclick="queryForm(2)">
-                           </p>
-            </form>
-             <div class="shopList-cnt">
-                <p class="shopList-cnt-tit">
-                    <input type="checkbox" name="scode" class="all"><label for="">全选/全不选</label>
-                    <input class="enter" type="button" value="确定" >
-                    <input class="close" type="button" value="放弃">
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <p class="scList input">
+                    <label>商品类别：</label>
+                    <input type="text" id="sccode" name="sccode" value="{{ sccode }}">
+                    <span class="scList-icon"></span>
                 </p>
-                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-                    <thead>
-                        <tr>
-                            <th>
-                                选择
-                            </th>
-                            <th>
-                                门店编码
-                            </th>
-                            <th>
-                                门店名称
-                            </th>
+                <p class="input">
+                    <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}">
+                </p>
+                <p class="input">
+                    <label for="end">结束日期：</label> <input class="inline laydate-icon" id="end" name="end" type="text"  value="{{ end }}">
+                </p>
 
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for shop in  shopList %}
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="scode" value="{{ shop.shopcode }}">
-                            </td>
-                            <td>
-                                {{ shop.shopcode }}
-                            </td>
-                            <td>
-                                 {{ shop.shopnm }}
-                            </td>
+                <p class="input">
+                    <label>商品名称：</label><input type="text" name="pname" value="{{ pname }}">
+                </p>
+                <p class="input">
+                    <label>商品编码：</label><input type="text" name="pcode" value="{{ pcode }}">
+                </p>
+                <p class="input">
+                    <label>商品条码：</label><input type="text" name="barcode" value="{{ barcode }}">
+                </p>
+                <p class="input">
+                    <label>排序条件：</label>
+                    <select name="orderstyle" class="input">
+                        <option value="pcode" {% ifequal orderstyle "pcode" %}selected="selected" {% endifequal %}>
+                            商品编码
+                        </option>
+                        <option value="pname" {% ifequal orderstyle "pname" %}selected="selected" {% endifequal %}>
+                            商品名称
+                        </option>
+                        <option value="num" {% ifequal orderstyle "num" %}selected="selected" {% endifequal %}>
+                            销售数量
+                        </option>
+                        <option value="scost"  {% ifequal orderstyle "scost" %}selected="selected" {% endifequal %}>
+                            进价金额
+                        </option>
 
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                    </select>
+                </p>
+                <p class="input">
+                    <input class="query-enter" type="button" value="查询"  onclick="queryForm(1)">
+                    <input type="hidden" id="qtype" name="qtype">
+                </p>
+                <p class="input">
+                    <input class="query-enter" type="button" value="导出到excel"  onclick="queryForm(2)">
+                </p>
+            </form>
         </div>
         <div class="scList-cnt">
                 <p class="scList-cnt-tit">

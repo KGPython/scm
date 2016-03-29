@@ -45,15 +45,14 @@ body{
 	font-size: 16px;
 }
 .l-main-content p input{
-	padding: 6px 5px;
+	padding: 0 5px;
 	margin-left:20px;
 	width: 250px;
 	height: 34px;
 	line-height: 34px;
 	text-indent: 5px;
 	border-radius:5px ;
-
-} 
+}
 .l-main-content .validate img{
 	display: inline-block;
 	width: 90px;
@@ -153,39 +152,39 @@ body{
 ***************************************查询表单模块****************************************
 */
 .query{
-	margin-bottom:20px; 
+	margin-bottom:20px;
+	overflow: unset;
 }
 
 .query-list{
 	display: block;
 	margin: 0 auto;
-	overflow: hidden;
 	float: left;
 	width: 100%;
 }
-.query .query-list p{
+.query .query-list .input{
 	float: left;
 	margin-right: 19px;
 }
 
-.query .query-list p label{
+.query .query-list .input label{
 	display: block;
 	margin-bottom:5px; 
 }
-.query .query-list p select{
+.query .query-list .input select{
 	height: 30px;
 	line-height: 30px;
 	text-indent: 10px;
 	width: 120px;
 }
-.query .query-list p input[type="text"],
-.query .query-list p input[type="password"]{
+.query .query-list .input input[type="text"],
+.query .query-list .input input[type="password"]{
 	height: 30px;
 	line-height: 30px;
 	text-indent: 10px;
 }
-.query .query-list p input[type="text"],
-.query .query-list p input[type="password"]{
+.query .query-list .input input[type="text"],
+.query .query-list .input input[type="password"]{
 	background-color: #fff
 }
 .query-enter,
@@ -220,22 +219,27 @@ body{
 	line-height: 50px;
 	border: 10px;
 }
+.shopList,
+.powerSet{position: relative;z-index: 99}
 .shopList .shopList-icon,
 .scList .scList-icon{
+	position: absolute;
+	right:-20px;
+	top: 30px;
 	display: block;
 	+display:block;
 	width: 20px;
 	height: 20px;
 	background: transparent url("../image/plus.gif") no-repeat center;
 	cursor: pointer;
-	float: right;
 }
 .shopList-cnt,
 .scList-cnt,
 .powerSet-box{
 	display: none;
+	z-index: 99999;
 	position: absolute;
-	top:170px;
+	top:50px;
 	left: 0;
 	width: 450px;
 	height: 450px;
@@ -271,6 +275,7 @@ body{
 	display: inline-block;
 	margin-right:10px; 
 	margin-top: 10px;
+	background: none;
 }
 .shopList-cnt-tit input[type="submit"],
 .shopList-cnt-tit input[type="button"],
@@ -279,13 +284,15 @@ body{
 {
 	background: #337AB7;
 	color:#fff;
-	padding: 2px 4px;
+	padding: 0 10px;
+	height: 30px;
 }
 
 .shopList-cnt th,
 .scList-cnt th{
 	font-size: 14px
 }
+.shopList-cnt table td input{background: none}
 .errorlist{
 	display:block;
 	float: left;
@@ -717,9 +724,7 @@ tbody a{
 .supply_admin .query-list .btn{
 	float: right;
 }
-.supply_admin .query-enter{
-	margin-top: 0px;
-}
+
 .supply_admin table a{
 	font-size: 25px
 }
@@ -841,6 +846,7 @@ tbody a{
 }
 .box-line p input[type=text]{
 	height: 30px;
+	line-height: 30px;
 	width: 140px;
 	text-indent: 10px;
 	background-color: #fff;
