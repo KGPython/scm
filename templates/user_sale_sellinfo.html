@@ -60,11 +60,48 @@
                                 </table>
                             </div>
                         </div>
-                        <p class="scList input">
+                        <div class="scList input">
                             <label>商品类别：</label>
                             <input type="text" id="sccode" name="sccode" value="{{ sccode }}">
                             <a class="scList-icon" title="商品类别"></a>
-                        </p>
+                            <div class="scList-cnt">
+                                <p class="scList-cnt-tit">
+                                    <input type="checkbox" name="ccode" class="all"><label for="" style="display:inline">全选/全不选</label>
+                                    <input class="enter" type="button" value="确定" >
+                                    <input class="close" type="button" value="放弃">
+                                </p>
+                                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                                    <thead>
+                                        <tr>
+                                            <th>
+                                                选择
+                                            </th>
+                                            <th>
+                                                类别编码
+                                            </th>
+                                            <th>
+                                                类别名称
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for row in  deptList %}
+                                        <tr>
+                                            <td>
+                                                <input type="checkbox" name="ccode" value="{{ row.deptid }}">
+                                            </td>
+                                            <td>
+                                                {{ row.deptid }}
+                                            </td>
+                                            <td>
+                                                {{ row.deptname }}
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
                         <p class="input">
                             <label for="start">开始日期：</label> <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}">
                         </p>
@@ -125,44 +162,7 @@
             </form>
 
         </div>
-        <div class="scList-cnt">
-                <p class="scList-cnt-tit">
-                    <input type="checkbox" name="ccode" class="all"><label for="">全选/全不选</label>
-                    <input class="enter" type="button" value="确定" >
-                    <input class="close" type="button" value="放弃">
-                </p>
-                <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-                    <thead>
-                        <tr>
-                            <th>
-                                选择
-                            </th>
-                            <th>
-                                类别编码
-                            </th>
-                            <th>
-                                类别名称
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in  deptList %}
-                        <tr>
-                            <td>
-                                <input type="checkbox" name="ccode" value="{{ row.deptid }}">
-                            </td>
-                            <td>
-                                {{ row.deptid }}
-                            </td>
-                            <td>
-                                {{ row.deptname }}
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        </div>
+
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h1>

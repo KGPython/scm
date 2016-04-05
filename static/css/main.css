@@ -127,10 +127,11 @@ body{
 }
 .nav-list2{
 	position: absolute;
+	left:0;
 	top:58px;
 	+top:58px;
 	display: none;
-	width: 118px;
+	width: 100%;
 	clear: both;
 	background: #FFF ;
 	border:1px solid #EFEFEF;
@@ -220,7 +221,7 @@ body{
 	border: 10px;
 }
 .shopList,
-.powerSet{position: relative;z-index: 99}
+.scList{position: relative;z-index: 99}
 .shopList .shopList-icon,
 .scList .scList-icon{
 	position: absolute;
@@ -250,7 +251,7 @@ body{
 .scList-cnt{
 	width: 450px;
 	height: 450px;
-	margin-left:200px;
+	margin: 0;
 }
 .shopList-cnt-tit,
 .scList-cnt-tit{
