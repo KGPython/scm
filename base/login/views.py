@@ -147,10 +147,10 @@ def login(request):
                 response_data['status'] = "3"
         else:
             response_data['status'] = "0"
-            if olduser["utype"] == "2":
-                response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
-            else:
+            if olduser["utype"] == "1":
                 response_data['homeurl'] = Constants.URL_RETAILER_HOME
+            else:
+                response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
     except Exception as e:
         print(e)
 

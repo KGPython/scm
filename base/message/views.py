@@ -30,8 +30,8 @@ def readFile(filePath, buf_size=262144):
 def download(request):
     file = request.GET.get("filename","")
     filename = file.split("/")
-    path = os.getcwd()#本地测试
-    #path = constants.BASE_ROOT
+    #path = os.getcwd()#本地测试
+    path = constants.BASE_ROOT
     filePath = path+file
     if not os.path.isfile(filePath):
          pindex = request.GET.get("pindex")
