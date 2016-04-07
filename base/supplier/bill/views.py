@@ -103,7 +103,7 @@ def billArticle(request):
     #入库单明细
     billList = BillInd.objects.values("procode","pname","unit","taxrate","num","denums","prnum","price_intax","sum_tax","chdate","salebn","classes")\
                               .filter(code=code,orderstyle__in=('2323','2301'),grpcode=grpCode)\
-                              .order_by('pname','unit')#order_by('pname','class'，'unit')
+                              .order_by('pname','classes','unit')
 
     TotalSumTax = 0  #含税进价总额
     for bill in billList:
