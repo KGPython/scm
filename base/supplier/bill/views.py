@@ -10,8 +10,8 @@ from django.db import connection
 
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
-time = datetime.datetime.today().strftime("%Y-%m-%d")
-monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+# time = datetime.datetime.today().strftime("%Y-%m-%d")
+# monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 def supplierBill(request):
     sperCode = request.session.get('s_suppcode')   #用户所属单位
     grpCode = request.session.get('s_grpcode')   #用户所属单位
@@ -20,8 +20,8 @@ def supplierBill(request):
     shopCodeList = []
     shopCode = ''
     code = ''
-    start = time
-    end = time
+    start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+    end = datetime.datetime.today().strftime("%Y-%m-%d")
     page = request.GET.get('page',1)
 
     if request.method== 'POST':
@@ -34,8 +34,8 @@ def supplierBill(request):
     else:
         code = request.GET.get('code','')
         shopCode = request.GET.get('shopcode','')
-        start = request.GET.get('start',monthFrist)
-        end = request.GET.get('end',time)
+        start = request.GET.get('start',start)
+        end = request.GET.get('end',end)
         data = {'code':code,'shopcode':shopCode,'start':start,'end':end}
         form = BillInForm(data)
 
@@ -121,8 +121,8 @@ def billAdjust(request):
     shopCodeList = []
     shopStr = ''
     code = ''
-    start = ''
-    end = ''
+    start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+    end = datetime.datetime.today().strftime("%Y-%m-%d")
     orderStyle = ''
     page = request.GET.get('page',1)
 
@@ -137,9 +137,9 @@ def billAdjust(request):
     else:
         code = request.GET.get('code','')
         shopCode = request.GET.get('shopcode','')
-        start = request.GET.get('start',monthFrist)
-        end = request.GET.get('end',time)
-        orderStyle = request.GET.get('orderstyle',time)
+        start = request.GET.get('start',start)
+        end = request.GET.get('end',end)
+        orderStyle = request.GET.get('orderstyle','chdate')
 
         data = {'code':code,'shopcode':shopCode,'start':start,'end':end}
         form = AdPriceForm(data)
@@ -152,9 +152,9 @@ def billAdjust(request):
             shopCode +=str(item)
             shopCode +="','"
         shopCode = shopCode[0:len(shopCode)-2]
-        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum from adprice,adpriced where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum from adprice,adpriced where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+orderStyle+" desc"
     else:
-        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum,cstyle,csname,bdate,edate,remark,status,sum(anum) anum from adprice,adpriced where adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.code=adpriced.code and  adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+'code'+" desc"
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum,cstyle,csname,bdate,edate,remark,status,sum(anum) anum from adprice,adpriced where adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.code=adpriced.code and  adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+orderStyle+" desc"
 
     cursor = connection.cursor()
     cursor.execute(sql)
@@ -243,8 +243,8 @@ def billBack(request):
     shopCodeList = []
     shopCode = ''
     code = ''
-    start = time
-    end = time
+    start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+    end = datetime.datetime.today().strftime("%Y-%m-%d")
     page = request.GET.get('page',1)
     if request.method== 'POST':
         form = BillInForm(request.POST)
@@ -256,8 +256,8 @@ def billBack(request):
     else:
         code = request.GET.get('code','')
         shopCode = request.GET.get('shopcode','')
-        start = request.GET.get('start',monthFrist)
-        end = request.GET.get('end',time)
+        start = request.GET.get('start',start)
+        end = request.GET.get('end',end)
         data = {'code':code,'shopcode':shopCode,'start':start,'end':end}
         form = BillInForm(data)
     kwargs = {}

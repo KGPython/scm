@@ -15,8 +15,8 @@ from base.views import findPayType
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
 
-time = datetime.datetime.today().strftime("%Y-%m-%d")
-monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+#time = datetime.datetime.today().strftime("%Y-%m-%d")
+#monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 
 #add by liubf at 2016/01/12
 #查询单据明细
@@ -915,8 +915,8 @@ def balance(request):
     grpCode = request.session.get('s_grpcode')   #用户所属单位
     grpName = request.session.get('s_grpname')
 
-    start = monthFrist
-    end = time
+    start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+    end = datetime.datetime.today().strftime("%Y-%m-%d")
     shopId = []
     sheetId = ''
     flag = ''
@@ -933,8 +933,8 @@ def balance(request):
             orderStyle = form.cleaned_data['orderStyle']
     else:
         shopId = request.GET.get('shopcode','')
-        start = request.GET.get('start',monthFrist)
-        end = request.GET.get('end',time)
+        start = request.GET.get('start',start)
+        end = request.GET.get('end',end)
         sheetId = request.GET.get('sheetid','')
         flag = request.GET.get('flag','')
         orderStyle = request.GET.get('orderstyle','editdate')
