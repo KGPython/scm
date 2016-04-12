@@ -1,0 +1,142 @@
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+        <style>
+            .mycode { float:left; display:inline;border:1px solid #666;border-left:0;border-bottom:0;}
+            .mycode li{height:30px; list-style:none;border-bottom:1px solid #666;}
+            .mycode li p{float:left;text-align:left;border-left:1px solid #666;width:100px;height:30px;line-height: 30px;font-size:14px;}
+            .mycode li i{float:left;text-align:center;border-left:1px solid #666;width:100px;height:60px;font-size:18px;font-style:normal;}
+            .mycode ul li i ul{border:0;}
+            .mycode ul li i ul li{height:30px; list-style:none;line-height: 30px;}
+            .mycode ul li i ul li i{float:left;text-align:left;width:100px;height:30px;text-align:center;}
+            .mycode .dhead {
+                background-color: #337AB7;
+                line-height:60px;
+                color: white;
+            }
+        </style>
+    </head>
+    <body>
+        {% include 'common/nav.html' %}
+        <style>
+            .datahead{
+                overflow-y: hidden;
+                overflow-x: hidden;
+                height:60px;
+                width: 100%;
+            }
+            .databody{
+                overflow-y: scroll;
+                overflow-x: hidden;
+                height:450px;
+                width:100%;
+            }
+            table{
+                background-color: #eee;
+                border-collapse: collapse;
+                border-top: 0px solid #ffffff;
+            }
+            table thead{
+                background-color: #337AB7;
+                color: white;
+                position: absolute;
+                z-index: 2;
+                text-align: center;
+                float:left;
+                width:72%;
+
+            }
+            table tbody{
+                position:relative;
+                z-index:1;
+                float: left;
+                width:100%;
+            }
+            table th{
+                background-color: #337AB7;
+                color: white;
+                text-align: center;
+                width: 100px;
+            }
+             table td{
+                text-align: center;
+                width: 100px;
+            }
+        </style>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                     各店零库存排名表
+                     <a class="button right" href="javascript:void(0);" id="btnExport">
+                         导出Excel
+                    </a>
+                </h1>
+            </div>
+            <div  style="width:100%;">
+
+                      {% comment %}   <div class="mycode"><ul>
+                          <li class="dhead" style="height:60px;">
+                              <i>序号</i><i>门店编号</i><i>门店名称</i>
+                              <i style="width:800px;">
+                                 <ul style="width:100%;">
+                                     <li>
+                                         <i style="width:402px;text-align: center; border-left:0;">月累计排名(不含联营和新品)</i>
+                                         <i style="width:392px;text-align: center; border-left:1px solid #666;">今日排名(不含联营和新品)</i>
+                                     </li>
+                                     <li style="border-bottom: 0;">
+                                         <i style="border-left:0;">有效商品数</i>
+                                         <i>零库存数</i>
+                                         <i>占比</i>
+                                         <i>排名</i>
+                                         <i>有效商品数</i>
+                                         <i>零库存数</i>
+                                         <i>占比</i>
+                                         <i style="width: 92px;text-align: center;">排名</i>
+                                     </li>
+                                 </ul>
+                              </i>
+                          </li>
+                          {% for item in tlist %}
+                          <li><p>{{ forloop.counter }}</p>
+                              <p>{{ item.0 }}</p><p>{{ item.1 }}</p>
+                              <p>{{ item.2 }}</p><p>{{ item.3 }}</p>
+                              <p>{{ item.4 }}</p><p>{{ item.5 }}</p>
+                              <p>{{ item.6 }}</p><p>{{ item.7 }}</p>
+                              <p>{{ item.8 }}</p><p>{{ item.9 }}</p></li>
+                          {% endfor %}
+                      </ul> </div>{% endcomment %}
+
+                 <div class="datahead">
+                      <table style="width:98%;">
+                                <tr>
+                                    <th rowspan="2">序号</th><th rowspan="2">门店编号</th><th rowspan="2">门店名称</th>
+                                    <th colspan="4">月累计排名(不含联营和新品)</th><th colspan="4">今日排名(不含联营和新品)</th>
+                                </tr>
+                                <tr >
+                                    <th>有效商品数</th><th>零库存数</th><th>占比</th><th>排名</th>
+                                    <th>有效商品数</th><th>零库存数</th><th>占比</th><th>排名</th>
+                                </tr>
+                       </table>
+                 </div>
+                 <div class="databody">
+                      <table>
+                                {% for item in tlist %}
+                                    <tr>
+                                        <td>{{ forloop.counter }}</td><td>{{ item.0 }}</td>
+                                        <td>{{ item.1 }}</td><td>{{ item.2 }}</td><td>{{ item.3 }}</td>
+                                        <td>{{ item.4 }}</td><td>{{ item.5 }}</td><td>{{ item.6 }}</td>
+                                        <td>{{ item.7 }}</td><td>{{ item.8 }}</td><td>{{ item.9 }}</td>
+                                    </tr>
+                                {% endfor %}
+                      </table>
+                 </div>
+            </div>
+        </div>
+        {% include "common/footer.html" %}
+        <script data-jsfiddle="example1">
+            current = "ribao";
+        </script>
+    </body>
+</html>

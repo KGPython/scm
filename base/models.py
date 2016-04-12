@@ -13,7 +13,6 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
-
 class Adprice(models.Model):
     code = models.CharField(db_column='Code', max_length=20)  # Field name made lowercase.
     grpcode = models.CharField(db_column='Grpcode', max_length=20)  # Field name made lowercase.
@@ -1400,3 +1399,29 @@ class BasPayType(models.Model):
     class Meta:
         managed = False
         db_table = 'bas_paytype'
+
+class RepShopZeroStock(models.Model):
+    shopid = models.CharField(db_column='ShopID',max_length=16)
+    shopname = models.CharField(db_column='ShopName',max_length=100)
+    deptid = models.CharField(db_column='DeptId',max_length=16)
+    deptname = models.CharField(db_column='DeptName',max_length=100)
+    qtyz = models.DecimalField(db_column='Qtyz', max_digits=16, decimal_places=2)
+    qtyl = models.DecimalField(db_column='Qtyl', max_digits=16, decimal_places=2)
+    createtime = models.DateTimeField(db_column='CreateTime',auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'rep_shopzerostock'
+
+class RepShopNegativeStock(models.Model):
+    shopid = models.CharField(db_column='ShopID',max_length=16)
+    shopname = models.CharField(db_column='ShopName',max_length=100)
+    deptid = models.CharField(db_column='DeptId',max_length=16)
+    deptname = models.CharField(db_column='DeptName',max_length=100)
+    qtyz = models.DecimalField(db_column='Qtyz', max_digits=16, decimal_places=2)
+    qtyl = models.DecimalField(db_column='Qtyl', max_digits=16, decimal_places=2)
+    createtime = models.DateTimeField(db_column='CreateTime',auto_now_add=True)
+
+    class Meta:
+        managed = False
+        db_table = 'rep_shopnegativestock'

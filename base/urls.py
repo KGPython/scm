@@ -14,8 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include(blog_urls))
 """
 #-*- coding:utf-8 -*-
-from django.conf.urls import include, url
-from django.contrib import admin
+from django.conf.urls import include,url
 
 urlpatterns = [
 	url(r'^base/index/','base.views.index'),
@@ -90,7 +89,6 @@ urlpatterns = [
     url(r'^base/supp/invoice/new/$','base.supplier.invioce.views.newInvoice',name='newInvoice'),
     url(r'^base/supp/invoice/new/query','base.supplier.invioce.views.queryBalance',name='queryBalance'),
 
-
 	#零售商&系统管理
     url(r'^base/admin/index/','base.admin.home.index'),
     url(r'^base/admin/supprole/','base.admin.supprole.views.index'),
@@ -104,6 +102,9 @@ urlpatterns = [
     url(r'^base/admin/supp_queryRole', 'base.admin.supprole.views.queryRole'),
     url(r'^base/admin/supp_savePur', 'base.admin.supprole.views.savePur'),
     url(r'^base/admin/reconciltype/', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
+
+    #报表中心
+    url(r'^base/',include('base.report.urls')),
 
 ]
 

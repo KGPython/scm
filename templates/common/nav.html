@@ -12,7 +12,6 @@
             </li>
             {% if not request.session.s_fee or request.session.s_fee.status == 'Y' %}
                  {% if request.session.menu_type == "2" %}
-
                     {% for item in  request.session.s_umenu.supplier %}
                         <li class="nav-list-item">
                             <a id="nav_{{item.2}}" >{{ item.0|cutNum }}
@@ -67,10 +66,8 @@
                         </li>
                     {% endfor %}
                 {% else %}
-
                 {% endif %}
             {% endif %}
-
             <li class="nav-list-item">
                 <a id="nav_9" href="/scm/base/logout/">退出</a>
             </li>
