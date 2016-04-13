@@ -90,7 +90,7 @@
                 </div>
                 <div class="checker">
                     <div class="checker">
-                        <span class="long">审核人：{{ balance.checker }}</span>
+                        <span class="long">审核人：{{ balance.checker|default_if_none:'' }}</span>
                         <span>&emsp;</span>
                         <span >财务经理：&emsp;</span>
                         <span>&emsp;</span>
@@ -130,18 +130,21 @@
                                 <td>{{ item.payabledate|date:'Y-m-d' }}</td>
                                 <td>{{ item.invoicesheetid|default_if_none:""}}</td>
                             </tr>
+                            {% if forloop.last%}
+                               <tr>
+                                    <td></td>
+                                    <td></td>
+                                    <td>售价金额合价：</td>
+                                    <td>{{  sdict|key:item.inshopid|key:2 | floatformat:2  }}</td>
+                                    <td>应结金额合价：</td>
+                                    <td>{{ sdict|key:item.inshopid|key:0 | floatformat:2 }}</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            {% endif %}
                         {% endfor %}
-                        <tr>
-                            <td></td>
-                            <td></td>
-                            <td>售价金额合价：</td>
-                            <td>{{  sdict|key:shopid|key:2 | floatformat:2  }}</td>
-                            <td>应结金额合价：</td>
-                            <td>{{ sdict|key:shopid|key:0 | floatformat:2 }}</td>
-                            <td></td>
-                            <td></td>
-                            <td></td>
-                        </tr>
+
                     </table>
                 {% endfor %}
             </div>

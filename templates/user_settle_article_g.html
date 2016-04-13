@@ -89,7 +89,7 @@
                     <div class="seal" >供应商盖章区</div>
                 </div>
                 <div class="checker">
-                        <span class="long">审核人：{{ balance.checker }}</span>
+                        <span class="long">审核人：{{ balance.checker |default_if_none:''}}</span>
                         <span>&emsp;</span>
                         <span >财务经理：&emsp;</span>
                         <span>&emsp;</span>
@@ -134,7 +134,7 @@
                             <td></td>
                             <td></td>
                             <td>{{ sdict|key:row.0|key:0| floatformat:2 }}</td>
-                            <td>{{  sdict|key:row.0|key:1  | floatformat:2 }}</td>
+                            <td>{{  sdict|key:row.0|key:1| floatformat:2 }}</td>
                         </tr>
                     </table>
                 {% endfor %}
