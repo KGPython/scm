@@ -28,51 +28,55 @@ input[type="submit"],
 ***************************************用户登录页****************************************
 */
 body{
-	background:#efefef;
+	background:url("../image/login.jpg") no-repeat center;
+	background-size:cover ;
 }
 .login-main{
-	margin:150px auto 0;
+	margin:0 auto;
 	width: 800px;
 	overflow: hidden;
 	text-align: center;
-	background: #fff;
 }
 .l-main-title{
-	margin-bottom: 30px;
+	margin-bottom: 100px;
+	margin-top: 200px;
+	height: 50px;
+	background:url("../image/login_title.png") no-repeat center;
 }
 .l-main-content p{
-	margin-bottom:10px; 
-	font-size: 16px;
+	margin-bottom:30px;
+	font-size: 20px;
+	color: #fff;
 }
 .l-main-content p input{
 	padding: 0 5px;
 	margin-left:20px;
-	width: 250px;
-	height: 34px;
-	line-height: 34px;
+	width: 350px;
+	height: 45px;
+	line-height:45px;
 	text-indent: 5px;
 	border-radius:5px ;
 }
 .l-main-content .validate img{
 	display: inline-block;
 	width: 90px;
-	height: 30px;
+	height: 45px;
 	margin-left: 10px;
 	margin-right:10px;
 }
 .l-main-content .validate a{
-	color: cornflowerblue;
-	font-size: 18px;
+	color:#fff;
+	font-size: 20px;
 }
 .l-main-content p .enter{
 	margin-top:10px;
 	margin-left:70px; 
 	width: 250px;
 	height: 46px;
-	background-color: #337AB7;
+	background-color: #6CC362;
 	border-color: #2E6DA4;
 	color:#fff;
-	font-size: 16px
+	font-size: 20px
 }  
 .browserDownload{
 	position: relative;
@@ -231,7 +235,7 @@ body{
 	+display:block;
 	width: 20px;
 	height: 20px;
-	background: transparent url("../image/plus.gif") no-repeat center;
+	background:url("../image/plus.gif") no-repeat center;
 	cursor: pointer;
 }
 .shopList-cnt,
