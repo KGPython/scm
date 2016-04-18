@@ -27,10 +27,7 @@ input[type="submit"],
 /*
 ***************************************用户登录页****************************************
 */
-body{
-	background:url("../image/login.jpg") no-repeat center;
-	background-size:cover ;
-}
+
 .login-main{
 	margin:0 auto;
 	width: 800px;
