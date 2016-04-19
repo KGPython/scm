@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>商业供应链系统</title>
+</head>
+<body>
+    {% load basefilter %}
+    {% include "common/nav.html" %}
+     <div class="query comWidth noprint">
+            <input class="query-print right" type="button" onclick=" javascript:print()" value="打印当前页" style="margin-right: 20px;margin-left: 20px"/>
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false; ">
+     </div>
+    <div class="mainSettle comWidth">
+        <div class="tTitle">
+        <h1>{{ grpName }}{{ billTypeDict|key:sheettype }}</h1>
+        </div>
+        <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+            <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>单号</th>
+                  <th>说明</th>
+                  <th>备注</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in itemList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ row.sheetid }}</td>
+                        <td>{{ row.note }}</td>
+                        <td>该往来单据调整单没有明细</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% include "common/footer.html" %}
+</body>
+</html>

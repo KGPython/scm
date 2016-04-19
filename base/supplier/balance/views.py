@@ -8,7 +8,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator  #分页查询
 
-from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced,ReconcilItem,Reconcil
+from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced,ReconcilItem,Reconcil,Updpayable,Updpayableitem
 from base.utils import MethodUtil as mtu,Constants,DateUtil
 from base.views import findPayType
 
@@ -88,20 +88,28 @@ def findSheet(request):
         result["itemList"] = slist
         targetPage = "user_settle_article_g_detail1.html"
     elif sheettype in ["5205"]:
-        srow = findRefSheetId(sheetid,venderid)
-        if srow:
-            refsheetid = srow["refsheetid"]
-            refsheettype = srow["refsheettype"]
-            prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
-            code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
-
-            slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
-                                                                                  "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
-                                                                                  "anum_notax","anum_intax","anum_stock","anum_stock_intax",
-                                                                                  "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
-                                                                                  "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+        prefix = sheetid[0:2:]
+        if prefix in ["CM","cM","cm","Cm",]:
+            slist3 = Updpayable.objects.filter(sheetid=sheetid).values("sheetid","refsheetid","refsheettype","shopid","venderid","refcheckdate","note","flag");
+            result["itemList"] = slist3
+            targetPage = "user_settle_article_g_detail3.html"
         else:
-            slist2 = []
+            srow = findRefSheetId(sheetid,venderid)
+            if srow:
+                refsheetid = srow["refsheetid"]
+                refsheettype = srow["refsheettype"]
+                prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
+                code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
+
+                slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
+                                                                                      "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
+                                                                                      "anum_notax","anum_intax","anum_stock","anum_stock_intax",
+                                                                                      "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
+                                                                                      "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+            else:
+                slist2 = []
+            result["itemList"] = slist2
+            targetPage = "user_settle_article_g_detail2.html"
 
         # for item in slist2:
         #     sum1 += item["num"]
@@ -121,8 +129,7 @@ def findSheet(request):
         # result["sum6"] = sum6
         # result["sum7"] = sum7
         # result["sum8"] = sum8
-        result["itemList"] = slist2
-        targetPage = "user_settle_article_g_detail2.html"
+
 
     return render(request,targetPage,result)
 
@@ -1016,8 +1023,9 @@ def balanceArticle(request):
     #结算通知明细
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
                                                 "costvalue","costtaxvalue","costtaxrate","salevalue","dkrate","invoicesheetid")\
-                                        .filter(sheetid__contains=sheetId)\
+                                        .filter(sheetid__contains=sheetId).exclude(costvalue=0)\
                                         .order_by("inshopid","refsheettype","refsheetid")
+
     itemList = []
     itemShopId = None
     for item in balanceItems:
