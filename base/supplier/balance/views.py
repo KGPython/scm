@@ -90,7 +90,7 @@ def findSheet(request):
     elif sheettype in ["5205"]:
         prefix = sheetid[0:2:]
         if prefix in ["CM","cM","cm","Cm",]:
-            slist3 = Updpayable.objects.filter(sheetid=sheetid).values("sheetid","refsheetid","refsheettype","shopid","venderid","refcheckdate","note","flag");
+            slist3 = Updpayable.objects.filter(sheetid=sheetid).values("sheetid","refsheetid","refsheettype","shopid","venderid","refcheckdate","note","flag","checkdate");
             result["itemList"] = slist3
             targetPage = "user_settle_article_g_detail3.html"
         else:

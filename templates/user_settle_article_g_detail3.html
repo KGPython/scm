@@ -18,10 +18,12 @@
         <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
             <thead>
                 <tr>
-                  <th>序号</th>
-                  <th>单号</th>
-                  <th>说明</th>
-                  <th>备注</th>
+                  <th style="width:5%;">序号</th>
+                  <th style="width:10%;">单号</th>
+                  <th style="width:10%;">对应验收单</th>
+                  <th style="width:50%;">说明</th>
+                  <th style="width:10%;">审核日期</th>
+                  <th style="width:15%;">备注</th>
                 </tr>
             </thead>
             <tbody>
@@ -29,7 +31,9 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ row.sheetid }}</td>
+                        <td>{{ row.refsheetid }}</td>
                         <td>{{ row.note }}</td>
+                        <td>{{ row.checkdate|date:'Y-m-d' }}</td>
                         <td>该往来单据调整单没有明细</td>
                     </tr>
                 {% endfor %}
