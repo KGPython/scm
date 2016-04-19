@@ -155,7 +155,7 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_URL ="/scm/base/loginpage/"
-LOGIN_EXEMPT_URLS=["scm/base/login/","scm/base/logout/","scm/base/vcode/","favicon.ico"]
+LOGIN_EXEMPT_URLS=["scm/base/login/","scm/base/logout/","scm/base/vcode/","favicon.ico","scm/welcome"]
 
 # LOGGING = {
 #     'version': 1,

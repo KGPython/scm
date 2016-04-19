@@ -342,3 +342,10 @@ def uppwd(request):
         print(e)
 
     return HttpResponse(json.dumps(data))
+
+
+# 欢迎
+def welcome(request):
+    return render(request,'welcome.html')
+
+
