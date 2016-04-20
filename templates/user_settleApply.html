@@ -59,21 +59,16 @@
                         <p><label>帐扣金额：</label><span>{{ kxinvoice|floatformat:2|default_if_none:"" }}</span></p>
                         <p><label>帐扣可冲发票金额：</label><span style="width: 60px">{{ zkinvoice|floatformat:2|default_if_none:"" }}</span></p>
                     </div>
-                    {% comment %}  <div class="box-line">
-                        <p><label>缴款金额：</label><span>{{ jxsum|default_if_none:"" }}</span></p>
-                    </div>{% endcomment %}
-{#                    <a class="query-enter right" href="/scm/base/balance/apply/findKxlist/?pend={{ pend }}" target="_blank">查询帐扣明细</a>#}
-                      <input class="query-enter right" type="button" value="查询帐扣明细" style="margin-left: 10px;" onclick="openWin()">
-
+                    <input class="query-enter right" type="button" value="查询帐扣明细" style="margin-left: 10px;" onclick="openWin()">
                 </div>
             </div>
 
             <table  border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                 <thead>
                     <tr>
-                        <th>全选<input type="checkbox" id="billAll" /></th>
+                        <th>全选<br><input type="checkbox" id="billAll" /></th>
                         <th>结算类型</th>
-                        <th>发生店</th>
+                        <th>发生店编码</th>
                         <th>发生店名称</th>
                         <th>相关单号</th>
                         <th>应结金额<br>（含税）</th>
@@ -94,24 +89,26 @@
                 <tbody>
                     {% for item in itemList %}
                         <tr>
-                            <td><input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{'paytypesortid':'{{item.paytypesortid}}','payabledate':'{{item.payabledate}}','refsheetid':'{{ item.refsheetid }}','refsheettype':{{ item.refsheettype }},'managedeptid':{{ item.managedeptid }},'fromshopid':'{{ item.fromshopid }}','inshopid':'{{ item.inshopid }}','costvalue':{{ item.costvalue }},'costtaxvalue':{{ item.costtaxvalue }},'costtaxrate':{{ item.costtaxrate }},'agroflag':{{ item.agroflag }},'salevalue':{{ item.salevalue }},'invoicesheetid':'{{ item.invoicesheetid }}','Dkrate':'{{ item.Dkrate }}' }"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}></td>
-                            <td>{{ contractTypeDict|key:item.paytypesortid }}</td>
-                            <td>{{ item.inshopid }}</td>
-                            <td>{{ shopDict|key:item.inshopid }}</td>
-                            <td>{{ item.refsheetid }}</td>
-                            <td id="costvalue_{{ forloop.counter }}" val="{{ item.costvalue }}">{{ item.costvalue }}</td>
-                            <td>{{ item.notaxvalue }}</td>
-                            <td>{{ item.costtaxvalue }}</td>
-                            <td>{{ item.sheetname }}</td>
-                            <td>{{ item.managedeptid|fillZero:1 }}</td>
-                            <td>{{ item.salevalue }}</td>
-                            <td>{{ item.costtaxrate }}</td>
-                            <td>{{ item.agroflag|isYes }}</td>
-                            <td>{{ item.payabledate}}</td>
-                            <td>{{ item.invoicesheetid }}</td>
-                            <td>{{ item.Dkrate }}</td>
-                            <td>{{ item.Adjustsheetid|default_if_none:"" }}</td>
-                            <td>{{ item.Adjustsheetname|default_if_none:"" }}</td>
+                            <td style="width: 4%;word-break:break-all; word-wrap:break-word;">
+                                <input type="checkbox" id="{{ forloop.counter }}" name="refsheetid" rtype="{{ item.refsheettype }}" value="{'paytypesortid':'{{item.paytypesortid}}','payabledate':'{{item.payabledate}}','refsheetid':'{{ item.refsheetid }}','refsheettype':{{ item.refsheettype }},'managedeptid':{{ item.managedeptid }},'fromshopid':'{{ item.fromshopid }}','inshopid':'{{ item.inshopid }}','costvalue':{{ item.costvalue }},'costtaxvalue':{{ item.costtaxvalue }},'costtaxrate':{{ item.costtaxrate }},'agroflag':{{ item.agroflag }},'salevalue':{{ item.salevalue }},'invoicesheetid':'{{ item.invoicesheetid }}','Dkrate':'{{ item.Dkrate }}' }"  onchange="count();" {% if item.refsheettype == 2323 or item.refsheettype == 5205 %} onclick="return false;" checked {% endif %}>
+                            </td>
+                            <td style="width:4%;word-break:break-all; word-wrap:break-word;">{{ contractTypeDict|key:item.paytypesortid }}</td>
+                            <td style="width: 5%;word-break:break-all; word-wrap:break-word;">{{ item.inshopid }}</td>
+                            <td style="width: 6%;word-break:break-all; word-wrap:break-word;">{{ shopDict|key:item.inshopid }}</td>
+                            <td style="width: 8%;word-break:break-all; word-wrap:break-word;">{{ item.refsheetid }}</td>
+                            <td style="width: 4%;word-break:break-all; word-wrap:break-word;" id="costvalue_{{ forloop.counter }}" val="{{ item.costvalue }}">{{ item.costvalue }}</td>
+                            <td style="width: 4%;word-break:break-all; word-wrap:break-word;">{{ item.notaxvalue }}</td>
+                            <td style="width: 4%;word-break:break-all; word-wrap:break-word;">{{ item.costtaxvalue }}</td>
+                            <td style="width: 8%;word-break:break-all; word-wrap:break-word;">{{ item.sheetname }}</td>
+                            <td style="width: 6%;word-break:break-all; word-wrap:break-word;">{{ item.managedeptid|fillZero:1 }}</td>
+                            <td style="width: 4%;word-break:break-all; word-wrap:break-word;">{{ item.salevalue }}</td>
+                            <td style="width: 5%;word-break:break-all; word-wrap:break-word;">{{ item.costtaxrate }}</td>
+                            <td style="width: 5%;word-break:break-all; word-wrap:break-word;">{{ item.agroflag|isYes }}</td>
+                            <td style="width: 8%;word-break:break-all; word-wrap:break-word;">{{ item.payabledate}}</td>
+                            <td style="width: 6%;word-break:break-all; word-wrap:break-word;">{{ item.invoicesheetid }}</td>
+                            <td style="width: 5%;word-break:break-all; word-wrap:break-word;">{{ item.Dkrate }}</td>
+                            <td style="width: 8%;word-break:break-all; word-wrap:break-word;">{{ item.Adjustsheetid|default_if_none:"" }}</td>
+                            <td style="width: 10%;word-break:break-all; word-wrap:break-word;">{{ item.Adjustsheetname|default_if_none:"" }}</td>
                         </tr>
                     {% endfor %}
                     <tr >
