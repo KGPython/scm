@@ -76,17 +76,20 @@
         <div class="mainSettle comWidth">
             <div class="tTitle">
                 <h1>
-                        {% if flag == '0' %}制单未审核{% elif flag == '1' or flag == '4' %}单据待审批{% elif flag == '2' %}扣项缴款待审核{% elif flag == '3' %}付款待审核{% elif flag == '100' %}已付款{% else %}全部{% endif %}结算单列表结算单列表
+                        {% if flag == '0' %}制单未审核{% elif flag == '1,4'%}单据待审批{% elif flag == '2' %}扣项缴款待审核{% elif flag == '3' %}付款待审核{% elif flag == '100' %}已付款{% else %}全部{% endif %}结算单列表
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
                 </h3>
                 <p>
-                    门店：
+                    结算位置：
                     <span class="shopListTxt">
                         {% if shopId %}
                             {% for id in shopId %}
-                               {{ shopDict | key:id}}，
+                               {{ shopDict | key:id}}
+                                {% if not forloop.last %}
+                                    ，
+                                {% endif %}
                             {% endfor %}
                         {% else %}
                             全部
