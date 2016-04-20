@@ -46,6 +46,8 @@ def query(request):
     orderstyle =  MethodUtil.getReqVal(request,"orderstyle","")   #排序条件
     ordercode = MethodUtil.getReqVal(request,"ordercode","")   #订单编号
 
+    inflag =  MethodUtil.getReqVal(request,"inflag","")    #验收状态
+
     #组合查询条件
     shopnames = ""
     karrs = {}
@@ -88,6 +90,9 @@ def query(request):
     else:
         karrs.setdefault("checkdate__lte","{end} 23:59:59".format(end=datetime.datetime.now().strftime("%Y-%m-%d")))
 
+    if inflag and inflag!="":
+        karrs.setdefault("inflag",inflag)
+
     #设置默认排序方式
     orderby = orderstyle
     if not orderby:
@@ -112,6 +117,7 @@ def query(request):
     result.setdefault("status",status)
     result.setdefault("grpname",grpname)
     result.setdefault("state",state)
+    result.setdefault("inflag",inflag)
     result.setdefault("logistics",logistics)
     result.setdefault("start",start)
     result.setdefault("end",end)
