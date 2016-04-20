@@ -15,21 +15,21 @@ class BillInForm(forms.Form):
     status = forms.ChoiceField(widget=forms.Select(attrs={"id":"status","name":"status"}),choices=STATUS_CHOICES,required=False)
 
     FLAG_CHOICES = (
-        ('0', u'制单'),
-        ('1', u'制单审核'),
-        ('2', u'付款审核'),
-        ('3', u'缴款审核'),
-        ('100', u'确认'),
-        ('', u'全部')
+        ('', u'全部'),
+        ('0', u'1-制单未审核 '),
+        ('1,4', u'2-单据待审批'),
+        ('2', u'3-扣项缴款待审核'),
+        ('3', u'4-付款待审核'),
+        ('100', u'5-已付款')
     )
     flag = forms.ChoiceField(widget=forms.Select(attrs={"id":"status","name":"status"}),choices=FLAG_CHOICES,required=False)
     ORDER_CHOICES = (
-        ('-editdate', u'制单日期'),
-        ('sheetid', u'编码'),
         ('shopid', u'结算位置'),
+        ('sheetid', u'供应商编码'),
         ('-begindate', u'上次结算日期'),
         ('-enddate', u'本次结算日期'),
-        ('flag', u'结算状态'),
-        ('seenum', u'查看次数'),
+        ('-editdate', u'制单日期'),
+        ('flag', u'审核状态'),
+        #('seenum', u'查看次数'),
     )
     orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"id":"orderStyle","name":"orderStyle",}),choices=ORDER_CHOICES)

@@ -76,7 +76,7 @@
         <div class="mainSettle comWidth">
             <div class="tTitle">
                 <h1>
-                    {% if flag == '0' %}制单{% elif flag == '1' %}制单审核{% elif flag == '2' %}付款审核{% elif flag == '3' %}缴款审核{% elif flag == '100' %}确认{% else %}全部{% endif %}结算单列表结算单列表
+                        {% if flag == '0' %}制单未审核{% elif flag == '1' or flag == '4' %}单据待审批{% elif flag == '2' %}扣项缴款待审核{% elif flag == '3' %}付款待审核{% elif flag == '100' %}已付款{% else %}全部{% endif %}结算单列表结算单列表
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
@@ -132,7 +132,7 @@
                         <td>{{ balance.begindate | date:'Y-m-d' }}</td>
                         <td>{{ balance.enddate | date:'Y-m-d' }}</td>
                         <td>{{ balance.editdate | date:'Y-m-d' }}</td>
-                        <td>{% if balance.flag == 0 %}制单{% elif balance.flag == 1 %}制单审核{% elif balance.flag == 2 %}付款审核{% elif balance.flag == 3 %}缴款审核{% elif balance.flag == 100 %}确认{% endif %}</td>
+                        <td>{% if balance.flag == 0 %}1-制单未审核{% elif balance.flag == 1 or balance.flag == 4 %}2-单据待审批{% elif balance.flag == 2 %}3-扣项缴款待审核{% elif balance.flag == 3 %}4-付款待审核{% elif balance.flag == 100 %}5-已付款{% endif %}</td>
                        {% comment %} <td>{% if balance.seenum %}{{ balance.seenum }}{% else %}0{% endif %}</td>{% endcomment %}
                         <td><a href="{% url 'createInvioce' %}?sheetid={{ balance.sheetid }}">录发票</a></td>
                     </tr>

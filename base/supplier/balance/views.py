@@ -944,13 +944,14 @@ def balance(request):
         end = request.GET.get('end',end)
         sheetId = request.GET.get('sheetid','')
         flag = request.GET.get('flag','')
-        orderStyle = request.GET.get('orderstyle','editdate')
-        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'flag':flag}
+        orderStyle = request.GET.get('orderstyle','-editdate')
+        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'flag':flag,'orderStyle':orderStyle}
         form = BillInForm(data)
 
     kwargs = {}
     if flag:
-        kwargs.setdefault('flag',flag)
+        flags = flag.split(",")
+        kwargs.setdefault('flag__in',flags)
 
     if sheetId:
         kwargs.setdefault('sheetid__contains',sheetId)
