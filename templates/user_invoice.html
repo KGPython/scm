@@ -19,22 +19,22 @@
                 <input type="hidden" name="begindate" id="begindate" value="{{ begindate| date:"Y-m-d H:m:s" }}">
                 <input type="hidden" name="enddate" id="enddate" value="{{ enddate| date:"Y-m-d H:m:s" }}">
 				<div class="box-line">
-                    <p><lable>单据编号：</lable><input type="text" readonly="readonly" name="sheetId" value="{{ sheetId }}"></p>
-                    <p><label>门店编号：</label><input type="text" readonly="readonly" name="shopId" id="shopId" value="{{ shopId }}"></p>
-					<p><label>门店名称：</label><input type="text" readonly="readonly" name="shopName" value="{{ shopDict | key:shopId }}"></p>
+                    <p><lable>单据编号：</lable><input type="text" style="background-color: #d3d3d3;" readonly="readonly" name="sheetId" value="{{ sheetId }}"></p>
+                    <p><label>门店编号：</label><input type="text" style="background-color: #d3d3d3;" readonly="readonly" name="shopId" id="shopId" value="{{ shopId }}"></p>
+					<p><label>门店名称：</label><input type="text" style="background-color: #d3d3d3;width: 160px;" readonly="readonly" name="shopName" value="{{ shopDict | key:shopId }}"></p>
                     <p>
                         <label>付款日期：</label>
                         <input class="inline laydate-icon" id="payDate" name="payDate" type="text" value="{{ PlanPayDate|date:'Y-m-d' }}" style="width: 140px;">
                     </p>
 				</div>
 				<div class="box-line">
-                    <p><label>申请结算单：</label><input type="text" name="refSheetId" id="refSheetId" readonly="readonly" value="{{ refSheetId }}"></p>
-                    <p><label>经营方式：</label><input type="text"  readonly="readonly" value="{{ payTypeDict|key:paytypeid }}">
-                    <input type="hidden" name="paytypeid" readonly="readonly" value="{{ paytypeid }}">
+                    <p><label>申请结算单：</label><input type="text"  name="refSheetId" id="refSheetId" readonly="readonly" style="background-color: #d3d3d3;" value="{{ refSheetId }}"></p>
+                    <p><label>经营方式：</label><input type="text"  readonly="readonly" style="background-color: #d3d3d3;" value="{{ payTypeDict|key:paytypeid }}">
+                    <input type="hidden" name="paytypeid" readonly="readonly" style="background-color: #d3d3d3;" value="{{ paytypeid }}">
                     </p>
                     <p class="settleAdress">
                         <label>结算地：</label>
-                        <input type="text" readonly="readonly" value="CM01 |  宽广超市业务中心">
+                        <input type="text" readonly="readonly" style="background-color: #d3d3d3;width: 160px;" value="CM01|宽广超市业务中心">
                     </p>
 				</div>
 			</div>

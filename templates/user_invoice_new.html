@@ -16,7 +16,7 @@
                 <input type="hidden" name="begindate" id="begindate" value="">
                 <input type="hidden" name="enddate" id="enddate" value="">
 				<div class="box-line">
-                    <p><lable>单据编号：</lable><input type="text" readonly="readonly" name="sheetId" value=""></p>
+                    <p><lable>单据编号：</lable><input type="text" readonly="readonly" style="background-color: #d3d3d3;"  name="sheetId" value=""></p>
                     <p>
                         <label>经营方式：</label>
                        {% comment %} <select name="payTypeId" id="payTypeId">
@@ -24,12 +24,12 @@
                             <option value="{{ payType.id }}">{{ payType.id }} | {{ payType.name }}</option>
                             {% endfor %}
                         </select>{% endcomment %}
-                        <input type="text"  readonly="readonly" value="{{ payTypeDict|key:paytypeid }}">
+                        <input type="text"  readonly="readonly" style="background-color: #d3d3d3;" value="{{ payTypeDict|key:paytypeid }}">
                         <input type="hidden" name="paytypeid" readonly="readonly" value="{{ paytypeid }}">
                     </p>
                     <p>
                         <label>结算地：</label>
-                        <input type="text" readonly="readonly" value="CM01 |  宽广超市业务中心" style="width: 160px;">
+                        <input type="text" readonly="readonly" style="background-color: #d3d3d3;width: 160px;" value="CM01 |  宽广超市业务中心">
                     </p>
                   {% comment %}  <p style="width: 250px">
                         <label>提取发票方式：</label>
