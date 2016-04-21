@@ -67,13 +67,13 @@ input[type="submit"],
 }
 .l-main-content p .enter{
 	margin-top:10px;
-	margin-left:50px;
-	width: 150px;
+	margin-left:70px; 
+	width: 250px;
 	height: 46px;
 	background-color: #6CC362;
 	border-color: #2E6DA4;
 	color:#fff;
-	font-size: 20px;
+	font-size: 20px
 }  
 .browserDownload{
 	position: relative;

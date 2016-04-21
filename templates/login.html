@@ -41,7 +41,6 @@
                         <a href="##" onclick="changeValidateCode('validateImg')">[刷新]</a>
                     </p>
                     <p>
-                         <input type="button" class="enter" id="resetId" style="margin-left:90px;" value="重&nbsp;&nbsp;&nbsp;&nbsp;置">
                         <input type="button" class="enter" id="loginId" value="登&nbsp;&nbsp;&nbsp;&nbsp;录">
                     </p>
                 </form>
@@ -81,11 +80,6 @@
                            $('#loginForm').ajaxSubmit(ajax_option);
                        }
                    });
-
-                    $("#resetId").bind("click",function(){
-                        changeValidateCode('validateImg');
-                        $('#loginForm')[0].reset();
-                    });
 
                   document.onkeydown = function(e){
                       var ev = document.all ? window.event : e;
