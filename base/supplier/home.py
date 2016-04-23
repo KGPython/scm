@@ -99,7 +99,7 @@ def index(request):
     except Exception as e:
         print(e)
 
-    return render(request,"index.html",{"page":page,"pageNum":pageNum,"pwdInit":pwdInit,"rdays":rds,"tdays":tds,"endDate":endDate})
+    return render(request,"index.html",{"page":page,"pageNum":pageNum,"pwdInit":pwdInit,"rdays":rds,"tdays":tds,"endDate":endDate,"payTypeName":payTypeName})
 
 def findPayType(type):
     payTypeList = BasPayType.objects.all().values("id","name")

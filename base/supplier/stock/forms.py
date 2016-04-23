@@ -6,6 +6,7 @@ class StockForm(forms.Form):
     shopCode = forms.CharField(widget=forms.TextInput(attrs={"id":"shopCode","name":"shopCode","readonly":"readonly"}),max_length=1000,
                                required=False)
     proCode = forms.CharField(widget=forms.TextInput(attrs={"name":"proCode"}),max_length=20,required=False)
+    barcode = forms.CharField(widget=forms.TextInput(attrs={"name":"barcode"}),max_length=20,required=False)
     num1 = forms.FloatField(widget=forms.TextInput(attrs={"name":"num1","value":"0"}),required=True,error_messages={"required":"库存范围为必填"})
     num2 = forms.FloatField(widget=forms.TextInput(attrs={"name":"num2","value":"100000"}),required=True,error_messages={"required":"库存范围为必填"})
     scCode = forms.CharField(widget=forms.TextInput(attrs={"name":"scCode"}),max_length=20,required=False)

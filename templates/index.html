@@ -19,9 +19,7 @@
                         {{  request.session.s_umenu.system|getPur:"007" }}
                     </li>
                     <li style="margin-top: 20px;text-align: left;">
-                        {% if  request.session.s_paytypeid %}
-                             结算方式：{{ payTypeDict | key:request.session.s_paytypeid }}
-                        {% endif %}
+                       结算方式：{{ payTypeName|default_if_none:"" }}
                     </li>
                     <li style="text-align: left;">
                         账户有效期至：{{ endDate|date:'Y-m-d' }}

@@ -161,6 +161,7 @@ def find(request):
 
     #查询门店信息
     shop = BasShop.objects.get(grpcode=grpcode,shopcode=order.shopcode)
+    shop.tel = shop.tel.strip()
 
     return render(request,"user_order_article.html",{"order":order,"detailList":detailList,"today":today,"shop":shop,"curgrpname":grpname})
 

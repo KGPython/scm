@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 <p class="input">
-                    <label>商品编码：</label>{{ form.proCode }}
+                    <label>商品条码：</label>{{ form.barcode }}
                 </p>
                 <p class="input">
                     <label>库存范围：</label> {{ form.num1 }} <span>&lt;=库存数量&lt;=</span> {{ form.num2 }}
@@ -75,8 +75,8 @@
                 <thead>
                     <tr>
                         <th>商品编码</th>
-                        <th>商品名称</th>
                         <th>商品条码</th>
+                        <th>商品名称</th>
                         <th>小类编码</th>
                         <th>小类名称</th>
                         <th>规格</th>
@@ -89,8 +89,8 @@
                 {% for stcok in stockList %}
                     <tr>
                         <td><a href="{% url 'detailArticle' %}?{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if stcok.procode %}&procode={{ stcok.procode }}{% endif %}{% if stcok.proname %}&proname={{ stcok.proname }}{% endif %}{% if num1 %}&num1={{ num1 }}{% endif %}{% if num2 %}&num2={{ num2 }}{% endif %}">{{ stcok.procode }}</a></td>
-                        <td>{{ stcok.proname }}</td>
                         <td>{{ stcok.barcode }}</td>
+                        <td>{{ stcok.proname }}</td>
                         <td>{{ stcok.sccode }}</td>
                         <td>{{ stcok.scname }}</td>
                         <td></td>
