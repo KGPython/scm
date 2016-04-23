@@ -278,7 +278,7 @@ def detailArticle(request):
         shopCode=shopCode[0:len(shopCode)]
         sql ="select t1.shopcode,shopnm,num,sums_intax,clearflag from(select shopcode,sum(num) num,sum(sums_intax) sums_intax,clearflag from stock where shopcode in ("+shopCode+") and procode like '%"+proCode+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"' group by shopcode,clearflag) as t1,bas_shop as t2 where t2.grpcode=grpcode and t1.num>="+num1+" and t1.num<="+num2+" and t1.shopcode=t2.shopcode"
     else:
-        sql ="select t1.shopcode,shopnm,num,sums_intax,clearflag from(select shopcode,sum(num) num,sum(sums_intax) sums_intax,clearflag from stock where procode like '%"+proCode+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"' group by shopcode,clearflag) as t1,bas_shop as t2 where t2.grpcode=grpcode and t1.num>="+num1+"and t1.num<="+num2+" and t1.shopcode=t2.shopcode"
+        sql ="select t1.shopcode,shopnm,num,sums_intax,clearflag from(select shopcode,sum(num) num,sum(sums_intax) sums_intax,clearflag from stock where procode like '%"+proCode+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"' group by shopcode,clearflag) as t1,bas_shop as t2 where t2.grpcode=grpcode and t1.num>="+num1+" and t1.num<="+num2+" and t1.shopcode=t2.shopcode"
 
     cursor = connection.cursor()
     cursor.execute(sql)
