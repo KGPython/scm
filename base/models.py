@@ -929,6 +929,15 @@ class OrdD(models.Model):
         db_table = 'ord_d'
 
 
+class OrdStatus(models.Model):
+    ordercode = models.CharField(db_column='Ordercode',primary_key=True, max_length=20)  #
+    status = models.CharField(db_column='Status', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    yyshdate = models.DateTimeField(db_column='Yyshdate', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'ord_status'
+
 class Pubinfo(models.Model):
     infocode = models.CharField(db_column='InfoCode', max_length=20,primary_key=True)  # Field name made lowercase.
     infotype = models.CharField(db_column='InfoType', max_length=20, blank=True, null=True)  # Field name made lowercase.

@@ -1,16 +1,15 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import os,xlrd,json,xlwt3 as xlwt
-import time,datetime
+import json,datetime
 from django.http import HttpResponse
 from django.db import transaction
 from django.db.models import Q,Sum
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
-from base.models import BasUser,Ord,OrdD,BasShop
-from base.utils import Constants,MethodUtil
+from base.models import OrdStatus,Ord,OrdD,BasShop
+from base.utils import MethodUtil
 from base.views import findShop
 
 __EACH_PAGE_SHOW_NUMBER = 10
@@ -110,6 +109,11 @@ def query(request):
         .values("remark","logistics","inflag","ordercode","checkdate","concode","style","spercode","spername","status","sdate",
                 "shopcode","inprice_tax","printnum","seenum","purday","spsum","sjshsum","ssspzb")
 
+    for item in pubList:
+        slist = OrdStatus.objects.filter(ordercode=item["ordercode"]).values("status")
+        if slist:
+            item["status"] = slist[0]["status"]
+
     page = Paginator(pubList,__EACH_PAGE_SHOW_NUMBER,allow_empty_first_page=True).page(int(pageNum))
 
     result = {"page":page,"pageNum":str(pageNum)}
@@ -139,9 +143,13 @@ def find(request):
 
     #查询订单信息
     order = Ord.objects.get(ordercode=ordercode)
+    slist = OrdStatus.objects.filter(ordercode=ordercode).values("ordercode","yyshdate","status")
 
-    if not order.yyshdate:
-        order.yyshdate = order.sdate
+    orderstatus = {}
+    if not slist:
+        orderstatus["yyshdate"] = order.sdate
+    else:
+        orderstatus = slist[0]
 
     seenum = order.seenum
     if not seenum:
@@ -163,7 +171,7 @@ def find(request):
     shop = BasShop.objects.get(grpcode=grpcode,shopcode=order.shopcode)
     shop.tel = shop.tel.strip()
 
-    return render(request,"user_order_article.html",{"order":order,"detailList":detailList,"today":today,"shop":shop,"curgrpname":grpname})
+    return render(request,"user_order_article.html",{"order":order,"orderstatus":orderstatus,"detailList":detailList,"today":today,"shop":shop,"curgrpname":grpname})
 
 #保存预约送货日期
 @csrf_exempt
@@ -185,8 +193,12 @@ def save(request):
         for row in detailList:
             OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode,procode=str(row["procode"])).update(sjshsum="-1",sjprnum="-1")    #note="
 
-        #2.保存预约送货日期，更新订单状态
-        Ord.objects.filter(ordercode=ordercode).update(yyshdate=yyshdate,status="Y")
+        #2.保存预约送货日期 更新订单状态
+        rs = OrdStatus.objects.all().filter(ordercode=ordercode)
+        if not rs:
+            OrdStatus.objects.create(ordercode=ordercode, yyshdate=yyshdate, status="Y")
+        else:
+            OrdStatus.objects.filter(ordercode=ordercode).update(yyshdate=yyshdate,status="Y")
 
         response_data['result'] = 'success'
     except Exception as e:
