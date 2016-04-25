@@ -183,8 +183,6 @@ def save(request):
 
     response_data = {}
     try:
-
-
         #1.更新订单明细
         detailList = OrdD.objects \
                          .filter(ordercode=ordercode,grpcode=grpcode) \
