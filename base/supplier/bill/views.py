@@ -220,7 +220,7 @@ def adjustArticle(request):
         kwargs.setdefault("spercode",sperCode)
     kwargs.setdefault("code",code)
     kwargs.setdefault("grpcode",grpCode)
-    adBillList = Adpriced.objects.values("adbatchseq","pcode","pname","anum","cprice_notax","dqhsjj","spercode")\
+    adBillList = Adpriced.objects.values("adbatchseq","pcode","pname","anum","cprice_notax","dqhsjj","spercode","barcode")\
                                  .filter(**kwargs)
 
     sum4=0  #含税调整金额

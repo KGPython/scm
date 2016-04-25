@@ -10,7 +10,7 @@
             <form class="query-list" method="post" action="{% url 'billAdjust' %}">
                 {% csrf_token %}
                 <p class="input">
-                    <label>入库单号：</label>
+                    <label>变价单号：</label>
                     {{ form.code }}
                 </p>
                 <div class="shopList input">
