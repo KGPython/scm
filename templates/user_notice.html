@@ -72,7 +72,13 @@
                     <tr>
                         <td>{{ info.infocode }}</td>
                         <td>{{ info.title }}</td>
-                        <td>{{ info.depart }}</td>
+                        <td>
+                            {% if info.depart == '-1' %}
+                                 全部
+                            {% else %}
+                                {{ info.depart|default_if_none:"" }}
+                            {% endif %}
+                        </td>
                         <td>{{ info.subtime|date:"Y-m-d H:i" }}</td>
                         <td>{{ info.usergrpname }}</td>
                         <td>{{ info.username }}</td>

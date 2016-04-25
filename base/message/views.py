@@ -66,7 +66,7 @@ def findPubInfoAllByCon(user):
     utype = user["utype"]
     #供应商查询已接收通知
     if utype=="2":
-        result = Pubinfo.objects.filter(Q(infotype=0) & ((Q(accesstype=11) & Q(depart=user["grpcode"])) | (Q(accesstype=13) & Q(depart=""))))\
+        result = Pubinfo.objects.filter(Q(infotype=0) & ((Q(accesstype=11) & Q(depart=user["grpcode"])) | (Q(accesstype=13) & Q(depart="-1"))))\
             .order_by("-subtime")\
             .values("infocode","infotype","checker","subtime","content","title","depart","grpcode","accesstype","status","username","usergrpcode","usergrpname","departname","mailpath")
 
@@ -79,7 +79,7 @@ def findPubInfoAllByCon(user):
     return result
 
 def findPubInfoTotalCount(user):
-    total = Pubinfo.objects.filter(Q(infotype=1) & Q(usergrpcode=user.grpcode) & (Q(accesstype=11) & Q(depart=user.ucode) | Q(accesstype=13)))\
+    total = Pubinfo.objects.filter(Q(infotype=1) & Q(usergrpcode=user.grpcode) & ((Q(accesstype=11) & Q(depart=user.ucode)) | (Q(accesstype=13) & Q(depart="-1"))))\
             .count()
     return total
 
@@ -118,13 +118,15 @@ def msglist(request):
             if flag == 'msgIn':
                 # 根据用户类型，获特殊查询条件
                 if userType == "2":
-                    q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='')),Q.AND)
-                else:#零售商
-                    q.add(((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='23') & Q(depart=''))),Q.AND)
+                    q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='-1')),Q.AND)
+                    q.add((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='13') & Q(depart='-1')),Q.AND)
 
                 #获取数据列表
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
                                           .filter(q,**kwargs).order_by("-subtime")
+                for item in infoList:
+                    item["depart"] = userGrpCode;
+
             if flag == 'msgOut':
                 q.add(Q(checker=userCode),Q.AND)
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
@@ -163,13 +165,15 @@ def msglist(request):
         if flag == 'msgIn':
             # 根据用户类型，获特殊查询条件
             if userType == "2":#供应商
-                q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='')),Q.AND)
+                q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='-1')),Q.AND)
             else:#零售商
-                q.add(((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='23') & Q(depart=''))),Q.AND)
+                q.add(((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='23') & Q(depart='-1'))),Q.AND)
 
             #获取数据列表
             infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
                                           .filter(q,**kwargs).order_by("-subtime")
+            for item in infoList:
+                    item["depart"] = userGrpCode;
 
         if flag == 'msgOut':
             q.add(Q(checker=userCode),Q.AND)
@@ -305,7 +309,7 @@ def msgCreate(request):
                 info.username = userName
                 info.usergrpcode = userGrpCode
                 info.usergrpname = userGrpName
-
+                info.depart = "-1"
                 #表单提交信息
                 info.infotype = infoType
                 info.accesstype = accessType
