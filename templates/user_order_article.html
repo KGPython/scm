@@ -164,6 +164,10 @@
                 return false;
             }
             //预期送货日期 < 今日
+            if($("#yyshdate")==undefined || $("#yyshdate").val()==''){
+                alert("预期送货日期不能为空");
+                return false;
+            }
             var yyshdate = $("#yyshdate").val();
             if(dateDiff(yyshdate,today) < 0){
                 alert("预期送货日期不能晚于今日");
