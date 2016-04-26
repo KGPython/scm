@@ -95,8 +95,8 @@
                         <td>{{ stcok.scname }}</td>
                         <td></td>
                         <td>{{ stcok.unit }}</td>
-                        <td>{{ stcok.num }}</td>
-                        <td>{{ stcok.sums_intax }}</td>
+                        <td>{{ stcok.num|floatformat:2 }}</td>
+                        <td>{{ stcok.sums_intax|floatformat:2 }}</td>
                     </tr>
                 {% endfor %}
                 <tr>

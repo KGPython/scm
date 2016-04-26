@@ -46,14 +46,14 @@
                         <td>{{ bill.pname }}</td>
                         <td>{{ bill.unit }}</td>
                         <td>{{ bill.tacrate }}</td>
-                        <td>{{ bill.denums }}</td>
-                        <td>{{ bill.price_intax }}</td>
-                        <td>{{ bill.sum_tax }}</td>
+                        <td>{{ bill.denums|floatformat:2 }}</td>
+                        <td>{{ bill.price_intax|floatformat:2 }}</td>
+                        <td>{{ bill.sum_tax|floatformat:2 }}</td>
                     </tr>
                     {% endfor %}
                     <tr>
                         <td colspan="9">合计：</td>
-                        <td>{{ TotalSumTax }}</td>
+                        <td>{{ TotalSumTax|floatformat:2 }}</td>
                     </tr>
                 </tbody>
             </table>
