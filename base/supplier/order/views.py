@@ -149,7 +149,11 @@ def find(request):
     if not slist:
         orderstatus["yyshdate"] = order.sdate
     else:
-        orderstatus = slist[0]
+        sobj = slist[0]
+        if not sobj["yyshdate"]:
+            orderstatus["yyshdate"] = order.sdate
+        else:
+            orderstatus = slist[0]
 
     seenum = order.seenum
     if not seenum:
@@ -183,22 +187,25 @@ def save(request):
 
     response_data = {}
     try:
-        #1.更新订单明细
-        detailList = OrdD.objects \
-                         .filter(ordercode=ordercode,grpcode=grpcode) \
-                         .values("ordercode","procode","barcode","grpcode")
+        if ordercode:
+            #1.更新订单明细
+            detailList = OrdD.objects \
+                             .filter(ordercode=ordercode,grpcode=grpcode) \
+                             .values("ordercode","procode","barcode","grpcode")
 
-        for row in detailList:
-            OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode,procode=str(row["procode"])).update(sjshsum="-1",sjprnum="-1")    #note="
+            for row in detailList:
+                OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode,procode=str(row["procode"])).update(sjshsum="-1",sjprnum="-1")    #note="
 
-        #2.保存预约送货日期 更新订单状态
-        rs = OrdStatus.objects.all().filter(ordercode=ordercode)
-        if not rs:
-            OrdStatus.objects.create(ordercode=ordercode, yyshdate=yyshdate, status="Y")
+            #2.保存预约送货日期 更新订单状态
+            rs = OrdStatus.objects.all().filter(ordercode=ordercode)
+            if not rs:
+                OrdStatus.objects.create(ordercode=ordercode, yyshdate=yyshdate, status="Y")
+            else:
+                OrdStatus.objects.filter(ordercode=ordercode).update(yyshdate=yyshdate,status="Y")
+
+            response_data['result'] = 'success'
         else:
-            OrdStatus.objects.filter(ordercode=ordercode).update(yyshdate=yyshdate,status="Y")
-
-        response_data['result'] = 'success'
+             response_data['result'] = 'failure'
     except Exception as e:
         print(e)
         response_data['result'] = 'failure'
