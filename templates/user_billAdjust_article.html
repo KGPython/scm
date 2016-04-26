@@ -10,13 +10,13 @@
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h1>
-                    变价单明细
+                    往来单据额调整单明细
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
                 </h3>
                 <p>
-                    <b>变价单号：</b><span>{{ code }}</span>
+                    <b>单号：</b><span>{{ code }}</span>
                     <b>审核日期：</b><span>{{ suppiler.chdate | date:'Y-m-d' }}</span>
                     <b>生成日期：</b><span>{{ suppiler.edate | date:'Y-m-d' }}</span>
                 </p>
@@ -52,7 +52,7 @@
                         <td>{{ adBill.pname }}</td>
                         <td>{{ adBill.anum | floatformat:2 }}</td>
                         <td>{{ adBill.cprice_notax | floatformat:2 }}</td>
-                        <td>{{ adBill.dqhsjj }}</td>
+                        <td>{{ adBill.dqhsjj| floatformat:2 }}</td>
                         <td>{{ adBill.sum4 }}</td>
                     </tr>
                     {% endfor %}

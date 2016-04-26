@@ -10,7 +10,7 @@
             <form class="query-list" method="post" action="{% url 'billAdjust' %}">
                 {% csrf_token %}
                 <p class="input">
-                    <label>变价单号：</label>
+                    <label>单号：</label>
                     {{ form.code }}
                 </p>
                 <div class="shopList input">
@@ -78,7 +78,7 @@
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h1>
-                    变价单列表
+                    往来单据额调整单列表
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
@@ -104,7 +104,7 @@
                 <thead>
                     <tr>
                         <th>调价类别</th>
-                        <th>变价单号</th>
+                        <th>单号</th>
                         <th>审核日期</th>
                         <th>供应商代码</th>
                         <th>供应商名称</th>
