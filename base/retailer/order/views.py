@@ -115,7 +115,6 @@ def retOrder(request):
                     "grpName":grpName
                   })
 
-
 def retOrderArticle(request):
     grpCode = request.session.get('s_grpcode','')
     grpName = request.session.get('s_grpname','')
