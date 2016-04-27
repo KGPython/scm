@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*-
 from django.shortcuts import render
 from .form import *
-from base.models import Ord,BasUserClass,OrdD
+from base.models import Ord,BasUserClass,OrdD,OrdStatus
 import time,datetime
 from django.core.paginator import Paginator
 from django.db.models import Q
@@ -67,10 +67,9 @@ def retOrder(request):
     kwargs.setdefault('checkdate__gte',start)
     kwargs.setdefault('checkdate__lte',"{end} 23:59:59".format(end=end))
     kwargs.setdefault('grpcode',grpCode)
-    retOrderList = {}
-    print(userRoleList)
+
     if '1' in userRoleList:
-        retOrderList = Ord.objects.values('ordercode','checkdate','state','status','style','spercode','spername','sdate','shopcode','inprice_tax','seenum','printnum')\
+        olist = Ord.objects.values('ordercode','checkdate','state','status','style','spercode','spername','sdate','shopcode','inprice_tax','seenum','printnum')\
                                         .filter(**kwargs).order_by("-"+orderStyle)
     else:
         shopRole = BasUserClass.objects.values('orgcode').filter(ucode__in=userRoleList,tablecode='roleshop')
@@ -78,18 +77,23 @@ def retOrder(request):
         q=Q()
         q.add(Q(shopcode__in=shopRole),Q.AND)
 
-        retOrderList = Ord.objects.values('ordercode','checkdate','state','status','style','spercode','spername','sdate','shopcode','inprice_tax','seenum','printnum')\
+        olist = Ord.objects.values('ordercode','checkdate','state','status','style','spercode','spername','sdate','shopcode','inprice_tax','seenum','printnum')\
                                   .filter(q,**kwargs).order_by("-"+orderStyle)
 
     totalInpriceTax = 0
-    for item in retOrderList:
+    for item in olist:
         totalInpriceTax += float(item['inprice_tax'])
-        # print(totalInpriceTax)
+
     page = request.GET.get('page',1)
-    paginator = Paginator(retOrderList,10)
+    paginator = Paginator(olist,10)
     try:
         retOrderList = paginator.page(page)
+        for item in retOrderList:
+            slist = OrdStatus.objects.filter(ordercode=item["ordercode"]).values("status")
+            if slist:
+                item["status"] = slist[0]["status"]
     except Exception as e:
+        retOrderList = []
         print(e)
 
     return render(request,
@@ -122,6 +126,12 @@ def retOrderArticle(request):
     #订单明细列表
     retOrderList = OrdD.objects.values('procode','pn','unit','taxrate','innums','denums','price_intax','sum_intax','sjshsum','sjprnum')\
                                .filter(ordercode=orderCode)
+    try:
+        orderStatus = OrdStatus.objects.values('ordercode','yyshdate','status').get(ordercode=orderCode)
+        if orderStatus:
+            sperDict["yyshdate"] = orderStatus["yyshdate"]
+    except Exception as e:
+        print(e)
 
     sumDenums = 0
     sumSumIntax = 0
