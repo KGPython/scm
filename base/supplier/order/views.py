@@ -189,12 +189,12 @@ def save(request):
     try:
         if ordercode:
             #1.更新订单明细
-            detailList = OrdD.objects \
-                             .filter(ordercode=ordercode,grpcode=grpcode) \
-                             .values("ordercode","procode","barcode","grpcode")
+            # detailList = OrdD.objects \
+            #                  .filter(ordercode=ordercode,grpcode=grpcode) \
+            #                  .values("ordercode","procode","barcode","grpcode")
 
-            for row in detailList:
-                OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode,procode=str(row["procode"])).update(sjshsum="-1",sjprnum="-1")    #note="
+            # for row in detailList:  procode=str(row["procode"])
+            OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode).update(sjshsum="-1",sjprnum="-1")
 
             #2.保存预约送货日期 更新订单状态
             rs = OrdStatus.objects.all().filter(ordercode=ordercode)
