@@ -98,17 +98,21 @@ def findSheet(request):
             if srow:
                 refsheetid = srow["refsheetid"]
                 refsheettype = srow["refsheettype"]
-                prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
-                code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
+                if refsheettype in Constants.SCM_SHEET_TYPE_KEY:
+                    prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
+                    code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
 
-                slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
-                                                                                      "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
-                                                                                      "anum_notax","anum_intax","anum_stock","anum_stock_intax",
-                                                                                      "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
-                                                                                      "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+                    slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
+                                                                                          "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
+                                                                                          "anum_notax","anum_intax","anum_stock","anum_stock_intax",
+                                                                                          "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
+                                                                                          "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+                else:
+                    slist2 = []
             else:
                 slist2 = []
             result["itemList"] = slist2
+            result["refsheettype"] = refsheettype
             targetPage = "user_settle_article_g_detail2.html"
 
         # for item in slist2:
