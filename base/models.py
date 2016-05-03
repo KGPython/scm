@@ -13,6 +13,67 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class Ret0(models.Model):
+    sheetid = models.CharField(db_column='SheetID', primary_key=True, max_length=16)  # Field name made lowercase.
+    refsheetid = models.CharField(db_column='refSheetID', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    shopid = models.CharField(max_length=4)
+    venderid = models.IntegerField(db_column='VenderID')  # Field name made lowercase.
+    retdate = models.DateTimeField(auto_now_add=True)
+    paymoney = models.DecimalField(db_column='PayMoney', max_digits=12, decimal_places=2)  # Field name made lowercase.
+    kxsummoney = models.DecimalField(db_column='KxSumMoney', max_digits=12, decimal_places=2)  # Field name made lowercase.
+    acceptflag = models.IntegerField(db_column='AcceptFlag')  # Field name made lowercase.
+    badflag = models.IntegerField(db_column='BadFlag')  # Field name made lowercase.
+    notes = models.CharField(db_column='Notes', max_length=64, blank=True, null=True)  # Field name made lowercase.
+    flag = models.IntegerField(db_column='Flag')  # Field name made lowercase.
+    editor = models.CharField(db_column='Editor', max_length=8)  # Field name made lowercase.
+    editdate = models.DateTimeField(db_column='EditDate', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+    operator = models.CharField(db_column='Operator', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    checker = models.CharField(db_column='Checker', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    finchecker = models.CharField(db_column='FinChecker', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    checkdate = models.DateTimeField(db_column='CheckDate', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+    managedeptid = models.IntegerField()
+    placeid = models.IntegerField(db_column='PlaceID', blank=True, null=True)  # Field name made lowercase.
+    mastervenderid = models.IntegerField(db_column='MasterVenderID')  # Field name made lowercase.
+    printcount = models.IntegerField(db_column='PrintCount')  # Field name made lowercase.
+    emailflag = models.IntegerField()
+    cprintcount = models.IntegerField(db_column='cPrintCount')  # Field name made lowercase.
+    costflag = models.IntegerField()
+    overrule = models.CharField(max_length=100, blank=True, null=True)
+    kxcalculated = models.IntegerField(db_column='KXCalculated')  # Field name made lowercase.
+    isadjust = models.IntegerField(db_column='IsAdjust')  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'ret0'
+
+
+class Retitem0(models.Model):
+    sheetid = models.CharField(db_column='SheetID', max_length=16)  # Field name made lowercase.
+    goodsid = models.IntegerField(db_column='GoodsID')  # Field name made lowercase.
+    deptid = models.IntegerField(db_column='DeptID')  # Field name made lowercase.
+    taxrate = models.DecimalField(db_column='TaxRate', max_digits=4, decimal_places=2)  # Field name made lowercase.
+    price = models.DecimalField(db_column='Price', max_digits=10, decimal_places=2)  # Field name made lowercase.
+    cost = models.DecimalField(max_digits=12, decimal_places=4)
+    askqty = models.DecimalField(max_digits=12, decimal_places=3)
+    planqty = models.DecimalField(max_digits=12, decimal_places=3)
+    realqty = models.DecimalField(max_digits=12, decimal_places=3)
+    reasontypeid = models.IntegerField(db_column='ReasonTypeID')  # Field name made lowercase.
+    reason = models.CharField(max_length=200, blank=True, null=True)
+    logistics = models.IntegerField()
+    pknum = models.IntegerField(db_column='PkNum')  # Field name made lowercase.
+    pkname = models.CharField(db_column='PKName', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    pkspec = models.CharField(db_column='PKSpec', max_length=12, blank=True, null=True)  # Field name made lowercase.
+    subitem_iid = models.IntegerField()
+    stockqty = models.DecimalField(db_column='stockQty', max_digits=12, decimal_places=3, blank=True, null=True)  # Field name made lowercase.
+    goodscostid = models.IntegerField(db_column='GoodsCostid')  # Field name made lowercase.
+    notes = models.CharField(db_column='Notes', max_length=300, blank=True, null=True)  # Field name made lowercase.
+    inputgoodsid = models.CharField(db_column='InputGoodsId', max_length=20, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'retitem0'
+        unique_together = (('GoodsID', 'SheetID', 'GoodsCostid'),)
+
 class Adprice(models.Model):
     code = models.CharField(db_column='Code', max_length=20)  # Field name made lowercase.
     grpcode = models.CharField(db_column='Grpcode', max_length=20)  # Field name made lowercase.
