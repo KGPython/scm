@@ -210,13 +210,12 @@
                             }
                         }
 
-                        if(confirm("请核实好实付金额，缴款总数，银行帐号等重要信息后再提交？")){
+                        if(confirm("确认提交吗？")){
                             $('#billForm').ajaxSubmit(ajax_option);
                         }
                  }
             });
         });
-
         function openWin(){
             window.open("/scm/base/balance/apply/findKxlist/?pend={{ pend }}",'kxinfo')
         }
