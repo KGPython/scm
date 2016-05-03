@@ -47,7 +47,7 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ bill.goodsid }}</td>
-                        <td>{{ bill.inputgoodsid|default_if_none:"" }}</td>
+                        <td>{{ bill.barcode|default_if_none:"" }}</td>
                         <td>{{ bill.goodsname }}</td>
                         <td>{{ bill.taxrate }}</td>
                         <td>{{ bill.price|floatformat:2 }}</td>

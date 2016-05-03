@@ -408,12 +408,15 @@ def beforeBackDetail(request):
 
     sum1,sum2,sum3,sum4,sum5 = 0,0,0,0,0;
     for item in billList:
-        plist = BasProduct.objects.values("pcode","chnm").filter(pcode=str(item["goodsid"]));
+        plist = BasProduct.objects.values("pcode","chnm","barcode").filter(pcode=str(item["goodsid"]));
         goodsname = ""
+        barcode = ""
         if plist:
             goods = plist[0]
             goodsname = goods["chnm"]
+            barcode = goods["barcode"]
         item["goodsname"] = goodsname
+        item["barcode"] = barcode
         sum1 += item["price"]
         sum2 += item["cost"]
         sum3 += item["planqty"]
