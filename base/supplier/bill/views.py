@@ -381,7 +381,7 @@ def beforeBackBill(request):
     ACCEPT_FLAG = {"0":"同意","1":"不同意"}
     BAD_FLAG = {"0":"坏货","1":"好货"}
 
-    return render(request,'user_billbeforeback.html',locals())
+    return render(request,'user_bill_beforeback.html',locals())
 
 def beforeBackDetail(request):
     """
