@@ -133,13 +133,13 @@
                                 <a href="/scm/base/supp/sale/analysis/detail3/?sdate={{ row.0 }}&qtype=1" target="_blank">查看</a>
                             </td>
                             <td class="col1">
-                                {{ row.4 }}
+                                {{ row.4|floatformat:2 }}
                             </td>
                             <td class="col1">
-                                {{  row.5|floatformat:2 }}
+                                {{  row.5|floatformat:3 }}
                             </td>
                             <td class="col1">
-                                {{ row.6|floatformat:2 }}
+                                {{ row.6|floatformat:3 }}
                             </td>
                             <td class="col1">
                                 {{ row.7 |floatformat:2}}

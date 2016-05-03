@@ -11,7 +11,7 @@
     <input type="hidden" name="end" value="{{ end }}">
     <input  class="query-enter right"  type="submit" value="返回" style="margin-right: 200px">
     {% if infoObj.checker != userCode %}
-    <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">
+    <input class="query-enter right" type="button" value="回复" onclick="setAction('answer','{{ infoObj.checker }}')" style="margin-right: 15px">
     {% endif %}
 </form>
 
@@ -43,7 +43,7 @@
 {% include "common/footer.html" %}
 <script type="text/javascript">
     current ="tongzhi";
-    function setAction(act){
+    function setAction(act,revcode){
         var utype = "{{ request.session.s_utype }}";
         var infotype = "";
         if(utype=="2"){
@@ -51,7 +51,7 @@
         }else{
             infotype = "0";
         }
-        window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype;
+        window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype+"&revcode="+revcode;
     }
     var flag = "{{ request.message }}";
     if(flag=='no_file'){

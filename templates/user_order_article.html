@@ -85,7 +85,7 @@
                               <td>{{ row.num|floatformat:0 }}</td>
                               <td style="color:dodgerblue;">{{ row.denums|floatformat:0 }}</td>
                               <td></td>
-                              <td>{{ row.price_intax }}</td>
+                              <td>{{ row.price_intax|floatformat:2 }}</td>
                               <td></td>
                               <td></td>
                               <td></td>
@@ -100,9 +100,10 @@
                           <td></td>
                           <td></td>
                           <td></td>
+                          <td><span class="noprint">{{ sum1|floatformat:0 }}</span></td>
                           <td></td>
-                          <td></td>
-                          <td colspan="5"></td>
+                          <td><span class="noprint">{{ sum2|floatformat:2 }}</span></td>
+                          <td colspan="4"></td>
                     </tr>
                     <tr class="tbottom" style="background-color: lightskyblue">
                           <td ></td>

@@ -64,13 +64,13 @@
                                 {{ row.4 }}
                             </td>
                             <td>
-                               {{ row.2 }}
+                               {{ row.2 |floatformat:2}}
                             </td>
                             <td>
-                               {{ row.1 }}
+                               {{ row.1 |floatformat:3}}
                             </td>
                             <td>
-                                {{ row.0 }}
+                                {{ row.0 |floatformat:3}}
                             </td>
                         </tr>
                     {% endfor %}

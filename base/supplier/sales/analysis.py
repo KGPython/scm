@@ -119,8 +119,8 @@ def query(request):
         result.setdefault("start",start)
         result.setdefault("end",end)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
         # result.setdefault("imgfile",imgfile)
         return render(request, "user_sale_analysis.html",result)
     else:
@@ -294,8 +294,8 @@ def detail1(request):
         result.setdefault("end",end)
         result.setdefault("sdate",sdate)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
         return render(request, "user_sale_analysis_dtlshop.html",result)
     else:
         return exportDetail1(rslist,sum1,sum2,sum3,type)
@@ -307,7 +307,7 @@ def exportDetail1(result,sum1,sum2,sum3,type):
               ("销售成本","1000")]
 
     sumlist = ["合计","",sum1,sum2,sum3]
-    fmtlist = [None,None,"0.00","0.00","0.00"]
+    fmtlist = [None,None,"0.00","0.000","0.000"]
 
     book = mtu.exportXls(sname,titles,result,sumlist,None,fmtlist)
 
@@ -424,8 +424,8 @@ def detail2(request):
         result.setdefault("end",end)
         result.setdefault("sdate",sdate)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
         return render(request, "user_sale_analysis_dtlpro.html",result)
     else:
          return exportDetail2(rslist,sum1,sum2,sum3,type)
@@ -438,7 +438,7 @@ def exportDetail2(rslist,sum1,sum2,sum3,type):
               ("销售数量","1000"),("实际销售","1000"),("销售成本","1000"),("税率","500")]
 
     sumlist = ["合计","","","","",sum1,sum2,sum3,""]
-    fmtlist = [None,None,None,None,None,"0.00","0.00","0.00",None]
+    fmtlist = [None,None,None,None,None,"0.00","0.000","0.000",None]
 
     book = mtu.exportXls(sname,titles,rslist,sumlist,None,fmtlist)
 
@@ -539,8 +539,8 @@ def detail3(request):
         result.setdefault("end",end)
         result.setdefault("sdate",sdate)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
         return render(request, "user_sale_analysis_dtlgz.html",result)
     else:
          return exportDetail3(outlist,sum1,sum2,sum3,type)
@@ -552,7 +552,7 @@ def exportDetail3(rslist,sum1,sum2,sum3,type):
               ("实际销售","1000"),("销售成本","1000")]
 
     sumlist = ["合计","",sum1,sum2,sum3]
-    fmtlist = [None,None,"0.00","0.00","0.00"]
+    fmtlist = [None,None,"0.00","0.000","0.000"]
 
     book = mtu.exportXls(sname,titles,rslist,sumlist,None,fmtlist)
 

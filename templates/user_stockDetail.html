@@ -96,11 +96,12 @@
                         <td></td>
                         <td>{{ stcok.unit }}</td>
                         <td>{{ stcok.num|floatformat:2 }}</td>
-                        <td>{{ stcok.sums_intax|floatformat:2 }}</td>
+                        <td>{{ stcok.sums_intax|floatformat:3 }}</td>
                     </tr>
                 {% endfor %}
-                <tr>
-                        <td colspan="8">合计：</td>
+                    <tr>
+                        <td colspan="7">合计：</td>
+                        <td>{{ total_sums|floatformat:2 }}</td>
                         <td>{{ total_sums_intax }}</td>
                     </tr>
                 </tbody>

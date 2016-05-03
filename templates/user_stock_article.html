@@ -114,14 +114,14 @@
                         <td>{{ stock.classes }}</td>
                         <td>{{ stock.unit }}</td>
                         <td>{{ stock.num | floatformat:2 }}</td>
-                        <td>{{ stock.sums_intax | floatformat:2 }}</td>
+                        <td>{{ stock.sums_intax | floatformat:3 }}</td>
                         <td>{{ goodsFlag | key:stock.clearflag }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
                         <td colspan="8">合计：</td>
                         <td>{{ totalNum | floatformat:2 }}</td>
-                        <td>{{ totalSumsIntax | floatformat:2 }}</td>
+                        <td>{{ totalSumsIntax | floatformat:3}}</td>
                         <td></td>
                     </tr>
                 </tbody>

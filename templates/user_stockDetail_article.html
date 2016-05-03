@@ -43,14 +43,14 @@
                     <tr>
                         <td>{{ stcok.shopnm }}</td>
                         <td>{{ stcok.num | floatformat:2}}</td>
-                        <td>{{ stcok.sums_intax | floatformat:2 }}</td>
+                        <td>{{ stcok.sums_intax | floatformat:3}}</td>
                         <td>{{ flagDict | key:stcok.clearflag }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
                         <td colspan="1">合计：</td>
                         <td>{{ total_num | floatformat:2 }}</td>
-                        <td>{{ total_sums_intax | floatformat:2 }}</td><td></td>
+                        <td>{{ total_sums_intax | floatformat:3 }}</td><td></td>
                     </tr>
                 </tbody>
             </table>

@@ -138,8 +138,8 @@ def query(request):
         result.setdefault("barcode",barcode)
         result.setdefault("orderstyle",orderstyle)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
 
         return render(request, "user_sale_pro.html",result)
     else:
@@ -153,7 +153,7 @@ def export(rslist,sum1,sum2,sum3):
               ("税率","500"),("销售数量","1000"),("实际销售","1000"),("销售成本","1000")]
 
     sumlist = ["合计","","","","","",sum1,sum2,sum3]
-    fmtlist = [None,None,None,None,None,None,"0.00","0.00","0.00"]
+    fmtlist = [None,None,None,None,None,None,"0.00","0.000","0.000"]
 
     book = mtu.exportXls(sname,titles,rslist,sumlist,None,fmtlist)
 

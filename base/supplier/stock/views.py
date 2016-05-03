@@ -200,9 +200,9 @@ def stockDetail(request):
                 shopCode = shopCode[0:len(shopCode)-2]
 
                 #shopcode,
-                sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag  from stock where shopcode in ("+shopCode+") and barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where shopcode in ("+shopCode+") and barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
             else:
-                sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag from stock where barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
 
             cursor = connection.cursor()
             cursor.execute(sql)
@@ -212,31 +212,33 @@ def stockDetail(request):
 
             stockList = []
             total_sums_intax = 0
+            total_sums = 0
             for obj in fetchall:
                 dic={}
-                dic['sccode']=obj[3]
-                dic['scname']=obj[4]
-                dic['procode']=obj[5]
-                dic['proname']=obj[6]
-                dic['classes']=obj[7]
-                dic['unit']=obj[8]
-                dic['num']=obj[10]
-                dic['sums_intax']=obj[11]
-                dic['barcode']=obj[12]
-                total_sums_intax +=obj[11]
+                dic['sccode']=obj[2]
+                dic['scname']=obj[3]
+                dic['procode']=obj[4]
+                dic['proname']=obj[5]
+                dic['classes']=obj[6]
+                dic['unit']=obj[7]
+                dic['num']=obj[9]
+                dic['sums_intax']=obj[10]
+                dic['barcode']=obj[11]
+                total_sums_intax +=obj[10]
+                total_sums += obj[9]
                 stockList.append(dic)
             if request.GET.get('action', None)!="outQuery":
                 title = '全部库存明细列表 '
                 keyList = ['procode','proname','barcode','sccode','scname','classes','unit','num','sums_intax']#由excel展现字段决定
                 rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'规格',u'单位',u'数量',u'含税进价金额']
-                rowTotal = ['',u'合计','','','','','','',total_sums_intax]
+                rowTotal = ['',u'合计','','','','','',total_sums,total_sums_intax]
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
         form = StockForm()
         num1 = "0"
         num2 = "100000"
-        sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag from stock where suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by sccode"
+        sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by sccode"
         cursor = connection.cursor()
         cursor.execute(sql)
         fetchall = cursor.fetchall()
@@ -245,18 +247,20 @@ def stockDetail(request):
 
         stockList = []
         total_sums_intax = 0
+        total_sums = 0
         for obj in fetchall:
             dic={}
-            dic['sccode']=obj[3]
-            dic['scname']=obj[4]
-            dic['procode']=obj[5]
-            dic['proname']=obj[6]
-            dic['classes']=obj[7]
-            dic['unit']=obj[8]
-            dic['num']=obj[10]
-            dic['sums_intax']=obj[11]
-            dic['barcode']=obj[12]
-            total_sums_intax +=obj[11]
+            dic['sccode']=obj[2]
+            dic['scname']=obj[3]
+            dic['procode']=obj[4]
+            dic['proname']=obj[5]
+            dic['classes']=obj[6]
+            dic['unit']=obj[7]
+            dic['num']=obj[9]
+            dic['sums_intax']=obj[10]
+            dic['barcode']=obj[11]
+            total_sums_intax +=obj[10]
+            total_sums += obj[9]
             stockList.append(dic)
 
     return render(request,'user_stockDetail.html',locals())

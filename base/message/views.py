@@ -120,7 +120,7 @@ def msglist(request):
                 if userType == "2":
                     q.add((Q(depart=userGrpCode) & Q(accesstype='11')) | (Q(accesstype='13') & Q(depart='-1')),Q.AND)
                     q.add((Q(depart=userCode) & Q(accesstype='21')) | (Q(accesstype='13') & Q(depart='-1')),Q.AND)
-
+                kwargs.setdefault('depart',userCode)
                 #获取数据列表
                 infoList = Pubinfo.objects.values("infocode","title","depart","subtime","usergrpname","username","content","checker")\
                                           .filter(q,**kwargs).order_by("-subtime")
@@ -234,6 +234,7 @@ def msgCreate(request):
         action = request.GET.get("action")
         infoType = request.GET.get('infotype','')
         infoCode = request.GET.get('infocode','')
+        revcode = request.GET.get('revcode','')
         #查询
         if infoCode:
             info = Pubinfo.objects.values("checker","title","content","username","subtime","mailpath","depart").get(infocode=infoCode)

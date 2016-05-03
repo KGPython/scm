@@ -2,7 +2,7 @@
 
 from django.shortcuts import render
 from django.http import HttpResponse
-from base.models import BasUser,BasUserRole,BasRole
+from base.models import BasUser,BasUserRole,BasRole,BasKe
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
 from django.db import connection
@@ -47,8 +47,20 @@ def index(request):
             user.remark = remark
             user.grpcode = grpcode
             user.save()
+
+            ke = BasKe()
+            ke.kbcode = user.ucode
+            ke.kbname = user.nm
+            ke.save()
         elif action == "del":
-            user.delete()
+            try:
+                ke = BasKe.objects.get(kbcode=ucode)
+                if ke:
+                    ke.delete()
+            except Exception as e:
+               print(e)
+            if user:
+                user.delete()
             user = BasUser()
 
     retUserList = BasUser.objects.values('ucode','nm','password','dept','depttype','utype','status','grpcode').filter(grpcode=grpcode)

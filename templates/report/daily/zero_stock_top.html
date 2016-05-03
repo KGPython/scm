@@ -3,140 +3,301 @@
     <head>
         <meta charset="UTF-8">
         <title>商业供应链系统</title>
-        <style>
-            .mycode { float:left; display:inline;border:1px solid #666;border-left:0;border-bottom:0;}
-            .mycode li{height:30px; list-style:none;border-bottom:1px solid #666;}
-            .mycode li p{float:left;text-align:left;border-left:1px solid #666;width:100px;height:30px;line-height: 30px;font-size:14px;}
-            .mycode li i{float:left;text-align:center;border-left:1px solid #666;width:100px;height:60px;font-size:18px;font-style:normal;}
-            .mycode ul li i ul{border:0;}
-            .mycode ul li i ul li{height:30px; list-style:none;line-height: 30px;}
-            .mycode ul li i ul li i{float:left;text-align:left;width:100px;height:30px;text-align:center;}
-            .mycode .dhead {
-                background-color: #337AB7;
-                line-height:60px;
-                color: white;
-            }
-        </style>
+        <link data-jsfiddle="common" rel="stylesheet" media="screen" href="{{ static }}/js/handsontable/jquery.handsontable.css">
     </head>
     <body>
         {% include 'common/nav.html' %}
-        <style>
-            .datahead{
-                overflow-y: hidden;
-                overflow-x: hidden;
-                height:60px;
-                width: 100%;
-            }
-            .databody{
-                overflow-y: scroll;
-                overflow-x: hidden;
-                height:450px;
-                width:100%;
-            }
-            table{
-                background-color: #eee;
-                border-collapse: collapse;
-                border-top: 0px solid #ffffff;
-            }
-            table thead{
-                background-color: #337AB7;
-                color: white;
-                position: absolute;
-                z-index: 2;
-                text-align: center;
-                float:left;
-                width:72%;
-
-            }
-            table tbody{
-                position:relative;
-                z-index:1;
-                float: left;
-                width:100%;
-            }
-            table th{
-                background-color: #337AB7;
-                color: white;
-                text-align: center;
-                width: 100px;
-            }
-             table td{
-                text-align: center;
-                width: 100px;
-            }
-        </style>
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
-                <h1>
-                     各店零库存排名表
-                     <a class="button right" href="javascript:void(0);" id="btnExport">
-                         导出Excel
-                    </a>
-                </h1>
-            </div>
-            <div  style="width:100%;">
-
-                      {% comment %}   <div class="mycode"><ul>
-                          <li class="dhead" style="height:60px;">
-                              <i>序号</i><i>门店编号</i><i>门店名称</i>
-                              <i style="width:800px;">
-                                 <ul style="width:100%;">
-                                     <li>
-                                         <i style="width:402px;text-align: center; border-left:0;">月累计排名(不含联营和新品)</i>
-                                         <i style="width:392px;text-align: center; border-left:1px solid #666;">今日排名(不含联营和新品)</i>
-                                     </li>
-                                     <li style="border-bottom: 0;">
-                                         <i style="border-left:0;">有效商品数</i>
-                                         <i>零库存数</i>
-                                         <i>占比</i>
-                                         <i>排名</i>
-                                         <i>有效商品数</i>
-                                         <i>零库存数</i>
-                                         <i>占比</i>
-                                         <i style="width: 92px;text-align: center;">排名</i>
-                                     </li>
-                                 </ul>
-                              </i>
-                          </li>
-                          {% for item in tlist %}
-                          <li><p>{{ forloop.counter }}</p>
-                              <p>{{ item.0 }}</p><p>{{ item.1 }}</p>
-                              <p>{{ item.2 }}</p><p>{{ item.3 }}</p>
-                              <p>{{ item.4 }}</p><p>{{ item.5 }}</p>
-                              <p>{{ item.6 }}</p><p>{{ item.7 }}</p>
-                              <p>{{ item.8 }}</p><p>{{ item.9 }}</p></li>
-                          {% endfor %}
-                      </ul> </div>{% endcomment %}
-
-                 <div class="datahead">
-                      <table style="width:98%;">
-                                <tr>
-                                    <th rowspan="2">序号</th><th rowspan="2">门店编号</th><th rowspan="2">门店名称</th>
-                                    <th colspan="4">月累计排名(不含联营和新品)</th><th colspan="4">今日排名(不含联营和新品)</th>
-                                </tr>
-                                <tr >
-                                    <th>有效商品数</th><th>零库存数</th><th>占比</th><th>排名</th>
-                                    <th>有效商品数</th><th>零库存数</th><th>占比</th><th>排名</th>
-                                </tr>
-                       </table>
-                 </div>
-                 <div class="databody">
-                      <table>
-                                {% for item in tlist %}
-                                    <tr>
-                                        <td>{{ forloop.counter }}</td><td>{{ item.0 }}</td>
-                                        <td>{{ item.1 }}</td><td>{{ item.2 }}</td><td>{{ item.3 }}</td>
-                                        <td>{{ item.4 }}</td><td>{{ item.5 }}</td><td>{{ item.6 }}</td>
-                                        <td>{{ item.7 }}</td><td>{{ item.8 }}</td><td>{{ item.9 }}</td>
-                                    </tr>
-                                {% endfor %}
-                      </table>
-                 </div>
+                <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
+                <div class="container">
+                    <ul class="nav nav-tabs">
+                      <li role="presentation" class="active"><a href="#">7月零库存总排名（门店）</a></li>
+                      <li role="presentation"><a href="#">7月零库存每日排名（门店）</a></li>
+                      <li role="presentation"><a href="#">7月零库存排名总表（课组）</a></li>
+                      <li role="presentation"><a href="#">7月各店零库存排名表（课组）</a></li>
+                    </ul>
+                    <div class="list-tabs container">
+                        <div class="table" style="display:block">
+                             <div id="example1" style="height:550px;margin-left: 10px; "> </div>
+                        </div>
+                        <div class="table">
+                              <div id="example2" style="height:550px; "></div>
+                        </div>
+                        <div class="table">
+                             <div id="example3" style="height:550px;"></div>
+                        </div>
+                        <div class="table">
+                            <div class="card_tab1">
+                                <div class="con">
+                                    <ul>
+                                        <li class="current ti1">
+                                            <h3>德惠店</h3>
+                                            <div class="show_content" >
+                                                 <div id="example1"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>商城店</h3>
+                                            <div class="show_content">
+                                                  <div id="example5"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>双百店</h3>
+                                            <div class="show_content">
+                                                  <div id="example6"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>滦河店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>宽城广场店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>宽城购物中心超市店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>围场店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>丰润店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>丰宁一店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>平泉店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>滦平店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>隆化店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>双滦广场店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>安定里店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>奥体店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>天山店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>围场美神店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>丰宁二店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>嘉禾店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>名都店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti1">
+                                            <h3>下板城店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                        <li class="ti2">
+                                            <h3>迁安店</h3>
+                                            <div class="show_content">
+                                                  <div id="example7"> </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         {% include "common/footer.html" %}
+        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/jquery.handsontable.js"></script>
+        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/jquery.handsontable.helper.js"></script>
         <script data-jsfiddle="example1">
             current = "ribao";
         </script>
+        <script type="text/javascript">
+            $('.nav-tabs li').click(function (e) {
+                e.preventDefault();
+                $(this).addClass("active").siblings().removeClass("active");
+                i=$(this).index();
+                $(".list-tabs .table").eq(i).show().siblings().hide();
+            })
+
+            $(".card_tab1 .con ul li").click(function(){
+                $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
+            });
+        </script>
+        <script >
+            var rsdata = [];
+            {% for item in tlist %}
+                var item = [ '{{ item.0 }}', '{{ item.1 }}', '{{ item.2 }}', '{{ item.3 }}', '{{ item.4 }}', '{{ item.5 }}', '{{ item.6 }}', '{{ item.7 }}', '{{ item.8 }}', '{{ item.9 }}'];
+                rsdata.push(item);
+            {% endfor %}
+
+           {% comment %}  var data = [
+                  { shopcode:"C001",shopname:"德惠店",m1: 1, m2: "4", m3: "7", m4: "1", d1: "4", d2: "6", d3: "9", d4: "3" },
+                  { shopcode:"C002",shopname:"商城店",m1: 2, m2: "5", m3: "8", m4: "2", d1: "3", d2: "8", d3: "3", d4: "4" },
+                  { shopcode:"C003",shopname:"嘉禾店",m1: 3, m2: "6", m3: "9", m4: "3", d1: "5", d2: "3", d3: "1", d4: "8" },
+            ];
+            var colHeaders = [
+                { id: 'shopcode', name: '门店编号', depth: 1, leafs: 1},
+                { id: 'shopname', name: '门店', depth: 1, leafs: 1 },
+                {
+                    id: 'month', name: '<span style="color:red;">本月</span>累计排名(不含联营和新品)', depth: 1, leafs: 4, children: [
+                        { id: 'm1', name: '有效商品数', depth: 2, leafs: 0 },
+                        { id: 'm2', name: '零库存数', depth: 2, leafs: 0},
+                        { id: 'm3', name: '占比', depth: 2, leafs: 0},
+                        { id: 'm4', name: '排名', depth: 2, leafs: 0}
+                    ],
+                },
+                {
+                    id: 'today', name: '<span style="color:red;">当日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
+                        { id: 'd1', name: '有效商品数', depth: 2, leafs: 0},
+                        { id: 'd2', name: '零库存数', depth: 2, leafs: 0},
+                        { id: 'd3', name: '占比', depth: 2, leafs: 0},
+                        { id: 'd4', name: '排名', depth: 2, leafs: 0}
+                    ],
+                }
+            ];
+            var container = $("#example1");
+            container.handsontable({
+                width:1300,
+                rowHeaders: true,//是否显示序号
+                colHeaders: true,//是否显示序号
+                minCreateRows: 1,//每次最少创建行数
+                autoWrapRow: true,
+                colWidths: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],//宽度
+                columns: treeToColumns(colHeaders),
+                readOnly:false,
+                contextMenu:false,
+                afterRender: function ()
+                {
+                }
+            });
+            container.handsontable("setMcolHeaders", colHeaders);//设置表头
+            container.handsontable("loadData", data);//加载数据{% endcomment %}
+
+            var data2 = [
+                  { shopcode:"C001",shopname:"德惠店",id11: 1, id12: "2", id13: "3", id14: "4", id21:5, id22: "6", id23: "7", id24: "8",id31: 9, id32: "10", id33: "11", id34: "12",id41:13, id42: "14", id43: "15", id44: "16"},
+                  { shopcode:"C002",shopname:"商城店",id11: 1, id12: "2", id13: "3", id14: "4", id21:5, id22: "6", id23: "7", id24: "8",id31: 9, id32: "10", id33: "11", id34: "12",id41:13, id42: "14", id43: "15", id44: "16"},
+                  { shopcode:"C003",shopname:"嘉禾店",id11: 1, id12: "2", id13: "3", id14: "4", id21:5, id22: "6", id23: "7", id24: "8",id31: 9, id32: "10", id33: "11", id34: "12",id41:13, id42: "14", id43: "15", id44: "16"},
+            ];
+            var colHeaders2 = [
+                { id: 'shopcode', name: '门店编号', depth: 1, leafs: 1},
+                { id: 'shopname', name: '门店', depth: 1, leafs: 1 },
+                {
+                    id: 'id1', name: '<span style="color:red;">1日</span>累计排名(不含联营和新品)', depth: 1, leafs: 4, children: [
+                        { id: 'id11', name: '有效商品数', depth: 2, leafs: 0 },
+                        { id: 'id12', name: '零库存数', depth: 2, leafs: 0},
+                        { id: 'id13', name: '占比', depth: 2, leafs: 0},
+                        { id: 'id14', name: '排名', depth: 2, leafs: 0}
+                    ],
+                },
+                {
+                    id: 'id2', name: '<span style="color:red;">2日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
+                        { id: 'id21', name: '有效商品数', depth: 2, leafs: 0},
+                        { id: 'id22', name: '零库存数', depth: 2, leafs: 0},
+                        { id: 'id23', name: '占比', depth: 2, leafs: 0},
+                        { id: 'id24', name: '排名', depth: 2, leafs: 0}
+                    ],
+                },
+                {
+                    id: 'id3', name: '<span style="color:red;">3日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
+                        { id: 'id31', name: '有效商品数', depth: 2, leafs: 0},
+                        { id: 'id32', name: '零库存数', depth: 2, leafs: 0},
+                        { id: 'id33', name: '占比', depth: 2, leafs: 0},
+                        { id: 'id34', name: '排名', depth: 2, leafs: 0}
+                    ],
+                },
+                {
+                    id: 'id4', name: '<span style="color:red;">4日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
+                        { id: 'id41', name: '有效商品数', depth: 2, leafs: 0},
+                        { id: 'id42', name: '零库存数', depth: 2, leafs: 0},
+                        { id: 'id43', name: '占比', depth: 2, leafs: 0},
+                        { id: 'id44', name: '排名', depth: 2, leafs: 0}
+                    ],
+                }
+            ];
+            var container2 =  $("#example2");
+            container2.handsontable({
+                width:1400,
+                rowHeaders: true,//是否显示序号
+                colHeaders: true,//是否显示序号
+                autoWrapRow: true,
+                fixedColumnsLeft:2,
+                columns: treeToColumns(colHeaders2),
+                readOnly:false,
+                contextMenu:false,
+                colWidths: [80,80, 80,80,80,80, 80,80,80,80,80,80,80,80,80,80, 80,80],//宽度
+                afterRender  : function () {
+
+                },
+            });
+            container2.handsontable("setMcolHeaders", colHeaders2);//设置表头
+            container2.handsontable("loadData", data2);//加载数据
+
+          </script>
     </body>
 </html>

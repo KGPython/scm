@@ -175,8 +175,8 @@
                             <td class="col1">{{ row.barcodeid }}</td>
                             <td class="col1">{{ row.name }}</td>
                             <td class="col1">{{ row.spec | default_if_none:""}}</td>
-                            <td class="col2_4">{{ row.cost }}</td>
-                            <td class="col1">{{ row.price }}</td>
+                            <td class="col2_4">{{ row.cost|floatformat:3 }}</td>
+                            <td class="col1">{{ row.price|floatformat:3 }}</td>
                             <td class="col2_4">{{ gstatus|key:row.flag }}</td>
                             <td class="col1">{{ row.venderid }}</td>
                             <td class="col1">{{ row.costtaxrate }}</td>

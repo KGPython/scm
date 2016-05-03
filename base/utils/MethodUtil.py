@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import xlrd,xlwt3 as xlwt
+import xlwt3 as xlwt
 import os,decimal,datetime,time,random,hashlib
 from PIL import Image, ImageDraw, ImageFont
 
