@@ -23,4 +23,7 @@ urlpatterns = [
     url(r'^bill/adjustArticle/', adjustArticle , name='adjustArticle'),
     url(r'^bill/billBack/$', billBack , name='billBack'),
     url(r'^bill/backArticle/$', backArticle , name='backArticle'),
+
+    url(r'^bill/billBeforeBack/$', beforeBackBill, name='billBeforeBack'),
+    url(r'^bill/beforeBackArticle/$', beforeBackDetail , name='beforeBackArticle'),
 ]

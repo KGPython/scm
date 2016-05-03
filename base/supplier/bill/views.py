@@ -3,10 +3,11 @@
 from django.shortcuts import render
 import logging
 from .forms import *
-from base.models import BillIn,BillInd,BasShop,Adpriced,Adprice
+from base.models import BillIn,BillInd,BasShop,Adpriced,Adprice,Ret0,Retitem0,BasProduct
 from django.core.paginator import Paginator #分页查询
 import time,datetime
 from django.db import connection
+from base.utils import MethodUtil as mtu
 
 # Create your views here.
 logger=logging.getLogger('base.supplier.stock.views')
@@ -333,3 +334,90 @@ def backArticle(request):
 def setSeeNum(code,grpcode,seeNum):
     BillIn.objects.filter(code=code,grpcode=grpcode).update(seenum=seeNum)
 
+def beforeBackBill(request):
+    """
+    预退货单列表
+    :param request:
+    :return:
+    """
+    sperCode = request.session.get('s_suppcode')   #用户所属单位
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+
+    shopCodeList = []
+
+    start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+    end = datetime.datetime.today().strftime("%Y-%m-%d")
+    page = mtu.getReqVal(request,'page',1)
+
+    sheetId =  mtu.getReqVal(request,'sheetId','')
+    shopCode =  mtu.getReqVal(request,'shopCode','')
+    start =  mtu.getReqVal(request,'start',start)
+    end =  mtu.getReqVal(request,'end',end)
+
+    kwargs = {}
+    if sheetId:
+        kwargs.setdefault("sheetid__contains",sheetId)
+    if len(shopCode):
+        shopCodeStr = shopCode[0:len(shopCode)-1]
+        shopCodeList = shopCodeStr.split(',')
+        kwargs.setdefault("shopid__in",shopCodeList)
+
+    kwargs.setdefault("checkdate__gte",start)
+    kwargs.setdefault("checkdate__lte","{end} 23:59:59".format(end=end))
+
+    #kwargs.setdefault("venderid",sperCode)
+    kwargs.setdefault("flag",2)
+
+    billList = Ret0.objects.values("sheetid","shopid","venderid","retdate","editdate","paymoney","kxsummoney","acceptflag","badflag","checkdate","notes")\
+                             .filter(**kwargs).order_by("sheetid")
+    #分页函数
+    paginator=Paginator(billList,20)
+    try:
+        billList=paginator.page(page)
+    except Exception as e:
+        print(e)
+
+    ACCEPT_FLAG = {"0":"同意","1":"不同意"}
+    BAD_FLAG = {"0":"坏货","1":"好货"}
+
+    return render(request,'user_billbeforeback.html',locals())
+
+def beforeBackDetail(request):
+    """
+    预退货单明细
+    :param request:
+    :return:
+    """
+    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    grpName = request.session.get('s_grpname')
+    sheetid = request.GET.get('sheetId',None)
+
+     #供应商信息
+    bill = Ret0.objects.values("shopid","checkdate","editdate").distinct().get(sheetid=sheetid)
+
+    #门店信息
+    shopCode = bill.get('shopid')
+    shop = BasShop.objects.values('shopnm').get(shopcode=shopCode)
+
+    billList = Retitem0.objects.values("sheetid","goodsid","deptid","taxrate","price","cost",
+                                       "askqty","planqty","realqty","reasontypeid","reason",
+                                       "logistics","pknum","pkname","pkspec","subitem_iid",
+                                       "stockqty","goodscostid","notes","inputgoodsid"
+                                       ).filter(sheetid=sheetid).order_by('goodsid','deptid')
+
+    sum1,sum2,sum3,sum4,sum5 = 0,0,0,0,0;
+    for item in billList:
+        plist = BasProduct.objects.values("pcode","chnm").filter(pcode=str(item["goodsid"]));
+        goodsname = ""
+        if plist:
+            goods = plist[0]
+            goodsname = goods["chnm"]
+        item["goodsname"] = goodsname
+        sum1 += item["price"]
+        sum2 += item["cost"]
+        sum3 += item["planqty"]
+        sum4 += item["realqty"]
+        sum5 += item["stockqty"]
+
+    return render(request,'user_billbeforeback_article.html',locals())

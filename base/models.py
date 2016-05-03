@@ -72,7 +72,7 @@ class Retitem0(models.Model):
     class Meta:
         managed = False
         db_table = 'retitem0'
-        unique_together = (('GoodsID', 'SheetID', 'GoodsCostid'),)
+        unique_together = (('sheetid','goodsid', 'goodscostid'),)
 
 class Adprice(models.Model):
     code = models.CharField(db_column='Code', max_length=20)  # Field name made lowercase.
