@@ -107,6 +107,15 @@ def findSheet(request):
                                                                                           "anum_notax","anum_intax","anum_stock","anum_stock_intax",
                                                                                           "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
                                                                                           "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+                    for item in slist2:
+                        sum1 += item["anum"]
+                        sum2 += item["cprice_notax"]
+                        sum3 += item["dqhsjj"]
+
+                    result["sum1"] = sum1
+                    result["sum2"] = sum2
+                    result["sum3"] = sum3
+
                 else:
                     slist2 = []
             else:
@@ -115,24 +124,7 @@ def findSheet(request):
             result["refsheettype"] = refsheettype
             targetPage = "user_settle_article_g_detail2.html"
 
-        # for item in slist2:
-        #     sum1 += item["num"]
-        #     sum2 += item["innums"]
-        #     sum3 += item["denums"]
-        #     sum4 += item["giftnum"]
-        #     sum5 += item["price_intax"]
-        #     sum6 += item["prnum"]
-        #     sum7 += item["sum_tax"]
-        #     sum8 += item["sum"]
-        #
-        # result["sum1"] = sum1
-        # result["sum2"] = sum2
-        # result["sum3"] = sum3
-        # result["sum4"] = sum4
-        # result["sum5"] = sum5
-        # result["sum6"] = sum6
-        # result["sum7"] = sum7
-        # result["sum8"] = sum8
+
 
 
     return render(request,targetPage,result)

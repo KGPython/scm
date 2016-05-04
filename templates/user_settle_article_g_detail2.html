@@ -51,8 +51,8 @@
                         <td>{{ row.pname }}</td>
                         <td>{{ row.adbatchseq }}</td>
                         <td>{{ row.anum |floatformat:2}}</td>
-                        <td>{{ row.cprice_notax|floatformat:2 }}</td>
-                        <td>{{ row.dqhsjj|floatformat:2 }}</td>
+                        <td>{{ row.cprice_notax|floatformat:3 }}</td>
+                        <td>{{ row.dqhsjj|floatformat:3 }}</td>
                      {% comment %}   <td>{{ row.sprice|floatformat:2 }}</td>
                         <td>{{ row.anum_notax |floatformat:2}}</td>
                         <td>{{ row.anum_intax |floatformat:2}}</td>{% endcomment %}
@@ -76,24 +76,17 @@
                             </td>
                         </tr>
                 {% endfor %}
-              {% comment %}  <tr>
+                <tr>
                     <td>合计：</td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td>{{ sum1|floatformat:2 }}</td>
+                    <td>{{ sum2|floatformat:3 }}</td>
+                    <td>{{ sum3|floatformat:3 }}</td>
                     <td></td>
-                    <td>{{ sum1 }}</td>
-                    <td>{{ sum2 }}</td>
-                    <td>{{ sum3 }}</td>
-                    <td>{{ sum4 }}</td>
-                    <td></td>
-                    <td>{{ sum5 }}</td>
-                    <td></td>
-                    <td>{{ sum6 }}</td>
-                    <td>{{ sum7 }}</td>
-                    <td>{{ sum8 }}</td>
-                </tr>{% endcomment %}
+                </tr>
             </tbody>
         </table>
     </div>
