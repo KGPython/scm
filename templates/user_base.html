@@ -107,7 +107,7 @@
                     单位：<span>{{ grpname }}</span>
                 </h3>
                 <p>
-                    <b>门店：</b><span>{{ shopnames }}</span> {% comment %}<b>时间：</b><span>{{ start }}至{{ end }}</span> 默认查当前月？？{% endcomment %}
+                    <b>门店：</b><span>{% if shopnames %}{{ shopnames }} {% else %}全部 {% endif %}</span> {% comment %}<b>时间：</b><span>{{ start }}至{{ end }}</span> 默认查当前月？？{% endcomment %}
                 </p>
             </div>
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">

@@ -165,7 +165,7 @@
                      <b>单位：</b><span>{{ grpname }}</span>
                 </p>
                 <p>
-                    <b>门店：</b><span>{{ shopnames }}</span>
+                    <b>门店：</b><span>{% if shopnames %}{{ shopnames }} {% else %}全部 {% endif %}</span>
                 </p>
                 <p><b>时间：</b><span>{{ start }}至{{ end }}</span> <b>单位：</b><span>元</span> <b>含税进价金额合计：</b><span>{{ sum }}</span></p>
             </div>
