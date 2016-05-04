@@ -50,8 +50,8 @@
                         <td>{{ bill.barcode|default_if_none:"" }}</td>
                         <td>{{ bill.goodsname }}</td>
                         <td>{{ bill.taxrate }}</td>
-                        <td>{{ bill.price|floatformat:2 }}</td>
-                        <td>{{ bill.cost|floatformat:2 }}</td>
+                        <td>{{ bill.price|floatformat:3 }}</td>
+                        <td>{{ bill.cost|floatformat:3 }}</td>
                        {% comment %} <td>{{ bill.askqty|floatformat:1  }}</td>{% endcomment %}
                         <td>{{ bill.planqty |floatformat:1 }}</td>
                         <td>{{ bill.realqty|floatformat:1 }}</td>
@@ -65,19 +65,17 @@
                     </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="2">合计：</td>
+                        <td colspan="4">合计：</td>
+                        <td></td>
+                        <td>{{ sum1|floatformat:3 }}</td>
+                        <td>{{ sum2|floatformat:3 }}</td>
+                        <td>{{ sum3|floatformat:1}}</td>
+                        <td>{{ sum4|floatformat:1 }}</td>
+                        <td></td>
+                        <td>{{ sum6|floatformat:1 }}</td>
                         <td></td>
                         <td></td>
-                        <td></td>
-                        <td>{{ sum1|floatformat:2 }}</td>
-                        <td>{{ sum2|floatformat:2 }}</td>
-                        <td>{{ sum3|floatformat:2 }}</td>
-                        <td>{{ sum4|floatformat:2 }}</td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td>{{ sum5|floatformat:2 }}</td>
+                        <td>{{ sum5|floatformat:1 }}</td>
                         <td></td>
                     </tr>
                 </tbody>

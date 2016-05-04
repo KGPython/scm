@@ -126,7 +126,7 @@
                         <td>{{ bill.spername }}</td>
                         <td>{{ bill.shopcode }}</td>
                         <td>{{ bill.shopname }}</td>
-                        <td>{{ bill.inprice_tax | floatformat:2 }}</td>
+                        <td>{{ bill.inprice_tax | floatformat:3 }}</td>
                         <td>{% if bill.seenum %} {{ bill.seenumbill.seenum }} {% else %} 0 {% endif %}</td>
 
                     </tr>

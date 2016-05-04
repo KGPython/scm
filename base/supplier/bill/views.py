@@ -57,8 +57,10 @@ def supplierBill(request):
                                          .filter(**kwargs)
 
     totalInpriceTax = 0
+
     for item in billList:
         totalInpriceTax += item['inprice_tax']
+
 
     #分页函数
     paginator=Paginator(billList,20)
@@ -107,8 +109,13 @@ def billArticle(request):
                               .order_by('pname','classes','unit')
 
     TotalSumTax = 0  #含税进价总额
+    sum1,sum2,sum3,sum4 = 0,0,0,0
     for bill in billList:
         TotalSumTax += bill.get('sum_tax',0)
+        sum1 += bill["num"]
+        sum2 += bill["denums"]
+        sum3 += bill["prnum"]
+        sum4 += bill["price_intax"]
 
     return render(request,'user_bill_article.html',locals())
 
@@ -228,10 +235,10 @@ def adjustArticle(request):
     sum5=0  #调整数量（合计）
     sum6=0  #含税调整金额（合计）
     for adObj in adBillList:
-        sum4 = round((adObj.get('dqhsjj')-adObj.get('cprice_notax'))*adObj.get('anum'),2)
+        sum4 = round((adObj.get('dqhsjj')-adObj.get('cprice_notax'))*adObj.get('anum'),3)
         adObj.setdefault("sum4",sum4)
         sum6+=sum4
-        sum5+=round(adObj.get('anum'),2)
+        sum5+=round(adObj.get('anum'),3)
 
     return render(request,'user_billAdjust_article.html',locals())
 
@@ -324,9 +331,11 @@ def backArticle(request):
                               .order_by('pname','unit')#order_by('pname','class'，'unit')
 
     TotalSumTax = 0  #含税进价总额
-
+    sum1,sum2 = 0,0
     for bill in billList:
         TotalSumTax += bill.get('sum_tax',0)
+        sum1 += bill["denums"]
+        sum2 += bill["price_intax"]
 
     return render(request,'user_billback_article.html',locals())
 
@@ -406,7 +415,7 @@ def beforeBackDetail(request):
                                        "stockqty","goodscostid","notes","inputgoodsid"
                                        ).filter(sheetid=sheetid).order_by('goodsid','deptid')
 
-    sum1,sum2,sum3,sum4,sum5 = 0,0,0,0,0;
+    sum1,sum2,sum3,sum4,sum5,sum6 = 0,0,0,0,0,0
     for item in billList:
         plist = BasProduct.objects.values("pcode","chnm","barcode").filter(pcode=str(item["goodsid"]));
         goodsname = ""
@@ -422,5 +431,6 @@ def beforeBackDetail(request):
         sum3 += item["planqty"]
         sum4 += item["realqty"]
         sum5 += item["stockqty"]
+        sum6 += item["pknum"]
 
     return render(request,'user_billbeforeback_article.html',locals())

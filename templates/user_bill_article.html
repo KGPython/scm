@@ -56,13 +56,19 @@
                         <td>{{ bill.num | floatformat:2 }}</td>
                         <td>{{ bill.denums | floatformat:2 }}</td>
                         <td>{{ bill.prnum | floatformat:2 }}</td>
-                        <td>{{ bill.price_intax | floatformat:2 }}</td>
-                        <td>{{ bill.sum_tax | floatformat:2 }}</td>
+                        <td>{{ bill.price_intax | floatformat:3 }}</td>
+                        <td>{{ bill.sum_tax | floatformat:3 }}</td>
                     </tr>
                     {% endfor %}
                     <tr>
-                        <td colspan="11">合计：</td>
-                        <td>{{ TotalSumTax }}</td>
+                        <td colspan="5">合计：</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ sum1| floatformat:2 }}</td>
+                        <td>{{ sum2| floatformat:2 }}</td>
+                        <td>{{ sum3| floatformat:2 }}</td>
+                        <td>{{ sum4| floatformat:3 }}</td>
+                        <td>{{ TotalSumTax| floatformat:3 }}</td>
                     </tr>
                 </tbody>
             </table>

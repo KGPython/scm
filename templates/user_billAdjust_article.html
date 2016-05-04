@@ -51,17 +51,17 @@
                         <td>{{ adBill.barcode }}</td>
                         <td>{{ adBill.pname }}</td>
                         <td>{{ adBill.anum | floatformat:2 }}</td>
-                        <td>{{ adBill.cprice_notax | floatformat:2 }}</td>
-                        <td>{{ adBill.dqhsjj| floatformat:2 }}</td>
-                        <td>{{ adBill.sum4 }}</td>
+                        <td>{{ adBill.cprice_notax | floatformat:3 }}</td>
+                        <td>{{ adBill.dqhsjj| floatformat:3 }}</td>
+                        <td>{{ adBill.sum4 | floatformat:3}}</td>
                     </tr>
                     {% endfor %}
                     <tr>
                         <td colspan="5">合计：</td>
-                        <td>{{ sum5 }}</td>
+                        <td>{{ sum5| floatformat:2 }}</td>
                         <td></td>
                         <td></td>
-                        <td>{{ sum6 }}</td>
+                        <td>{{ sum6| floatformat:3 }}</td>
                     </tr>
                 </tbody>
             </table>
