@@ -366,7 +366,7 @@ def beforeBackBill(request):
     kwargs.setdefault("checkdate__gte",start)
     kwargs.setdefault("checkdate__lte","{end} 23:59:59".format(end=end))
 
-    #kwargs.setdefault("venderid",sperCode)
+    kwargs.setdefault("venderid",sperCode)
     kwargs.setdefault("flag",2)
 
     billList = Ret0.objects.values("sheetid","shopid","venderid","retdate","editdate","paymoney","kxsummoney","acceptflag","badflag","checkdate","notes")\
