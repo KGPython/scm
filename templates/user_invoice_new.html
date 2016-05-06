@@ -86,9 +86,9 @@
 					<td><input type="text" value="0.00 " name="ctaxrate" id="ctaxrate"></td>
 					<td><input type="text" name="cno"></td>
 					<td><input type="text" value="0.00 " name="cmoney"></td>
-					<td><input type="text" value="0.00 " name="csh"></td>
-					<td><input type="text" value="0.00 " name="jshj"></td>
-					<td><input type="text" value="0.00 " name="sjfk"></td>
+					<td><input type="text" value="0.00 " name="csh" readonly="readonly"></td>
+					<td><input type="text" value="0.00 " name="jshj" readonly="readonly"></td>
+					<td><input type="text" value="0.00 " name="sjfk" readonly="readonly"></td>
 					<td>
                         <select name="" id="">
                             <option value="0">支票</option>
@@ -278,12 +278,15 @@
                         }
                         if(i==4){
                             input.name="csh"
+                            input.setAttribute("readonly","readonly");
                         }
                         if(i==5){
                             input.name="jshj"
+                            input.setAttribute("readonly","readonly");
                         }
                         if(i==6){
                             input.name="sjfk"
+                            input.setAttribute("readonly","readonly");
                         }
                         if(i==8){
                             input.value="{{ timeNow }}"
