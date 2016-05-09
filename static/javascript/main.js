@@ -134,14 +134,14 @@ $(document).on('blur','input[name=cmoney]',function(){
     $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 //税额（csh）求和
-/*$(document).on('blur','input[name=csh]',function(){
+$(document).on('blur','input[name=csh]',function(){
     var trs = $("#invoiceTable").find("tr");
     cshSum=0.00;
     jshjSum=0.00;
     trs.each(function(){
         var csh = $(this).find('td').eq('4').find('input').val();
         if(csh){
-            cshSum += parseFloat(csh,2);
+            cshSum += parseFloat(csh);
         }
 
         var cmoney = $(this).find('td').eq('3').find('input').val();
@@ -150,15 +150,15 @@ $(document).on('blur','input[name=cmoney]',function(){
         }
         var jsum =  parseFloat(csh)+parseFloat(cmoney);
         if(jsum){
-             jshjSum += parseFloat(jsum,2);
+             jshjSum += parseFloat(jsum);
         }
 
-        $(this).find('td').eq('5').find('input').val(jsum);
-        $(this).find('td').eq('6').find('input').val(jsum);
+        $(this).find('td').eq('5').find('input').val(jsum.toFixed(2));
+        $(this).find('td').eq('6').find('input').val(jsum.toFixed(2));
     });
     $("#cshSum").text(parseFloat(cshSum).toFixed(2));
     $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
-});*/
+});
 //税额（jshj）求和
 $(document).on('blur','input[name=ctaxrate]',function(){
     var trs = $("#invoiceTable").find("tr");

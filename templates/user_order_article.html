@@ -69,6 +69,7 @@
                           <td>订数</td>
                           <td>实送</td>
                           <td>进价</td>
+                          <td>含税金额</td>
                           <td>实收</td>
                           <td>实收金额</td>
                           <td>大件数量</td>
@@ -86,6 +87,7 @@
                               <td style="color:dodgerblue;">{{ row.denums|floatformat:0 }}</td>
                               <td></td>
                               <td>{{ row.price_intax|floatformat:2 }}</td>
+                              <td>{{ row.jshj|floatformat:2 }}</td>
                               <td></td>
                               <td></td>
                               <td></td>
@@ -103,7 +105,8 @@
                           <td><span class="noprint">{{ sum1|floatformat:0 }}</span></td>
                           <td></td>
                           <td><span class="noprint">{{ sum2|floatformat:2 }}</span></td>
-                          <td colspan="4"></td>
+                          <td><span class="noprint">{{ sum3|floatformat:2 }}</span></td>
+                          <td colspan="3"></td>
                     </tr>
                     <tr class="tbottom" style="background-color: lightskyblue">
                           <td ></td>
