@@ -169,10 +169,12 @@ def find(request):
         .values( "drrq","ordercode","rid","procode","salebn","pn","classes","unit","taxrate","num","innums","denums","price_intax","sum_intax","nums_inplan",
                     "date_inplan","checkdate","prnum","barcode","rowno","grpcode","sjshsum","ssnumzb","sjprnum","promflag","refsheetid")
 
-    sum1,sum2 = 0,0
+    sum1,sum2,sum3 = 0,0,0
     for item in detailList:
         sum1 += item["denums"]
         sum2 += item["price_intax"]
+        sum3 += item["denums"] * item["price_intax"]
+        item["jshj"] = item["denums"] * item["price_intax"]
     today = datetime.datetime.today()
 
     #查询门店信息
