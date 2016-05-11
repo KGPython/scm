@@ -108,6 +108,9 @@ urlpatterns = [
 
      #欢迎页面（临时）
     url(r'^welcome/$','base.login.views.welcome'),
+
+    #负库存
+    url(r'^base/report/daily/negStock/$','base.report.daily.negativestocktop.index')
 ]
 
 

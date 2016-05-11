@@ -3,70 +3,95 @@
     <head>
         <meta charset="UTF-8">
         <title>商业供应链系统</title>
+
     </head>
     <body>
-        {% include 'common/nav.html' %}
-        <div class="query comWidth">
-            <form class="query-list" method="post" action="{% url 'supplierBill' %}">
-
-                <p class="input">
-                    <label for="end">结束日：</label>
-
-                </p>
-                <p class="input">
-                    <input class="query-enter" type="submit" value="查询">
-                </p>
-            </form>
-
-        </div>
-        <div class="notice noticeOrder comWidth">
+        {% include "common/nav.html" %}
+        <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+        <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.full.min.css">
+        <div class="notice noticeOrder">
             <div class="tTitle">
-                <h1>
-                    入库单列表
-                </h1>
+                <h1>入库单列表</h1>
             </div>
-            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-                <thead>
-                    <tr>
-                        <th>入库单号</th>
-                        <th>订单编码</th>
-                        <th>审核日期</th>
-                        <th>供应商代码</th>
-                        <th>供应商名称</th>
-                        <th>门店</th>
-                        <th>含税进价金额</th>
-                        <th>查看次数</th>
-                        <th>备注</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for bill in billList %}
-                    <tr>
-                        <td>
-                            <a href="{% url 'billArticle' %}?code={{ bill.code }}">{{ bill.code }}</a>
-                        </td>
-                        <td>{% if bill.ordercode %}{{ bill.ordercode }}{% else %}无{% endif %}</td>
-                        <td>{{ bill.chdate | date:'Y-m-d' }}</td>
-                        <td>{{ bill.spercode }}</td>
-                        <td>{{ bill.spername }}</td>
-                        <td>{{ shopDict | key:bill.shopcode }}</td>
-                        <td>{{ bill.inprice_tax | floatformat:2 }}</td>
-                        <td>{% if bill.seenum %} {{ bill.seenumbill.seenum }} {% else %} 0 {% endif %}</td>
-                        <td>{% if  bill.remark %} {{ bill.remark }} {% else %} 无 {% endif %} </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+            <div id="example1" class="hot handsontable htRowHeaders htColumnHeaders"></div>
         </div>
         {% include "common/footer.html" %}
         <script type="text/javascript">
             current = "danju"
-            $(function(){
+            var container = document.getElementById('example1'),
+                data=[
+                    ['门店编号','门店名称','','','','','1日排名(不含联营和新品)','','','','2日排名(不含联营和新品)','','','','3日排名(不含联营和新品)','','','','4日排名(不含联营和新品)','','','','5日排名(不含联营和新品)','','','','6日排名(不含联营和新品)','','','','7日排名(不含联营和新品)','','','','8日排名(不含联营和新品)','','','','9日排名(不含联营和新品)','','','','10日排名(不含联营和新品)','','','','11日排名(不含联营和新品)','','','','12日排名(不含联营和新品)','','','','13日排名(不含联营和新品)','','','','14日排名(不含联营和新品)','','','','15日排名(不含联营和新品)','','','','16日排名(不含联营和新品)','','','','17日排名(不含联营和新品)','','','','18日排名(不含联营和新品)','','','','19日排名(不含联营和新品)','','','','20日排名(不含联营和新品)','','','','21日排名(不含联营和新品)','','','','22日排名(不含联营和新品)','','','','23日排名(不含联营和新品)','','','','24日排名(不含联营和新品)','','','','25日排名(不含联营和新品)','','','','26日排名(不含联营和新品)','','','','27日排名(不含联营和新品)','','','','28日排名(不含联营和新品)','','','','29日排名(不含联营和新品)','','','','30日排名(不含联营和新品)','','','','31日排名(不含联营和新品)','','',''],
+                    [' ',' ','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名']
+                ],
+                hot;
 
+            var dataList = [];
+            var days = 0
+
+            {% for obj in dataList %}
+                var list = [];
+                list.push('{{ obj.shopid }}');
+                list.push('{{ obj.shopname }}');
+                list.push('{{ obj.qtyz }}');
+                list.push('{{ obj.qtyl }}');
+                list.push('{{ obj.zhonbi }}');
+                list.push('{{ obj.mingci }}');
+                dataList.push(list);
+            {% endfor %}
+            console.log(dataList);
+            data = data.concat(dataList)
+
+            hot = new Handsontable(container, {
+                data: data,
+                colWidths: 80,
+                className:"htCenter htMiddle",
+                rowHeaders: true,
+                colHeaders: true,
+                contextMenu: false,
+                fixedRowsTop: 2,
+                fixedColumnsLeft: 2,
+                manualColumnResize: true,
+                manualRowMove: true,
+                manualColumnMove: true,
+                columnSorting: true,
+                sortIndicator: true,
+                mergeCells: [
+                  {row: 0, col: 0, rowspan: 2, colspan: 1},
+                  {row: 0, col: 1, rowspan: 2, colspan: 1},
+                  {row: 0, col: 2, rowspan: 1, colspan: 4},
+                  {row: 0, col: 6, rowspan: 1, colspan: 4},//1
+                  {row: 0, col: 10, rowspan: 1, colspan: 4},
+                  {row: 0, col: 14, rowspan: 1, colspan: 4},
+                  {row: 0, col: 18, rowspan: 1, colspan: 4},
+                  {row: 0, col: 22, rowspan: 1, colspan: 4},
+                  {row: 0, col: 26, rowspan: 1, colspan: 4},
+                  {row: 0, col: 30, rowspan: 1, colspan: 4},
+                  {row: 0, col: 34, rowspan: 1, colspan: 4},
+                  {row: 0, col: 38, rowspan: 1, colspan: 4},
+                  {row: 0, col: 42, rowspan: 1, colspan: 4},//10
+                  {row: 0, col: 46, rowspan: 1, colspan: 4},
+                  {row: 0, col: 50, rowspan: 1, colspan: 4},
+                  {row: 0, col: 54, rowspan: 1, colspan: 4},
+                  {row: 0, col: 58, rowspan: 1, colspan: 4},
+                  {row: 0, col: 62, rowspan: 1, colspan: 4},
+                  {row: 0, col: 66, rowspan: 1, colspan: 4},
+                  {row: 0, col: 70, rowspan: 1, colspan: 4},
+                  {row: 0, col: 74, rowspan: 1, colspan: 4},
+                  {row: 0, col: 78, rowspan: 1, colspan: 4},
+                  {row: 0, col: 82, rowspan: 1, colspan: 4},//20
+                  {row: 0, col: 86, rowspan: 1, colspan: 4},
+                  {row: 0, col: 90, rowspan: 1, colspan: 4},
+                  {row: 0, col: 94, rowspan: 1, colspan: 4},
+                  {row: 0, col: 98, rowspan: 1, colspan: 4},
+                  {row: 0, col: 102, rowspan: 1, colspan: 4},
+                  {row: 0, col: 106, rowspan: 1, colspan: 4},
+                  {row: 0, col: 110, rowspan: 1, colspan: 4},
+                  {row: 0, col: 114, rowspan: 1, colspan: 4},
+                  {row: 0, col: 118, rowspan: 1, colspan: 4},
+                  {row: 0, col: 122, rowspan: 1, colspan: 4},//30
+                  {row: 0, col: 126, rowspan: 1, colspan: 4}
+                ]
             });
-            !function(){
-                laydate.skin('molv');//切换皮肤，请查看skins下面皮肤库
-            }();
         </script>
     </body>
 </html>
