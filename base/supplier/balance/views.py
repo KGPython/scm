@@ -1002,7 +1002,7 @@ def balanceArticle(request):
     s_suppname = request.session.get('s_suppname')   #用户所属单
     grpName = Constants.SCM_UNIT[grpCode]
     contracttype = request.session.get("s_contracttype")   #经营方式
-    paytypeid = request.session.get("s_paytypeid")   #经营方式
+    paytypeid = str(int(request.session.get("s_paytypeid")))   #经营方式
 
     sheetId = request.GET.get('sheetid','')
     queryAction = request.POST.get('actionTxt','')
@@ -1015,7 +1015,7 @@ def balanceArticle(request):
     #结算通知单汇总      ,beginsdate,endsdate
     balance = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
-                                               "premoney","editor","checker","paychecker","contracttype","beginsdate","endsdate")\
+                                               "premoney","editor","checker","paychecker","contracttype","beginsdate","endsdate","advance")\
                                        .get(sheetid__contains=sheetId)
     #结算通知明细
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",

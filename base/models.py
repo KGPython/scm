@@ -13,6 +13,55 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class Estimate(models.Model):
+    shopid = models.CharField(db_column='ShopID', max_length=4)  # Field name made lowercase.
+    datetype = models.IntegerField(db_column='DateType')  # Field name made lowercase.
+    dateid = models.IntegerField(db_column='DateID')  # Field name made lowercase.
+    deptlevelid = models.IntegerField(db_column='DeptLevelID')  # Field name made lowercase.
+    groupid = models.IntegerField(db_column='GroupID')  # Field name made lowercase.
+    weatherid = models.IntegerField(db_column='WeatherID')  # Field name made lowercase.
+    salevalue = models.DecimalField(db_column='SaleValue', max_digits=12, decimal_places=2)  # Field name made lowercase.
+    salegain = models.DecimalField(db_column='SaleGain', max_digits=12, decimal_places=2)  # Field name made lowercase.
+    stockvalue = models.DecimalField(db_column='StockValue', max_digits=12, decimal_places=2)  # Field name made lowercase.
+    note = models.CharField(db_column='Note', max_length=64, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Estimate'
+        unique_together = (('dateid', 'groupid', 'shopid'),)
+
+class BasShopRegion(models.Model):
+    shopid = models.CharField(db_column='ShopId', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    shopname = models.CharField(db_column='ShopName', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    region = models.CharField(db_column='Region', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    opentime = models.DateTimeField(db_column='OpenTime', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+    type = models.CharField(db_column='Type', max_length=8, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'bas_shop_region'
+
+class Kshopsale(models.Model):
+    sdate = models.DateTimeField(db_column='Sdate',auto_now_add=True)  # Field name made lowercase.
+    shopid = models.CharField(db_column='ShopID', max_length=4)  # Field name made lowercase.
+    salevalue = models.DecimalField(db_column='Salevalue', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salegain = models.DecimalField(db_column='Salegain', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    tradenumber = models.DecimalField(db_column='Tradenumber', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    tradeprice = models.DecimalField(db_column='Tradeprice', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salevalueesti = models.DecimalField(db_column='SalevalueEsti', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salegainesti = models.DecimalField(db_column='SalegainEsti', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    sdateold = models.DateTimeField(db_column='Sdateold', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+    tradenumberold = models.DecimalField(db_column='Tradenumberold', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    tradepriceold = models.DecimalField(db_column='Tradepriceold', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salevalueold = models.DecimalField(db_column='Salevalueold', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salegainold = models.DecimalField(db_column='Salegainold', max_digits=12, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Kshopsale'
+        unique_together = (('sdate', 'shopid'),)
+
+
 class Ret0(models.Model):
     sheetid = models.CharField(db_column='SheetID', primary_key=True, max_length=16)  # Field name made lowercase.
     refsheetid = models.CharField(db_column='refSheetID', max_length=16, blank=True, null=True)  # Field name made lowercase.
@@ -653,7 +702,7 @@ class Billhead0(models.Model):
     openmoney = models.DecimalField(db_column='OpenMoney', max_digits=12, decimal_places=2)  # Field name made lowercase.
     closemoney = models.CharField(db_column='CloseMoney', max_length=12)  # Field name made lowercase.
     bankvalue = models.CharField(db_column="bankvalue",max_length=20)
-    advance = models.CharField(db_column='Advance', max_length=14, blank=True, null=True)  # Field name made lowercase.
+    advance =  models.DecimalField(db_column='Advance', max_digits=14, decimal_places=4)  # Field name made lowercase.
     seenum = models.IntegerField(db_column='Seenum',blank=True, null=True)
     status = models.CharField(db_column='Status', max_length=6, default="N")
     grpcode = models.CharField(db_column='Grpcode', max_length=10, blank=True, null=True)
