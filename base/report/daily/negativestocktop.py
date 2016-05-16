@@ -8,7 +8,7 @@ import datetime
 from django.core import serializers
 
 def index(request):
-    #最近返回数据
+    #返回数据
     dataList = []
 
     conn = MethodUtil.getMysqlConn()
