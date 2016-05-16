@@ -647,15 +647,19 @@ def getStartAndEndDate(contracttype,payTypeName):
         cend = datetime.datetime.now().strftime("%Y-%m-%d")
     else:
         #单据日期
-        if "月结30天" in payTypeName or "月结45天" in payTypeName:
-            n = -2   #前两个月一整月
-        elif "月结60天" in payTypeName:
-            n = -3   #前三个月一整月
-        else:
-            n = -1   #前一个月一整月
+        if "月" in payTypeName and "半月结" not in payTypeName:
+            if "月结30天" in payTypeName or "月结45天" in payTypeName:
+                n = -2   #前两个月一整月
+            elif "月结60天" in payTypeName:
+                n = -3   #前三个月一整月
+            else:
+                n = -1   #前一个月一整月
 
-        cstart = DateUtil.get_firstday_month(n)
-        cend = DateUtil.get_lastday_month(n)
+            cstart = DateUtil.get_firstday_month(n)
+            cend = DateUtil.get_lastday_month(n)
+        else:
+            cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
+            cend = datetime.datetime.now().strftime("%Y-%m-%d")
 
     return pstart,pend,cstart,cend
 
