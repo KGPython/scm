@@ -318,6 +318,7 @@ input[type="submit"],
 	margin-bottom:15px;
 	text-align: center;
 }
+.tTitle-report{position: fixed;width: 100%;top: 80px;}
 .tTitle p b{
 	margin-left:20px; 
 }
@@ -1342,3 +1343,5 @@ tbody a{
 	margin-left: auto;
 	margin-right: auto;
 }
+
+#tableReport{top: 150px}

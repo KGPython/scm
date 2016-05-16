@@ -3,53 +3,45 @@
     <head>
         <meta charset="UTF-8">
         <title>商业供应链系统</title>
+        <style>
+            .header{position: fixed;width: 100%;top: 0;}
 
+        </style>
     </head>
     <body>
         {% include "common/nav.html" %}
         <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
-        <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.full.min.css">
-        <div class="notice noticeOrder">
-            <div class="tTitle">
-                <h1>入库单列表</h1>
-            </div>
-            <div id="example1" class="hot handsontable htRowHeaders htColumnHeaders"></div>
+        <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+        <div class="tTitle tTitle-report">
+            <h1>入库单列表</h1>
         </div>
+        <div id="tableReport"></div>
         {% include "common/footer.html" %}
         <script type="text/javascript">
             current = "danju"
-            var container = document.getElementById('example1'),
-                data=[
+            var container = document.getElementById('tableReport'),
+                tableData=[
                     ['门店编号','门店名称','','','','','1日排名(不含联营和新品)','','','','2日排名(不含联营和新品)','','','','3日排名(不含联营和新品)','','','','4日排名(不含联营和新品)','','','','5日排名(不含联营和新品)','','','','6日排名(不含联营和新品)','','','','7日排名(不含联营和新品)','','','','8日排名(不含联营和新品)','','','','9日排名(不含联营和新品)','','','','10日排名(不含联营和新品)','','','','11日排名(不含联营和新品)','','','','12日排名(不含联营和新品)','','','','13日排名(不含联营和新品)','','','','14日排名(不含联营和新品)','','','','15日排名(不含联营和新品)','','','','16日排名(不含联营和新品)','','','','17日排名(不含联营和新品)','','','','18日排名(不含联营和新品)','','','','19日排名(不含联营和新品)','','','','20日排名(不含联营和新品)','','','','21日排名(不含联营和新品)','','','','22日排名(不含联营和新品)','','','','23日排名(不含联营和新品)','','','','24日排名(不含联营和新品)','','','','25日排名(不含联营和新品)','','','','26日排名(不含联营和新品)','','','','27日排名(不含联营和新品)','','','','28日排名(不含联营和新品)','','','','29日排名(不含联营和新品)','','','','30日排名(不含联营和新品)','','','','31日排名(不含联营和新品)','','',''],
                     [' ',' ','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名','有效商品数','合计','占比','排名']
                 ],
                 hot;
 
-            var dataList = [];
-            var days = 0
-
-            {% for obj in dataList %}
-                var list = [];
-                list.push('{{ obj.shopid }}');
-                list.push('{{ obj.shopname }}');
-                list.push('{{ obj.qtyz }}');
-                list.push('{{ obj.qtyl }}');
-                list.push('{{ obj.zhonbi }}');
-                list.push('{{ obj.mingci }}');
-                dataList.push(list);
+            var tempList = [];
+            {% for data in dataList %}
+                tempList.push({{ data | safe }});
             {% endfor %}
-            console.log(dataList);
-            data = data.concat(dataList)
+            console.log(tempList);
+            tableData = tableData.concat(tempList)
 
             hot = new Handsontable(container, {
-                data: data,
-                colWidths: 80,
+                data: tableData,
+                colWidths: 120,
                 className:"htCenter htMiddle",
                 rowHeaders: true,
                 colHeaders: true,
                 contextMenu: false,
                 fixedRowsTop: 2,
-                fixedColumnsLeft: 2,
+                fixedColumnsLeft: 5,
                 manualColumnResize: true,
                 manualRowMove: true,
                 manualColumnMove: true,
