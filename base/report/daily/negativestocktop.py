@@ -16,7 +16,7 @@ def index(request):
     today = str(datetime.datetime.today())
     yesterday = str(datetime.datetime.today() - datetime.timedelta(days=1))
     #合计
-    sqlSum = "select b.shopid,b.shopname,SUM(b.qtyz) AS qtyz,SUM(b.qtyl) AS qtyl,(SUM(b.qtyl)/SUM(b.qtyz)) AS zhonbi,(select count(distinct zhonbi) from Fcu_Stock a where a.zhonbi <= b.zhonbi) AS mingci from Fcu_Stock AS b WHERE stockdate BETWEEN '"+start+"' AND '"+today+"' GROUP BY shopid order by shopid"
+    sqlSum = "select b.shopid,b.shopname,SUM(b.qtyz) AS qtyz,SUM(b.qtyl) AS qtyl,(SUM(b.qtyl)/SUM(b.qtyz)) AS zhonbi,(select count(distinct zhonbi) from Fcu_Stock a where a.zhonbi <= b.zhonbi) AS mingci from KNegativestock AS b WHERE stockdate BETWEEN '"+start+"' AND '"+today+"' GROUP BY shopid order by shopid"
     print(sqlSum)
     cur = conn.cursor()
     cur.execute(sqlSum)
