@@ -1,0 +1,264 @@
+{% load basefilter %}
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+        <link data-jsfiddle="common" rel="stylesheet" media="screen" href="{{ static }}/js/handsontable/handsontable.full.css">
+    </head>
+    <body>
+        {% include 'common/nav.html' %}
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
+                <div class="container">
+                    <ul class="nav nav-tabs">
+                      <li role="presentation" class="active"><a href="#">月累计销售报表</a></li>
+                      <li role="presentation" ><a href="#">（月）日销售报表</a></li>
+                      <li role="presentation"><a href="#">（月）日毛利报表</a></li>
+                      <li role="presentation"><a href="#">年累计销售报表</a></li>
+                    </ul>
+                    <div class="list-tabs container">
+                        <div class="table" style="display:block;">
+                                <div id="example1" style="height:770px;width:1250px;overflow: auto;" > </div>
+                        </div>
+                        <div class="table" >
+                               <div id="example2" style="height:770px;width:1250px;overflow: auto;" > </div>
+                        </div>
+                        <div class="table">
+                              <div id="example3" style="height:770px;width:1250px;overflow: auto;" > </div>
+                        </div>
+                        <div class="table">
+                              <div id="example4" style="height:770px;width:1250px;overflow: auto;" > </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% include "common/footer.html" %}
+        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.full.js"></script>
+        <script data-jsfiddle="example1">
+            current = "ribao";
+        </script>
+        <script type="text/javascript">
+            $('.nav-tabs li').click(function (e) {
+                e.preventDefault();
+                $(this).addClass("active").siblings().removeClass("active");
+                i=$(this).index();
+                $(".list-tabs .table").eq(i).show().siblings().hide();
+            })
+
+            $(".card_tab1 .con ul li").click(function(){
+                $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
+            });
+            function getYestoday(date){
+                var yesterday_milliseconds=date.getTime()-1000*60*60*24;
+                var yesterday = new Date();
+                yesterday.setTime(yesterday_milliseconds);
+                var strYear = yesterday.getFullYear();
+                var strDay = yesterday.getDate();
+                var strMonth = yesterday.getMonth()+1;
+                if(strMonth<10){
+                    strMonth="0"+strMonth;
+                }
+                if(strDay<10){
+                    strDay="0"+strDay;
+                }
+                datastr = strYear+"-"+strMonth+"-"+strDay;
+                return datastr;
+            }
+
+            function getMonthTimeProgress(date){
+                var yesterday_milliseconds=date.getTime()-1000*60*60*24;
+                var yesterday = new Date();
+                yesterday.setTime(yesterday_milliseconds);
+                var strYear = yesterday.getFullYear();
+                var strDay = yesterday.getDate();
+                var strMonth = yesterday.getMonth()+1;
+                var lastDay = getLastDay(strYear,strMonth);
+                var rs = (strDay*100/lastDay).toFixed(2)+"%";
+                return rs;
+            }
+
+            function getLastDay(year,month){
+                 var new_year = year;    //取当前的年份
+                 var new_month = month++;//取下一个月的第一天，方便计算（最后一天不固定）
+                 if(month>12)            //如果当前大于12月，则年份转到下一年
+                 {
+                      new_month -=12;        //月份减
+                      new_year++;            //年份增
+                 }
+                 var new_date = new Date(new_year,new_month,1);                //取当年当月中的第一天
+                 return (new Date(new_date.getTime()-1000*60*60*24)).getDate();//获取当月最后一天日期
+            }
+        </script>
+        <script >
+              var myDate = new Date();
+              var example = document.getElementById('example1'),hot1;
+              var headers = [
+                  {'region':'','shopid':'','shopname':'','opentime':'','type':'','day_salevalue':'('+(myDate.getMonth()+1)+'月)营运日报表','month_salevalue':'','month_salevalueesti':'','month_sale_difference':'','month_accomratio':'','month_sale_estimate':'','month_complet_progress':'','month_salevalueold':'','month_sale_ynygrowth':'','month_salegain':'','month_salegainesti':'','month_salegain_difference':'','month_salegain_accomratio':'','month_salegain_estimate':'','month_salegain_complet_progress':'','month_salegainold':'','month_salegain_ynygrowth':'','month_salegain_grossmargin':'','month_salegain_grossmarginold':'','month_tradenumber':'','month_tradenumberold':'','month_tradenumber_ynygrowth':'','month_tradeprice':'','month_tradepriceold':'','month_tradeprice_ynygrowth':''},
+                  {'region':'数据日期：','shopid':'','shopname':''+getYestoday(myDate)+'','opentime':'','type':'','day_salevalue':'月时间进度','day_salevalueesti':'','day_sale_difference':'','day_accomratio':'','day_tradenumber':''+getMonthTimeProgress(myDate)+'','day_tradenumberold':'','day_tradenumber_ynygrowth':'','day_tradeprice':'','day_tradepriceold':'','day_tradeprice_ynygrowth':'','day_salegain':'','day_salegainesti':'','day_salegain_difference':'','day_salegain_accomratio':'','day_grossmargin':'','month_salevalue':'','month_salevalueesti':'单位:万元'},
+                  {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','day_salevalue':'当日销售','day_salevalueesti':'','day_sale_difference':'','day_accomratio':'','day_tradenumber':'','day_tradenumberold':'','day_tradenumber_ynygrowth':'','day_tradeprice':'','day_tradepriceold':'','day_tradeprice_ynygrowth':'','day_salegain':'','day_salegainesti':'','day_salegain_difference':'','day_salegain_accomratio':'','day_grossmargin':'','month_salevalue':'月累计销售额','month_salevalueesti':'','month_sale_difference':'','month_accomratio':'','month_sale_estimate':'','month_complet_progress':'','month_salevalueold':'','month_sale_ynygrowth':'','month_salegain':'月毛利','month_salegainesti':'','month_salegain_difference':'','month_salegain_accomratio':'','month_salegain_estimate':'','month_salegain_complet_progress':'','month_salegainold':'','month_salegain_ynygrowth':'','month_salegain_grossmargin':'','month_salegain_grossmarginold':'','month_tradenumber':'月日均来客数','month_tradenumberold':'','month_tradenumber_ynygrowth':'','month_tradeprice':'月客单价'},
+                  {'region':'','shopid':'','shopname':'','opentime':'','type':'','day_salevalue':'销售','day_salevalueesti':'','day_sale_difference':'','day_accomratio':'','day_tradenumber':'来客数','day_tradenumberold':'','day_tradenumber_ynygrowth':'','day_tradeprice':'客单价','day_tradepriceold':'','day_tradeprice_ynygrowth':'','day_salegain':'毛利','day_salegainesti':'','day_salegain_difference':'','day_salegain_accomratio':'','day_grossmargin':'','month_salevalue':'实际','month_salevalueesti':'预算','month_sale_difference':'差异','month_accomratio':'达成率','month_sale_estimate':'全月预算','month_complet_progress':'月预算进度','month_salevalueold':'去年销售','month_sale_ynygrowth':'同比增长','month_salegain':'实际','month_salegainesti':'预算','month_salegain_difference':'差异','month_salegain_accomratio':'达成率','month_salegain_estimate':'全月预算','month_salegain_complet_progress':'月预算进度','month_salegainold':'去年同期','month_salegain_ynygrowth':'同比增长','month_salegain_grossmargin':'毛利率','month_salegain_grossmarginold':'去年同期毛利率','month_tradenumber':'月日均来客数','month_tradenumberold':'去年','month_tradenumber_ynygrowth':'同比增长','month_tradeprice':'月日均客单价','month_tradepriceold':'去年','month_tradeprice_ynygrowth':'同比增长'},
+                  {'region':'','shopid':'','shopname':'','opentime':'','type':'','day_salevalue':'实际','day_salevalueesti':'预算','day_sale_difference':'差异','day_accomratio':'达成率','day_tradenumber':'当日','day_tradenumberold':'去年','day_tradenumber_ynygrowth':'同比增长','day_tradeprice':'当日','day_tradepriceold':'去年','day_tradeprice_ynygrowth':'同比增长','day_salegain':'毛利额','day_salegainesti':'预算','day_salegain_difference':'差异','day_salegain_accomratio':'达成率','day_grossmargin':'毛利率'},
+              ];
+
+              var sum = [{{ sumlist.sum1|safe }},{{ sumlist.sum2|safe }},{{ sumlist.sum3|safe }},{{ sumlist.sum4|safe }}];
+              headers = headers.concat(sum);
+
+              var data = {{ rlist|safe }};
+              var r = headers.concat(data);
+              function headerRenderer(instance, td, row, col, prop, value, cellProperties) {
+                  Handsontable.renderers.TextRenderer.apply(this, arguments);
+                  td.style.fontWeight = 'bold';
+                  td.style.color = '#000';
+                  td.style.background = '#D8D4BB';
+                }
+
+              function rowRenderer1(instance, td, row, col, prop, value, cellProperties) {
+                  Handsontable.renderers.TextRenderer.apply(this, arguments);
+                  td.style.color = '#000';
+                  td.style.background = '#D8E4BC';
+              }
+
+              function rowRenderer2(instance, td, row, col, prop, value, cellProperties) {
+                  Handsontable.renderers.TextRenderer.apply(this, arguments);
+                  td.style.color = '#000';
+                  td.style.background = '#92D050';
+              }
+              var rows1 = [5,6,9,10,12,13,15,16,20,21,26,28,29,34,38,39,41,42];
+              var rows2 = [24,32];
+
+              hot1 = new Handsontable(example,{
+                    data:r,
+                    colWidths: [80, 50,150, 100,50,100,100,100, 80, 100,100, 80, 80, 80, 80,100,100, 80, 80,80,100,100,100, 80,100, 80,100, 80,100,100,100, 80,100, 80,100, 80, 80, 100,100,100, 80,100,100,80],
+                    rowHeaders: true,
+                    colHeaders: true,
+                    fixedColumnsLeft:5,
+                    fixedRowsTop:5,
+                    minSpareRows: 1,
+                    contextMenu: false,
+                    cells: function (row, col, prop) {
+                        var cellProperties = {};
+                        if (row <= 4|| this.instance.getData()[row][col] === 'readOnly') {
+                          cellProperties.readOnly = true;
+                        }
+
+                        if (row <= 8 && col<=4 ) {
+                            cellProperties.renderer = headerRenderer;
+                        }
+
+                        if (row <= 4 ) {
+                          cellProperties.renderer = headerRenderer;
+                        }else if(row > 4 && rows1.indexOf(col)!=-1 ){
+                            cellProperties.renderer = rowRenderer1;
+                        }else if(row > 4 && rows2.indexOf(col)!=-1 ){
+                            cellProperties.renderer = rowRenderer2;
+                        }
+                        return cellProperties;
+                    },
+                    columns: [
+                        {data: 'region'},
+                        {data: 'shopid'},
+                        {data: 'shopname'},
+                        {data: 'opentime'},
+                        {data: 'type'},
+                        {data: 'day_salevalue'},
+                        {data: 'day_salevalueesti'},
+                        {data: 'day_sale_difference'},
+                        {data: 'day_accomratio'},
+                        {data: 'day_tradenumber'},
+                        {data: 'day_tradenumberold'},
+                        {data: 'day_tradenumber_ynygrowth'},
+                        {data: 'day_tradeprice'},
+                        {data: 'day_tradepriceold'},
+                        {data: 'day_tradeprice_ynygrowth'},
+                        {data: 'day_salegain'},
+                        {data: 'day_salegainesti'},
+                        {data: 'day_salegain_difference'},
+                        {data: 'day_salegain_accomratio'},
+                        {data: 'day_grossmargin'},
+                        {data: 'month_salevalue'},
+                        {data: 'month_salevalueesti'},
+                        {data: 'month_sale_difference'},
+                        {data: 'month_accomratio'},
+                        {data: 'month_sale_estimate'},
+                        {data: 'month_complet_progress'},
+                        {data: 'month_salevalueold'},
+                        {data: 'month_sale_ynygrowth'},
+                        {data: 'month_salegain'},
+                        {data: 'month_salegainesti'},
+                        {data: 'month_salegain_difference'},
+                        {data: 'month_salegain_accomratio'},
+                        {data: 'month_salegain_estimate'},
+                        {data: 'month_salegain_complet_progress'},
+                        {data: 'month_salegainold'},
+                        {data: 'month_salegain_ynygrowth'},
+                        {data: 'month_salegain_grossmargin'},
+                        {data: 'month_salegain_grossmarginold'},
+                        {data: 'month_tradenumber'},
+                        {data: 'month_tradenumberold'},
+                        {data: 'month_tradenumber_ynygrowth'},
+                        {data: 'month_tradeprice'},
+                        {data: 'month_tradepriceold'},
+                        {data: 'month_tradeprice_ynygrowth'},
+                    ],
+                    mergeCells:[
+                      {row: 0, col: 5, rowspan: 1, colspan: 15},
+                      {row: 1, col: 0, rowspan: 1, colspan: 2},
+                      {row: 1, col: 2, rowspan: 1, colspan: 2},
+                      {row: 1, col: 5, rowspan: 1, colspan: 4},
+                      {row: 1, col:9, rowspan: 1, colspan: 3},
+                      {row: 2, col: 0, rowspan: 3, colspan: 1},
+                      {row: 2, col: 1, rowspan: 3, colspan: 1},
+                      {row: 2, col: 2, rowspan: 3, colspan: 1},
+                      {row: 2, col: 3, rowspan: 3, colspan: 1},
+                      {row: 2, col: 4, rowspan: 3, colspan: 1},
+                      {row: 2, col: 5, rowspan: 1, colspan: 15},
+                      {row: 2, col: 20, rowspan: 1, colspan: 8},
+                      {row: 2, col: 28, rowspan: 1, colspan:10},
+                      {row: 2, col: 38, rowspan: 1, colspan:3},
+                      {row: 2, col: 41, rowspan: 1, colspan:3},
+                      {row: 3, col: 5, rowspan: 1, colspan: 4},
+                      {row: 3, col: 9, rowspan: 1, colspan: 3},
+                      {row: 3, col: 12, rowspan: 1, colspan: 3},
+                      {row: 3, col: 15, rowspan: 1, colspan: 5},
+                      {row: 3, col: 20, rowspan: 2, colspan: 1},
+                      {row: 3, col: 21, rowspan: 2, colspan: 1},
+                      {row: 3, col: 22, rowspan: 2, colspan: 1},
+                      {row: 3, col: 23, rowspan: 2, colspan: 1},
+                      {row: 3, col: 24, rowspan: 2, colspan: 1},
+                      {row: 3, col: 25, rowspan: 2, colspan: 1},
+                      {row: 3, col: 26, rowspan: 2, colspan: 1},
+                      {row: 3, col: 27, rowspan: 2, colspan: 1},
+                      {row: 3, col: 28, rowspan: 2, colspan: 1},
+                      {row: 3, col: 29, rowspan: 2, colspan: 1},
+                      {row: 3, col: 30, rowspan: 2, colspan: 1},
+                      {row: 3, col: 31, rowspan: 2, colspan: 1},
+                      {row: 3, col: 32, rowspan: 2, colspan: 1},
+                      {row: 3, col: 33, rowspan: 2, colspan: 1},
+                      {row: 3, col: 34, rowspan: 2, colspan: 1},
+                      {row: 3, col: 35, rowspan: 2, colspan: 1},
+                      {row: 3, col: 36, rowspan: 2, colspan: 1},
+                      {row: 3, col: 37, rowspan: 2, colspan: 1},
+                      {row: 3, col: 38, rowspan: 2, colspan: 1},
+                      {row: 3, col: 39, rowspan: 2, colspan: 1},
+                      {row: 3, col: 40, rowspan: 2, colspan: 1},
+                      {row: 3, col: 41, rowspan: 2, colspan: 1},
+                      {row: 3, col: 42, rowspan: 2, colspan: 1},
+                      {row: 3, col: 43, rowspan: 2, colspan: 1},
+                      {row: 3, col: 44, rowspan: 2, colspan: 1},
+
+                      {row: 5, col: 0, rowspan: 1, colspan: 5},
+                      {row: 6, col: 0, rowspan: 1, colspan: 5},
+                      {row: 7, col: 0, rowspan: 1, colspan: 5},
+                      {row: 8, col: 0, rowspan: 1, colspan: 5},
+
+                      {row: 9, col: 0, rowspan: 11, colspan: 1},
+                      {row: 20, col: 0, rowspan: 10, colspan: 1},
+
+                  ]
+              });
+
+          </script>
+    </body>
+</html>
