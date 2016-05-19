@@ -179,7 +179,10 @@ def find(request):
 
     #查询门店信息
     shop = BasShop.objects.get(grpcode=grpcode,shopcode=order.shopcode)
-    shop.tel = shop.tel.strip()
+    if shop.tel:
+        shop.tel = shop.tel.strip()
+    else:
+        shop.tel = ""
 
     return render(request,"user_order_article.html",locals())
 
