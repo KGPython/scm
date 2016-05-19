@@ -192,11 +192,16 @@ $(document).on('blur','input[name=ctaxrate]',function(){
     $("#cshSum").text(parseFloat(cshSum).toFixed(2));
     $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
- //当前日期前一天
- function getYestoday(date){
+
+function getYestodayDate(date){
     var yesterday_milliseconds=date.getTime()-1000*60*60*24;
     var yesterday = new Date();
     yesterday.setTime(yesterday_milliseconds);
+    return yesterday;
+}
+ //当前日期前一天
+ function getYestoday(date){
+    var yesterday = getYestodayDate(date);
     var strYear = yesterday.getFullYear();
     var strDay = yesterday.getDate();
     var strMonth = yesterday.getMonth()+1;
@@ -211,9 +216,7 @@ $(document).on('blur','input[name=ctaxrate]',function(){
 }
 //月时间进度
 function getMonthTimeProgress(date){
-    var yesterday_milliseconds=date.getTime()-1000*60*60*24;
-    var yesterday = new Date();
-    yesterday.setTime(yesterday_milliseconds);
+    var yesterday = getYestodayDate(date);
     var strYear = yesterday.getFullYear();
     var strDay = yesterday.getDate();
     var strMonth = yesterday.getMonth()+1;
