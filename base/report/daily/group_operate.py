@@ -11,12 +11,14 @@ import datetime,calendar,decimal
 @csrf_exempt
 def index(request):
      karrs = {}
-     start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
-     yesterday = DateUtil.get_day_of_day(-1).strftime("%Y-%m-%d")
-     days = DateUtil.get_day_of_day(-1).day
 
-     year = datetime.date.today().year
-     month = datetime.date.today().month
+     date = DateUtil.get_day_of_day(-1)
+     days = date.day
+     year = date.year
+     month = date.month
+
+     start = (date.replace(day=1)).strftime("%Y-%m-%d")
+     yesterday = date.strftime("%Y-%m-%d")
      lastDay = calendar.monthrange(year,month)[1]
 
      #查询所有超市门店
@@ -28,7 +30,17 @@ def index(request):
      baselist = Kshopsale.objects.values('shopid','sdate','salevalue','salegain','tradenumber','tradeprice','salevalueesti','salegainesti',
                                          'sdateold','tradenumberold','tradepriceold','salevalueold','salegainold').filter(**karrs).order_by("shopid")
 
-     ddict,mdict,edict = {},{},{}
+     karrs.clear()
+     karrs.setdefault("sdate__year","{year}".format(year=year))
+     yearlist = Kshopsale.objects.values("shopid")\
+                     .filter(**karrs).order_by("shopid")\
+                     .annotate(salevalue=Sum('salevalue')/10000,salegain=Sum('salegain')/10000,tradenumber=Sum('tradenumber')
+                                              ,tradeprice=Sum('tradeprice'),salevalueesti=Sum('salevalueesti')/10000
+                                              ,salegainesti=Sum('salegainesti')/10000,sdateold=Sum('sdateold')
+                                              ,tradenumberold=Sum('tradenumberold'),tradepriceold=Sum('tradepriceold')
+                                              ,salevalueold=Sum('salevalueold')/10000,salegainold=Sum('salegainold')/10000)
+
+     ddict,mdict,edict,yeardict = {},{},{},{}
      itemShopId = None
      for item in baselist:
          sdate = item["sdate"].strftime("%Y-%m-%d")
@@ -135,14 +147,22 @@ def index(request):
      #查询当月全月销售预算，毛利预算
      ydict = findMonthEstimate()
 
+     for item in yearlist:
+         yeardict.setdefault(item["shopid"],item)
+
+     #全年预算
+     yydict = findYearEstimate()
+
      #计算月累加合计
      rlist,erlist = [],[]
      sumList,esumlist ={},{}
-     sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,erlist,esumlist)
+     yearlist = []
+     yearSum = {}
+     sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,erlist,esumlist,yeardict,yearlist,yearSum,yydict)
 
-     return render(request, "report/daily/group_operate.html",{"rlist":rlist,"sumlist":sumList,"erlist":erlist,"esumlist":esumlist})
+     return render(request, "report/daily/group_operate.html",{"rlist":rlist,"sumlist":sumList,"erlist":erlist,"esumlist":esumlist,"yearlist":yearlist,"yearSum":yearSum})
 
-def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,rlist2,sumList2):
+def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,rlist2,sumList2,yeardict,yearlist,yearSum,yydict):
 
      sumList.setdefault("sum1",{})
      sumList.setdefault("sum2",{})
@@ -154,16 +174,60 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,rlist2,sumList2):
      sumList2.setdefault("sum3",{})
      sumList2.setdefault("sum4",{})
 
+     yearSum.setdefault("sum1",{})
+     yearSum.setdefault("sum2",{})
+     yearSum.setdefault("sum3",{})
+     yearSum.setdefault("sum4",{})
+
+     today = DateUtil.get_day_of_day(-1)
+     d1 = datetime.date(year = today.year,month=1,day=1)
+     oldtoday = datetime.date(year = today.year-1,month=1,day=1)
+     oldd1 = datetime.date(year = today.year-1,month=today.month,day=today.day)
+     ydays = DateUtil.subtract(today,d1)
+     ydaysold = DateUtil.subtract(oldtoday,oldd1)
      for item in slist:
          #月累计
          mergeData(item,ddict,mdict,ydict,rlist,sumList)
          #日销售、毛利
          mergeData2(item,edict,rlist2,sumList2)
+         #年累计
+         mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold)
 
      #合计运算
      countSum(sumList,days)
-
      countSum2(sumList2,days)
+     countSum3(yearSum)
+
+def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
+    ritem = {}
+    setShopInfo(ritem,item)
+
+    if item["shopid"] in yeardict:
+         yearitem = yeardict[item["shopid"]]
+    else:
+         yearitem = initDayItem(item)
+
+    ritem = dict(ritem, **yearitem)
+
+    if item["shopid"] in yydict:
+        yitem = yydict[item["shopid"]]
+    else:
+        yitem = initYitem(item)
+
+    ritem = dict(ritem, **yitem)
+
+    setYearSale(ritem,ydays,ydaysold)
+
+     #累计求和
+    setSumValue3(yearSum,ritem)
+
+    if ritem["region"]=="13080":
+         region = "承德市区"
+    else:
+         region = "外埠区"
+
+    ritem["region"] = region
+    yearlist.append(ritem)
 
 def mergeData2(item,edict,rlist2,sumList2):
     year = datetime.date.today().year
@@ -200,29 +264,6 @@ def mergeData2(item,edict,rlist2,sumList2):
     ritem["region"] = region
     rlist2.append(ritem)
 
-def initEitem(item,year,month,lastDay):
-   eitem = {}
-   eitem.setdefault("shopid",item["shopid"])
-   for d in range(1,lastDay+1):
-        salevalue = "salevalue_{year}{month}{day}".format(year=year,month=month,day=d)
-        salevalueesti = "salevalueesti_{year}{month}{day}".format(year=year,month=month,day=d)
-        saledifference = "saledifference_{year}{month}{day}".format(year=year,month=month,day=d)
-        accomratio = "saleaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
-        eitem.setdefault(salevalue,0.0)
-        eitem.setdefault(salevalueesti,0.0)
-        eitem.setdefault(saledifference,0.0)
-        eitem.setdefault(accomratio,"0.0%")
-
-        salegain = "salegain_{year}{month}{day}".format(year=year,month=month,day=d)
-        salegainesti = "salegainesti_{year}{month}{day}".format(year=year,month=month,day=d)
-        salegaindifference = "salegaindifference_{year}{month}{day}".format(year=year,month=month,day=d)
-        salegainaccomratio = "salegainaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
-        eitem.setdefault(salegain,0.0)
-        eitem.setdefault(salegainesti,0.0)
-        eitem.setdefault(salegaindifference,0.0)
-        eitem.setdefault(salegainaccomratio,"0.0%")
-   return eitem
-
 def mergeData(item,ddict,mdict,ydict,rlist,sumList):
      ritem = {}
      setShopInfo(ritem,item)
@@ -257,66 +298,96 @@ def mergeData(item,ddict,mdict,ydict,rlist,sumList):
      rlist.append(ritem)
 
 
-def findMonthEstimate():
-     edict = {}
-     start = (datetime.date.today().replace(day=1)).strftime("%Y%m%d")
-     year = datetime.date.today().year
-     month = datetime.date.today().month
-     d = calendar.monthrange(year,month)
-     end = (datetime.date.today().replace(day=d[1])).strftime("%Y%m%d")
-     karrs = {}
-     karrs.setdefault("shopid__contains","C")
-     karrs.setdefault("dateid__gte","{start}".format(start=start))
-     karrs.setdefault("dateid__lte","{end}".format(end=end))
-     elist = Estimate.objects.values("shopid")\
-                     .filter(**karrs)\
-                     .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
+def countSum3(sumList):
+    """合计运算"""
+    unkeys = ["tradenumber","tradenumberold"]
+    for key in sumList.keys():
+        sum = sumList[key]
+        for k in sum:
+            if k not in unkeys:
+                sum[k] = "%0.2f" % float(sum[k])
+            else:
+                sum[k] = int(sum[k])
 
-     for item in elist:
-         edict.setdefault(str(item["shopid"]),item)
+        #日销售-销售差异
+        sum["sale_difference"] = str("%0.2f" % (float(sum["salevalue"])-float(sum["salevalueesti"])))
+        #日销售-销售达成率
+        if float(sum["salevalueesti"]) > 0:
+            sum["sale_accomratio"] = str("%0.2f" % (float(sum["salevalue"])*100/float(sum["salevalueesti"])))+"%"
+        else:
+            sum["sale_accomratio"] = str("0.00%")
+        #年销售预算季度
+        if float(sum["y_salevalue"]) > 0:
+            sum["sale_complet_progress"] = str("%0.2f" % (float(sum["salevalue"])*100/float(sum["y_salevalue"])))+"%"
+        else:
+            sum["sale_complet_progress"] = str("0.00%")
+        #同比增长
+        if float(sum["salevalueold"]) > 0:
+            sum["sale_ynygrowth"] = str("%0.2f" % ((float(sum["salevalue"])-float(sum["salevalueold"]))*100/float(sum["salevalueold"])))+"%"
+        else:
+            sum["sale_ynygrowth"] = str("0.00%")
 
-     return edict
+        #日销售-毛利差异
+        sum["salegain_difference"] = str("%0.2f" % (float(sum["salegain"])-float(sum["salegainesti"])))
 
-def initDayItem(item):
-    dayItem = {}
-    dayItem.setdefault("shopid",item["shopid"])
-    dayItem.setdefault('salevalue',0.00)
-    dayItem.setdefault('salevalueold',0.00)
-    dayItem.setdefault('salevalueesti',0.00)
-    dayItem.setdefault('tradenumber',0)
-    dayItem.setdefault('tradenumberold',0)
-    dayItem.setdefault('tradeprice',0.00)
-    dayItem.setdefault('tradepriceold',0.00)
-    dayItem.setdefault('salegain',0.00)
-    dayItem.setdefault('salegainesti',0.00)
-    return dayItem
+        #日销售-毛利达成率
+        if float(sum["salegainesti"]) > 0:
+            sum["salegain_accomratio"] = str("%0.2f" % (float(sum["salegain"])*100/float(sum["salegainesti"])))+"%"
+        else:
+            sum["salegain_accomratio"] = str("0.00%")
+         #年毛利预算季度
+        if float(sum["y_salegain"]) > 0:
+            sum["salegain_complet_progress"] = str("%0.2f" % (float(sum["salegain"])*100/float(sum["y_salegain"])))+"%"
+        else:
+            sum["salegain_complet_progress"] = str("0.00%")
+         #同比增长
+        if float(sum["salegainold"]) > 0:
+            sum["salegain_ynygrowth"] = str("%0.2f" % ((float(sum["salegain"])-float(sum["salegainold"]))*100/float(sum["salegainold"])))+"%"
+        else:
+            sum["salegain_ynygrowth"] = str("0.00%")
+        #日销售-毛利毛利率
+        if float(sum["salegain"]) > 0:
+            sum["salegain_grossmargin"] = str("%0.2f" % (float(sum["salegain"])*100/float(sum["salevalue"])))+"%"
+        else:
+            sum["salegain_grossmargin"] = str("0.00%")
 
-def initMonthItem(item):
-    monthItem = {}
-    monthItem.setdefault("shopid",item["shopid"])
-    monthItem.setdefault("m_salevalue",0.00)
-    monthItem.setdefault("m_salevalueesti",0.00)
-    monthItem.setdefault("m_salevalueold",0.00)
-    monthItem.setdefault("m_salegain",0.00)
-    monthItem.setdefault("m_salegainesti",0.00)
-    monthItem.setdefault("m_salegainold",0.00)
-    monthItem.setdefault("m_tradenumber",0)
-    monthItem.setdefault("m_tradenumberold",0)
-    monthItem.setdefault("m_tradeprice",0.00)
-    monthItem.setdefault("m_tradepriceold",0.00)
-    return monthItem
 
-def initYitem(item):
-    eitem = {}
-    eitem.setdefault("shopid",item["shopid"])
-    eitem.setdefault("y_salegain",0.00)
-    eitem.setdefault("y_salevalue",0.00)
-    return eitem
+        #日销售-来客数同比增长
+        if sum["tradenumberold"] > 0:
+            sum["tradenumber_ynygrowth"] = str("%0.2f" % ((sum["tradenumber"]-sum["tradenumberold"])*100.0/sum["tradenumberold"]))+"%"
+        else:
+            sum["tradenumber_ynygrowth"] = str("0.00%")
+
+        #日销售-日客单价 = 日销售实际*10000 / 日来客数
+        if sum["tradenumber"] > 0:
+            sum["tradeprice"] = str("%0.2f" % (float(sum["salevalue"])*10000/sum["tradenumber"]))
+        else:
+            sum["tradeprice"] = str("0.00")
+
+        #日销售-去年日客单价 = 去年日销售实际*10000 / 去年日来客数
+        if sum["tradenumberold"] > 0:
+            sum["tradepriceold"] = str("%0.2f" % (float(sum["salevalueold"])*10000/sum["tradenumberold"]))
+        else:
+            sum["tradepriceold"] = str("0.00")
+
+        #日销售-客单价同比增长
+        if float(sum["tradepriceold"]) > 0:
+            sum["tradeprice_ynygrowth"] = str("%0.2f" % ((float(sum["tradeprice"])-float(sum["tradepriceold"]))*100.0/float(sum["tradepriceold"])))+"%"
+        else:
+            sum["tradeprice_ynygrowth"] = str("0.00%")
+
+
+    sumList["sum1"].setdefault("region","集团合计")
+    sumList["sum2"].setdefault("region","同店合计")
+    sumList["sum3"].setdefault("region","市区合计")
+    sumList["sum4"].setdefault("region","外埠区合计")
 
 def countSum2(sumList,days):
-    year = datetime.date.today().year
-    month = datetime.date.today().month
+    date = DateUtil.get_day_of_day(-1)
+    year = date.year
+    month = date.month
     lastDay = calendar.monthrange(year,month)[1]
+
     """合计运算"""
 
     for key in sumList.keys():
@@ -507,6 +578,41 @@ def setShopInfo(ritem,item):
     ritem.setdefault("shopname",item["shopname"])
     ritem.setdefault("opentime",item["opentime"].strftime("%Y-%m-%d")  )
     ritem.setdefault("type",item["type"])
+
+def setYearSale(ritem,ydays,ydaysold):
+    ritem['salevalue'] = mtu.convertToStr(ritem['salevalue'],"0.00",1)
+    ritem['salevalueesti'] = mtu.convertToStr(ritem['salevalueesti'],"0.00",1)
+    ritem.setdefault('sale_difference',mtu.convertToStr(decimal.Decimal(ritem["salevalue"])-decimal.Decimal(ritem["salevalueesti"]),"0.00",1))
+    ritem.setdefault('sale_accomratio',"{sale_accomratio}%".format(sale_accomratio=mtu.convertToStr(decimal.Decimal(ritem["salevalue"])*decimal.Decimal("100.0")/decimal.Decimal(ritem["salevalueesti"]),"0.00",1)))
+
+    ritem["y_salevalue"] = mtu.convertToStr(ritem['y_salevalue'],"0.00",1)
+    ritem["y_salegain"] = mtu.convertToStr(ritem['y_salegain'],"0.00",1)
+    ritem.setdefault('sale_complet_progress',"{sale_complet_progress}%".format(sale_complet_progress=mtu.convertToStr(decimal.Decimal(ritem["salevalue"])*decimal.Decimal("100.0")/decimal.Decimal(ritem["y_salevalue"]),"0.00",1)))
+
+    ritem['salevalueold'] = mtu.convertToStr(ritem['salevalueold'],"0.00",1)
+    ritem.setdefault('sale_ynygrowth',mtu.convertToStr((decimal.Decimal(ritem["salevalue"])-decimal.Decimal(ritem["salevalueold"]))*decimal.Decimal("100.0")/decimal.Decimal(ritem["salevalueold"]),"0.00",1)+"%")
+
+    ritem['salegain'] = mtu.convertToStr(ritem['salegain'],"0.00",1)
+    ritem['salegainesti'] = mtu.convertToStr(ritem['salegainesti'],"0.00",1)
+    ritem.setdefault('salegain_difference',mtu.convertToStr(decimal.Decimal(ritem["salegain"])-decimal.Decimal(ritem["salegainesti"]),"0.00",1))
+    ritem.setdefault('salegain_accomratio',"{salegain_accomratio}%".format(salegain_accomratio=mtu.convertToStr(decimal.Decimal(ritem["salegain"])*decimal.Decimal("100.0")/decimal.Decimal(ritem["salegainesti"]),"0.00",1)))
+    ritem.setdefault('salegain_complet_progress',"{salegain_complet_progress}%".format(salegain_complet_progress=mtu.convertToStr(decimal.Decimal(ritem["salegain"])*decimal.Decimal("100.0")/decimal.Decimal(ritem["y_salegain"]),"0.00",1)))
+
+    ritem['salegainold'] = mtu.convertToStr(ritem['salegainold'],"0.00",1)
+    ritem.setdefault('salegain_ynygrowth',mtu.convertToStr((decimal.Decimal(ritem["salegain"])-decimal.Decimal(ritem["salegainold"]))*decimal.Decimal("100.0")/decimal.Decimal(ritem["salegainold"]),"0.00",1)+"%")
+    ritem.setdefault('salegain_grossmargin',"{salegain_grossmargin}%".format(salegain_grossmargin=mtu.convertToStr(decimal.Decimal(ritem["salegain"])*decimal.Decimal("100.0")/decimal.Decimal(ritem["salevalue"]),"0.00",1)))
+
+    #来客数
+    ritem["tradenumber"] = int(ritem["tradenumber"])
+    ritem["tradenumberold"] = int(ritem["tradenumberold"])
+    ritem.setdefault('tradenumber_ynygrowth', mtu.convertToStr((ritem["tradenumber"]-ritem["tradenumberold"])*decimal.Decimal("100.0")/ritem["tradenumberold"],"0.00",1)+"%")
+
+    #客单价
+    ritem['tradeprice'] = mtu.convertToStr(ritem['tradeprice']/ydays,"0.00",1)
+    ritem['tradepriceold'] = mtu.convertToStr(ritem['tradepriceold']/ydaysold,"0.00",1)
+    ritem.setdefault('tradeprice_ynygrowth',mtu.convertToStr((decimal.Decimal(ritem["tradeprice"])-decimal.Decimal(ritem["tradepriceold"]))*decimal.Decimal("100.0")/decimal.Decimal(ritem["tradepriceold"]),"0.00",1)+"%")
+
+    ritem["sdateold"] = str(ritem["sdateold"])
 
 def setDaiySale(ritem,dayItem):
     """设置日运营"""
@@ -737,6 +843,73 @@ def setSumValue2(sumList,ritem,year,month,lastDay):
         #外埠区合计
         setValue2(sumList["sum4"],ritem,year,month,lastDay)
 
+def setSumValue3(sumList,ritem):
+    """ 计算合计 """
+    #集团合计
+    setValue3(sumList["sum1"],ritem)
+    #同店合计
+    if ritem["type"] == "同店":
+        setValue3(sumList["sum2"],ritem)
+
+    if ritem["region"]=="13080":
+        #市区合计
+        setValue3(sumList["sum3"],ritem)
+    else:
+        #外埠区合计
+        setValue3(sumList["sum4"],ritem)
+
+def setValue3(sum1,ritem):
+   if "salevalue" in sum1:
+       sum1["salevalue"] = str(float(sum1["salevalue"]) + float(ritem["salevalue"]))
+   else:
+       sum1["salevalue"] = str(float(ritem["salevalue"]))
+
+   if "salevalueold" in sum1:
+       sum1["salevalueold"] = str(float(sum1["salevalueold"]) + float(ritem["salevalueold"]))
+   else:
+       sum1["salevalueold"] = str(float(ritem["salevalueold"]))
+
+   if "salevalueesti" in sum1:
+       sum1["salevalueesti"] = str(float(sum1["salevalueesti"]) + float(ritem["salevalueesti"]))
+   else:
+       sum1["salevalueesti"] = str(float(ritem["salevalueesti"]))
+
+   if "tradenumber" in sum1:
+       sum1["tradenumber"] = str(int(sum1["tradenumber"]) + int(ritem["tradenumber"]))
+   else:
+       sum1["tradenumber"] = str(int(ritem["tradenumber"]))
+
+   if "tradenumberold" in sum1:
+       sum1["tradenumberold"] = str(int(sum1["tradenumberold"]) + int(ritem["tradenumberold"]))
+   else:
+       sum1["tradenumberold"] = str(int(ritem["tradenumberold"]))
+
+   if "salegain" in sum1:
+       sum1["salegain"] = str(float(sum1["salegain"]) + float(ritem["salegain"]))
+   else:
+       sum1["salegain"] = str(float(ritem["salegain"]))
+
+   if "salegainold" in sum1:
+       sum1["salegainold"] = str(float(sum1["salegainold"]) + float(ritem["salegainold"]))
+   else:
+       sum1["salegainold"] = str(float(ritem["salegainold"]))
+
+   if "salegainesti" in sum1:
+       sum1["salegainesti"] = str(float(sum1["salegainesti"]) + float(ritem["salegainesti"]))
+   else:
+       sum1["salegainesti"] = str(float(ritem["salegainesti"]))
+
+   if "y_salevalue" in sum1:
+       sum1["y_salevalue"] = str(float(sum1["y_salevalue"]) + float(ritem["y_salevalue"]))
+   else:
+       sum1["y_salevalue"] = str(float(ritem["y_salevalue"]))
+
+   if "y_salegain" in sum1:
+       sum1["y_salegain"] = str(float(sum1["y_salegain"]) + float(ritem["y_salegain"]))
+   else:
+       sum1["y_salegain"] = str(float(ritem["y_salegain"]))
+
+
 def setValue2(sum1,ritem,year,month,lastDay):
     if "m_salevalue" in sum1:
         sum1["m_salevalue"] = str(float(sum1["m_salevalue"]) + float(ritem["m_salevalue"]))
@@ -783,8 +956,6 @@ def setValue2(sum1,ritem,year,month,lastDay):
             sum1[salegainesti] = str(float(sum1[salegainesti]) + float(ritem[salegainesti]))
         else:
             sum1[salegainesti] = str(float(ritem[salegainesti]))
-
-
 
 def setValue(sum1,ritem):
    if "day_salevalue" in sum1:
@@ -873,6 +1044,99 @@ def setValue(sum1,ritem):
        sum1["month_tradenumberold"] = str(int(ritem["month_tradenumberold"]))
 
 
+def findYearEstimate():
+     edict = {}
+     date = DateUtil.get_day_of_day(-1)
+     year = date.year
+     start = (datetime.datetime(year,1,1)).strftime("%Y%m%d")
+     yesterday = date.strftime("%Y%m%d")
+
+     karrs = {}
+     karrs.setdefault("shopid__contains","C")
+     karrs.setdefault("dateid__gte","{start}".format(start=start))
+     karrs.setdefault("dateid__lte","{end}".format(end=yesterday))
+     elist = Estimate.objects.values("shopid")\
+                     .filter(**karrs).order_by("shopid")\
+                     .annotate(y_salevalue=Sum('salevalue')/10000,y_salegain=Sum('salegain')/10000)
+
+     for item in elist:
+         edict.setdefault(str(item["shopid"]),item)
+
+     return edict
+
+def findMonthEstimate():
+     month = datetime.date.today().month
+     edict = {}
+     karrs = {}
+     karrs.setdefault("shopid__contains","C")
+     karrs.setdefault("dateid__month","{month}".format(month=month))
+     elist = Estimate.objects.values("shopid")\
+                     .filter(**karrs)\
+                     .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
+
+     for item in elist:
+         edict.setdefault(str(item["shopid"]),item)
+
+     return edict
+
+def initEitem(item,year,month,lastDay):
+   eitem = {}
+   eitem.setdefault("shopid",item["shopid"])
+   for d in range(1,lastDay+1):
+        salevalue = "salevalue_{year}{month}{day}".format(year=year,month=month,day=d)
+        salevalueesti = "salevalueesti_{year}{month}{day}".format(year=year,month=month,day=d)
+        saledifference = "saledifference_{year}{month}{day}".format(year=year,month=month,day=d)
+        accomratio = "saleaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
+        eitem.setdefault(salevalue,0.0)
+        eitem.setdefault(salevalueesti,0.0)
+        eitem.setdefault(saledifference,0.0)
+        eitem.setdefault(accomratio,"0.0%")
+
+        salegain = "salegain_{year}{month}{day}".format(year=year,month=month,day=d)
+        salegainesti = "salegainesti_{year}{month}{day}".format(year=year,month=month,day=d)
+        salegaindifference = "salegaindifference_{year}{month}{day}".format(year=year,month=month,day=d)
+        salegainaccomratio = "salegainaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
+        eitem.setdefault(salegain,0.0)
+        eitem.setdefault(salegainesti,0.0)
+        eitem.setdefault(salegaindifference,0.0)
+        eitem.setdefault(salegainaccomratio,"0.0%")
+   return eitem
+
+def initDayItem(item):
+    dayItem = {}
+    dayItem.setdefault("shopid",item["shopid"])
+    dayItem.setdefault('salevalue',0.00)
+    dayItem.setdefault('salevalueold',0.00)
+    dayItem.setdefault('salevalueesti',0.00)
+    dayItem.setdefault('tradenumber',0)
+    dayItem.setdefault('tradenumberold',0)
+    dayItem.setdefault('tradeprice',0.00)
+    dayItem.setdefault('tradepriceold',0.00)
+    dayItem.setdefault('salegain',0.00)
+    dayItem.setdefault('salegainesti',0.00)
+    return dayItem
+
+def initMonthItem(item):
+    monthItem = {}
+    monthItem.setdefault("shopid",item["shopid"])
+    monthItem.setdefault("m_salevalue",0.00)
+    monthItem.setdefault("m_salevalueesti",0.00)
+    monthItem.setdefault("m_salevalueold",0.00)
+    monthItem.setdefault("m_salegain",0.00)
+    monthItem.setdefault("m_salegainesti",0.00)
+    monthItem.setdefault("m_salegainold",0.00)
+    monthItem.setdefault("m_tradenumber",0)
+    monthItem.setdefault("m_tradenumberold",0)
+    monthItem.setdefault("m_tradeprice",0.00)
+    monthItem.setdefault("m_tradepriceold",0.00)
+    return monthItem
+
+def initYitem(item):
+    eitem = {}
+    eitem.setdefault("shopid",item["shopid"])
+    eitem.setdefault("y_salegain",0.00)
+    eitem.setdefault("y_salevalue",0.00)
+    return eitem
 
 @csrf_exempt
 def query():

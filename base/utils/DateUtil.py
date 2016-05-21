@@ -13,6 +13,11 @@ hour = strftime("%H",localtime())
 min  = strftime("%M",localtime())
 sec  = strftime("%S",localtime())
 
+def subtract(d1,d2):
+    """计算两日期间天数差：d1 - d2 """
+    d = d1 - d2
+    return d.days
+
 def todaystr():
     '''
     get date string, date format="YYYYMMDD"
@@ -20,13 +25,13 @@ def todaystr():
     return datetime.date.today().strftime("%Y-%m-%d")
 
 def datetimestr():
-    '''''
+    '''
     get datetime,format="YYYY-MM-DD HH:MM:SS"
     '''
     return datetime.datetime.today().strftime("%Y-%m-%d %H:%M:%S")
 
 def get_day_of_day(n=0):
-    '''''
+    '''
     if n>=0,date is larger than today
     if n<0,date is less than today
     date format = "YYYY-MM-DD"
@@ -38,13 +43,13 @@ def get_day_of_day(n=0):
         return datetime.date.today()+datetime.timedelta(days=n)
 
 def get_days_of_month(year,mon):
-    '''''
+    '''
     get days of month
     '''
     return calendar.monthrange(year, mon)[1]
 
 def get_firstday_of_month(year,mon):
-    '''''
+    '''
     get the first day of month
     date format = "YYYY-MM-DD"
     '''
@@ -55,7 +60,7 @@ def get_firstday_of_month(year,mon):
     return "-".join("%s" %i for i in arr)
 
 def get_lastday_of_month(year,mon):
-    '''''
+    '''
     get the last day of month
     date format = "YYYY-MM-DD"
     '''
@@ -65,7 +70,7 @@ def get_lastday_of_month(year,mon):
     return "-".join("%s" %i for i in arr)
 
 def get_firstday_month(n=0):
-    '''''
+    '''
     get the first day of month from today
     n is how many months
     '''
@@ -75,14 +80,14 @@ def get_firstday_month(n=0):
     return "-".join("%s" %i for i in arr)
 
 def get_lastday_month(n=0):
-    '''''
+    '''
     get the last day of month from today
     n is how many months
     '''
     return "-".join("%s" %i for i in getyearandmonth(n))
 
 def getyearandmonth(n=0):
-    '''''
+    '''
     get the year,month,days from today
     befor or after n months
     '''
@@ -121,7 +126,7 @@ def getyearandmonth(n=0):
             return (str(thisyear),str(j),days)
 
 def addzero(n):
-    '''''
+    '''
     add 0 before 0-9
     return 01-09
     '''
@@ -132,7 +137,7 @@ def addzero(n):
         return nabs
 
 def get_today_month(n=0):
-    '''''
+    '''
     获取当前日期前后N月的日期
     if n>0, 获取当前日期前N月的日期
     if n<0, 获取当前日期后N月的日期
