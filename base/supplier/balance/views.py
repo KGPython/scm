@@ -8,7 +8,8 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.core.paginator import Paginator  #分页查询
 
-from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,Adpriced,ReconcilItem,Reconcil,Updpayable,Updpayableitem
+from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,\
+    Adpriced,ReconcilItem,Reconcil,Updpayable,Updpayableitem,Billhead0Status
 from base.utils import MethodUtil as mtu,Constants,DateUtil
 from base.views import findPayType
 
@@ -968,6 +969,19 @@ def balance(request):
 
     balanceList = Billhead0.objects.values("shopid","venderid","vendername","sheetid","begindate","enddate","editdate","flag","status","seenum","contracttype")\
                                    .filter(**kwargs).order_by(orderStyle)
+
+    statuslist = Billhead0Status.objects.values("sheetid","inviocestatus").filter(**kwargs).order_by(orderStyle)
+
+    statusDict = {}
+    for item in statuslist:
+        statusDict.setdefault(item["sheetid"],item)
+
+    for item in balanceList:
+        if item["sheetid"] in statusDict:
+            sitem = statusDict[item["sheetid"]]
+            item.setdefault("inviocestatus",sitem["inviocestatus"])
+        else:
+            item.setdefault("inviocestatus",0)
 
     paginator=Paginator(balanceList,20)
     try:

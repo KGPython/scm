@@ -117,7 +117,7 @@
                         <th>本次结算日期</th>
                         <th>制单日期</th>
                         <th>审核状态</th>
-                      {% comment %}  <th>查看次数</th>{% endcomment %}
+                        <th>发票状态</th>
                         <th>操作</th>
                     </tr>
                 </thead>
@@ -138,7 +138,7 @@
                         <td>{{ balance.enddate | date:'Y-m-d' }}</td>
                         <td>{{ balance.editdate | date:'Y-m-d' }}</td>
                         <td>{% if balance.flag == 0 %}1-制单未审核{% elif balance.flag == 1 or balance.flag == 4 %}2-单据待审批{% elif balance.flag == 2 %}3-扣项缴款待审核{% elif balance.flag == 3 %}4-付款待审核{% elif balance.flag == 100 %}5-已付款{% endif %}</td>
-                       {% comment %} <td>{% if balance.seenum %}{{ balance.seenum }}{% else %}0{% endif %}</td>{% endcomment %}
+                        <td>{% if balance.inviocestatus == 1 %}<span style="color:green;">已录入</span>{% else %}<span style="color:red;">未录入</span>{% endif %}</td>
                         <td><a href="{% url 'createInvioce' %}?sheetid={{ balance.sheetid }}">录发票</a></td>
                     </tr>
                     {% endfor %}
