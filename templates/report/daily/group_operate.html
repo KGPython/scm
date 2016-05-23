@@ -211,13 +211,16 @@
                                 if (row <= 4 || (row >= 5 && row <= 8 && col<=4 )) {
                                   cellProperties.renderer = headerRenderer;
                                 }
-                                else if(row > 4 && cols1.indexOf(col)!=-1 ){
-                                    cellProperties.renderer = rowRenderer1;
-                                }else if(row > 4 && cols2.indexOf(col)!=-1 ){
-                                    cellProperties.renderer = rowRenderer2;
-                                }
+
                                 if((row==0 && col==0) || (row==1 && col==9)){
                                      cellProperties.renderer = headerTextRenderer;
+                                }
+
+                                if(row > 4 && cols1.indexOf(col)!=-1 ){
+                                    cellProperties.renderer = rowRenderer1;
+                                }
+                                else if(row > 4 && cols2.indexOf(col)!=-1 ){
+                                    cellProperties.renderer = rowRenderer2;
                                 }
                                 return cellProperties;
                             },
@@ -368,8 +371,8 @@
                       });
                   }
                   if(!hot4){
-                      var cols1 = [5,6,11,13,14,19,22,23,25,26];
-                      var cols2 = [9,17];
+                      var cols3 = [5,6,11,13,14,19,22,23,25,26];
+                      var cols4 = [9,17];
                       var group_operate4 = document.getElementById('group_operate4');
                       hot4 = new Handsontable(group_operate4,{
                             colWidths: [80, 50,150, 100,50,100,100,100, 80, 100,100, 80, 80, 80,
@@ -385,9 +388,9 @@
                                 if (row <= 3 || (row >= 4 && row <= 7 && col<=3)) {
                                   cellProperties.renderer = headerRenderer;
                                 }
-                                else if(row > 3 && cols1.indexOf(col)!=-1 ){
+                                else if(row > 3 && cols3.indexOf(col)!=-1 ){
                                     cellProperties.renderer = rowRenderer1;
-                                }else if(row > 3 && cols2.indexOf(col)!=-1 ){
+                                }else if(row > 3 && cols4.indexOf(col)!=-1 ){
                                     cellProperties.renderer = rowRenderer2;
                                 }
                                 if((row==0 && col==0) || (row==1 && col==7)){
