@@ -1,0 +1,89 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>商业供应链系统</title>
+    </head>
+    <body>
+        {% include "common/nav.html" %}
+        <p class="comWidth"><input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;"></p>
+        <div class="notice noticeOrder comWidth">
+            <div class="tTitle">
+                <h1>
+                    预退货单明细
+                </h1>
+                <h3>
+                    单位：<span>{{ grpName }}</span>
+                </h3>
+                <p>
+                    <b>预退货单号：</b><span>{{ sheetid }}</span> <b>门店：</b><span>{{ shop.shopnm }}</span>
+
+                    <b>制单日期：</b><span>{{ bill.editdate | date:'Y-m-d' }}</span><b>审核日期：</b><span>{{ bill.checkdate | date:'Y-m-d' }}</span>
+                </p>
+            </div>
+            <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
+                <thead>
+                    <tr>
+                        <th>序号</th>
+                        <th>商品代码</th>
+                        <th>商品条码</th>
+                        <th>商品名称</th>
+                        <th>进项税率</th>
+                        <th>售价</th>
+                        <th>进价</th>
+                        {% comment %}<th>申请退货数</th>{% endcomment %}
+                        <th>审批数量</th>
+                        <th>实退数</th>
+                        <th>退货原因</th>
+                       {% comment %} <th>物流模式</th>{% endcomment %}
+                        <th>包装数量</th>
+                        <th>包装单位</th>
+                        <th>包装规格</th>
+                        <th>库存数量</th>
+                        <th>备注</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bill in billList %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ bill.goodsid }}</td>
+                        <td>{{ bill.barcode|default_if_none:"" }}</td>
+                        <td>{{ bill.goodsname }}</td>
+                        <td>{{ bill.taxrate }}</td>
+                        <td>{{ bill.price|floatformat:3 }}</td>
+                        <td>{{ bill.cost|floatformat:3 }}</td>
+                       {% comment %} <td>{{ bill.askqty|floatformat:1  }}</td>{% endcomment %}
+                        <td>{{ bill.planqty |floatformat:1 }}</td>
+                        <td>{{ bill.realqty|floatformat:1 }}</td>
+                        <td>{{ bill.reason |default_if_none:""}}</td>
+                      {% comment %}  <td>{{ bill.logistics }}</td>{% endcomment %}
+                        <td>{{ bill.pknum|floatformat:1  }}</td>
+                        <td>{{ bill.pkname }}</td>
+                        <td>{{ bill.pkspec }}</td>
+                        <td>{{ bill.stockqty|floatformat:1 }}</td>
+                        <td>{{ bill.notes|default_if_none:"" }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr>
+                        <td colspan="4">合计：</td>
+                        <td></td>
+                        <td>{{ sum1|floatformat:3 }}</td>
+                        <td>{{ sum2|floatformat:3 }}</td>
+                        <td>{{ sum3|floatformat:1}}</td>
+                        <td>{{ sum4|floatformat:1 }}</td>
+                        <td></td>
+                        <td>{{ sum6|floatformat:1 }}</td>
+                        <td></td>
+                        <td></td>
+                        <td>{{ sum5|floatformat:1 }}</td>
+                        <td></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% include "common/footer.html" %}
+        <script type="text/javascript">
+            current ="danju"
+        </script>
+    </body>
+</html>

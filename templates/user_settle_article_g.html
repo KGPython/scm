@@ -36,8 +36,8 @@
                             <td class="label" style="text-align: left;">结算日期：<span>{{ balance.begindate|date:'Y-m-d'  }}至{{ balance.enddate|date:'Y-m-d'  }}</span></td>
                         </tr>
                         <tr>
-                            <td class="label" style="text-align: left;">预付款金额：<span class="money">&nbsp;</span></td>
-                            <td class="label" style="text-align: left;">预付款余额：<span class="money">{% if balance.premoney %}{{ balance.premoney| floatformat:2}}{% else %}&nbsp;{% endif %}</span></td>
+                            <td class="label" style="text-align: left;">预付款金额：<span class="money">{% if balance.premoney > 0 %}{{ balance.premoney| floatformat:2}}{% else %}&nbsp;{% endif %}</span></td>
+                            <td class="label" style="text-align: left;">预付款余额：<span class="money">{% if balance.advance > 0 %}{{ balance.advance| floatformat:2}}{% else %}&nbsp;{% endif %}</span></td>
                             <td class="label" style="text-align: left;">单据日期：<span>{{ balance.beginsdate|date:'Y-m-d' }}至{{ balance.endsdate|date:'Y-m-d' }}</span> </td>
                         </tr>
                         <tr>
@@ -139,7 +139,7 @@
                     </table>
                 {% endfor %}
             </div>
-            <div class="table2" style="margin-top: 40px;margin-bottom: 10px;">
+            <div class="table2 noprint" style="margin-top: 40px;margin-bottom: 10px;">
                 {% if kxlist %}
                     <h2 style="text-align: center;font-weight: normal">供应商扣项调整单</h2>
                     <table>

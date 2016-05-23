@@ -12,4 +12,9 @@ urlpatterns = [
     url(r'^report/daily/negativestock/index/','base.report.daily.negativestocktop.index',name='negativeStockTopIndex'),
     url(r'^report/daily/negativestock/query/','base.report.daily.negativestocktop.query',name='negativeStockTopQuery'),
     url(r'^report/daily/negativestock/download/','base.report.daily.negativestocktop.download',name='negativeStockTopDownload'),
+
+    #集团营运日报表
+    url(r'^report/daily/grpoperate/index/','base.report.daily.group_operate.index',name='grpOperateIndex'),
+    url(r'^report/daily/grpoperate/query/','base.report.daily.group_operate.query',name='grpOperateQuery'),
+    url(r'^report/daily/grpoperate/download/','base.report.daily.group_operate.download',name='grpOperateDownload'),
 ]

@@ -107,7 +107,7 @@
                     单位：<span>{{ grpname }}</span>
                 </h3>
                 <p>
-                    <b>门店：</b><span>{{ shopnames }}</span> {% comment %}<b>时间：</b><span>{{ start }}至{{ end }}</span> 默认查当前月？？{% endcomment %}
+                    <b>门店：</b><span>{% if shopnames %}{{ shopnames }} {% else %}全部 {% endif %}</span> {% comment %}<b>时间：</b><span>{{ start }}至{{ end }}</span> 默认查当前月？？{% endcomment %}
                 </p>
             </div>
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
@@ -175,8 +175,8 @@
                             <td class="col1">{{ row.barcodeid }}</td>
                             <td class="col1">{{ row.name }}</td>
                             <td class="col1">{{ row.spec | default_if_none:""}}</td>
-                            <td class="col2_4">{{ row.cost }}</td>
-                            <td class="col1">{{ row.price }}</td>
+                            <td class="col2_4">{{ row.cost|floatformat:3 }}</td>
+                            <td class="col1">{{ row.price|floatformat:3 }}</td>
                             <td class="col2_4">{{ gstatus|key:row.flag }}</td>
                             <td class="col1">{{ row.venderid }}</td>
                             <td class="col1">{{ row.costtaxrate }}</td>

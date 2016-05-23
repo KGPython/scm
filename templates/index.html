@@ -10,35 +10,37 @@
         {% load basefilter %}
         {% include 'common/nav.html' %}
         <div class="mainHome comWidth">
-            <div class="sideNav left">
-                <ul class="sideNav-list">
+            <div class="sideNav left" style="margin-top: 30px;">
+                <ul class="sideNav-list" style="font-size:14px;">
                     <li class="sideNav-list-item">
                         <a href="/scm/base/supp/home/" title="retail">供应商数据</a>
                     </li>
                     <li class="sideNav-list-item">
                         {{  request.session.s_umenu.system|getPur:"007" }}
                     </li>
-                    <li style="margin-top: 20px;">
-                        您的账户有效期截止到：{{ endDate|date:'Y-m-d' }}
+                    <li style="margin-top: 20px;text-align: left;">
+                       结算方式：{{ payTypeName|default_if_none:"" }}
+                    </li>
+                    <li style="text-align: left;">
+                        账户有效期至：{{ endDate|date:'Y-m-d' }}
                         {% if request.session.s_fee and request.session.s_fee.status == 'N' %}
                             <span style="color:red;">现已停用，请及时联系管理员：0314-2064525。</span>
                         {% endif %}
                     </li>
-                    <li >
+                    <li style="text-align: left;">
                         {% if rdays %}
-                            您的对账日期：每月{{ rdays }}日<br/>
+                            对账日期：每月{{ rdays }}日<br/>
                         {% endif %}
                         {% if rdays %}
-                            您编辑结算单日期：每月{{ tdays }}日
+                            编辑结算单日期：每月{{ tdays }}日
                         {% endif %}
                     </li>
-                    <li>
+                    <li style="text-align: left;">
                         {% if request.session.s_rdict > 0 %}
-
                             {{  request.session.s_umenu.supplier|getPur:"277" }}
                         {% endif %}
                     </li>
-                    <li>
+                    <li style="text-align: left;">
                         {% if pwdInit %}
                             <a href='/scm/base/supp/repwd/' title='修改密码' style="color: red;">请及时修改登录密码</a>
                         {% endif %}
@@ -125,5 +127,6 @@
                 });
             });
         </script>
+        <script type="text/javascript" src="http://tajs.qq.com/stats?sId=55965179" charset="UTF-8"></script>
     </body>
 </html>

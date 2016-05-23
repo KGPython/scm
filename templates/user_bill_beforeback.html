@@ -7,15 +7,15 @@
     <body>
         {% include 'common/nav.html' %}
         <div class="query comWidth">
-            <form class="query-list" method="post" action="{% url 'billBack' %}">
+            <form class="query-list" method="post" action="{% url 'billBeforeBack' %}">
                 {% csrf_token %}
                 <p class="input">
-                    <label>退货单号：</label>
-                    {{ form.code }}
+                    <label>预退货单号：</label>
+                    <input type="text" name="sheetId" value="{{ sheetId }}">
                 </p>
                 <div class="shopList input">
                     <label>门店：</label>
-                    {{ form.shopcode }}
+                    <input type="text" name="shopCode" id="shopCode" value="{{ shopCode }}">
                     <span class="shopList-icon"></span>
                      <div class="shopList-cnt">
                         <p class="shopList-cnt-tit">
@@ -45,36 +45,29 @@
                                     <td>
                                         {{ shop.shopnm }}
                                     </td>
-                                  {% comment %}  <td>
-
-                                    </td>{% endcomment %}
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
                     </div>
                 </div>
-
                 <p class="input">
-                    <label for="start">开始日：</label>
-                    {{ form.start }}
-                    {{ form.start.errors }}
+                    <label for="start">审核开始日：</label>
+                    <input class="inline laydate-icon" id="start" name="start" type="text" value="{{ start }}">
                 </p>
                 <p class="input">
-                    <label for="end">结束日：</label>
-                     {{ form.end }}
-                     {{ form.end.errors }}
+                    <label for="end">审核结束日：</label>
+                    <input class="inline laydate-icon" id="end" name="end" value="{{ end }}" type="text">
                 </p>
                 <p class="input">
                     <input class="query-enter" type="submit" value="查询">
                 </p>
             </form>
-
         </div>
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h1>
-                    退货单列表
+                    预退货单列表
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
@@ -92,60 +85,61 @@
                     </span>
                 </p>
                 <p>
-                    <b>经营方式：</b><span>经销-代销-联营</span>
-                    <b>时间：</b>{{ start }}<b>至：</b> {{ end }}<b>单位：</b><span>元</span>
-                    <b>含税进价金额合计：</b>
-                    <span>{{ totalInpriceTax | floatformat:2 }}</span>
+                    <b>时间：</b>{{ start }}<b>至：</b> {{ end }}
                 </p>
             </div>
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                 <thead>
                     <tr>
-                        <th>退货单号</th>
-                        <th>审核日期</th>
-                        <th>供应商代码</th>
-                        <th>供应商名称</th>
+                        <th>预退货单号</th>
                         <th>门店</th>
-                        <th>含税进价金额</th>
-                        <th>查看次数</th>
+                        <th>制单日期</th>
+                        {% comment %}<th>应付帐款</th>
+                        <th>未扣款金额</th>
+                        <th>坏货标志</th>
+                        <th>审核结果</th>{% endcomment %}
+                        <th>审核日期</th>
+                        <th>备注</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for bill in billList %}
                     <tr>
                         <td>
-                            <a href="{% url 'backArticle' %}?code={{ bill.code }}">{{ bill.code }}</a>
+                            <a href="{% url 'beforeBackArticle' %}?sheetId={{ bill.sheetid }}">{{ bill.sheetid }}</a>
                         </td>
-                        <td>{{ bill.chdate | date:'Y-m-d' }}</td>
-                        <td>{{ bill.spercode }}</td>
-                        <td>{{ bill.spername }}</td>
-                        <td>{{ shopDict | key:bill.shopcode }}</td>
-                        <td>{{ bill.inprice_tax | floatformat:3 }}</td>
-                        <td>{% if bill.seenum %} {{ bill.seenumbill.seenum }} {% else %} 0 {% endif %}</td>
+                        <td>{{ shopDict | key:bill.shopid }}</td>
+                        <td>{{ bill.editdate | date:'Y-m-d' }}</td>
+                      {% comment %}  <td>{{ bill.paymoney | floatformat:2 }}</td>
+                        <td>{{ bill.kxsummoney| floatformat:2 }}</td>
+                        <td>{{ ACCEPT_FLAG|key:bill.acceptflag}}</td>
+                        <td>{{ BAD_FLAG|key:bill.badflag}}</td>{% endcomment %}
+                        <td>{{ bill.checkdate | date:'Y-m-d' }}</td>
+                        <td>{{ bill.notes|default_if_none:""}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
             <div class="page">
                 <span>第<b>{{ page }}</b> 页 /共<b>{{ billList.paginator.num_pages }}</b>页</span>
-                <a href="?page=1{% if code %}&code={{ code }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">首页</a>
+                <a href="?page=1{% if sheetId %}&sheetId={{ sheetId }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">首页</a>
 
                 {% if billList.has_previous %}
-                <a href="?page={{ billList.previous_page_number }}{% if code %}&code={{ code }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">上一页</a>
+                <a href="?page={{ billList.previous_page_number }}{% if sheetId %}&sheetId={{ sheetId }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">上一页</a>
                 {% else %}
                 <a href="javascript:;">上一页</a>
                 {% endif %}
 
                 {% if billList.has_next %}
-                <a href="?page={{ billList.next_page_number }}{% if code %}&code={{ code }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">下一页</a>
+                <a href="?page={{ billList.next_page_number }}{% if sheetId %}&sheetId={{ sheetId }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">下一页</a>
                 {% else %}
                 <a href="javascript:;">下一页</a>
                 {% endif %}
 
-                <a href="?page={{ billList.paginator.num_pages }}{% if code %}&code={{ code }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">尾页</a>
+                <a href="?page={{ billList.paginator.num_pages }}{% if sheetId %}&sheetId={{ sheetId }}{% endif %}{% if shopCode %}&shopcode={{ shopCode }}{% endif %}{% if start %}&start={{ start }}{% endif %}{% if end %}&end={{ end }}{% endif %}">尾页</a>
 
                 <form id="pageForm" name="pageForm" method="get">
-                    <input name="code" type="hidden" value="{{ code }}">
+                    <input name="sheetId" type="hidden" value="{{ sheetId }}">
                     <input name="shopcode" type="hidden" value="{{ shopCode }}">
                     <input name="start" type="hidden" value="{{ start }}">
                     <input name="end" type="hidden" value="{{ end }}">

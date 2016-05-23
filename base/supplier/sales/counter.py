@@ -261,8 +261,8 @@ def detail(request):
         result.setdefault("start",start)
         result.setdefault("end",end)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
         return render(request, "user_sale_counter_detail.html",result)
     else:
         return exportDetail(outlist,sum1,sum2,sum3)
@@ -274,7 +274,7 @@ def exportDetail(rslist,sum1,sum2,sum3):
               ("销售数量","1000","promflag"),("实际销售","1000","startdate"),("销售成本","1000","enddate"),
               ("占比","500","enddate"),("累计占比","1000","enddate")]
 
-    fmtlist = [None,None,"%Y-%m-%d","0.00","0.00","0.00","0.00","0.0"]
+    fmtlist = [None,None,"%Y-%m-%d","0.00","0.000","0.000","0.00","0.0"]
 
     sumList = ["合计",None,None,sum1,sum2,sum3,"100.00","100.00"]
 

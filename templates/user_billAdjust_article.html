@@ -10,13 +10,13 @@
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h1>
-                    变价单明细
+                    往来单据额调整单明细
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
                 </h3>
                 <p>
-                    <b>变价单号：</b><span>{{ code }}</span>
+                    <b>单号：</b><span>{{ code }}</span>
                     <b>审核日期：</b><span>{{ suppiler.chdate | date:'Y-m-d' }}</span>
                     <b>生成日期：</b><span>{{ suppiler.edate | date:'Y-m-d' }}</span>
                 </p>
@@ -33,7 +33,7 @@
                         <th>序号</th>
                         <th>供应商编码</th>
                         <th>批次号</th>
-                        <th>商品编码</th>
+                        <th>商品条码</th>
                         <th>品名</th>
                         <th>调整数量</th>
                         <th>原含税单价</th>
@@ -48,20 +48,20 @@
                         <td>{{ forloop.counter }}</td>
                         <td>{{ adBill.spercode }}</td>
                         <td>{{ adBill.adbatchseq }}</td>
-                        <td>{{ adBill.procode }}</td>
+                        <td>{{ adBill.barcode }}</td>
                         <td>{{ adBill.pname }}</td>
                         <td>{{ adBill.anum | floatformat:2 }}</td>
-                        <td>{{ adBill.cprice_notax | floatformat:2 }}</td>
-                        <td>{{ adBill.dqhsjj }}</td>
-                        <td>{{ adBill.sum4 }}</td>
+                        <td>{{ adBill.cprice_notax | floatformat:3 }}</td>
+                        <td>{{ adBill.dqhsjj| floatformat:3 }}</td>
+                        <td>{{ adBill.sum4 | floatformat:3}}</td>
                     </tr>
                     {% endfor %}
                     <tr>
                         <td colspan="5">合计：</td>
-                        <td>{{ sum5 }}</td>
+                        <td>{{ sum5| floatformat:2 }}</td>
                         <td></td>
                         <td></td>
-                        <td>{{ sum6 }}</td>
+                        <td>{{ sum6| floatformat:3 }}</td>
                     </tr>
                 </tbody>
             </table>

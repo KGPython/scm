@@ -6,6 +6,14 @@
     <body>
         {% load basefilter %}
         {% include "common/nav.html" %}
+         <style>
+            .query .query-list .input select{
+                height: 28px;
+                line-height: 28px;
+                text-indent: 10px;
+                width: 100px;
+            }
+        </style>
         <div class="query comWidth">
             <form id="queryForm" class="query-list" action="/scm/base/supp/order/query/" method="post">
                  <div class="shopList input">
@@ -57,7 +65,7 @@
                         </table>
                     </div>
                 </div>
-                <p class="input">
+                <p class="input" >
                     <label>确认状态：</label>
                     <select type="text" name="status" >
                         <option value="A" {% ifequal status "" %}selected="selected" {% endifequal %}>
@@ -82,6 +90,20 @@
                         </option>
                         <option value="N" {% ifequal state "N" %}selected="selected" {% endifequal %}>
                             未过期
+                        </option>
+                    </select>
+                </p>
+                <p class="input">
+                    <label>验收状态：</label>
+                    <select name="inflag">
+                        <option value="" {% ifequal inflag "" %}selected="selected" {% endifequal %}>
+                            全部
+                        </option>
+                        <option value="1" {% ifequal inflag "1" %}selected="selected" {% endifequal %}>
+                            已验收
+                        </option>
+                        <option value="0" {% ifequal inflag "0" %}selected="selected" {% endifequal %}>
+                            未验收
                         </option>
                     </select>
                 </p>
@@ -143,7 +165,7 @@
                      <b>单位：</b><span>{{ grpname }}</span>
                 </p>
                 <p>
-                    <b>门店：</b><span>{{ shopnames }}</span>
+                    <b>门店：</b><span>{% if shopnames %}{{ shopnames }} {% else %}全部 {% endif %}</span>
                 </p>
                 <p><b>时间：</b><span>{{ start }}至{{ end }}</span> <b>单位：</b><span>元</span> <b>含税进价金额合计：</b><span>{{ sum }}</span></p>
             </div>

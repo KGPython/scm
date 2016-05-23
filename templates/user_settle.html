@@ -76,17 +76,20 @@
         <div class="mainSettle comWidth">
             <div class="tTitle">
                 <h1>
-                    {% if flag == '0' %}制单{% elif flag == '1' %}制单审核{% elif flag == '2' %}付款审核{% elif flag == '3' %}缴款审核{% elif flag == '100' %}确认{% else %}全部{% endif %}结算单列表结算单列表
+                        {% if flag == '0' %}制单未审核{% elif flag == '1,4'%}单据待审批{% elif flag == '2' %}扣项缴款待审核{% elif flag == '3' %}付款待审核{% elif flag == '100' %}已付款{% else %}全部{% endif %}结算单列表
                 </h1>
                 <h3>
                     单位：<span>{{ grpName }}</span>
                 </h3>
                 <p>
-                    门店：
+                    结算位置：
                     <span class="shopListTxt">
                         {% if shopId %}
                             {% for id in shopId %}
-                               {{ shopDict | key:id}}，
+                               {{ shopDict | key:id}}
+                                {% if not forloop.last %}
+                                    ，
+                                {% endif %}
                             {% endfor %}
                         {% else %}
                             全部
@@ -100,7 +103,9 @@
                     <b>时间：</b><span>{{ start }}至{{ end }}</span>
                     <b>单位：</b><span>元</span>
                 </p>
+
             </div>
+            <div style="text-align: left;font-size: 13px;"><p><span style="color: red;font-size: 14px;">※</span>&nbsp;1.结算单审核状态为：<span style="color:red;font-size: 14px;">2-单据待审批</span>,才可打印结算单、开发票、录发票。2.结算单审核状态为：<span style="color:red;font-size: 14px;">4-付款待审核</span>,才代表已经缴费成功，进入付款程序。</p></div>
             <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
                 <thead>
                     <tr>
@@ -132,7 +137,7 @@
                         <td>{{ balance.begindate | date:'Y-m-d' }}</td>
                         <td>{{ balance.enddate | date:'Y-m-d' }}</td>
                         <td>{{ balance.editdate | date:'Y-m-d' }}</td>
-                        <td>{% if balance.flag == 0 %}制单{% elif balance.flag == 1 %}制单审核{% elif balance.flag == 2 %}付款审核{% elif balance.flag == 3 %}缴款审核{% elif balance.flag == 100 %}确认{% endif %}</td>
+                        <td>{% if balance.flag == 0 %}1-制单未审核{% elif balance.flag == 1 or balance.flag == 4 %}2-单据待审批{% elif balance.flag == 2 %}3-扣项缴款待审核{% elif balance.flag == 3 %}4-付款待审核{% elif balance.flag == 100 %}5-已付款{% endif %}</td>
                        {% comment %} <td>{% if balance.seenum %}{{ balance.seenum }}{% else %}0{% endif %}</td>{% endcomment %}
                         <td><a href="{% url 'createInvioce' %}?sheetid={{ balance.sheetid }}">录发票</a></td>
                     </tr>

@@ -1,7 +1,7 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import xlrd,xlwt3 as xlwt
+import xlwt3 as xlwt
 import os,decimal,datetime,time,random,hashlib
 from PIL import Image, ImageDraw, ImageFont
 
@@ -13,6 +13,38 @@ import configparser
 import pymysql
 import pymssql
 import _mssql
+
+def convertToStr(val,*arg):
+    if arg:
+        fmt,divisor = arg[0],arg[1]
+    else:
+        fmt,divisor = None,None
+
+    if not fmt:
+        fmt = "0.00"
+    if not divisor:
+        divisor = 10000
+
+    if isinstance(val,decimal.Decimal):
+        return str(float((val/divisor).quantize(decimal.Decimal(str(fmt)))))
+    else:
+        return str(float(val))
+
+def quantize(val,*arg):
+    if arg:
+        fmt,divisor = arg[0],arg[1]
+    else:
+        fmt,divisor = None,None
+
+    if not fmt:
+        fmt = "0.00"
+    if not divisor:
+        divisor = 10000
+
+    if isinstance(val,decimal.Decimal):
+        return (val/divisor).quantize(decimal.Decimal(str(fmt)))
+    else:
+        return val
 
 def encodeStr(str):
     if str:

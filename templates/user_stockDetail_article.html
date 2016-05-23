@@ -14,16 +14,18 @@
                  <input type="hidden" name="proname" value="{{ proName }}">
                  <input type="hidden" name="num1" value="{{ num1 }}">
                  <input type="hidden" name="num2" value="{{ num2 }}">
-                 <p style="width: 100%">
-                     <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
-                     <input class="query-enter right" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
+                 <p class="right" >
+                     <input class="query-enter" type="button" value="返回" onclick="window.history.back();return false;">
+                 </p>
+                  <p class="right" >
+                     <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
                  </p>
              </form>
         </div>
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h2>
-                    单品: {{ proName }} &nbsp;&nbsp;&nbsp;&nbsp;库存单明细
+                    单品<span style="color:red">[{{ proName }}]</span>库存单明细
                 </h2>
                 <p>单位：{{ grpName }} 单位：元</p>
             </div>
@@ -41,14 +43,14 @@
                     <tr>
                         <td>{{ stcok.shopnm }}</td>
                         <td>{{ stcok.num | floatformat:2}}</td>
-                        <td>{{ stcok.sums_intax | floatformat:2 }}</td>
+                        <td>{{ stcok.sums_intax | floatformat:3}}</td>
                         <td>{{ flagDict | key:stcok.clearflag }}</td>
                     </tr>
                 {% endfor %}
                 <tr>
                         <td colspan="1">合计：</td>
                         <td>{{ total_num | floatformat:2 }}</td>
-                        <td>{{ total_sums_intax | floatformat:2 }}</td><td></td>
+                        <td>{{ total_sums_intax | floatformat:3 }}</td><td></td>
                     </tr>
                 </tbody>
             </table>

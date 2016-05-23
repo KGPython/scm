@@ -105,24 +105,32 @@ $(document).on('blur','input[name=cmoney]',function(){
     var trs = $("#invoiceTable").find("tr");
     cmoneySum=0.00;
     jshjSum=0.00;
+    cshSum=0.00;
     trs.each(function(){
+        var rate = $(this).find('td').eq('1').find('input').val();
         var cmoney = $(this).find('td').eq('3').find('input').val();
         if(cmoney){
-            cmoneySum += parseFloat(cmoney,2);
+            cmoneySum += parseFloat(cmoney);
         }
-        var csh = $(this).find('td').eq('4').find('input').val();
-        if(!csh){
-            csh = 0.0;
-        }
-        var jsum = parseFloat(csh)+parseFloat(cmoney);
-        if(jsum){
-             jshjSum += parseFloat(jsum,2);
+        var csh = parseFloat(rate)/100.00 * parseFloat(cmoney);
+        if(csh){
+            cshSum += csh;
+        }else{
+            csh = 0.00;
         }
 
-        $(this).find('td').eq('6').find('input').val(cmoney);
-        $(this).find('td').eq('5').find('input').val(jsum);
+        $(this).find('td').eq('4').find('input').val(parseFloat(csh).toFixed(2));
+
+        var jsum = parseFloat(csh)+parseFloat(cmoney);
+        if(jsum){
+             jshjSum += parseFloat(jsum);
+        }
+
+        $(this).find('td').eq('5').find('input').val(jsum.toFixed(2));
+        $(this).find('td').eq('6').find('input').val(jsum.toFixed(2));
     });
     $("#cmoneySum").text(parseFloat(cmoneySum).toFixed(2));
+    $("#cshSum").text(parseFloat(cshSum).toFixed(2));
     $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 //税额（csh）求和
@@ -133,7 +141,7 @@ $(document).on('blur','input[name=csh]',function(){
     trs.each(function(){
         var csh = $(this).find('td').eq('4').find('input').val();
         if(csh){
-            cshSum += parseFloat(csh,2);
+            cshSum += parseFloat(csh);
         }
 
         var cmoney = $(this).find('td').eq('3').find('input').val();
@@ -142,26 +150,90 @@ $(document).on('blur','input[name=csh]',function(){
         }
         var jsum =  parseFloat(csh)+parseFloat(cmoney);
         if(jsum){
-             jshjSum += parseFloat(jsum,2);
+             jshjSum += parseFloat(jsum);
         }
 
-        $(this).find('td').eq('5').find('input').val(jsum);
+        $(this).find('td').eq('5').find('input').val(jsum.toFixed(2));
+        $(this).find('td').eq('6').find('input').val(jsum.toFixed(2));
     });
     $("#cshSum").text(parseFloat(cshSum).toFixed(2));
     $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 //税额（jshj）求和
-$(document).on('blur','input[name=jshj]',function(){
+$(document).on('blur','input[name=ctaxrate]',function(){
     var trs = $("#invoiceTable").find("tr");
+    cmoneySum=0.00;
     jshjSum=0.00;
+    cshSum=0.00;
     trs.each(function(){
-        var jshj = $(this).find('td').eq('5').find('input').val();
-        if(jshj){
-            jshjSum += parseFloat(jshj,2);
+        var rate = $(this).find('td').eq('1').find('input').val();
+        var cmoney = $(this).find('td').eq('3').find('input').val();
+        if(cmoney){
+            cmoneySum += parseFloat(cmoney);
         }
+        var csh = parseFloat(rate)/100.00 * parseFloat(cmoney);
+        if(csh){
+            cshSum += csh;
+        }else{
+            csh = 0.00;
+        }
+
+        $(this).find('td').eq('4').find('input').val(parseFloat(csh).toFixed(2));
+
+        var jsum = parseFloat(csh)+parseFloat(cmoney);
+        if(jsum){
+             jshjSum += parseFloat(jsum);
+        }
+
+        $(this).find('td').eq('5').find('input').val(jsum.toFixed(2));
+        $(this).find('td').eq('6').find('input').val(jsum.toFixed(2));
     });
+    $("#cmoneySum").text(parseFloat(cmoneySum).toFixed(2));
+    $("#cshSum").text(parseFloat(cshSum).toFixed(2));
     $("#jshjSum").text(parseFloat(jshjSum).toFixed(2));
 });
 
-
+function getYestodayDate(date){
+    var yesterday_milliseconds=date.getTime()-1000*60*60*24;
+    var yesterday = new Date();
+    yesterday.setTime(yesterday_milliseconds);
+    return yesterday;
+}
+ //当前日期前一天
+ function getYestoday(date){
+    var yesterday = getYestodayDate(date);
+    var strYear = yesterday.getFullYear();
+    var strDay = yesterday.getDate();
+    var strMonth = yesterday.getMonth()+1;
+    if(strMonth<10){
+        strMonth="0"+strMonth;
+    }
+    if(strDay<10){
+        strDay="0"+strDay;
+    }
+    datastr = strYear+"-"+strMonth+"-"+strDay;
+    return datastr;
+}
+//月时间进度
+function getMonthTimeProgress(date){
+    var yesterday = getYestodayDate(date);
+    var strYear = yesterday.getFullYear();
+    var strDay = yesterday.getDate();
+    var strMonth = yesterday.getMonth()+1;
+    var lastDay = getLastDay(strYear,strMonth);
+    var rs = (strDay*100/lastDay).toFixed(2)+"%";
+    return rs;
+}
+//当月最后一天
+function getLastDay(year,month){
+     var new_year = year;    //取当前的年份
+     var new_month = month++;//取下一个月的第一天，方便计算（最后一天不固定）
+     if(month>12)            //如果当前大于12月，则年份转到下一年
+     {
+          new_month -=12;        //月份减
+          new_year++;            //年份增
+     }
+     var new_date = new Date(new_year,new_month,1);                //取当年当月中的第一天
+     return (new Date(new_date.getTime()-1000*60*60*24)).getDate();//获取当月最后一天日期
+}
 

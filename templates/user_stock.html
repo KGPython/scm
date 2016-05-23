@@ -44,8 +44,8 @@
                     </div>
                 </div>
                 <p class="input">
-                    <label>商品编码：</label>
-                    {{ form.proCode }}
+                    <label>商品条码：</label>
+                    {{ form.barcode }}
                 </p>
                 <p class="num input">
                     <label>库存范围：</label>
@@ -122,14 +122,14 @@
                             {{ stock.num | floatformat:2 }}
                         </td>
                         <td>
-                            {{ stock.sums_intax | floatformat:2 }}
+                            {{ stock.sums_intax | floatformat:3 }}
                         </td>
                     </tr>
                 {% endfor %}
                     <tr>
                         <td>合计：</td>
                         <td>{{ totalNum | floatformat:2 }}</td>
-                        <td>{{ totalSumsIntax | floatformat:2 }}</td>
+                        <td>{{ totalSumsIntax | floatformat:3 }}</td>
                     </tr>
                 </tbody>
             </table>

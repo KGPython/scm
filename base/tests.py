@@ -93,16 +93,65 @@ def testmssql():
     for row in list:
         print(row["ID"],mdu.getDBVal(row,"Name"))
 
+def testSort():
+    nums = [['a',11],['b',2],['c',2],['d',1],['e',1],['f',1],['g',34],['h',35],['i',37],['j',39]]
+    rs = []
+    nums.sort(key=lambda x:x[1])
+    for i in range(0,len(nums)):
+        item = nums[i]
+        item.append(0)
+        rs.append(item)
 
+    print(rs)
+    j = 1
+    for i in range(0,len(rs)):
+        if i>0:
+            a = rs[i-1]
+            b = rs[i]
+            if a[1]==b[1]:
+                b[2] = j
+            else:
+                j += 1
+                b[2]=j
+        else:
+           a = rs[i]
+           a[2] = j
+    print(rs)
+
+def testSort2():
+    nums = [['a',11],['d',1],['g',34],['e',1],['h',35],['c',2],['i',37],['b',2],['f',1],['j',39]]
+    nums.sort(key=lambda x:x[1])
+    j = 1
+    for i in range(0,len(nums)):
+        if i > 0:
+            a = nums[i-1]
+            b = nums[i]
+            if a[1] != b[1]:
+                j += 1
+            b.append(j)
+        else:
+            a = nums[i]
+            a.append(j)
+    print(nums)
 
 if __name__ == "__main__":
 
     print(">>>main()")
-    print(DateUtil.get_firstday_month(-2))
-    print(DateUtil.get_lastday_month(-2))
-    print("月结30天" in "")
+    # print(DateUtil.get_firstday_month(-2))
+    # print(DateUtil.get_lastday_month(-2))
+    # print("月结30天" in "")
+    # testSort2()
 
+    str = "CM01201603020064"
+    if str.startswith("CM",0,2):
+        print("包含")
+    else:
+        print("不包含")
 
+    print(str[0:2:])
+    pr = str[0:2:]
+    if pr in ["CM","cM","cm","Cm",]:
+        print("true");
 
 
 

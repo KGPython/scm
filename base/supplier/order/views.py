@@ -1,16 +1,15 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import os,xlrd,json,xlwt3 as xlwt
-import time,datetime
+import json,datetime
 from django.http import HttpResponse
 from django.db import transaction
 from django.db.models import Q,Sum
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
-from base.models import BasUser,Ord,OrdD,BasShop
-from base.utils import Constants,MethodUtil
+from base.models import OrdStatus,Ord,OrdD,BasShop
+from base.utils import MethodUtil
 from base.views import findShop
 
 __EACH_PAGE_SHOW_NUMBER = 10
@@ -45,6 +44,8 @@ def query(request):
     end = MethodUtil.getReqVal(request,"end","")  #审核日期：结束时间
     orderstyle =  MethodUtil.getReqVal(request,"orderstyle","")   #排序条件
     ordercode = MethodUtil.getReqVal(request,"ordercode","")   #订单编号
+
+    inflag =  MethodUtil.getReqVal(request,"inflag","")    #验收状态
 
     #组合查询条件
     shopnames = ""
@@ -88,6 +89,9 @@ def query(request):
     else:
         karrs.setdefault("checkdate__lte","{end} 23:59:59".format(end=datetime.datetime.now().strftime("%Y-%m-%d")))
 
+    if inflag and inflag!="":
+        karrs.setdefault("inflag",inflag)
+
     #设置默认排序方式
     orderby = orderstyle
     if not orderby:
@@ -105,6 +109,11 @@ def query(request):
         .values("remark","logistics","inflag","ordercode","checkdate","concode","style","spercode","spername","status","sdate",
                 "shopcode","inprice_tax","printnum","seenum","purday","spsum","sjshsum","ssspzb")
 
+    for item in pubList:
+        slist = OrdStatus.objects.filter(ordercode=item["ordercode"]).values("status")
+        if slist:
+            item["status"] = slist[0]["status"]
+
     page = Paginator(pubList,__EACH_PAGE_SHOW_NUMBER,allow_empty_first_page=True).page(int(pageNum))
 
     result = {"page":page,"pageNum":str(pageNum)}
@@ -112,6 +121,7 @@ def query(request):
     result.setdefault("status",status)
     result.setdefault("grpname",grpname)
     result.setdefault("state",state)
+    result.setdefault("inflag",inflag)
     result.setdefault("logistics",logistics)
     result.setdefault("start",start)
     result.setdefault("end",end)
@@ -133,9 +143,17 @@ def find(request):
 
     #查询订单信息
     order = Ord.objects.get(ordercode=ordercode)
+    slist = OrdStatus.objects.filter(ordercode=ordercode).values("ordercode","yyshdate","status")
 
-    if not order.yyshdate:
-        order.yyshdate = order.sdate
+    orderstatus = {}
+    if not slist:
+        orderstatus["yyshdate"] = order.sdate
+    else:
+        sobj = slist[0]
+        if not sobj["yyshdate"]:
+            orderstatus["yyshdate"] = order.sdate
+        else:
+            orderstatus = slist[0]
 
     seenum = order.seenum
     if not seenum:
@@ -151,12 +169,22 @@ def find(request):
         .values( "drrq","ordercode","rid","procode","salebn","pn","classes","unit","taxrate","num","innums","denums","price_intax","sum_intax","nums_inplan",
                     "date_inplan","checkdate","prnum","barcode","rowno","grpcode","sjshsum","ssnumzb","sjprnum","promflag","refsheetid")
 
+    sum1,sum2,sum3 = 0,0,0
+    for item in detailList:
+        sum1 += item["denums"]
+        sum2 += item["price_intax"]
+        sum3 += item["denums"] * item["price_intax"]
+        item["jshj"] = item["denums"] * item["price_intax"]
     today = datetime.datetime.today()
 
     #查询门店信息
     shop = BasShop.objects.get(grpcode=grpcode,shopcode=order.shopcode)
+    if shop.tel:
+        shop.tel = shop.tel.strip()
+    else:
+        shop.tel = ""
 
-    return render(request,"user_order_article.html",{"order":order,"detailList":detailList,"today":today,"shop":shop,"curgrpname":grpname})
+    return render(request,"user_order_article.html",locals())
 
 #保存预约送货日期
 @csrf_exempt
@@ -168,20 +196,25 @@ def save(request):
 
     response_data = {}
     try:
+        if ordercode:
+            #1.更新订单明细
+            # detailList = OrdD.objects \
+            #                  .filter(ordercode=ordercode,grpcode=grpcode) \
+            #                  .values("ordercode","procode","barcode","grpcode")
 
+            # for row in detailList:  procode=str(row["procode"])
+            OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode).update(sjshsum="-1",sjprnum="-1")
 
-        #1.更新订单明细
-        detailList = OrdD.objects \
-                         .filter(ordercode=ordercode,grpcode=grpcode) \
-                         .values("ordercode","procode","barcode","grpcode")
+            #2.保存预约送货日期 更新订单状态
+            rs = OrdStatus.objects.all().filter(ordercode=ordercode)
+            if not rs:
+                OrdStatus.objects.create(ordercode=ordercode, yyshdate=yyshdate, status="Y")
+            else:
+                OrdStatus.objects.filter(ordercode=ordercode).update(yyshdate=yyshdate,status="Y")
 
-        for row in detailList:
-            OrdD.objects.filter(ordercode=ordercode,grpcode=grpcode,procode=str(row["procode"])).update(sjshsum="-1",sjprnum="-1")    #note="
-
-        #2.保存预约送货日期，更新订单状态
-        Ord.objects.filter(ordercode=ordercode).update(yyshdate=yyshdate,status="Y")
-
-        response_data['result'] = 'success'
+            response_data['result'] = 'success'
+        else:
+             response_data['result'] = 'failure'
     except Exception as e:
         print(e)
         response_data['result'] = 'failure'

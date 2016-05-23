@@ -98,37 +98,33 @@ def findSheet(request):
             if srow:
                 refsheetid = srow["refsheetid"]
                 refsheettype = srow["refsheettype"]
-                prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
-                code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
+                if refsheettype in Constants.SCM_SHEET_TYPE_KEY:
+                    prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
+                    code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
 
-                slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
-                                                                                      "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
-                                                                                      "anum_notax","anum_intax","anum_stock","anum_stock_intax",
-                                                                                      "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
-                                                                                      "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+                    slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
+                                                                                          "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
+                                                                                          "anum_notax","anum_intax","anum_stock","anum_stock_intax",
+                                                                                          "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
+                                                                                          "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+                    for item in slist2:
+                        sum1 += item["anum"]
+                        sum2 += item["cprice_notax"]
+                        sum3 += item["dqhsjj"]
+
+                    result["sum1"] = sum1
+                    result["sum2"] = sum2
+                    result["sum3"] = sum3
+
+                else:
+                    slist2 = []
             else:
                 slist2 = []
             result["itemList"] = slist2
+            result["refsheettype"] = refsheettype
             targetPage = "user_settle_article_g_detail2.html"
 
-        # for item in slist2:
-        #     sum1 += item["num"]
-        #     sum2 += item["innums"]
-        #     sum3 += item["denums"]
-        #     sum4 += item["giftnum"]
-        #     sum5 += item["price_intax"]
-        #     sum6 += item["prnum"]
-        #     sum7 += item["sum_tax"]
-        #     sum8 += item["sum"]
-        #
-        # result["sum1"] = sum1
-        # result["sum2"] = sum2
-        # result["sum3"] = sum3
-        # result["sum4"] = sum4
-        # result["sum5"] = sum5
-        # result["sum6"] = sum6
-        # result["sum7"] = sum7
-        # result["sum8"] = sum8
+
 
 
     return render(request,targetPage,result)
@@ -651,15 +647,19 @@ def getStartAndEndDate(contracttype,payTypeName):
         cend = datetime.datetime.now().strftime("%Y-%m-%d")
     else:
         #单据日期
-        if "月结30天" in payTypeName or "月结45天" in payTypeName:
-            n = -2   #前两个月一整月
-        elif "月结60天" in payTypeName:
-            n = -3   #前三个月一整月
-        else:
-            n = -1   #前一个月一整月
+        if "月" in payTypeName and "半月结" not in payTypeName:
+            if "月结30天" in payTypeName or "月结45天" in payTypeName:
+                n = -2   #前两个月一整月
+            elif "月结60天" in payTypeName:
+                n = -3   #前三个月一整月
+            else:
+                n = -1   #前一个月一整月
 
-        cstart = DateUtil.get_firstday_month(n)
-        cend = DateUtil.get_lastday_month(n)
+            cstart = DateUtil.get_firstday_month(n)
+            cend = DateUtil.get_lastday_month(n)
+        else:
+            cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
+            cend = datetime.datetime.now().strftime("%Y-%m-%d")
 
     return pstart,pend,cstart,cend
 
@@ -944,13 +944,14 @@ def balance(request):
         end = request.GET.get('end',end)
         sheetId = request.GET.get('sheetid','')
         flag = request.GET.get('flag','')
-        orderStyle = request.GET.get('orderstyle','editdate')
-        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'flag':flag}
+        orderStyle = request.GET.get('orderstyle','-editdate')
+        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'flag':flag,'orderStyle':orderStyle}
         form = BillInForm(data)
 
     kwargs = {}
     if flag:
-        kwargs.setdefault('flag',flag)
+        flags = flag.split(",")
+        kwargs.setdefault('flag__in',flags)
 
     if sheetId:
         kwargs.setdefault('sheetid__contains',sheetId)
@@ -1005,7 +1006,7 @@ def balanceArticle(request):
     s_suppname = request.session.get('s_suppname')   #用户所属单
     grpName = Constants.SCM_UNIT[grpCode]
     contracttype = request.session.get("s_contracttype")   #经营方式
-    paytypeid = request.session.get("s_paytypeid")   #经营方式
+    paytypeid = str(int(request.session.get("s_paytypeid")))   #经营方式
 
     sheetId = request.GET.get('sheetid','')
     queryAction = request.POST.get('actionTxt','')
@@ -1018,7 +1019,7 @@ def balanceArticle(request):
     #结算通知单汇总      ,beginsdate,endsdate
     balance = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
                                                ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
-                                               "premoney","editor","checker","paychecker","contracttype","beginsdate","endsdate")\
+                                               "premoney","editor","checker","paychecker","contracttype","beginsdate","endsdate","advance")\
                                        .get(sheetid__contains=sheetId)
     #结算通知明细
     balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",

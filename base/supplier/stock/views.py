@@ -21,9 +21,15 @@ def supplierStock(request):
         form = StockForm(request.POST) # form 包含提交的数据
         if form.is_valid():
             shopCode = form.cleaned_data['shopCode']
-            proCode = form.cleaned_data['proCode']
+            #proCode = form.cleaned_data['proCode']
+            barcode = form.cleaned_data['barcode']
             num1 = form.cleaned_data['num1']
             num2 = form.cleaned_data['num2']
+            if num1 >= 0:
+                num1 = str(int(num1))
+            if num2:
+                num2 = str(int(num2))
+
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
             orderStyle = form.cleaned_data['orderStyle']
@@ -33,8 +39,8 @@ def supplierStock(request):
                 shopCode = shopCode[0:(len(shopCode)-1)]
                 shopCode =shopCode.split(',')
                 kwargs.setdefault("shopcode__in",shopCode)
-            if proCode:
-                kwargs.setdefault("procode__contains",proCode.strip())
+            if barcode:
+                kwargs.setdefault("barcode__contains",barcode.strip())
             if scCode:
                 kwargs.setdefault("sccode__contains",scCode.strip())
             if proName:
@@ -64,6 +70,22 @@ def supplierStock(request):
             print(form.errors)
     else:
         form = StockForm()
+        kwargs = {}
+        num1 = "0"
+        num2 = "100000"
+        kwargs.setdefault("num__gte",num1)
+        kwargs.setdefault("num__lte",num2)
+        kwargs.setdefault("suppcode",suppCode)
+        kwargs.setdefault("grpcode",grpCode)
+        stockList = Stock.objects.values("shopcode")\
+                                     .filter(**kwargs)\
+                                     .annotate(num=Sum('num'),sums_intax=Sum('sums_intax'))\
+                                     .order_by('-sums_intax')
+        totalNum = 0  #总库存数量
+        totalSumsIntax = 0  #总库存进价含税金额
+        for stock in stockList:
+            totalNum += stock.get('num',0)
+            totalSumsIntax += stock.get('sums_intax',0)
     return render(request,'user_stock.html',locals())
 
 
@@ -80,6 +102,7 @@ def stockArticle(request):
         form = StockForm(request.POST) # form 包含提交的数据
         if form.is_valid():
             proCode = form.cleaned_data['proCode']
+            barcode = form.cleaned_data['barcode']
             num1 = form.cleaned_data['num1']
             num2 = form.cleaned_data['num2']
             scCode = form.cleaned_data['scCode']
@@ -87,8 +110,8 @@ def stockArticle(request):
             orderStyle = form.cleaned_data['orderStyle']
 
             kwargs = {}
-            if proCode:
-                kwargs.setdefault("procode__contains",proCode.strip())
+            if barcode:
+                kwargs.setdefault("barcode__contains",barcode.strip())
             if scCode:
                 kwargs.setdefault("sccode__contains",scCode.strip())
             if proName:
@@ -117,7 +140,7 @@ def stockArticle(request):
     else:
         form = StockForm(request.GET)
         kwargs = {}
-        proCode =request.GET.get('proCode')
+        barcode =request.GET.get('barcode')
         num1 =request.GET.get('num1')
         num2 =request.GET.get('num2')
         scCode =request.GET.get('scCode')
@@ -127,8 +150,8 @@ def stockArticle(request):
             orderStyle='sums_intax'
 
         kwargs = {}
-        if proCode:
-            kwargs.setdefault("procode__contains",proCode.strip())
+        if barcode:
+            kwargs.setdefault("barcode__contains",barcode.strip())
         if scCode:
             kwargs.setdefault("sccode__contains",scCode.strip())
         if proName:
@@ -160,7 +183,7 @@ def stockDetail(request):
         form = StockForm(request.POST) # form 包含提交的数据
         if form.is_valid():
             shopCode = form.cleaned_data['shopCode']
-            proCode = form.cleaned_data['proCode']
+            barcode = form.cleaned_data['barcode']
             num1 = str(form.cleaned_data['num1'])
             num2 = str(form.cleaned_data['num2'])
             scCode = form.cleaned_data['scCode']
@@ -176,10 +199,10 @@ def stockDetail(request):
                     shopCode +="','"
                 shopCode = shopCode[0:len(shopCode)-2]
 
-
-                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag  from stock where shopcode in ("+shopCode+") and procode like '%"+proCode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                #shopcode,
+                sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where shopcode in ("+shopCode+") and barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
             else:
-                sql ="select * from (select shopcode, (select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,clearflag,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode,clearflag from stock where procode like '%"+proCode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by shopcode,brandnm,clearflag,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
+                sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
 
             cursor = connection.cursor()
             cursor.execute(sql)
@@ -189,28 +212,57 @@ def stockDetail(request):
 
             stockList = []
             total_sums_intax = 0
+            total_sums = 0
             for obj in fetchall:
                 dic={}
-                dic['sccode']=obj[3]
-                dic['scname']=obj[4]
-                dic['procode']=obj[5]
-                dic['proname']=obj[6]
-                dic['classes']=obj[7]
-                dic['unit']=obj[8]
-                dic['num']=obj[10]
-                dic['sums_intax']=obj[11]
-                dic['barcode']=obj[12]
-                total_sums_intax +=obj[11]
+                dic['sccode']=obj[2]
+                dic['scname']=obj[3]
+                dic['procode']=obj[4]
+                dic['proname']=obj[5]
+                dic['classes']=obj[6]
+                dic['unit']=obj[7]
+                dic['num']=obj[9]
+                dic['sums_intax']=obj[10]
+                dic['barcode']=obj[11]
+                total_sums_intax +=obj[10]
+                total_sums += obj[9]
                 stockList.append(dic)
             if request.GET.get('action', None)!="outQuery":
                 title = '全部库存明细列表 '
                 keyList = ['procode','proname','barcode','sccode','scname','classes','unit','num','sums_intax']#由excel展现字段决定
                 rowTitle = [u'商品编码',u'商品名称',u'商品条码',u'小类编码',u'小类名称',u'规格',u'单位',u'数量',u'含税进价金额']
-                rowTotal = ['',u'合计','','','','','','',total_sums_intax]
+                rowTotal = ['',u'合计','','','','','',total_sums,total_sums_intax]
                 return writeExcel(stockList,title,rowTitle,keyList,rowTotal)
 
     else:
         form = StockForm()
+        num1 = "0"
+        num2 = "100000"
+        sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by sccode"
+        cursor = connection.cursor()
+        cursor.execute(sql)
+        fetchall = cursor.fetchall()
+        cursor.close()
+        connection.close()
+
+        stockList = []
+        total_sums_intax = 0
+        total_sums = 0
+        for obj in fetchall:
+            dic={}
+            dic['sccode']=obj[2]
+            dic['scname']=obj[3]
+            dic['procode']=obj[4]
+            dic['proname']=obj[5]
+            dic['classes']=obj[6]
+            dic['unit']=obj[7]
+            dic['num']=obj[9]
+            dic['sums_intax']=obj[10]
+            dic['barcode']=obj[11]
+            total_sums_intax +=obj[10]
+            total_sums += obj[9]
+            stockList.append(dic)
+
     return render(request,'user_stockDetail.html',locals())
 
 
@@ -230,7 +282,7 @@ def detailArticle(request):
         shopCode=shopCode[0:len(shopCode)]
         sql ="select t1.shopcode,shopnm,num,sums_intax,clearflag from(select shopcode,sum(num) num,sum(sums_intax) sums_intax,clearflag from stock where shopcode in ("+shopCode+") and procode like '%"+proCode+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"' group by shopcode,clearflag) as t1,bas_shop as t2 where t2.grpcode=grpcode and t1.num>="+num1+" and t1.num<="+num2+" and t1.shopcode=t2.shopcode"
     else:
-        sql ="select t1.shopcode,shopnm,num,sums_intax,clearflag from(select shopcode,sum(num) num,sum(sums_intax) sums_intax,clearflag from stock where procode like '%"+proCode+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"' group by shopcode,clearflag) as t1,bas_shop as t2 where t2.grpcode=grpcode and t1.num>="+num1+"and t1.num<="+num2+" and t1.shopcode=t2.shopcode"
+        sql ="select t1.shopcode,shopnm,num,sums_intax,clearflag from(select shopcode,sum(num) num,sum(sums_intax) sums_intax,clearflag from stock where procode like '%"+proCode+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"' group by shopcode,clearflag) as t1,bas_shop as t2 where t2.grpcode=grpcode and t1.num>="+num1+" and t1.num<="+num2+" and t1.shopcode=t2.shopcode"
 
     cursor = connection.cursor()
     cursor.execute(sql)

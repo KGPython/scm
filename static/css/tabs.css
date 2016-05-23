@@ -1,0 +1,43 @@
+   .nav-tabs {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ddd;
+        height: 41px;
+    }
+   .nav-tabs > li:first-child{
+        margin-left: 10px;
+   }
+   .nav-tabs > li {
+        float: left;
+        margin-bottom: -1px;
+   }
+   .nav-tabs > li > a {
+        display: block;
+        padding: 10px 15px;
+        margin-right: 2px;
+        line-height: 1.42857143;
+        border: 1px solid transparent;
+        border-radius: 6px 6px 0 0;
+        font-size:14px;
+   }
+   .nav-tabs > li.active > a{
+        color: #337AB7;
+        cursor: default;
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-bottom-color: white;
+        font-size:14px;
+        height:21px;
+   }
+
+   .list-tabs .table{
+        display: none;
+   }
+
+   .card_tab1{ width:1220px; height:550px; margin:50px auto; padding:10px; box-shadow:0 0 10px #000;list-style:none;overflow: hidden;}
+   .card_tab1 .con{ width:1220px; height:550px;}
+   .card_tab1 .con ul li{ width:26px; height:550px; position:relative; float:left;}
+   .card_tab1 .con ul li.current{ width:500px;}
+   .card_tab1 .con ul li h3{ width:16px; height:520px; color:#fff; font-family:"Î¢ÈíÑÅºÚ"; font-size:16px; padding:5px; cursor:pointer;}
+   .card_tab1 .con ul li.ti1 h3{ background:#999;color:#fff; }
+   .card_tab1 .con ul li.ti2 h3{background:#ddd;color:#000;}
+   .card_tab1 .show_content{ position:absolute; left:26px; margin-right:10px;top:0; width:600px; height:550px; background-color: white;}

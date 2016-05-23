@@ -127,8 +127,8 @@ def query(request):
         result.setdefault("start",start)
         result.setdefault("end",end)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
 
         return render(request, "user_sale_ctg.html",result)
     else:
@@ -141,8 +141,8 @@ def export(rslist,sum1,sum2,sum3):
     titles = [("小类编码","1000"),("小类名称","1000"),("销售数量","1000"),("实际销售","1000"),
               ("销售成本","1000"),("占比(%)","500"),("累计占比(%)","1000")]
 
-    sumlist = ["合计","",sum1,sum2,sum3,"100.00","100.00"]
-    fmtlist = [None,None,"0.0","0.0","0.0","0.0","0.0"]
+    sumlist = ["合计","",sum1,sum2,sum3,"100.00","100.0"]
+    fmtlist = [None,None,"0.00","0.000","0.000","0.00","0.0"]
 
     book = mtu.exportXls(sname,titles,rslist,sumlist,None,fmtlist)
 
@@ -266,8 +266,8 @@ def detail(request):
         result.setdefault("start",start)
         result.setdefault("end",end)
         result.setdefault("sum1",sum1.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.00')))
-        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.00')))
+        result.setdefault("sum2",sum2.quantize(decimal.Decimal('0.000')))
+        result.setdefault("sum3",sum3.quantize(decimal.Decimal('0.000')))
 
         return render(request, "user_sale_ctg_detail.html",result)
     else:
@@ -279,8 +279,8 @@ def exportDetail(rslist,sum1,sum2,sum3):
     titles = [("日期","1000"),("小类编码","1000"),("小类名称","1000"),("销售数量","1000"),("实际销售","1000"),
               ("销售成本","1000"),("占比(%)","500"),("累计占比(%)","1000")]
 
-    sumlist = ["合计","","",sum1,sum2,sum3,"100.00","100.00"]
-    fmtlist = ["%Y-%m-%d",None,None,"0.0","0.0","0.0","0.0","0.0"]
+    sumlist = ["合计","","",sum1,sum2,sum3,"100.00","100.0"]
+    fmtlist = ["%Y-%m-%d",None,None,"0.00","0.000","0.000","0.00","0.0"]
 
     book = mtu.exportXls(sname,titles,rslist,sumlist,None,fmtlist)
 

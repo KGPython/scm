@@ -20,24 +20,25 @@
                 <tr>
                   <th>序号</th>
                   <th>入库单号</th>
-                  <th>商品ID</th>
+                 {% comment %} <th>商品编码</th>{% endcomment %}
+                  <th>商品条码</th>
                   <th>商品名称</th>
-                  <th>新含税单价</th>
-                  <th>批次号</th>
-                  <th>当前不含税进价</th>
-                  <th>售价</th>
-                  <th>调整数量</th>
+                    <th>批次号</th>
+                    <th>调整数量</th>
+                    <th>当前不含税进价</th>
+                    <th>新含税单价</th>
+                {% comment %}    <th>售价</th>
                   <th>不含税进货调整</th>
-                  <th>含税进货调整</th>
-                  <th>库存调整数量</th>
+                  <th>含税进货调整</th>{% endcomment %}
+                {% comment %}  <th>库存调整数量</th>
                   <th>库存含税调整数量</th>
-                  <th>库存不含税调整数量</th>
-                  <th>销售调整数量</th>
+                  <th>库存不含税调整数量</th>{% endcomment %}
+                 {% comment %} <th>销售调整数量</th>
                   <th>销售含税调整数量</th>
-                  <th>销售不含税调整数量</th>
-                  <th>其它调整数量</th>
+                  <th>销售不含税调整数量</th>{% endcomment %}
+               {% comment %}   <th>其它调整数量</th>
                   <th>其他含税调整数量</th>
-                  <th>其他不含税调整数量</th>
+                  <th>其他不含税调整数量</th>{% endcomment %}
                   <th>审核日期</th>
                 </tr>
             </thead>
@@ -46,48 +47,52 @@
                     <tr>
                         <td>{{ forloop.counter }}</td>
                         <td>{{ row.code }}</td>
-                        <td>{{ row.pcode }}</td>
+                        <td>{{ row.barcode }}</td>
                         <td>{{ row.pname }}</td>
-                        <td>{{ row.dqhsjj }}</td>
                         <td>{{ row.adbatchseq }}</td>
-                        <td>{{ row.cprice_notax|floatformat:2 }}</td>
-                        <td>{{ row.sprice|floatformat:2 }}</td>
                         <td>{{ row.anum |floatformat:2}}</td>
+                        <td>{{ row.cprice_notax|floatformat:3 }}</td>
+                        <td>{{ row.dqhsjj|floatformat:3 }}</td>
+                     {% comment %}   <td>{{ row.sprice|floatformat:2 }}</td>
                         <td>{{ row.anum_notax |floatformat:2}}</td>
-                        <td>{{ row.anum_intax |floatformat:2}}</td>
-                        <td>{{ row.anum_stock |floatformat:2}}</td>
+                        <td>{{ row.anum_intax |floatformat:2}}</td>{% endcomment %}
+                      {% comment %}  <td>{{ row.anum_stock |floatformat:2}}</td>
                         <td>{{ row.anum_stock_notax|floatformat:2}}</td>
-                        <td>{{ row.anum_stock_intax|floatformat:2 }}</td>
-                        <td>{{ row.anum_sale |floatformat:2}}</td>
+                        <td>{{ row.anum_stock_intax|floatformat:2 }}</td>{% endcomment %}
+                      {% comment %}  <td>{{ row.anum_sale |floatformat:2}}</td>
                         <td>{{ row.anum_sale_notax|floatformat:2}}</td>
-                        <td>{{ row.anum_sale_intax |floatformat:2}}</td>
-                        <td>{{ row.anum_other|floatformat:2 }}</td>
+                        <td>{{ row.anum_sale_intax |floatformat:2}}</td>{% endcomment %}
+                       {% comment %} <td>{{ row.anum_other|floatformat:2 }}</td>
                         <td>{{ row.anum_other_notax|floatformat:2}}</td>
-                        <td>{{ row.anum_other_iitax|floatformat:2 }}</td>
+                        <td>{{ row.anum_other_iitax|floatformat:2 }}</td>{% endcomment %}
                         <td>{{ row.chdate|date:'Y-m-d' }}</td>
                     </tr>
+                {% empty %}
+                        <tr>
+                            <td colspan="9">
+                                 {% if refsheettype == 104 %}
+                                     <span style="color:red;font-size:14px;">此往来金额是由促销商品折扣产生而来，线上暂时无法查询明细</span>
+                                 {% endif %}
+                            </td>
+                        </tr>
                 {% endfor %}
-              {% comment %}  <tr>
+                <tr>
                     <td>合计：</td>
                     <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
+                    <td>{{ sum1|floatformat:2 }}</td>
+                    <td>{{ sum2|floatformat:3 }}</td>
+                    <td>{{ sum3|floatformat:3 }}</td>
                     <td></td>
-                    <td>{{ sum1 }}</td>
-                    <td>{{ sum2 }}</td>
-                    <td>{{ sum3 }}</td>
-                    <td>{{ sum4 }}</td>
-                    <td></td>
-                    <td>{{ sum5 }}</td>
-                    <td></td>
-                    <td>{{ sum6 }}</td>
-                    <td>{{ sum7 }}</td>
-                    <td>{{ sum8 }}</td>
-                </tr>{% endcomment %}
+                </tr>
             </tbody>
         </table>
     </div>
     {% include "common/footer.html" %}
+     <script>
+        current = "jiesuan";
+    </script>
 </body>
 </html>

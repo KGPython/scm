@@ -52,11 +52,13 @@
                                   {% endif %}
 
                               {% elif userType == "1" %}
-                                  <input name="accesstype" checked="" value="13" type="radio">全部
-                                  <input name="accesstype" value="11" type="radio">指定编码(多个可逗号分隔)
                                   {% if action == 'answer' %}
-                                      <input class="txt" type="text" name="depart" id="depart" value="{{ userGrpCode }}">
+                                      <input name="accesstype" value="13" type="radio">全部
+                                      <input name="accesstype" value="11" type="radio" checked="checked" >指定编码(多个可逗号分隔)
+                                      <input class="txt" type="text" name="depart" id="depart" value="{{ revcode }}">
                                   {% else %}
+                                      <input name="accesstype" checked="checked" value="13" type="radio">全部
+                                      <input name="accesstype" value="11" type="radio">指定编码(多个可逗号分隔)
                                       <input class="txt" type="text" name="depart" id="depart" style="width: 400px;height: 30px" value="{{ info.depart }}" readonly>
                                   {% endif %}
                               {% endif %}

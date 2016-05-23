@@ -211,13 +211,13 @@
                                {{ row.1 }}
                             </td>
                             <td class="col1">
-                                {{ row.2 }}
+                                {{ row.2|floatformat:2 }}
                             </td>
                             <td class="col1">
-                                {{ row.3|floatformat:1 }}
+                                {{ row.3|floatformat:3 }}
                             </td>
                             <td class="col1">
-                                {{ row.4|floatformat:1 }}
+                                {{ row.4|floatformat:3 }}
                             </td>
                             <td class="col1">
                                 {{ row.5|floatformat:2 }}
@@ -247,7 +247,7 @@
                             100.00
                         </td>
                         <td class="col1">
-                             100.00
+                             100.0
                         </td>
                     </tr>
                 </tbody>
@@ -302,6 +302,7 @@
             var start = {
                 elem: '#start',
                 format: 'YYYY-MM-DD',
+                min: laydate.now(-90),
                 max: '2099-06-16', //最大日期
                 istoday: false,
                 choose: function(datas){

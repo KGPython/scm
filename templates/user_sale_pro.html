@@ -188,16 +188,16 @@
                                {{ row.4|default_if_none:"" }}
                             </td>
                             <td class="col1">
-                               {{ row.5 }}
+                               {{ row.5|floatformat:2 }}
                             </td>
                             <td class="col1">
                                 {{ row.6|floatformat:2 }}
                             </td>
                             <td class="col1">
-                                {{ row.7|floatformat:2 }}
+                                {{ row.7|floatformat:3 }}
                             </td>
                             <td class="col1">
-                                {{ row.8|floatformat:2 }}
+                                {{ row.8|floatformat:3 }}
                             </td>
 
                         </tr>
@@ -283,6 +283,7 @@
             var start = {
                 elem: '#start',
                 format: 'YYYY-MM-DD',
+                min: laydate.now(-90),
                 max: '2099-06-16', //最大日期
                 istoday: false,
                 choose: function(datas){

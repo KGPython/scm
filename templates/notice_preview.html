@@ -1,67 +1,68 @@
 <html lang="en">
-    <head>
+<body>
+{% load basefilter %}
+{% include "common/nav.html" %}
+<p class="comWidth">
+<form action="/scm/base/msg/msglist/" method="post" style="overflow: hidden">
+    {% csrf_token %}
+    <input type="hidden" name="flag" value="{{ flag }}">
+    <input type="hidden" name="infocode" value="{{ q_infocode }}">
+    <input type="hidden" name="start" value="{{ start }}">
+    <input type="hidden" name="end" value="{{ end }}">
+    <input  class="query-enter right"  type="submit" value="返回" style="margin-right: 200px">
+    {% if infoObj.checker != userCode %}
+    <input class="query-enter right" type="button" value="回复" onclick="setAction('answer','{{ infoObj.checker }}')" style="margin-right: 15px">
+    {% endif %}
+</form>
+
+
+</p>
+<h1 class="tTitle">
+    系统公告
+</h1>
+<div class="articleNotice comWidth">
+    <h2>
+        {{ infoObj.title }}
+        {% if infoObj.mailpath %}
+            <a class="button right" href="/scm/base/msg/download/?filename={{ infoObj.mailpath }}&infocode={{ infoObj.infocode }}&pindex=2&q_infocode={{ q_infocode }}&start={{ start }}&end={{ end }}&flag={{ flag }}">
+                下载附件
+            </a>
+
+        {% endif %}
+
+    </h2>
+    <p class="notice-ctn">
+
+        {{ infoObj.content | keep_spacing }}
+    </p>
+    <div class="noticeBottom">
+        <p class="left">作者：<span>{{ infoObj.checker }}</span></p>
+        <p class="right">发布日期：<span>{{ infoObj.subtime | date:'Y-m-d'}}</span></p>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script type="text/javascript">
+    current ="tongzhi";
+    function setAction(act,revcode){
+        var utype = "{{ request.session.s_utype }}";
+        var infotype = "";
+        if(utype=="2"){
+            infotype = "1";
+        }else{
+            infotype = "0";
+        }
+        window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype+"&revcode="+revcode;
+    }
+    var flag = "{{ request.message }}";
+    if(flag=='no_file'){
+        alert("附件不存在！");
+    }
+</script>
+</body>
+<head>
         <meta charset="UTF-8">
         <title>
            商业供应链系统
         </title>
     </head>
-    <body>
-        {% load basefilter %}
-        {% include "common/nav.html" %}
-        <p class="comWidth">
-            <form action="/scm/base/msg/msglist/" method="post" style="overflow: hidden">
-                {% csrf_token %}
-                <input type="hidden" name="flag" value="{{ flag }}">
-                <input type="hidden" name="infocode" value="{{ q_infocode }}">
-                <input type="hidden" name="start" value="{{ start }}">
-                <input type="hidden" name="end" value="{{ end }}">
-                <input  class="query-enter right"  type="submit" value="返回" style="margin-right: 200px">
-            </form>
-            {% if infoObj.checker != userCode %}
-               <input class="query-enter right" type="button" value="回复" onclick="setAction('answer')" style="margin-right: 15px">
-            {% endif %}
-
-        </p>
-        <h1 class="tTitle">
-            系统公告
-        </h1>
-        <div class="articleNotice comWidth">
-            <h2>
-                {{ infoObj.title }}
-                {% if infoObj.mailpath %}
-                <a class="button right" href="/scm/base/msg/download/?filename={{ infoObj.mailpath }}&infocode={{ infoObj.infocode }}&pindex=2&q_infocode={{ q_infocode }}&start={{ start }}&end={{ end }}&flag={{ flag }}">
-                    下载附件
-                </a>
-
-                {% endif %}
-
-            </h2>
-            <p class="notice-ctn">
-
-                {{ infoObj.content | keep_spacing }}
-            </p>
-            <div class="noticeBottom">
-            	<p class="left">作者：<span>{{ infoObj.checker }}</span></p>
-            	<p class="right">发布日期：<span>{{ infoObj.subtime | date:'Y-m-d'}}</span></p>
-            </div>
-        </div>
-         {% include "common/footer.html" %}
-        <script type="text/javascript">
-            current ="tongzhi";
-            function setAction(act){
-                var utype = "{{ request.session.s_utype }}";
-                var infotype = "";
-                if(utype=="2"){
-                    infotype = "1";
-                }else{
-                    infotype = "0";
-                }
-                window.location.href="{% url 'msgCreate' %}?action="+act+"&infocode={{ infoCode }}&infotype="+infotype;
-            }
-            var flag = "{{ request.message }}";
-            if(flag=='no_file'){
-                alert("附件不存在！");
-            }
-        </script>
-    </body>
 </html>
