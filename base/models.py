@@ -13,6 +13,19 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class Billhead0Status(models.Model):
+    sheetid = models.CharField(db_column='SheetId', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    inviocestatus = models.SmallIntegerField(db_column='InvioceStatus', blank=True, null=True)  # Field name made lowercase.
+    flag = models.SmallIntegerField(db_column='Flag', blank=True, null=True)  # Field name made lowercase.
+    shopid = models.CharField(db_column='Shopid', max_length=4, blank=True, null=True)  # Field name made lowercase.
+    editdate = models.DateTimeField(db_column='Editdate', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+    venderid = models.BigIntegerField(db_column='Venderid', blank=True, null=True)  # Field name made lowercase.
+    grpcode = models.CharField(db_column='Grpcode', max_length=10, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'billhead0_status'
+
 class Estimate(models.Model):
     shopid = models.CharField(db_column='ShopID', max_length=4)  # Field name made lowercase.
     datetype = models.IntegerField(db_column='DateType')  # Field name made lowercase.

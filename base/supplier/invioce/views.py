@@ -3,7 +3,7 @@ __author__ = 'Administrator'
 from base.utils import MethodUtil,Constants
 from django.shortcuts import render
 from django.http import HttpResponse
-from base.models import Billhead0,BasSupplier,Billheaditem0
+from base.models import Billhead0,BasSupplier,Billheaditem0,Billhead0Status
 from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
@@ -78,7 +78,7 @@ def saveInvioce(request):
               '''
             sheetId = conn2.execute_scalar(sqlSheetId)
 
-            ############开始存储事务############
+            # ############开始存储事务############
             conn.autocommit(False)
             cur = conn.cursor()
             #保存发票主要信息
@@ -117,6 +117,16 @@ def saveInvioce(request):
             cur.execute(sqlFlow)
 
             conn.commit()
+
+            #记录发票录入状态
+            try:
+                if refSheetId:
+                    billhead = Billhead0.objects.values("sheetid","flag","editdate","grpcode","venderid","shopid").get(sheetid=refSheetId)
+                    if billhead:
+                        Billhead0Status.objects.create(sheetid=refSheetId,inviocestatus=1,flag=billhead["flag"],editdate=billhead["editdate"],grpcode=billhead["grpcode"],venderid=billhead["venderid"],shopid=billhead["shopid"])
+            except Exception as e:
+                print(e)
+
             res['succ'] = '0'
 
             MethodUtil.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[5],"")
