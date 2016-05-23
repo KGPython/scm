@@ -71,10 +71,14 @@
                   if(tab==1){
                       var headers = [
                           {'region':'('+(today.getMonth()+1)+')月累计销售报表'},
-                          {'region':'数据日期：','shopid':'','shopname':''+getYestoday(today)+'','opentime':'','type':'','day_salevalue':'月时间进度','day_salevalueesti':'','day_sale_difference':'','day_accomratio':'','day_tradenumber':''+getMonthTimeProgress(today)+'','day_tradenumberold':'','day_tradenumber_ynygrowth':'','day_tradeprice':'','day_tradepriceold':'','day_tradeprice_ynygrowth':'','day_salegain':'','day_salegainesti':'','day_salegain_difference':'','day_salegain_accomratio':'','day_grossmargin':'','month_salevalue':'','month_salevalueesti':'单位:万元'},
-                          {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','day_salevalue':'当日销售','day_salevalueesti':'','day_sale_difference':'','day_accomratio':'','day_tradenumber':'','day_tradenumberold':'','day_tradenumber_ynygrowth':'','day_tradeprice':'','day_tradepriceold':'','day_tradeprice_ynygrowth':'','day_salegain':'','day_salegainesti':'','day_salegain_difference':'','day_salegain_accomratio':'','day_grossmargin':'','month_salevalue':'月累计销售额','month_salevalueesti':'','month_sale_difference':'','month_accomratio':'','month_sale_estimate':'','month_complet_progress':'','month_salevalueold':'','month_sale_ynygrowth':'','month_salegain':'月毛利','month_salegainesti':'','month_salegain_difference':'','month_salegain_accomratio':'','month_salegain_estimate':'','month_salegain_complet_progress':'','month_salegainold':'','month_salegain_ynygrowth':'','month_salegain_grossmargin':'','month_salegain_grossmarginold':'','month_tradenumber':'月日均来客数','month_tradenumberold':'','month_tradenumber_ynygrowth':'','month_tradeprice':'月客单价'},
-                          {'region':'','shopid':'','shopname':'','opentime':'','type':'','day_salevalue':'销售','day_salevalueesti':'','day_sale_difference':'','day_accomratio':'','day_tradenumber':'来客数','day_tradenumberold':'','day_tradenumber_ynygrowth':'','day_tradeprice':'客单价','day_tradepriceold':'','day_tradeprice_ynygrowth':'','day_salegain':'毛利','day_salegainesti':'','day_salegain_difference':'','day_salegain_accomratio':'','day_grossmargin':'','month_salevalue':'实际','month_salevalueesti':'预算','month_sale_difference':'差异','month_accomratio':'达成率','month_sale_estimate':'全月预算','month_complet_progress':'月预算进度','month_salevalueold':'去年销售','month_sale_ynygrowth':'同比增长','month_salegain':'实际','month_salegainesti':'预算','month_salegain_difference':'差异','month_salegain_accomratio':'达成率','month_salegain_estimate':'全月预算','month_salegain_complet_progress':'月预算进度','month_salegainold':'去年同期','month_salegain_ynygrowth':'同比增长','month_salegain_grossmargin':'毛利率','month_salegain_grossmarginold':'去年同期毛利率','month_tradenumber':'月日均来客数','month_tradenumberold':'去年','month_tradenumber_ynygrowth':'同比增长','month_tradeprice':'月日均客单价','month_tradepriceold':'去年','month_tradeprice_ynygrowth':'同比增长'},
-                          {'region':'','shopid':'','shopname':'','opentime':'','type':'','day_salevalue':'实际','day_salevalueesti':'预算','day_sale_difference':'差异','day_accomratio':'达成率','day_tradenumber':'当日','day_tradenumberold':'去年','day_tradenumber_ynygrowth':'同比增长','day_tradeprice':'当日','day_tradepriceold':'去年','day_tradeprice_ynygrowth':'同比增长','day_salegain':'毛利额','day_salegainesti':'预算','day_salegain_difference':'差异','day_salegain_accomratio':'达成率','day_grossmargin':'毛利率'},
+                          {'region':'数据日期：','shopname':''+getYestoday(today)+'','day_salevalue':'月时间进度','day_sale_difference':''+getMonthTimeProgress(today)+'','month_salevalueesti':'单位:万元'},
+                          {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','day_salevalue':'当日销售','month_salevalue':'月累计销售额','month_salegain':'月毛利','month_tradenumber':'月日均来客数','month_tradeprice':'月客单价'},
+                          {'day_salevalue':'销售','day_tradenumber':'来客数','day_tradeprice':'客单价','day_salegain':'毛利','month_salevalue':'实际','month_salevalueesti':'预算','month_sale_difference':'差异','month_accomratio':'达成率','month_sale_estimate':'全月预算',
+                              'month_complet_progress':'月预算进度','month_salevalueold':'去年销售','month_sale_ynygrowth':'同比增长','month_salegain':'实际','month_salegainesti':'预算','month_salegain_difference':'差异','month_salegain_accomratio':'达成率',
+                              'month_salegain_estimate':'全月预算','month_salegain_complet_progress':'月预算进度','month_salegainold':'去年同期','month_salegain_ynygrowth':'同比增长','month_salegain_grossmargin':'毛利率','month_salegain_grossmarginold':'去年同期毛利率',
+                              'month_tradenumber':'月日均来客数','month_tradenumberold':'去年','month_tradenumber_ynygrowth':'同比增长','month_tradeprice':'月日均客单价','month_tradepriceold':'去年','month_tradeprice_ynygrowth':'同比增长'},
+                          {'day_salevalue':'实际','day_salevalueesti':'预算','day_sale_difference':'差异','day_accomratio':'达成率','day_tradenumber':'当日','day_tradenumberold':'去年','day_tradenumber_ynygrowth':'同比增长','day_tradeprice':'当日',
+                              'day_tradepriceold':'去年','day_tradeprice_ynygrowth':'同比增长','day_salegain':'毛利额','day_salegainesti':'预算','day_salegain_difference':'差异','day_salegain_accomratio':'达成率','day_grossmargin':'毛利率'},
                       ];
 
                       var sum = [{{ sumlist.sum1|safe }},{{ sumlist.sum2|safe }},{{ sumlist.sum3|safe }},{{ sumlist.sum4|safe }}];
@@ -87,7 +91,7 @@
                       var headers = [];
                       var h0 = {'region':'('+(today.getMonth()+1)+'月)日销售报表',};
                       var h1 = {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','m_salevalue':'累计实际','m_salevalueesti':'累计预算',};
-                      var h2 = {'region':'','shopid':'','shopname':'','opentime':'','type':'','m_salevalue':'','m_salevalueesti':''};
+                      var h2 = {};
 
                       var columnsArr = [{data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},{data:'m_salevalue'},{data:'m_salevalueesti'}];
                       for(var i=1;i<=lastDay;i++){
@@ -124,7 +128,7 @@
                       var headers = [];
                       var h0 = {'region':'('+(today.getMonth()+1)+'月)日毛利报表',};
                       var h1 = {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','m_salegain':'月累计毛利','m_salegainesti':'月累计预算',};
-                      var h2 = {'region':'','shopid':'','shopname':'','opentime':'','type':'','m_salegain':'','m_salegainesti':''};
+                      var h2 = {};
 
                       var columnsArr = [{data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},{data:'m_salegain'},{data:'m_salegainesti'}];
                       for(var i=1;i<=lastDay;i++){
@@ -160,21 +164,11 @@
                   }else if(tab==4){
                       var headers = [
                           {'region':'('+(today.getFullYear())+')年累计销售报表'},
-                          {'region':'数据日期：','shopid':'','shopname':''+getYestoday(today)+'','opentime':'','type':'',
-                              'salevalue':'月时间进度','salevalueesti':'','sale_difference':''+getMonthTimeProgress(today)+'','sale_accomratio':'',
-                              'y_salevalue':'','sale_complet_progress':'','salevalueold':'','sale_ynygrowth':'单位:万元'},
-                          {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','salevalue':'年累计销售额',
-                              'salevalueesti':'','sale_difference':'','sale_accomratio':'','y_salevalue':'','sale_complet_progress':'',
-                              'salevalueold':'','sale_ynygrowth':'','salegain':'年累计毛利','salegainesti':'','salegain_difference':'',
-                              'salegain_accomratio':'','y_salegain':'','salegain_complet_progress':'','salegainold':'','salegain_ynygrowth':'',
-                              'salegain_grossmargin':'','tradenumber':'年日均来客数','tradenumberold':'','tradenumber_ynygrowth':'',
-                              'tradeprice':'年日均客单价','tradepriceold':'','tradeprice_ynygrowth':''},
-                          {'region':'','shopid':'','shopname':'','opentime':'','type':'','salevalue':'实际','salevalueesti':'累计预算',
-                              'sale_difference':'差异','sale_accomratio':'达成率','y_salevalue':'全年预算','sale_complet_progress':'年预算进度',
-                              'salevalueold':'去年','sale_ynygrowth':'同比增长','salegain':'实际','salegainesti':'累计预算','salegain_difference':'差异',
-                              'salegain_accomratio':'达成率','y_salegain':'全年预算','salegain_complet_progress':'年预算进度','salegainold':'去年',
-                              'salegain_ynygrowth':'同比增长','salegain_grossmargin':'毛利率','tradenumber':'实际','tradenumberold':'去年',
-                              'tradenumber_ynygrowth':'同比增长','tradeprice':'年累计','tradepriceold':'去年','tradeprice_ynygrowth':'同比增长'},
+                          {'region':'数据日期：','shopname':''+getYestoday(today)+'','salevalue':'月时间进度','sale_difference':''+getMonthTimeProgress(today)+'','sale_ynygrowth':'单位:万元'},
+                          {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','salevalue':'年累计销售额', 'salegain':'年累计毛利','tradenumber':'年日均来客数','tradeprice':'年日均客单价'},
+                          {'salevalue':'实际','salevalueesti':'累计预算', 'sale_difference':'差异','sale_accomratio':'达成率','y_salevalue':'全年预算','sale_complet_progress':'年预算进度',
+                              'salevalueold':'去年','sale_ynygrowth':'同比增长','salegain':'实际','salegainesti':'累计预算','salegain_difference':'差异','salegain_accomratio':'达成率','y_salegain':'全年预算','salegain_complet_progress':'年预算进度','salegainold':'去年',
+                              'salegain_ynygrowth':'同比增长','salegain_grossmargin':'毛利率','tradenumber':'实际','tradenumberold':'去年','tradenumber_ynygrowth':'同比增长','tradeprice':'年累计','tradepriceold':'去年','tradeprice_ynygrowth':'同比增长'},
                       ];
 
                       var sum = [{{ yearSum.sum1|safe }},{{ yearSum.sum2|safe }},{{ yearSum.sum3|safe }},{{ yearSum.sum4|safe }}];
@@ -212,7 +206,7 @@
                                   cellProperties.renderer = headerRenderer;
                                 }
 
-                                if((row==0 && col==0) || (row==1 && col==9)){
+                                if((row==0 && col==0) || (row==1 && col==7)){
                                      cellProperties.renderer = headerTextRenderer;
                                 }
 
@@ -240,11 +234,14 @@
                                 {data: 'month_tradepriceold'},{data: 'month_tradeprice_ynygrowth'},
                             ],
                             mergeCells:[
-                              {row: 0, col: 0, rowspan: 1, colspan: 5},{row: 1, col: 0, rowspan: 1, colspan: 2},
-                              {row: 1, col: 5, rowspan: 1, colspan: 4},{row: 1, col:9, rowspan: 1, colspan: 3}, {row: 2, col: 0, rowspan: 3, colspan: 1},
-                              {row: 2, col: 1, rowspan: 3, colspan: 1},{row: 2, col: 2, rowspan: 3, colspan: 1},{row: 2, col: 3, rowspan: 3, colspan: 1},
-                              {row: 2, col: 4, rowspan: 3, colspan: 1},{row: 2, col: 5, rowspan: 1, colspan: 15},{row: 2, col: 20, rowspan: 1, colspan: 8},
-                              {row: 2, col: 28, rowspan: 1, colspan:10},{row: 2, col: 38, rowspan: 1, colspan:3},{row: 2, col: 41, rowspan: 1, colspan:3},
+                              {row: 0, col: 0, rowspan: 1, colspan: 5},
+                              {row: 1, col: 0, rowspan: 1, colspan: 2},{row: 1, col: 5, rowspan: 1, colspan: 2},{row: 1, col:7, rowspan: 1, colspan: 2},
+
+                              {row: 2, col: 0, rowspan: 3, colspan: 1},{row: 2, col: 1, rowspan: 3, colspan: 1},{row: 2, col: 2, rowspan: 3, colspan: 1},
+                              {row: 2, col: 3, rowspan: 3, colspan: 1},{row: 2, col: 4, rowspan: 3, colspan: 1},{row: 2, col: 5, rowspan: 1, colspan: 15},
+                              {row: 2, col: 20, rowspan: 1, colspan: 8},{row: 2, col: 28, rowspan: 1, colspan:10},{row: 2, col: 38, rowspan: 1, colspan:3},
+                              {row: 2, col: 41, rowspan: 1, colspan:3},
+
                               {row: 3, col: 5, rowspan: 1, colspan: 4},{row: 3, col: 9, rowspan: 1, colspan: 3},{row: 3, col: 12, rowspan: 1, colspan: 3},
                               {row: 3, col: 15, rowspan: 1, colspan: 5},{row: 3, col: 20, rowspan: 2, colspan: 1},{row: 3, col: 21, rowspan: 2, colspan: 1},
                               {row: 3, col: 22, rowspan: 2, colspan: 1},{row: 3, col: 23, rowspan: 2, colspan: 1},{row: 3, col: 24, rowspan: 2, colspan: 1},
@@ -254,9 +251,14 @@
                               {row: 3, col: 34, rowspan: 2, colspan: 1},{row: 3, col: 35, rowspan: 2, colspan: 1},{row: 3, col: 36, rowspan: 2, colspan: 1},
                               {row: 3, col: 37, rowspan: 2, colspan: 1},{row: 3, col: 38, rowspan: 2, colspan: 1},{row: 3, col: 39, rowspan: 2, colspan: 1},
                               {row: 3, col: 40, rowspan: 2, colspan: 1},{row: 3, col: 41, rowspan: 2, colspan: 1},{row: 3, col: 42, rowspan: 2, colspan: 1},
-                              {row: 3, col: 43, rowspan: 2, colspan: 1},{row: 3, col: 44, rowspan: 2, colspan: 1}, {row: 5, col: 0, rowspan: 1, colspan: 5},
-                              {row: 6, col: 0, rowspan: 1, colspan: 5},{row: 7, col: 0, rowspan: 1, colspan: 5}, {row: 8, col: 0, rowspan: 1, colspan: 5},
-                              {row: 9, col: 0, rowspan: 11, colspan: 1},{row: 20, col: 0, rowspan: 10, colspan: 1},
+                              {row: 3, col: 43, rowspan: 2, colspan: 1},{row: 3, col: 44, rowspan: 2, colspan: 1},
+
+                              {row: 5, col: 0, rowspan: 1, colspan: 5},
+                              {row: 6, col: 0, rowspan: 1, colspan: 5},
+                              {row: 7, col: 0, rowspan: 1, colspan: 5},
+                              {row: 8, col: 0, rowspan: 1, colspan: 5},
+                              {row: 9, col: 0, rowspan: 11, colspan: 1},
+                              {row: 20, col: 0, rowspan: 10, colspan: 1},
 
                           ]
                       });
@@ -323,7 +325,7 @@
                                {row: 1, col: 2, rowspan: 2, colspan: 1},{row: 1, col: 3, rowspan: 2, colspan: 1},{row: 1, col: 4, rowspan: 2, colspan: 1},
                                {row: 1, col: 5, rowspan: 2, colspan: 1},{row: 1, col: 6, rowspan: 2, colspan: 1},{row: 3, col: 0, rowspan: 1, colspan:5},
                                {row: 4,col: 0, rowspan: 1, colspan:5},{row: 5,col: 0, rowspan: 1, colspan:5},{row: 6, col: 0, rowspan: 11, colspan: 1},
-                              {row: 17, col: 0, rowspan: 10, colspan: 1},];
+                               {row: 17, col: 0, rowspan: 10, colspan: 1},];
                       var cwidths = [80, 50,150, 100,50,100,100];
                       var cols = [];
                       var n = 7;
@@ -408,16 +410,19 @@
                                 {data: 'tradenumber_ynygrowth'},{data: 'tradeprice'},{data: 'tradepriceold'},{data: 'tradeprice_ynygrowth'},
                             ],
                             mergeCells:[
-                              {row: 0, col: 0, rowspan: 1, colspan: 5},{row: 1, col: 0, rowspan: 1, colspan: 2},
-                              {row: 1, col: 5, rowspan: 1, colspan:2},
+                              {row: 0, col: 0, rowspan: 1, colspan: 5},
+                              {row: 1, col: 0, rowspan: 1, colspan: 2},{row: 1, col: 5, rowspan: 1, colspan:2},
                               {row: 2, col: 0, rowspan: 2, colspan: 1},{row: 2, col: 1, rowspan: 2, colspan: 1},
                               {row: 2, col: 2, rowspan: 2, colspan: 1},{row: 2, col: 3, rowspan: 2, colspan: 1},
                               {row: 2, col: 4, rowspan: 2, colspan: 1},{row: 2, col: 5, rowspan: 1, colspan: 8},
                               {row: 2, col: 13, rowspan: 1, colspan: 9},{row: 2, col: 22, rowspan: 1, colspan:3},
                               {row: 2, col: 25, rowspan: 1, colspan:3},
-                              {row:4, col: 0, rowspan: 1, colspan: 5},{row: 5, col: 0, rowspan: 1, colspan: 5},
-                              {row: 6, col: 0, rowspan: 1, colspan: 5},{row: 7, col: 0, rowspan: 1, colspan: 5},
-                              {row:8, col: 0, rowspan: 11, colspan: 1},{row: 19, col: 0, rowspan: 10, colspan: 1},
+                              {row:4, col: 0, rowspan: 1, colspan: 5},
+                              {row: 5, col: 0, rowspan: 1, colspan: 5},
+                              {row: 6, col: 0, rowspan: 1, colspan: 5},
+                              {row: 7, col: 0, rowspan: 1, colspan: 5},
+                              {row:8, col: 0, rowspan: 11, colspan: 1},
+                              {row: 19, col: 0, rowspan: 10, colspan: 1},
 
                           ]
                       });
