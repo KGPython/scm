@@ -15,7 +15,7 @@ def index(request):
     sql = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
           'FROM Kzerostock ' \
           'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
-    cur = conn.cursor();
+    cur = conn.cursor()
     cur.execute(sql)
     listRes= cur.fetchall()
 
@@ -31,7 +31,7 @@ def index(request):
             listRes[i]['zhonbiSum']=0
         listRes[i]['zhonbiSum'] = float('%0.2f'%(listRes[i]['zhonbiSum']*100))
 
-        sql = "SELECT b.sdate,b.qtyz, b.qtyl, b.zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
+        sql = "SELECT b.sdate,b.qtyz, b.qtyl, b.zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM Kzerostock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM Kzerostock AS b " \
               "WHERE ShopID ='" + listRes[i]['ShopID'] + \
               "' ORDER BY sdate"
@@ -62,14 +62,6 @@ def ranking(lis,key,name):
     """
     排名函数
     """
-    # nums = [['a',11],['d',1],['g',34],['e',1],['h',35],['c',2],['i',37],['b',2],['f',1],['j',39]]
-
-    # for obj in lis:
-    #     for k in obj.keys():
-    #         item = obj[k]
-    #         if '%' in item :
-    #             item =float(item[0:len(item)-1])
-
     lis.sort(key=lambda x:x[key])
     j = 1
     for i in range(0,len(lis)):
@@ -83,5 +75,4 @@ def ranking(lis,key,name):
         else:
             a = lis[i]
             a[name]= j
-            # a[key] = str(a[key])+'%'
     return lis
