@@ -58,19 +58,19 @@
                     {% for row in list %}
                         <tr>
                             <td>
-                               {{ row.3 }}
+                               {{ row.0 }}
                             </td>
                             <td>
-                                {{ row.4 }}
+                                {{ row.1 }}
                             </td>
                             <td>
                                {{ row.2 |floatformat:2}}
                             </td>
                             <td>
-                               {{ row.1 |floatformat:3}}
+                               {{ row.3 |floatformat:3}}
                             </td>
                             <td>
-                                {{ row.0 |floatformat:3}}
+                                {{ row.4 |floatformat:3}}
                             </td>
                         </tr>
                     {% endfor %}

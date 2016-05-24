@@ -276,17 +276,17 @@ def detail1(request):
             item[0] = row[3]
             item[1] = row[4]
             item[2] = row[2]
-            item[3] = row[1]
+            item[3] = (row[1] - row[5])
             item[4] = row[0]
 
             sum1 += row[2]
-            sum2 += row[1]
+            sum2 += (row[1]- row[5])
             sum3 += row[0]
 
             rslist.append(item)
 
     if qtype=='1':
-        result = {"list":list}
+        result = {"list":rslist}
         result.setdefault("type",type)
         result.setdefault("grpname",grpname)
         result.setdefault("shops",shops)
