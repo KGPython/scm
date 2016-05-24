@@ -460,6 +460,30 @@ def testmssql():
     # conn.commit()
     conn.close()
 
+###
+# 排名函数
+# lis：需要排序的list
+# key：排序的参照对象
+# name:名次存放的字段名称
+###
+def ranking(lis,key,name):
+    lis.sort(key=lambda x:x[key])
+    j = 1
+    for i in range(0,len(lis)):
+        if i > 0:
+            a = lis[i-1]
+            b = lis[i]
+            if float(a[key]) != float(b[key]):
+                j += 1
+            b[name]= j
+            a[key] = str(a[key])+'%'
+        else:
+            a = lis[i]
+            a[name]= j
+    return lis
+
+
+
 if __name__ == "__main__":
     print(">>>__main__")
     # d1 = datetime.datetime.now()
