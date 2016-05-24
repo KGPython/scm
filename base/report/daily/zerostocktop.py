@@ -3,27 +3,32 @@ __author__ = 'liubf'
 
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from base.models import RepShopZeroStock
+import datetime
+from base.utils import MethodUtil
 
 @csrf_exempt
 def index(request):
-     print('zero stock')
-     tlist = []
-     for i in range(1,22):
-         item = ['C0%s' % i,'Test%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i]
-         tlist.append(item)
+    monthFirst = str(datetime.date.today().replace(day=1))
+    today = str(datetime.datetime.today().strftime('%y-%m-%d'))
+    conn = MethodUtil.getMysqlConn()
 
-     tlist2 = []
-     for i in range(1,22):
-         item = ['1%s' % i,'课组%s'%i,'%s'%i,'%s'%i,'%s'%i]
-         tlist2.append(item)
+    sql = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyz,SUM(qtyl) AS qtyl,(sum(qtyl) / sum(qtyz)) AS zhonbi ' \
+          'FROM Kzerostock ' \
+          'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
+    cur = conn.cursor();
+    cur.execute(sql)
+    listSum = cur.fetchall()
 
-     rlist = RepShopZeroStock.objects.all().order_by("shopid");
-     for item in rlist:
-         print(item.shopid)
-         #1.计算门店总排名
-
-     return render(request,"report/daily/zero_stock_top.html",{'tlist':tlist,'tlist2':tlist2})
+    for obj in listSum:
+        sql = "SELECT b.sdate,b.qtyz, b.qtyl, b.zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
+              "FROM Kzerostock AS b " \
+              "WHERE ShopID ='" + obj['ShopID'] + \
+              "' ORDER BY sdate"
+        cur.execute(sql)
+        listDetail = cur.fetchall()
+        # for item in listDetail:
+        #     date = item['sdate'][7:9]
+    return render(request,"report/daily/zero_stock_top.html",locals())
 
 @csrf_exempt
 def query():

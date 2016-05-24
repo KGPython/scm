@@ -104,10 +104,13 @@ urlpatterns = [
     url(r'^base/admin/reconciltype/', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
 
     #报表中心
-    url(r'^base/',include('base.report.urls')),
+    # url(r'^base/',include('base.report.urls')),
 
      #欢迎页面（临时）
-    url(r'^welcome/','base.login.views.welcome'),
+    url(r'^welcome/$','base.login.views.welcome'),
+
+    #负库存
+    url(r'^base/report/daily/negStock/$','base.report.daily.negativestocktop.index')
 ]
 
 
