@@ -13,7 +13,7 @@ urlpatterns = [
     #负库存课组汇总
     url(r'^report/daily/negStockDept/$','base.report.daily.negStockDept.index',name='negStockDept'),
 
-    #零库存排名1
+    #零库存排名
     url(r'^report/daily/zreostocktop/$','base.report.daily.zerostocktop.index',name='zeroStockTop'),
 
     #集团营运日报表

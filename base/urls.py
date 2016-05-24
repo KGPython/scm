@@ -106,7 +106,7 @@ urlpatterns = [
     #报表中心
     url(r'^base/',include('base.report.urls')),
 
-     #欢迎页面（临时）
+    #欢迎页面（临时）
     url(r'^welcome/$','base.login.views.welcome'),
 
     #负库存

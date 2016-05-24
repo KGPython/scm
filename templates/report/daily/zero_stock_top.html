@@ -20,8 +20,8 @@
     yesterday = yesterday.getDate()
 
     var table = [];
-    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','yxSum':'','zeroSum':'','zhonbiSum':'','mingciSum':'月累计排名（不含联营和烟2001）'};
-    var theadRow2 = {'shopid':'','shopname':'','yxSum':'有效商品数','zeroSum':'零库存数','zhonbiSum':'占比','mingciSum':'名次'};
+    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营和烟2001）','qtylSum':'','zhonbiSum':'','mingciSum':''};
+    var theadRow2 = {'shopid':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'零库存数','zhonbiSum':'占比','mingciSum':'名次'};
     var mergeCellsList = [
         {row: 0, col: 0, rowspan: 2, colspan: 1},
         {row: 0, col: 1, rowspan: 2, colspan: 1},
@@ -32,16 +32,30 @@
     var j=1;
     var k=6;
     do{
-        //第一行表头
-        theadRow1['yx_'+j]=j.toString()+'日排名(不含联营和烟2001)';
-        theadRow1['zero_'+j]='';
-        theadRow1['zhonbi_'+j]='';
-        theadRow1['mingci_'+j]= '';
-        //第二行表头
-        theadRow2['yx_'+j]='有效商品数';
-        theadRow2['zero_'+j]='零库存数';
-        theadRow2['zhonbi_'+j]='占比';
-        theadRow2['mingci_'+j]= '名次';
+        if(j<10){
+            //第一行表头
+            theadRow1['qtyz_0'+j]=j.toString()+'日排名(不含联营和烟2001)';
+            theadRow1['qtyl_0'+j]='';
+            theadRow1['zhonbi_0'+j]='';
+            theadRow1['mingci_0'+j]= '';
+            //第二行表头
+            theadRow2['qtyz_0'+j]='有效商品数';
+            theadRow2['qtyl_0'+j]='零库存数';
+            theadRow2['zhonbi_0'+j]='占比';
+            theadRow2['mingci_0'+j]= '名次';
+        }else{
+            //第一行表头
+            theadRow1['qtyz_'+j]=j.toString()+'日排名(不含联营和烟2001)';
+            theadRow1['qtyl_'+j]='';
+            theadRow1['zhonbi_'+j]='';
+            theadRow1['mingci_'+j]= '';
+            //第二行表头
+            theadRow2['qtyz_'+j]='有效商品数';
+            theadRow2['qtyl_'+j]='零库存数';
+            theadRow2['zhonbi_'+j]='占比';
+            theadRow2['mingci_'+j]= '名次';
+        }
+
         //单元格合并处理
         var mergeCell = {};
         mergeCell['row'] = 0;
@@ -56,11 +70,14 @@
     }while(i<yesterday*4);
     table.push(theadRow1);
     table.push(theadRow2);
+    //拼接tbody数据
+    var tbody = {{ listRes | safe }};
+    table = table.concat(tbody);
 
     var container = document.getElementById('tableReport');
     var hot = new Handsontable(container,{
         data: table,
-        colWidths: 120,
+        colWidths: 140,
         className: "htCenter htMiddle",
         rowHeaders: true,
         colHeaders: true,
