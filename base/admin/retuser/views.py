@@ -9,7 +9,7 @@ from django.db import connection
 from base.utils import Constants,MethodUtil as mtu
 import datetime,json
 
-LIMIT = 3
+LIMIT = 10
 
 @csrf_exempt
 def index(request):

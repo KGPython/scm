@@ -12,11 +12,11 @@ from django.core.paginator import Paginator
 from django.core.paginator import EmptyPage
 from django.core.paginator import PageNotAnInteger
 
+limit = 10
 
 def index(request):
     form = RoleForm()
     # 分页
-    limit = 6
     topics = BasRole.objects.filter(grpcode="2")
     paginator = Paginator(topics, limit)
     page = request.GET.get('page')
@@ -31,7 +31,6 @@ def index(request):
 
 @csrf_exempt
 def add_form(request):
-    limit = 6
     page = request.POST.get("page")
     flag = 0
 
@@ -108,7 +107,6 @@ def queryRole(request):
         pur['pcode'] = d[0]
         pur['nm'] = d[1]
         purL.append(pur)
-    print(purL)
 
     sql_UserPur = "select pcode from bas_role_pur where rcode = " + rcode
     cursor.execute(sql_UserPur)
@@ -118,14 +116,14 @@ def queryRole(request):
     rs = {}
     rs["purL"] = purL
     rs["uPurL"] = uPurL
-    print(json.dumps(rs))
+
     return HttpResponse(json.dumps(rs))
 
 
 @csrf_exempt
 def savePur(request):
     checkedList = request.POST.getlist('pcode')
-    print(checkedList)
+
     rs = {}
     rcode = request.POST.get('rcode')
     try:
