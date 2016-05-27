@@ -3,13 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <title>商业供应链系统</title>
+    <style>
+        .header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+        }
+    </style>
 </head>
 <body>
 {% include 'common/nav.html' %}
 <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
 <div class="tTitle tTitle-report">
-    <h1>零库存排名日报（）</h1>
+    <h1>零库存排名表</h1>
 </div>
 <div id="tableReport">
 </div>
@@ -20,8 +27,8 @@
     yesterday = yesterday.getDate()
 
     var table = [];
-    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营和烟2001）','qtylSum':'','zhonbiSum':'','mingciSum':''};
-    var theadRow2 = {'shopid':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'零库存数','zhonbiSum':'占比','mingciSum':'名次'};
+    var theadRow1 = {'ShopID':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营和烟2001）','qtylSum':'','zhonbiSum':'','mingciSum':''};
+    var theadRow2 = {'ShopID':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'零库存数','zhonbiSum':'占比','mingciSum':'名次'};
     var mergeCellsList = [
         {row: 0, col: 0, rowspan: 2, colspan: 1},
         {row: 0, col: 1, rowspan: 2, colspan: 1},
@@ -73,6 +80,16 @@
     //拼接tbody数据
     var tbody = {{ listRes | safe }};
     table = table.concat(tbody);
+    //拼接最后一行合计数据
+    var tfooter = {{ listTotal | safe }}
+    table.push(tfooter);
+    var len = table.length;
+    var mergeCellTotal = {}
+    mergeCellTotal['row'] = len-1;
+    mergeCellTotal['col'] = 0;
+    mergeCellTotal['rowspan'] = 1;
+    mergeCellTotal['colspan'] = 2;
+    mergeCellsList.push(mergeCellTotal);
 
     var container = document.getElementById('tableReport');
     var hot = new Handsontable(container,{

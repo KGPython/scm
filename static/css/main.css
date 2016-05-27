@@ -318,8 +318,16 @@ input[type="submit"],
 	margin-bottom:15px;
 	text-align: center;
 }
+.tTitle-report{
+	position: fixed;
+	top: 80px;
+	width: 100%;
+}
 .tTitle p b{
 	margin-left:20px; 
+}
+#tableReport{
+	margin-top: 160px;
 }
 table{
 	width: 100%;
