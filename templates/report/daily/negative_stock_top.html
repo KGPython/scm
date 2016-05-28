@@ -17,80 +17,87 @@
 <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
 <div class="tTitle tTitle-report">
-    <h1>入库单列表</h1>
+    <h1>负库存排名日报</h1>
 </div>
-<div id="tableReport">
-    {#    {% for i in dataList %}#}
-    {#        {{ i }}#}
-    {#    {% endfor %}#}
-</div>
+<div id="tableReport"></div>
 {% include "common/footer.html" %}
-<script type="text/javascript">
-    current = "danju"
-    var container = document.getElementById('tableReport'),
-            tableData = [
-                {#                ['门店编号', '门店名称', '', '', '', '', '1日排名(不含联营和新品)', '', '', '', '2日排名(不含联营和新品)', '', '', '', '3日排名(不含联营和新品)', '', '', '', '4日排名(不含联营和新品)', '', '', '', '5日排名(不含联营和新品)', '', '', '', '6日排名(不含联营和新品)', '', '', '', '7日排名(不含联营和新品)', '', '', '', '8日排名(不含联营和新品)', '', '', '', '9日排名(不含联营和新品)', '', '', '', '10日排名(不含联营和新品)', '', '', '', '11日排名(不含联营和新品)', '', '', '', '12日排名(不含联营和新品)', '', '', '', '13日排名(不含联营和新品)', '', '', '', '14日排名(不含联营和新品)', '', '', '', '15日排名(不含联营和新品)', '', '', '', '16日排名(不含联营和新品)', '', '', '', '17日排名(不含联营和新品)', '', '', '', '18日排名(不含联营和新品)', '', '', '', '19日排名(不含联营和新品)', '', '', '', '20日排名(不含联营和新品)', '', '', '', '21日排名(不含联营和新品)', '', '', '', '22日排名(不含联营和新品)', '', '', '', '23日排名(不含联营和新品)', '', '', '', '24日排名(不含联营和新品)', '', '', '', '25日排名(不含联营和新品)', '', '', '', '26日排名(不含联营和新品)', '', '', '', '27日排名(不含联营和新品)', '', '', '', '28日排名(不含联营和新品)', '', '', '', '29日排名(不含联营和新品)', '', '', '', '30日排名(不含联营和新品)', '', '', '', '31日排名(不含联营和新品)', '', '', ''],#}
-                {#                [' ', ' ', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名', '有效商品数', '合计', '占比', '排名']#}
-            ],
-            hot;
+<script>
+    var tody = new Date();
+    var yesterday = getYestodayDate(tody);
+    yesterday = yesterday.getDate()
 
-    var tempList = [];
-    {% for data in dataList %}
-        tempList.push({{ data | safe }});
-    {% endfor %}
-    console.log(tempList);
-    tableData = tableData.concat(tempList)
+    var table = [];
+    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
+    var theadRow2 = {'shopid':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'合计','zhonbiSum':'占比','mingciSum':'名次'};
+    var mergeCellsList = [
+        {row: 0, col: 0, rowspan: 2, colspan: 1},
+        {row: 0, col: 1, rowspan: 2, colspan: 1},
+        {row: 0, col: 2, rowspan: 1, colspan: 4}
+    ];
 
-    hot = new Handsontable(container, {
-        data: tableData,
-        colWidths: 120,
+    var i=0;
+    var j=1;
+    var k=6;
+    do{
+        if(j<10){
+            //第一行表头
+            theadRow1['qtyz_0'+j]=j.toString()+'日排名(不含联营)';
+            theadRow1['qtyl_0'+j]='';
+            theadRow1['zhonbi_0'+j]='';
+            theadRow1['mingci_0'+j]= '';
+            //第二行表头
+            theadRow2['qtyz_0'+j]='有效商品数';
+            theadRow2['qtyl_0'+j]='合计';
+            theadRow2['zhonbi_0'+j]='占比';
+            theadRow2['mingci_0'+j]= '名次';
+        }else{
+            //第一行表头
+            theadRow1['qtyz_'+j]=j.toString()+'日排名(不含联营)';
+            theadRow1['qtyl_'+j]='';
+            theadRow1['zhonbi_'+j]='';
+            theadRow1['mingci_'+j]= '';
+            //第二行表头
+            theadRow2['qtyz_'+j]='有效商品数';
+            theadRow2['qtyl_'+j]='合计';
+            theadRow2['zhonbi_'+j]='占比';
+            theadRow2['mingci_'+j]= '名次';
+        }
+
+        //单元格合并处理
+        var mergeCell = {};
+        mergeCell['row'] = 0;
+        mergeCell['col'] = k;
+        mergeCell['rowspan'] = 1;
+        mergeCell['colspan'] = 4;
+        mergeCellsList.push(mergeCell);
+
+        i+=4;//每日单元格数量
+        j+=1;//日期
+        k+=4;//每次合并单元格数量
+    }while(i<yesterday*4);
+    table.push(theadRow1);
+    table.push(theadRow2);
+    //拼接tbody数据
+    var tbody = {{ listRes | safe }};
+    table = table.concat(tbody);
+
+    var container = document.getElementById('tableReport');
+    var hot = new Handsontable(container,{
+        data: table,
+        colWidths: 140,
         className: "htCenter htMiddle",
         rowHeaders: true,
         colHeaders: true,
         contextMenu: false,
         fixedRowsTop: 2,
-        fixedColumnsLeft: 5,
+        fixedColumnsLeft: 6,
         manualColumnResize: true,
         manualRowMove: true,
         manualColumnMove: true,
         columnSorting: true,
         sortIndicator: true,
-        mergeCells: [
-            {row: 0, col: 0, rowspan: 2, colspan: 1},
-            {row: 0, col: 1, rowspan: 2, colspan: 1},
-            {row: 0, col: 2, rowspan: 1, colspan: 4},
-            {row: 0, col: 6, rowspan: 1, colspan: 4},//1
-            {row: 0, col: 10, rowspan: 1, colspan: 4},
-            {row: 0, col: 14, rowspan: 1, colspan: 4},
-            {row: 0, col: 18, rowspan: 1, colspan: 4},
-            {row: 0, col: 22, rowspan: 1, colspan: 4},
-            {row: 0, col: 26, rowspan: 1, colspan: 4},
-            {row: 0, col: 30, rowspan: 1, colspan: 4},
-            {row: 0, col: 34, rowspan: 1, colspan: 4},
-            {row: 0, col: 38, rowspan: 1, colspan: 4},
-            {row: 0, col: 42, rowspan: 1, colspan: 4},//10
-            {row: 0, col: 46, rowspan: 1, colspan: 4},
-            {row: 0, col: 50, rowspan: 1, colspan: 4},
-            {row: 0, col: 54, rowspan: 1, colspan: 4},
-            {row: 0, col: 58, rowspan: 1, colspan: 4},
-            {row: 0, col: 62, rowspan: 1, colspan: 4},
-            {row: 0, col: 66, rowspan: 1, colspan: 4},
-            {row: 0, col: 70, rowspan: 1, colspan: 4},
-            {row: 0, col: 74, rowspan: 1, colspan: 4},
-            {row: 0, col: 78, rowspan: 1, colspan: 4},
-            {row: 0, col: 82, rowspan: 1, colspan: 4},//20
-            {row: 0, col: 86, rowspan: 1, colspan: 4},
-            {row: 0, col: 90, rowspan: 1, colspan: 4},
-            {row: 0, col: 94, rowspan: 1, colspan: 4},
-            {row: 0, col: 98, rowspan: 1, colspan: 4},
-            {row: 0, col: 102, rowspan: 1, colspan: 4},
-            {row: 0, col: 106, rowspan: 1, colspan: 4},
-            {row: 0, col: 110, rowspan: 1, colspan: 4},
-            {row: 0, col: 114, rowspan: 1, colspan: 4},
-            {row: 0, col: 118, rowspan: 1, colspan: 4},
-            {row: 0, col: 122, rowspan: 1, colspan: 4},//30
-            {row: 0, col: 126, rowspan: 1, colspan: 4}
-        ]
+        readOnly:true,
+        mergeCells: mergeCellsList
     });
 
 
@@ -145,32 +152,6 @@
 {#        },#}
 {#    ];#}
 {##}
-{#    var container = document.getElementById('example');#}
-{#    var hot = new Handsontable(container, {#}
-{#        data: data2,#}
-{#        rowHeaders: true,    // 行头#}
-{#        colHeaders: true,    // 列头#}
-{#        dropdownMenu: true,#}
-{#        minSpareRows: 3,    // 在数据行后面再增加空行#}
-{#//    columns: [    // 选择展示的列#}
-{#//      {data: 0},#}
-{#//      {data: 1},#}
-{#//    ],#}
-{#        fixedRowsTop: 2,#}
-{#        fixedColumnsLeft: 6,#}
-{#        manualColumnResize: true,    // 可改变列宽度#}
-{#        manualRowResize: true,    // 可改变行宽度#}
-{#        mergeCells: [#}
-{#            {row: 0, col: 0, rowspan: 2, colspan: 1},#}
-{#            {row: 0, col: 1, rowspan: 2, colspan: 1},#}
-{#            {row: 0, col: 2, rowspan: 1, colspan: 4},#}
-{#            {row: 0, col: 6, rowspan: 1, colspan: 4},    // 累计结束分界#}
-{#            {row: 0, col: 10, rowspan: 1, colspan: 4},#}
-{#            {row: 0, col: 14, rowspan: 1, colspan: 4},#}
-{#            {row: 0, col: 18, rowspan: 1, colspan: 4},#}
-{##}
-{#        ]#}
-{#    });#}
 </script>
 </body>
 </html>
