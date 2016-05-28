@@ -27,8 +27,8 @@
     yesterday = yesterday.getDate()
 
     var table = [];
-    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
-    var theadRow2 = {'shopid':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'合计','zhonbiSum':'占比','mingciSum':'名次'};
+    var theadRow1 = {'ShopID':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
+    var theadRow2 = {'ShopID':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'合计','zhonbiSum':'占比','mingciSum':'名次'};
     var mergeCellsList = [
         {row: 0, col: 0, rowspan: 2, colspan: 1},
         {row: 0, col: 1, rowspan: 2, colspan: 1},
@@ -81,6 +81,16 @@
     var tbody = {{ listRes | safe }};
     table = table.concat(tbody);
 
+    var tfooter = {{ listTotal | safe }}
+    table.push(tfooter);
+    var len = table.length;
+    var mergeCellTotal = {};
+    mergeCellTotal['row'] = len-1;
+    mergeCellTotal['col'] = 0;
+    mergeCellTotal['rowspan'] = 1;
+    mergeCellTotal['colspan'] = 2;
+    mergeCellsList.push(mergeCellTotal);
+
     var container = document.getElementById('tableReport');
     var hot = new Handsontable(container,{
         data: table,
@@ -99,59 +109,6 @@
         readOnly:true,
         mergeCells: mergeCellsList
     });
-
-
-{#    var data2 = [#}
-{#        {#}
-{#            col: '门店编码',#}
-{#            col1: '门店',#}
-{#            col2: '',#}
-{#            col3: '',#}
-{#            col4: '',#}
-{#            col5: '',#}
-{#            col6: '1日排名(不含联营)',#}
-{#            col7: '',#}
-{#            col8: '',#}
-{#            col9: '',#}
-{#            col10: '2日排名(不含联营)',#}
-{#            col11: '',#}
-{#            col12: '',#}
-{#            col13: '',#}
-{#            col14: '3日排名(不含联营)',#}
-{#            col15: '',#}
-{#            col16: '',#}
-{#            col17: '',#}
-{#            col18: '4日',#}
-{#            col19: '',#}
-{#            col20: '',#}
-{#            col21: '',#}
-{#        },#}
-{#        {#}
-{#            col: '',#}
-{#            col1: '',#}
-{#            col2: '有效商品数',#}
-{#            col3: '合计',#}
-{#            col4: '占比',#}
-{#            col5: '排名',#}
-{#            col6: '有效商品数',#}
-{#            col7: '合计',#}
-{#            col8: '占比',#}
-{#            col9: '排名',#}
-{#            col10: '有效商品数',#}
-{#            col11: '合计',#}
-{#            col12: '占比',#}
-{#            col13: '排名',#}
-{#            col14: '有效商品数',#}
-{#            col15: '合计',#}
-{#            col16: '占比',#}
-{#            col17: '排名',#}
-{#            col18: '有效商品数',#}
-{#            col19: '合计',#}
-{#            col20: '占比',#}
-{#            col21: '排名'#}
-{#        },#}
-{#    ];#}
-{##}
 </script>
 </body>
 </html>
