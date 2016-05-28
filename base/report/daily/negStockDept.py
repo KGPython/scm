@@ -23,7 +23,7 @@ def index(request):
         if(not obj['zhonbi']):
             obj['zhonbi'] = 0
         obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
-    date = str(yesterday)[0:10]
+    date = str(yesterday)[0:8]
     cur.close()
     conn.close()
     return render(request, 'report/daily/negative_stock_dept.html',locals())

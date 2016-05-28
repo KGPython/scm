@@ -26,5 +26,5 @@ def index(request):
 
     conn.close()
     cur.close()
-    date = str(yesterday)[0:10]
+    date = str(yesterday)[0:8]
     return render(request,'report/daily/negative_stock_dept_detail.html',locals())
