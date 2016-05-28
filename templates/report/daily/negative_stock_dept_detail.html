@@ -3,18 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <title>商业供应链系统</title>
-    <style>
-
-    </style>
 </head>
 <body>
     {% include "common/nav.html" %}
     <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
     <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
-    <div class="tTitle tTitle-report">
+    <div class="tTitle">
         <h1>负库存课组明细日报（{{ date }}）</h1>
     </div>
-    <div id="tableReport" style="width: 1000px;margin: 0 auto">
+    <div id="tableReport" style="width: 1000px;margin:0 auto">
     </div>
 
     {% include "common/footer.html" %}
@@ -30,7 +27,7 @@
 
     var hot = new Handsontable(container,{
         data: table,
-        colWidths: 120,
+        colWidths: 140,
         className: "htCenter htMiddle",
         rowHeaders: true,
         colHeaders: true,

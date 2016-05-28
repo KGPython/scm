@@ -10,6 +10,12 @@ from base.utils import MethodUtil
 def index(request):
     monthFirst = str(datetime.date.today().replace(day=1))
     today = str(datetime.datetime.today().strftime('%y-%m-%d'))
+    lastMonthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
+    lastMonthEnd = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
+    # 修正每个月1号的查询条件
+    if(today[7:8]=='01'):
+        monthFirst = str(lastMonthFirst.strftime('%y-%m-%d'))
+        today = str(lastMonthEnd.strftime('%y-%m-%d'))
     conn = MethodUtil.getMysqlConn()
 
     #月份汇总数据
@@ -25,7 +31,8 @@ def index(request):
     for i in range(0,len(listRes)):
         if(not listRes[i]['qtyzSum']):
             listRes[i]['qtyzSum']=0
-        listRes[i]['qtyzSum'] = float(listRes[i]['qtyzSum'])
+        else:
+            listRes[i]['qtyzSum'] = float(listRes[i]['qtyzSum'])
         if 'qtyzSum' in listTotal:
             listTotal['qtyzSum'] += listRes[i]['qtyzSum']
         else:
@@ -33,7 +40,8 @@ def index(request):
 
         if(not listRes[i]['qtylSum']):
             listRes[i]['qtylSum']=0
-        listRes[i]['qtylSum'] = float(listRes[i]['qtylSum'])
+        else:
+            listRes[i]['qtylSum'] = float(listRes[i]['qtylSum'])
         if 'qtylSum' in listTotal:
             listTotal['qtylSum'] += listRes[i]['qtylSum']
         else:
@@ -41,7 +49,8 @@ def index(request):
 
         if(not listRes[i]['zhonbiSum']):
             listRes[i]['zhonbiSum']=0
-        listRes[i]['zhonbiSum'] = float('%0.2f'%(listRes[i]['zhonbiSum']*100))
+        else:
+            listRes[i]['zhonbiSum'] = float('%0.2f'%(listRes[i]['zhonbiSum']*100))
         listTotal['zhonbiSum'] = listTotal['qtylSum']/listTotal['qtyzSum']
         listTotal['zhonbiSum'] = str(float('%0.2f'%(listTotal['zhonbiSum']*100)))+'%'
 
@@ -57,7 +66,8 @@ def index(request):
             date = str(item['sdate'])[8:10]
             if(not item['qtyz']):
                 listRes[i]['qtyz_'+date]=0
-            listRes[i]['qtyz_'+date]=float(item['qtyz'])
+            else:
+                listRes[i]['qtyz_'+date]=float(item['qtyz'])
             if 'qtyz_'+date in listTotal:
                 listTotal['qtyz_'+date] += listRes[i]['qtyz_'+date]
             else:
@@ -65,7 +75,8 @@ def index(request):
 
             if(not item['qtyl']):
                 listRes[i]['qtyl_'+date]=0
-            listRes[i]['qtyl_'+date]=float(item['qtyl'])
+            else:
+                listRes[i]['qtyl_'+date]=float(item['qtyl'])
             if 'qtyl_'+date in listTotal:
                 listTotal['qtyl_'+date] += listRes[i]['qtyl_'+date]
             else:
@@ -73,7 +84,8 @@ def index(request):
 
             if(not item['zhonbi']):
                 listRes[i]['zhonbi_'+date]=0
-            listRes[i]['zhonbi_'+date]=float('%0.2f'%(item['zhonbi']*100))
+            else:
+                listRes[i]['zhonbi_'+date]=float('%0.2f'%(item['zhonbi']*100))
             listTotal['zhonbi_'+date] = listTotal['qtyl_'+date]/listTotal['qtyz_'+date]
             listTotal['zhonbi_'+date] = str(float('%0.2f'%(listTotal['zhonbi_'+date]*100)))+'%'
 
