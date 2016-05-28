@@ -23,13 +23,16 @@ def index(request):
     for i in range(0,len(listRes)):
         if(not listRes[i]['qtyzSum']):
             listRes[i]['qtyzSum']=0
-        listRes[i]['qtyzSum'] = float(listRes[i]['qtyzSum'])
+        else:
+            listRes[i]['qtyzSum'] = float(listRes[i]['qtyzSum'])
         if(not listRes[i]['qtylSum']):
             listRes[i]['qtylSum']=0
-        listRes[i]['qtylSum'] = float(listRes[i]['qtylSum'])
+        else:
+            listRes[i]['qtylSum'] = float(listRes[i]['qtylSum'])
         if(not listRes[i]['zhonbiSum']):
             listRes[i]['zhonbiSum']=0
-        listRes[i]['zhonbiSum'] = float('%0.2f'%(listRes[i]['zhonbiSum']*100))
+        else:
+            listRes[i]['zhonbiSum'] = float('%0.2f'%(listRes[i]['zhonbiSum']*100))
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM KNegativestock AS b " \
