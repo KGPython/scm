@@ -11,6 +11,13 @@ from base.utils import MethodUtil
 def index(request):
     monthFirst = str(datetime.date.today().replace(day=1))
     today = str(datetime.datetime.today().strftime('%y-%m-%d'))
+    lastMonthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
+    lastMonthEnd = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
+    # 修正每个月1号的查询条件
+    if(today[7:8]=='01'):
+        monthFirst = str(lastMonthFirst.strftime('%y-%m-%d'))
+        today = str(lastMonthEnd.strftime('%y-%m-%d'))
+
     conn = MethodUtil.getMysqlConn()
 
     sql = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
