@@ -1,0 +1,44 @@
+{% load basefilter %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+</head>
+<body>
+    {% include "common/nav.html" %}
+    <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+    <div class="tTitle">
+        <h1>课组汇总日报（{{ date }}）</h1>
+    </div>
+    <div id="tableReport" style="width: 800px;margin: 0 auto">
+    </div>
+    {% include "common/footer.html" %}
+    <script>
+    container = document.getElementById('tableReport');
+    var table = [];
+    var thead={'deptid':'课组编码','deptidname':'课组名称','qtyz':'有效商品数（不含联营\\烟2001）','qtyl':'零库存数（不含联营\\烟2001）','zhonbi':'占比'};
+    var tbody = {{list | safe}};
+    table.push(thead);
+    table = table.concat(tbody);
+    var hot = new Handsontable(container,{
+        data: table,
+        colWidths: 140,
+        className: "htCenter htMiddle",
+        rowHeaders: true,
+        colHeaders: true,
+        contextMenu: false,
+        fixedRowsTop: 1,
+        manualColumnResize: true,
+        manualRowMove: true,
+        manualColumnMove: true,
+        columnSorting: true,
+        sortIndicator: true,
+        readOnly:true,
+        columns:[
+            {data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
+        ]
+    })
+</script>
+</body>
+</html>

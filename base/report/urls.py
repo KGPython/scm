@@ -14,8 +14,11 @@ urlpatterns = [
     url(r'^report/daily/negStockDept/$','base.report.daily.negStockDept.index',name='negStockDept'),
 
     #零库存排名
-    url(r'^report/daily/zreostocktop/$','base.report.daily.zerostocktop.index',name='zeroStockTop'),
-
+    url(r'^report/daily/zeroStockTop/$','base.report.daily.zerostocktop.index',name='zeroStockTop'),
+    url(r'^report/daily/zeroStockDept/$','base.report.daily.zeroStockDept.index',name='zeroStockDept'),
     #集团营运日报表
     url(r'^report/daily/grpoperate/index/$','base.report.daily.group_operate.index',name='grpOperateIndex'),
+    # 各课组门店销售前十
+    url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),
+
 ]

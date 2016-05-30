@@ -8,11 +8,11 @@ from base.utils import MethodUtil
 def index(request):
     yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
     conn = MethodUtil.getMysqlConn()
-    sql = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from KNegativestock' \
+    sql = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from Kzerostock' \
           ' where sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
     cur = conn.cursor()
     cur.execute(sql)
-    listDept = cur.fetchall()
+    list = cur.fetchall()
     for obj in list:
         if(not obj['qtyz']):
             obj['qtyz'] = 0
@@ -26,4 +26,4 @@ def index(request):
     date = str(yesterday)[0:8]
     cur.close()
     conn.close()
-    return render(request, 'report/daily/negative_stock_top.html',locals())
+    return render(request, 'report/daily/aero_stock_dept.html',locals())
