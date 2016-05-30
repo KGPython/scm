@@ -20,4 +20,5 @@ urlpatterns = [
     url(r'^report/daily/grpoperate/index/$','base.report.daily.group_operate.index',name='grpOperateIndex'),
     # 各课组门店销售前十
     url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),
+
 ]
