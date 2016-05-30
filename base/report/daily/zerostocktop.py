@@ -1,5 +1,5 @@
 #-*- coding:utf-8 -*-
-__author__ = 'liubf'
+__author__ = ''
 
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
@@ -8,6 +8,7 @@ from base.utils import MethodUtil
 
 @csrf_exempt
 def index(request):
+    ###门店排名###
     monthFirst = str(datetime.date.today().replace(day=1))
     today = str(datetime.datetime.today().strftime('%y-%m-%d'))
     lastMonthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
@@ -19,11 +20,11 @@ def index(request):
     conn = MethodUtil.getMysqlConn()
 
     #月份汇总数据
-    sql = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
+    sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
           'FROM Kzerostock ' \
           'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
-    cur.execute(sql)
+    cur.execute(sqlTop)
     listRes= cur.fetchall()
 
     listTotal = {'ShopID':'合计','shopname':'','qtyzSum':0} #初始化最后一行
@@ -101,7 +102,27 @@ def index(request):
             listRes = ranking(listRes,'zhonbi_'+str(date),'mingci_'+str(date))
     # 按门店排序
     listRes.sort(key=lambda x:x['ShopID'])
+
+    ###课组汇总###
+    yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
+    sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from KNegativestock' \
+          ' where sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
+    cur = conn.cursor()
+    cur.execute(sqlDept)
+    listDept = cur.fetchall()
+    for obj in list:
+        if(not obj['qtyz']):
+            obj['qtyz'] = 0
+        obj['qtyz'] = float(obj['qtyz'])
+        if(not obj['qtyl']):
+            obj['qtyl'] = 0
+        obj['qtyl'] = float(obj['qtyl'])
+        if(not obj['zhonbi']):
+            obj['zhonbi'] = 0
+        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
+    date = str(yesterday)[0:8]
     return render(request,"report/daily/zero_stock_top.html",locals())
+
 
 ###
 # 排名函数

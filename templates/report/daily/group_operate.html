@@ -61,6 +61,10 @@
              $(function(){
                  initHot();
                  loadDate(1);
+
+                 $("#btnExport").on("click",function(){
+                     window.location.href="{% url 'grpOperateIndex' %}?qtype=2";
+                 });
              });
              function loadDate(tab){
                  var today = new Date();
@@ -219,7 +223,7 @@
                                 return cellProperties;
                             },
                             columns: [
-                                {data: 'region',color: 'red',},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},
+                                {data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},
                                 {data: 'day_salevalue'},{data: 'day_salevalueesti'}, {data: 'day_sale_difference'},{data: 'day_accomratio'},
                                 {data: 'day_tradenumber'},{data: 'day_tradenumberold'},{data: 'day_tradenumber_ynygrowth'},
                                 {data: 'day_tradeprice'},{data: 'day_tradepriceold'},{data: 'day_tradeprice_ynygrowth'},{data: 'day_salegain'},
