@@ -3,163 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <title>商业供应链系统</title>
+    <style>
+        .header {
+            position: fixed;
+            width: 100%;
+            top: 0;
+        }
+
+    </style>
 </head>
 <body>
 {% include "common/nav.html" %}
 <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
-<div class="notice noticeOrder comWidth" style="width: inherit">
-    <div class="tTitle">
-        <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
-        <div class="container">
-            <ul class="nav nav-tabs">
-              <li role="presentation" class="active"><a href="#">门店排名</a></li>
-              <li role="presentation" ><a href="#">负库存课组明细</a></li>
-              <li role="presentation"><a href="#">课组汇总</a></li>
-            </ul>
-            <div class="list-tabs container">
-                <div class="table" style="display:block;">
-                        <div id="tableReport1" style="height:770px;width:100%;overflow: auto;" > </div>
-                </div>
-                <div class="table" >
-                       <div id="tableReport2" style="height:700px;width:1250px;overflow: auto;margin: 0 auto" > </div>
-                </div>
-                <div class="table">
-                      <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto" > </div>
-                </div>
-            </div>
-        </div>
-    </div>
+<div class="tTitle tTitle-report">
+    <h1>负库存排名日报</h1>
 </div>
+<div id="tableReport"></div>
 {% include "common/footer.html" %}
-<script type="text/javascript">
-    $('.nav-tabs li').click(function (e) {
-        e.preventDefault();
-        $(this).addClass("active").siblings().removeClass("active");
-        i=$(this).index();
-        $(".list-tabs .table").eq(i).show().siblings().hide();
-        //加载数据
-        initDate(i+1);
-    })
+<script>
+    var tody = new Date();
+    var yesterday = getYestodayDate(tody);
+    yesterday = yesterday.getDate()
 
-    $(".card_tab1 .con ul li").click(function(){
-        $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
+    var table = [];
+    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
+    var theadRow2 = {'shopid':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'合计','zhonbiSum':'占比','mingciSum':'名次'};
+    var mergeCellsList = [
+        {row: 0, col: 0, rowspan: 2, colspan: 1},
+        {row: 0, col: 1, rowspan: 2, colspan: 1},
+        {row: 0, col: 2, rowspan: 1, colspan: 4}
+    ];
+
+    var i=0;
+    var j=1;
+    var k=6;
+    do{
+        if(j<10){
+            //第一行表头
+            theadRow1['qtyz_0'+j]=j.toString()+'日排名(不含联营)';
+            theadRow1['qtyl_0'+j]='';
+            theadRow1['zhonbi_0'+j]='';
+            theadRow1['mingci_0'+j]= '';
+            //第二行表头
+            theadRow2['qtyz_0'+j]='有效商品数';
+            theadRow2['qtyl_0'+j]='合计';
+            theadRow2['zhonbi_0'+j]='占比';
+            theadRow2['mingci_0'+j]= '名次';
+        }else{
+            //第一行表头
+            theadRow1['qtyz_'+j]=j.toString()+'日排名(不含联营)';
+            theadRow1['qtyl_'+j]='';
+            theadRow1['zhonbi_'+j]='';
+            theadRow1['mingci_'+j]= '';
+            //第二行表头
+            theadRow2['qtyz_'+j]='有效商品数';
+            theadRow2['qtyl_'+j]='合计';
+            theadRow2['zhonbi_'+j]='占比';
+            theadRow2['mingci_'+j]= '名次';
+        }
+
+        //单元格合并处理
+        var mergeCell = {};
+        mergeCell['row'] = 0;
+        mergeCell['col'] = k;
+        mergeCell['rowspan'] = 1;
+        mergeCell['colspan'] = 4;
+        mergeCellsList.push(mergeCell);
+
+        i+=4;//每日单元格数量
+        j+=1;//日期
+        k+=4;//每次合并单元格数量
+    }while(i<yesterday*4);
+    table.push(theadRow1);
+    table.push(theadRow2);
+    //拼接tbody数据
+    var tbody = {{ listRes | safe }};
+    table = table.concat(tbody);
+
+    var container = document.getElementById('tableReport');
+    var hot = new Handsontable(container,{
+        data: table,
+        colWidths: 140,
+        className: "htCenter htMiddle",
+        rowHeaders: true,
+        colHeaders: true,
+        contextMenu: false,
+        fixedRowsTop: 2,
+        fixedColumnsLeft: 6,
+        manualColumnResize: true,
+        manualRowMove: true,
+        manualColumnMove: true,
+        columnSorting: true,
+        sortIndicator: true,
+        readOnly:true,
+        mergeCells: mergeCellsList
     });
 
-</script>
-<script>
 
-    $(function(){
-         initDate(1);
-     });
-    function initDate(tab){
-        var fixedRow,fixedCol,mergeCellsList;
-        var table = [];
-        if(tab==1){
-            var tody = new Date();
-            var yesterday = getYestodayDate(tody);
-            yesterday = yesterday.getDate()
-            fixedRow = 2;
-            fixedCol = 6;
-            var theadRow1 = {'ShopID':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
-            var theadRow2 = {'ShopID':'','shopname':'','qtyzSum':'有效商品数','qtylSum':'合计','zhonbiSum':'占比','mingciSum':'名次'};
-            mergeCellsList = [
-                {row: 0, col: 0, rowspan: 2, colspan: 1},
-                {row: 0, col: 1, rowspan: 2, colspan: 1},
-                {row: 0, col: 2, rowspan: 1, colspan: 4}
-            ];
-            var i=0;
-            var j=1;
-            var k=6;
-            do{
-                if(j<10){
-                    //第一行表头
-                    theadRow1['qtyz_0'+j]=j.toString()+'日排名(不含联营)';
-                    theadRow1['qtyl_0'+j]='';
-                    theadRow1['zhonbi_0'+j]='';
-                    theadRow1['mingci_0'+j]= '';
-                    //第二行表头
-                    theadRow2['qtyz_0'+j]='有效商品数';
-                    theadRow2['qtyl_0'+j]='合计';
-                    theadRow2['zhonbi_0'+j]='占比';
-                    theadRow2['mingci_0'+j]= '名次';
-                }else{
-                    //第一行表头
-                    theadRow1['qtyz_'+j]=j.toString()+'日排名(不含联营)';
-                    theadRow1['qtyl_'+j]='';
-                    theadRow1['zhonbi_'+j]='';
-                    theadRow1['mingci_'+j]= '';
-                    //第二行表头
-                    theadRow2['qtyz_'+j]='有效商品数';
-                    theadRow2['qtyl_'+j]='合计';
-                    theadRow2['zhonbi_'+j]='占比';
-                    theadRow2['mingci_'+j]= '名次';
-                }
-
-                //单元格合并处理
-                var mergeCell = {};
-                mergeCell['row'] = 0;
-                mergeCell['col'] = k;
-                mergeCell['rowspan'] = 1;
-                mergeCell['colspan'] = 4;
-                mergeCellsList.push(mergeCell);
-
-                i+=4;//每日单元格数量
-                j+=1;//日期
-                k+=4;//每次合并单元格数量
-            }while(i<yesterday*4);
-            table.push(theadRow1);
-            table.push(theadRow2);
-            //拼接tbody数据
-            var tbody = {{ listRes | safe }};
-            table = table.concat(tbody);
-        }if(tab==2){
-            fixedRow = 1;
-            fixedCol = 0;
-            var thead={'shopid':'门店编码','shopname':'门店名称','deptid':'课组编码','deptidname':'课组名称','qtyz':'课组汇总','qtyl':'负库存数','zhonbi':'占比'};
-            var tbody = {{listDeptDetail | safe}};
-            console.log(tbody);
-            table.push(thead);
-            table=table.concat(tbody);
-            mergeCellsList = [
-                {data:'shopid'},{data:'shopname'},{data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
-            ]
-        }if(tab==3){
-            fixedRow = 1;
-            fixedCol = 0;
-            var thead={'deptid':'课组编码','deptidname':'课组名称','qtyz':'课组汇总','qtyl':'负库存数','zhonbi':'占比'};
-            var tbody = {{listDept | safe}};
-            table.push(thead);
-            table = table.concat(tbody);
-            mergeCellsList = [
-                {data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
-            ]
-        }
-        initTable(tab,table,fixedRow,fixedCol,mergeCellsList)
-    }
-
-    function initTable(tab,table,fixedRow,fixedCol,mergeCellsList){
-        var container = document.getElementById('tableReport'+tab);
-        var hot = new Handsontable(container,{
-            data: table,
-            colWidths: 140,
-            className: "htCenter htMiddle",
-            rowHeaders: true,
-            colHeaders: true,
-            contextMenu: false,
-            fixedRowsTop: fixedRow,
-            fixedColumnsLeft: fixedCol,
-            manualColumnResize: true,
-            manualRowMove: true,
-            manualColumnMove: true,
-            columnSorting: true,
-            sortIndicator: true,
-            readOnly:true,
-            mergeCells: mergeCellsList
-        });
-    }
-
-
+{#    var data2 = [#}
+{#        {#}
+{#            col: '门店编码',#}
+{#            col1: '门店',#}
+{#            col2: '',#}
+{#            col3: '',#}
+{#            col4: '',#}
+{#            col5: '',#}
+{#            col6: '1日排名(不含联营)',#}
+{#            col7: '',#}
+{#            col8: '',#}
+{#            col9: '',#}
+{#            col10: '2日排名(不含联营)',#}
+{#            col11: '',#}
+{#            col12: '',#}
+{#            col13: '',#}
+{#            col14: '3日排名(不含联营)',#}
+{#            col15: '',#}
+{#            col16: '',#}
+{#            col17: '',#}
+{#            col18: '4日',#}
+{#            col19: '',#}
+{#            col20: '',#}
+{#            col21: '',#}
+{#        },#}
+{#        {#}
+{#            col: '',#}
+{#            col1: '',#}
+{#            col2: '有效商品数',#}
+{#            col3: '合计',#}
+{#            col4: '占比',#}
+{#            col5: '排名',#}
+{#            col6: '有效商品数',#}
+{#            col7: '合计',#}
+{#            col8: '占比',#}
+{#            col9: '排名',#}
+{#            col10: '有效商品数',#}
+{#            col11: '合计',#}
+{#            col12: '占比',#}
+{#            col13: '排名',#}
+{#            col14: '有效商品数',#}
+{#            col15: '合计',#}
+{#            col16: '占比',#}
+{#            col17: '排名',#}
+{#            col18: '有效商品数',#}
+{#            col19: '合计',#}
+{#            col20: '占比',#}
+{#            col21: '排名'#}
+{#        },#}
+{#    ];#}
+{##}
 </script>
 </body>
 </html>

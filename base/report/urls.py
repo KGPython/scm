@@ -17,7 +17,5 @@ urlpatterns = [
     url(r'^report/daily/zeroStockTop/$','base.report.daily.zerostocktop.index',name='zeroStockTop'),
     url(r'^report/daily/zeroStockDept/$','base.report.daily.zeroStockDept.index',name='zeroStockDept'),
     #集团营运日报表
-    url(r'^report/daily/grpoperate/index/','base.report.daily.group_operate.index',name='grpOperateIndex'),
-    url(r'^report/daily/grpoperate/query/','base.report.daily.group_operate.query',name='grpOperateQuery'),
-    url(r'^report/daily/grpoperate/download/','base.report.daily.group_operate.download',name='grpOperateDownload'),
+    url(r'^report/daily/grpoperate/index/$','base.report.daily.group_operate.index',name='grpOperateIndex'),
 ]
