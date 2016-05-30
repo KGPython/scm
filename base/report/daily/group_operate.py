@@ -6,7 +6,9 @@ from django.db.models import Sum
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import Kshopsale,BasShopRegion,Estimate
+from django.http import HttpResponse
 import datetime,calendar,decimal
+import xlwt3 as xlwt
 
 @csrf_exempt
 def index(request):
@@ -155,29 +157,212 @@ def index(request):
 
      #计算月累加合计
      rlist,erlist = [],[]
-     sumList,esumlist ={},{}
+     sumDict,esumDict ={},{}
      yearlist = []
-     yearSum = {}
-     sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,erlist,esumlist,yeardict,yearlist,yearSum,yydict)
+     yearSumDict = {}
+     sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,erlist,esumDict,yeardict,yearlist,yearSumDict,yydict)
 
-     return render(request, "report/daily/group_operate.html",{"rlist":rlist,"sumlist":sumList,"erlist":erlist,"esumlist":esumlist,"yearlist":yearlist,"yearSum":yearSum})
+     qtype = mtu.getReqVal(request,"qtype","1")
+     if qtype == "1":
+         return render(request, "report/daily/group_operate.html",{"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict})
+     else:
+         return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
 
-def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,rlist2,sumList2,yeardict,yearlist,yearSum,yydict):
+def export(request,rlist,sumList,erlist,esumlist,yearlist,yearSum):
 
-     sumList.setdefault("sum1",{})
-     sumList.setdefault("sum2",{})
-     sumList.setdefault("sum3",{})
-     sumList.setdefault("sum4",{})
+    wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
 
-     sumList2.setdefault("sum1",{})
+    #写入sheet1 月累计销售报表
+    writeDataToSheet1(wb,rlist,sumList)
+    #写入sheet2 （月）日销售报表、（月）日毛利报表
+    writeDataToSheet2(wb,erlist,esumlist)
+    #写入sheet4 年累计销售报表
+    writeDataToSheet3(wb,yearlist,yearSum)
+
+    outtype = 'application/vnd.ms-excel;'
+    fname = datetime.date.today().strftime("%m.%d")+"group_daily_operate"
+
+    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
+    wb.save(response)
+    return response
+
+def writeDataToSheet1(wb,rlist,sumDict):
+    date = DateUtil.get_day_of_day(-1)
+    days = date.day
+    year = date.year
+    month = date.month
+    yesterday = date.strftime("%Y-%m-%d")
+    lastDay = calendar.monthrange(year,month)[1]
+
+    sheet = wb.add_sheet("月累计销售报表",cell_overwrite_ok=True)
+    #月时间进度
+    progress = "%0.2f" % (days * 100.0/lastDay)
+
+    titles = [[("（%s月）日销售报表" % month,0,1,15)],
+              [("数据日期：",0,1,2),(yesterday,2,1,1),("月时间进度：",5,1,1),("{progress}%".format(progress=progress),6,1,1),("单位：万元",21,1,1)],
+              [("区域",0,3,1),("店号",1,3,1),("店名",2,3,1),("开业时间",3,3,1),("类型",4,3,1),("当日销售",5,1,15),("月累计销售额",20,1,8),
+               ("月毛利",28,1,10),("月日均来客数",38,1,3),("月客单价",41,1,3)],
+              [("销售",5,1,4),("来客数",9,1,3),("客单价",12,1,3),("毛利",15,1,5),("实际",20,2,1),("预算",21,2,1),("差异",22,2,1),
+               ("达成率",23,2,1),("今日预算",24,2,1),("月预算进度",25,2,1),("去年销售",26,2,1),("同比增长",27,2,1),
+               ("实际",28,2,1),("预算",29,2,1),("差异",30,2,1),("达成率",31,2,1),("全月预算",32,2,1),("月预算进度",33,2,1),("去年同期",34,2,1),
+               ("同比增长",35,2,1),("毛利率",36,2,1),("去年同期毛利率",37,2,1),("月累计来客数",38,2,1),("去年",39,2,1),("同比增长",40,2,1),
+               ("月累计客单价",41,2,1),("去年",42,2,1),("同比增长",43,2,1)],
+              [("实际",5,1,1),("预算",6,1,1),("差异",7,1,1),("达成率",8,1,1),("当日",9,1,1),("去年",10,1,1),("同比增长",11,1,1)
+               ,("当日",12,1,1),("去年",13,1,1),("同比增长",14,1,1),("毛利额",15,1,1),("预算",16,1,1),("差异",17,1,1),("达成率",18,1,1)
+               ,("毛利率",19,1,1)]
+            ]
+
+    keylist = ['region','shopid','shopname','opentime','type','day_salevalue','day_salevalueesti','day_sale_difference','day_accomratio',
+               'day_tradenumber','day_tradenumberold','day_tradenumber_ynygrowth','day_tradeprice','day_tradepriceold','day_tradeprice_ynygrowth',
+               'day_salegain','day_salegainesti','day_salegain_difference','day_salegain_accomratio','day_grossmargin','month_salevalue'
+               ,'month_salevalueesti','month_sale_difference','month_accomratio','month_sale_estimate','month_complet_progress','month_salevalueold',
+               'month_sale_ynygrowth','month_salegain','month_salegainesti','month_salegain_difference','month_salegain_accomratio','month_salegain_estimate',
+               'month_salegain_complet_progress','month_salegainold','month_salegain_ynygrowth','month_salegain_grossmargin','month_salegain_grossmarginold',
+               'month_tradenumber','month_tradenumberold','month_tradenumber_ynygrowth','month_tradeprice','month_tradepriceold','month_tradeprice_ynygrowth']
+
+    widthList = [600,400,1000,800,400,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,
+                 800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,1200,800,800,
+                 800,800,800,800]
+
+    mtu.insertTitle2(sheet,titles,keylist,widthList)
+    #合计["","","","",sum1,sum2,sum3]   ["key1","key2","key3","key4"...]
+    count = mtu.insertSum2(sheet,keylist,5,sumDict,5)
+    #数据 [{"key":value,"key":value},{},...]   ["key1","key2","key3","key4"...]
+    #dictlist code 转 name 字典 [{"key":value,"key":value},{},...]
+    mtu.insertCell2(sheet,count,rlist,keylist,None)
+
+def writeDataToSheet2(wb,erlist,esumDict):
+    date = DateUtil.get_day_of_day(-1)
+    year = date.year
+    month = date.month
+    lastDay = calendar.monthrange(year,month)[1]
+
+    sheet = wb.add_sheet("（月）日销售报表",cell_overwrite_ok=True)
+    sheet2 = wb.add_sheet("（月）日毛利报表",cell_overwrite_ok=True)
+
+    titles = [[("（%s月）日销售报表" % month,0,1,15)],
+              [("区域",0,2,1),("店号",1,2,1),("店名",2,2,1),("开业时间",3,2,1),("类型",4,2,1),("累计实际",5,2,1),("累计预算",6,2,1)],
+              []]
+
+    titles2 = [[("（%s月）日毛利报表" % month,0,1,15)],
+              [("区域",0,2,1),("店号",1,2,1),("店名",2,2,1),("开业时间",3,2,1),("类型",4,2,1),("月累计毛利",5,2,1),("月累计预算",6,2,1)],
+              []]
+
+    keylist = ['region','shopid','shopname','opentime','type','m_salevalue','m_salevalueesti']
+    keylist2 = ['region','shopid','shopname','opentime','type','m_salegain','m_salegainesti']
+
+    widthList = [600,400,1000,800,400,800,800]
+
+    trow1 = titles[1]
+    trow2 = titles[2]
+
+    trow3 = titles2[1]
+    trow4 = titles2[2]
+
+    n = 7
+    for d in range(1,lastDay+1):
+        salevalue = "salevalue_{year}{month}{day}".format(year=year,month=month,day=d)
+        salevalueesti = "salevalueesti_{year}{month}{day}".format(year=year,month=month,day=d)
+        saledifference = "saledifference_{year}{month}{day}".format(year=year,month=month,day=d)
+        accomratio = "saleaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
+        keylist.append(salevalue)
+        keylist.append(salevalueesti)
+        keylist.append(saledifference)
+        keylist.append(accomratio)
+
+        salegain = "salegain_{year}{month}{day}".format(year=year,month=month,day=d)
+        salegainesti = "salegainesti_{year}{month}{day}".format(year=year,month=month,day=d)
+        salegaindifference = "salegaindifference_{year}{month}{day}".format(year=year,month=month,day=d)
+        salegainaccomratio = "salegainaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
+        keylist2.append(salegain)
+        keylist2.append(salegainesti)
+        keylist2.append(salegaindifference)
+        keylist2.append(salegainaccomratio)
+
+        t1 = ("{month}月{day}日".format(month=month,day=d),n,1,4)
+        trow1.append(t1)
+        trow3.append(t1)
+
+        widthList.append(800)
+        widthList.append(800)
+        widthList.append(800)
+        widthList.append(800)
+
+        t21 = ('实际',n,1,1)
+        t22 = ('预算',n+1,1,1)
+        t23 = ('差异',n+2,1,1)
+        t24 = ('达成率',n+3,1,1)
+        trow2.append(t21)
+        trow2.append(t22)
+        trow2.append(t23)
+        trow2.append(t24)
+
+        trow4.append(t21)
+        trow4.append(t22)
+        trow4.append(t23)
+        trow4.append(t24)
+
+        n += 4
+    #日销售报表
+    mtu.insertTitle2(sheet,titles,keylist,widthList)
+    count = mtu.insertSum2(sheet,keylist,3,esumDict,5)
+    mtu.insertCell2(sheet,count,erlist,keylist,None)
+    #日毛利报表
+    mtu.insertTitle2(sheet2,titles2,keylist2,widthList)
+    count2 = mtu.insertSum2(sheet2,keylist2,3,esumDict,5)
+    mtu.insertCell2(sheet2,count2,erlist,keylist2,None)
+
+def writeDataToSheet3(wb,yearlist,yearSumDict):
+    date = DateUtil.get_day_of_day(-1)
+    days = date.day
+    year = date.year
+    month = date.month
+    yesterday = date.strftime("%Y-%m-%d")
+    lastDay = calendar.monthrange(year,month)[1]
+
+    sheet = wb.add_sheet("年累计销售报表",cell_overwrite_ok=True)
+    #月时间进度
+    progress = "%0.2f" % (days * 100.0/lastDay)
+
+    titles = [[("年累计销售报表",0,1,15)],
+              [("数据日期：",0,1,2),(yesterday,2,1,1),("月时间进度：",5,1,1),("{progress}%".format(progress=progress),6,1,1),("单位：万元",8,1,1)],
+              [("区域",0,2,1),("店号",1,2,1),("店名",2,2,1),("开业时间",3,2,1),("类型",4,2,1),("年累计销售额",5,1,8),("年累计毛利",13,1,9),
+               ("年日均来客数",22,1,3),("年日均客单价",25,1,3)],
+              [("实际",5,2,1),("累计预算",6,2,1),("差异",7,2,1),("达成率",8,2,1),("全年预算",9,2,1),("年预算进度",10,2,1),
+               ("去年",11,2,1),("同比增长",12,2,1),("实际",13,2,1),("累计预算",14,2,1),("差异",15,2,1),("达成率",16,2,1),("全年预算",17,2,1),
+               ("年预算进度",18,2,1),("去年",19,2,1),("同比增长",20,2,1),("毛利率",21,2,1),("实际",22,2,1),("去年",23,2,1),("同比增长",24,2,1),
+               ("年累计",25,2,1),("去年",26,2,1),("同比增长",27,2,1)],
+            ]
+
+    keylist = ['region','shopid','shopname','opentime','type','salevalue','salevalueesti','sale_difference','sale_accomratio',
+               'y_salevalue','sale_complet_progress','salevalueold','sale_ynygrowth','salegain','salegainesti',
+               'salegain_difference','salegain_accomratio','y_salegain','salegain_complet_progress','salegainold','salegain_ynygrowth'
+               ,'salegain_grossmargin','tradenumber','tradenumberold','tradenumber_ynygrowth','tradeprice','tradepriceold',
+               'tradeprice_ynygrowth']
+
+    widthList = [600,400,1000,800,400,800,800,800,800,800,800,800,800,800,800,800,800,800,800,800,
+                 800,800,800,800,800,800,800,800]
+
+    mtu.insertTitle2(sheet,titles,keylist,widthList)
+    count = mtu.insertSum2(sheet,keylist,4,yearSumDict,5)
+    mtu.insertCell2(sheet,count,yearlist,keylist,None)
+
+def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardict,yearlist,yearSumDict,yydict):
+
+     sumDict.setdefault("sum1",{})
+     sumDict.setdefault("sum2",{})
+     sumDict.setdefault("sum3",{})
+     sumDict.setdefault("sum4",{})
+
+     sumDict2.setdefault("sum1",{})
      # sumList2.setdefault("sum2",{})
-     sumList2.setdefault("sum3",{})
-     sumList2.setdefault("sum4",{})
+     sumDict2.setdefault("sum3",{})
+     sumDict2.setdefault("sum4",{})
 
-     yearSum.setdefault("sum1",{})
-     yearSum.setdefault("sum2",{})
-     yearSum.setdefault("sum3",{})
-     yearSum.setdefault("sum4",{})
+     yearSumDict.setdefault("sum1",{})
+     yearSumDict.setdefault("sum2",{})
+     yearSumDict.setdefault("sum3",{})
+     yearSumDict.setdefault("sum4",{})
 
      today = DateUtil.get_day_of_day(-1)
      d1 = datetime.date(year = today.year,month=1,day=1)
@@ -187,16 +372,16 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumList,rlist2,sumList2,yeardi
      ydaysold = DateUtil.subtract(oldtoday,oldd1)
      for item in slist:
          #月累计
-         mergeData(item,ddict,mdict,ydict,rlist,sumList)
+         mergeData(item,ddict,mdict,ydict,rlist,sumDict)
          #日销售、毛利
-         mergeData2(item,edict,rlist2,sumList2)
+         mergeData2(item,edict,rlist2,sumDict2)
          #年累计
-         mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold)
+         mergeData3(item,yeardict,yearlist,yearSumDict,yydict,ydays,ydaysold)
 
      #合计运算
-     countSum(sumList,days)
-     countSum2(sumList2,days)
-     countSum3(yearSum)
+     countSum(sumDict,days)
+     countSum2(sumDict2,days)
+     countSum3(yearSumDict)
 
 def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
     ritem = {}
@@ -206,6 +391,7 @@ def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
          yearitem = yeardict[item["shopid"]]
     else:
          yearitem = initDayItem(item)
+
 
     ritem = dict(ritem, **yearitem)
 
@@ -617,20 +803,20 @@ def setYearSale(ritem,ydays,ydaysold):
 def setDaiySale(ritem,dayItem):
     """设置日运营"""
     #销售
-    if dayItem["salevalue"]:
-        ritem.setdefault('day_salevalue',mtu.convertToStr(dayItem['salevalue']))
-    else:
-       ritem.setdefault('day_salevalue',"0.00")
+    #if dayItem["salevalue"]:
+    ritem.setdefault('day_salevalue',mtu.convertToStr(dayItem['salevalue']))
+    #else:
+     #  ritem.setdefault('day_salevalue',"0.00")
 
-    if dayItem["salevalueold"]:
-        ritem.setdefault('day_salevalueold',mtu.convertToStr(dayItem['salevalueold']))
-    else:
-       ritem.setdefault('day_salevalueold',"0.00")
+   # if dayItem["salevalueold"]:
+    ritem.setdefault('day_salevalueold',mtu.convertToStr(dayItem['salevalueold']))
+    #else:
+    #   ritem.setdefault('day_salevalueold',"0.00")
 
-    if dayItem["salevalueesti"]:
-        ritem.setdefault('day_salevalueesti',mtu.convertToStr(dayItem['salevalueesti']))
-    else:
-        ritem.setdefault('day_salevalueesti','0.0')
+    #if dayItem["salevalueesti"]:
+    ritem.setdefault('day_salevalueesti',mtu.convertToStr(dayItem['salevalueesti']))
+    #else:
+    #    ritem.setdefault('day_salevalueesti','0.0')
 
     ritem.setdefault('day_sale_difference',mtu.convertToStr(mtu.quantize(dayItem["salevalue"])-mtu.quantize(dayItem["salevalueesti"]),"0.00",1))
     if dayItem["salevalueesti"]>0:
@@ -639,15 +825,15 @@ def setDaiySale(ritem,dayItem):
         ritem.setdefault('day_accomratio',"0.0%")
 
     #来客数
-    if dayItem["tradenumber"]:
-        ritem.setdefault('day_tradenumber',str(int(dayItem["tradenumber"])))
-    else:
-        ritem.setdefault('day_tradenumber',str(int(0)))
+    #if dayItem["tradenumber"]:
+    ritem.setdefault('day_tradenumber',str(int(dayItem["tradenumber"])))
+    #else:
+    #    ritem.setdefault('day_tradenumber',str(int(0)))
 
-    if dayItem["tradenumberold"]:
-        ritem.setdefault('day_tradenumberold',str(int(dayItem["tradenumberold"])))
-    else:
-        ritem.setdefault('day_tradenumberold',str(int(0)))
+    #if dayItem["tradenumberold"]:
+    ritem.setdefault('day_tradenumberold',str(int(dayItem["tradenumberold"])))
+    #else:
+    #    ritem.setdefault('day_tradenumberold',str(int(0)))
 
     if dayItem["tradenumberold"]>0:
         ritem.setdefault('day_tradenumber_ynygrowth',mtu.convertToStr((dayItem["tradenumber"]-dayItem["tradenumberold"])*decimal.Decimal("100.0")/dayItem["tradenumberold"],"0.00",1)+"%")
@@ -655,31 +841,31 @@ def setDaiySale(ritem,dayItem):
         ritem.setdefault('day_tradenumber_ynygrowth',"0.00")
 
     #客单价
-    if dayItem["tradeprice"]:
-        ritem.setdefault('day_tradeprice',mtu.convertToStr(dayItem['tradeprice'],"0.00",1))
-    else:
-        ritem.setdefault('day_tradeprice','0.00')
+    #if dayItem["tradeprice"]:
+    ritem.setdefault('day_tradeprice',mtu.convertToStr(dayItem['tradeprice'],"0.00",1))
+    #else:
+    #    ritem.setdefault('day_tradeprice','0.00')
 
-    if dayItem["tradepriceold"]:
-        ritem.setdefault('day_tradepriceold',mtu.convertToStr(dayItem['tradepriceold'],"0.00",1))
-    else:
-        ritem.setdefault('day_tradepriceold', '0.00')
+    #if dayItem["tradepriceold"]:
+    ritem.setdefault('day_tradepriceold',mtu.convertToStr(dayItem['tradepriceold'],"0.00",1))
+    #else:
+    #    ritem.setdefault('day_tradepriceold', '0.00')
 
-    if dayItem["tradeprice"] and dayItem["tradepriceold"] > 0:
+    if dayItem["tradepriceold"] > 0:
         ritem.setdefault('day_tradeprice_ynygrowth',mtu.convertToStr((dayItem["tradeprice"]-dayItem["tradepriceold"])*decimal.Decimal("100.0")/dayItem["tradepriceold"],"0.00",1)+"%")
     else:
         ritem.setdefault('day_tradeprice_ynygrowth',"0.00")
 
     #毛利
-    if dayItem["salegain"]:
-        ritem.setdefault('day_salegain',mtu.convertToStr(dayItem['salegain']))
-    else:
-        ritem.setdefault('day_salegain',"0.0")
+    #if dayItem["salegain"]:
+    ritem.setdefault('day_salegain',mtu.convertToStr(dayItem['salegain']))
+    #else:
+    #    ritem.setdefault('day_salegain',"0.0")
 
-    if dayItem["salegainesti"]:
-        ritem.setdefault('day_salegainesti',mtu.convertToStr(dayItem['salegainesti']))
-    else:
-        ritem.setdefault('day_salegainesti',"0.0")
+    #if dayItem["salegainesti"]:
+    ritem.setdefault('day_salegainesti',mtu.convertToStr(dayItem['salegainesti']))
+    #else:
+    #    ritem.setdefault('day_salegainesti',"0.0")
 
     ritem.setdefault('day_salegain_difference',mtu.convertToStr(mtu.quantize(dayItem["salegain"])-mtu.quantize(dayItem["salegainesti"]),"0.00",1))
 
@@ -696,53 +882,59 @@ def setDaiySale(ritem,dayItem):
 def setMonthSale(ritem,monthItem,yitem):
     """设置月运营"""
     #月累计销售额
-    if monthItem["m_salevalue"]:
-        ritem.setdefault('month_salevalue',mtu.convertToStr(monthItem["m_salevalue"]))
-    else:
-        ritem.setdefault('month_salevalue', "0.0")
+    ritem.setdefault('month_salevalue',mtu.convertToStr(monthItem["m_salevalue"]))
+    # if monthItem["m_salevalue"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salevalue', "0.0")
 
-    if monthItem["m_salevalueesti"]:
-        ritem.setdefault('month_salevalueesti',mtu.convertToStr(monthItem["m_salevalueesti"]))
-    else:
-        ritem.setdefault('month_salevalueesti',"0.0")
+    ritem.setdefault('month_salevalueesti',mtu.convertToStr(monthItem["m_salevalueesti"]))
+    # if monthItem["m_salevalueesti"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salevalueesti',"0.0")
 
 
     ritem.setdefault('month_sale_difference',mtu.convertToStr(mtu.quantize(monthItem["m_salevalue"])-mtu.quantize(monthItem["m_salevalueesti"]),"0.00",1))
 
-    if monthItem["m_salevalueesti"]:
+    if monthItem["m_salevalueesti"] > 0:
         ritem.setdefault('month_accomratio',mtu.convertToStr(mtu.quantize(monthItem["m_salevalue"])*decimal.Decimal("100.0")/mtu.quantize(monthItem["m_salevalueesti"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_accomratio',"0.00")
 
-    if yitem["y_salevalue"]:
-        ritem.setdefault('month_sale_estimate',mtu.convertToStr(yitem['y_salevalue']))
-    else:
-        ritem.setdefault('month_sale_estimate',"0.0")
+    ritem.setdefault('month_sale_estimate',mtu.convertToStr(yitem['y_salevalue']))
+    # if yitem["y_salevalue"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_sale_estimate',"0.0")
 
     if yitem["y_salevalue"] > 0:
         ritem.setdefault('month_complet_progress',mtu.convertToStr(mtu.quantize(monthItem["m_salevalue"])*decimal.Decimal("100.0")/mtu.quantize(yitem["y_salevalue"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_complet_progress',"0.00")
 
-    if monthItem["m_salevalueold"]:
-        ritem.setdefault('month_salevalueold',mtu.convertToStr(monthItem["m_salevalueold"]))
-    else:
-        ritem.setdefault('month_salevalueold',"0.0")
+    ritem.setdefault('month_salevalueold',mtu.convertToStr(monthItem["m_salevalueold"]))
+    # if monthItem["m_salevalueold"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salevalueold',"0.0")
 
     if monthItem["m_salevalueold"] > 0:
         ritem.setdefault('month_sale_ynygrowth',mtu.convertToStr((mtu.quantize(monthItem["m_salevalue"])-mtu.quantize(monthItem["m_salevalueold"]))*decimal.Decimal("100.0")/mtu.quantize(monthItem["m_salevalueold"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_sale_ynygrowth',"0.00")
     #月毛利
-    if monthItem["m_salegain"]:
-        ritem.setdefault('month_salegain',mtu.convertToStr(monthItem["m_salegain"]))
-    else:
-        ritem.setdefault('month_salegain',"0.0")
+    ritem.setdefault('month_salegain',mtu.convertToStr(monthItem["m_salegain"]))
+    # if monthItem["m_salegain"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salegain',"0.0")
 
-    if monthItem["m_salegainesti"]:
-        ritem.setdefault('month_salegainesti',mtu.convertToStr(monthItem["m_salegainesti"]))
-    else:
-        ritem.setdefault('month_salegainesti',"0.0")
+    ritem.setdefault('month_salegainesti',mtu.convertToStr(monthItem["m_salegainesti"]))
+    # if monthItem["m_salegainesti"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salegainesti',"0.0")
 
     ritem.setdefault('month_salegain_difference',mtu.convertToStr(mtu.quantize(monthItem["m_salegain"])-mtu.quantize(monthItem["m_salegainesti"]),"0.00",1))
 
@@ -751,20 +943,22 @@ def setMonthSale(ritem,monthItem,yitem):
     else:
         ritem.setdefault('month_salegain_accomratio',"0.00")
 
-    if yitem["y_salegain"]:
-        ritem.setdefault('month_salegain_estimate',mtu.convertToStr(yitem['y_salegain']))
-    else:
-        ritem.setdefault('month_salegain_estimate',"0.0")
+    ritem.setdefault('month_salegain_estimate',mtu.convertToStr(yitem['y_salegain']))
+    # if yitem["y_salegain"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salegain_estimate',"0.0")
 
     if yitem["y_salegain"] > 0:
         ritem.setdefault('month_salegain_complet_progress',mtu.convertToStr(mtu.quantize(monthItem["m_salegain"])*decimal.Decimal("100.0")/mtu.quantize(yitem["y_salegain"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_salegain_complet_progress',"0.00")
 
-    if monthItem["m_salegainold"]:
-        ritem.setdefault('month_salegainold',mtu.convertToStr(monthItem["m_salegainold"]))
-    else:
-        ritem.setdefault('month_salegainold',"0.0")
+    ritem.setdefault('month_salegainold',mtu.convertToStr(monthItem["m_salegainold"]))
+    # if monthItem["m_salegainold"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_salegainold',"0.0")
 
     if monthItem["m_salegainold"] > 0:
         ritem.setdefault('month_salegain_ynygrowth',mtu.convertToStr((mtu.quantize(monthItem["m_salegain"]) - mtu.quantize(monthItem["m_salegainold"]))*decimal.Decimal("100.0")/mtu.quantize(monthItem["m_salegainold"]),"0.00",1)+"%")
@@ -782,15 +976,17 @@ def setMonthSale(ritem,monthItem,yitem):
         ritem.setdefault('month_salegain_grossmarginold',"0.00")
 
     #月日均来客数
-    if monthItem["m_tradenumber"]:
-        ritem.setdefault('month_tradenumber',str(int(monthItem["m_tradenumber"])))
-    else:
-        ritem.setdefault('month_tradenumber',"0")
+    ritem.setdefault('month_tradenumber',str(int(monthItem["m_tradenumber"])))
+    # if monthItem["m_tradenumber"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_tradenumber',"0")
 
-    if monthItem["m_tradenumberold"]:
-        ritem.setdefault('month_tradenumberold',str(int(monthItem["m_tradenumberold"])))
-    else:
-        ritem.setdefault('month_tradenumberold',"0")
+    ritem.setdefault('month_tradenumberold',str(int(monthItem["m_tradenumberold"])))
+    # if monthItem["m_tradenumberold"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_tradenumberold',"0")
 
     if monthItem["m_tradenumberold"] > 0:
         ritem.setdefault('month_tradenumber_ynygrowth',mtu.convertToStr((monthItem["m_tradenumber"]-monthItem["m_tradenumberold"])*decimal.Decimal("100.0")/monthItem["m_tradenumberold"],"0.00",1)+"%")
@@ -798,15 +994,17 @@ def setMonthSale(ritem,monthItem,yitem):
         ritem.setdefault('month_tradenumber_ynygrowth',"0.00")
 
     #月客单价
-    if monthItem["m_tradeprice"]:
-        ritem.setdefault('month_tradeprice',mtu.convertToStr(monthItem["m_tradeprice"],'0.00',1))
-    else:
-        ritem.setdefault('month_tradeprice',"0.00")
+    ritem.setdefault('month_tradeprice',mtu.convertToStr(monthItem["m_tradeprice"],'0.00',1))
+    # if monthItem["m_tradeprice"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_tradeprice',"0.00")
 
-    if monthItem["m_tradepriceold"]:
-        ritem.setdefault('month_tradepriceold',mtu.convertToStr(monthItem["m_tradepriceold"],'0.00',1))
-    else:
-        ritem.setdefault('month_tradepriceold',"0.00")
+    ritem.setdefault('month_tradepriceold',mtu.convertToStr(monthItem["m_tradepriceold"],'0.00',1))
+    # if monthItem["m_tradepriceold"]:
+    #     pass
+    # else:
+    #     ritem.setdefault('month_tradepriceold',"0.00")
 
     if monthItem["m_tradepriceold"] > 0:
         ritem.setdefault('month_tradeprice_ynygrowth',mtu.convertToStr((monthItem["m_tradeprice"]-monthItem["m_tradepriceold"])*decimal.Decimal("100.0")/monthItem["m_tradepriceold"],"0.00",1)+"%")

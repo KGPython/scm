@@ -3,7 +3,7 @@
 from django.db.models import Q
 from django.http import HttpResponseRedirect
 from base.models import BasShop, SerialNumber, BasOrg, BasKe, BasGoods,BasPayType
-from base.utils import MethodUtil,Constants
+from base.utils import Constants
 
 def global_setting(request):
     grpcode = request.session.get("s_grpcode")

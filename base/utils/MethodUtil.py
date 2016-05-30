@@ -191,6 +191,92 @@ def exportXls(sheetname,titles,datalist,sumlist,dictlist,fmtlist):
 
     return book
 
+def insertTitle2(sheet,titles,keyList,widthList):
+     #设置导出文件标题样式
+    tstyle = xlwt.easyxf('pattern: pattern solid, fore_colour blue_gray; font: bold on,name SimSun,height 230,'
+                         'colour_index 1;borders: left thin,top thin,right thin,bottom thin;align: horiz center,vert center')
+
+    #设置行高
+    sheet.row(0).height_mismatch = True
+    sheet.row(0).height =500
+    #设置列宽
+    if widthList:
+        for i in range(len(widthList)):
+            sheet.col(i).width = 0x0d00 + widthList[i]
+
+    for i in range(len(titles)):
+        trow = titles[i]
+
+        if keyList:
+            for j in range(len(keyList)):
+               sheet.write(i,j,"",tstyle)
+
+        for col in trow:
+            #写入导出文件标题
+            sheet.write_merge(i,i+col[2]-1,col[1],col[1]+col[3]-1,str(col[0]),tstyle)
+
+#添加合计
+def insertSum2(sheet,keylist,count,sdict,index):
+    tstyle = xlwt.easyxf('pattern: pattern solid, fore_colour blue_gray; font: bold on,name SimSun,height 200,'
+                         'colour_index 1;borders: left thin,top thin,right thin,bottom thin;align: horiz center,vert center')
+    sstyle = xlwt.easyxf('pattern: pattern solid,fore_colour white;font:name SimSun,height 200;'
+                         'borders:left thin,top thin,right thin,bottom thin;align: horiz center,vert center')
+
+    slist=sorted(sdict.keys(), key=lambda d:d)
+    for key in slist:
+        item = sdict[key]
+        #写入合计文本
+        colindex = index
+        col1 = item[keylist[0]]
+        sheet.write_merge(count,count,0,colindex-1,col1,tstyle)
+        #写入合计数值
+        for j in range(1,len(keylist)):
+            k = keylist[j]
+            if k in item:
+                val = item[k]
+                sheet.write(count,j,val,sstyle)
+        count += 1
+    return count
+
+def insertCell2(sheet,count,datalist,keylist,dictlist):
+    #设置商品不存在时提示信息的样式
+    sstyle = xlwt.easyxf('pattern: pattern solid,fore_colour white;font:name SimSun,height 200;'
+                         'borders:left thin,top thin,right thin,bottom thin;align: horiz center,vert center')
+    #根据商品条码查询商品信息
+    for i in range(0,len(datalist)):
+        row = datalist[i]
+        #数据为list、tuple
+        if isinstance(row,list) or isinstance(row,tuple):
+            for j in range(len(row)):
+                cell = row[j]
+                dt = None
+                if dictlist:
+                    dt = dictlist[j]
+                if dt:
+                     #根据key取value
+                    sheet.write(count,j,dt[str(cell)],sstyle)
+                else:
+                    sheet.write(count,j,cell,sstyle)
+        elif isinstance(row,dict):
+           #数据为字典
+           for j in range(len(keylist)):
+                dt = None
+                if dictlist:
+                    dt = dictlist[j]
+                key = keylist[j]
+                cell = row.get(key)
+                if isinstance(cell,str):
+                    cell = cell.strip()
+
+                if dt:
+                     #根据key取value
+                    sheet.write(count,j,dt[str(cell)],sstyle)
+                else:
+                    sheet.write(count,j,cell,sstyle)
+        count += 1
+    return count
+
+
 #添加标题
 def insertTitle(sheet,titles):
      #设置导出文件标题样式
