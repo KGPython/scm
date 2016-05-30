@@ -9,3 +9,4 @@ from base.utils import MethodUtil
 @csrf_exempt
 def index(request):
     pass
+
