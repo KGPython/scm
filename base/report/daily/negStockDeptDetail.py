@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-__author__ = 'admin'
+__author__ = 'chen'
 import datetime
 from django.shortcuts import render
 from base.utils import MethodUtil
@@ -11,7 +11,7 @@ def index(request):
           +str(yesterday)+'" GROUP BY deptid,shopid'
     cur = conn.cursor()
     cur.execute(sql)
-    list = cur.fetchall()
+    listDeptDetail = cur.fetchall()
     for obj in list:
         if(not obj['zhonbi']):
             obj['zhonbi']= 0
@@ -27,4 +27,4 @@ def index(request):
     conn.close()
     cur.close()
     date = str(yesterday)[0:8]
-    return render(request,'report/daily/negative_stock_dept_detail.html',locals())
+    return render(request,'report/daily/negative_stock_top.html',locals())

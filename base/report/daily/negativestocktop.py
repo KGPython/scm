@@ -12,11 +12,11 @@ def index(request):
     today = str(datetime.datetime.today().strftime('%y-%m-%d'))
     conn = MethodUtil.getMysqlConn()
 
-    sql = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
+    sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
           'FROM KNegativestock ' \
           'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
-    cur.execute(sql)
+    cur.execute(sqlTop)
     listRes= cur.fetchall()
 
 
@@ -62,6 +62,44 @@ def index(request):
             listRes = ranking(listRes,'zhonbi_0'+str(date),'mingci_0'+str(date))
         else:
             listRes = ranking(listRes,'zhonbi_'+str(date),'mingci_'+str(date))
+
+
+    ###课组汇总###
+    yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
+    sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from KNegativestock' \
+          ' where sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
+    cur = conn.cursor()
+    cur.execute(sqlDept)
+    listDept = cur.fetchall()
+    for obj in listDept:
+        if(not obj['qtyz']):
+            obj['qtyz'] = 0
+        obj['qtyz'] = float(obj['qtyz'])
+        if(not obj['qtyl']):
+            obj['qtyl'] = 0
+        obj['qtyl'] = float(obj['qtyl'])
+        if(not obj['zhonbi']):
+            obj['zhonbi'] = 0
+        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
+
+    ###负库存课组明细###
+    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE sdate = "'\
+          +str(yesterday)+'" GROUP BY deptid,shopid'
+    cur = conn.cursor()
+    cur.execute(sqlDeptDetail)
+    listDeptDetail = cur.fetchall()
+    for obj in listDeptDetail:
+        if(not obj['zhonbi']):
+            obj['zhonbi']= 0
+        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
+        if(not obj['qtyl']):
+            obj['qtyl']= 0
+        obj['qtyl'] = float(obj['qtyl'])
+        if(not obj['qtyz']):
+            obj['qtyz']= 0
+        obj['qtyz'] = float(obj['qtyz'])
+
+    date = str(yesterday)[0:8]
     return render(request,"report/daily/negative_stock_top.html",locals())
 
 def ranking(lis,key,name):
