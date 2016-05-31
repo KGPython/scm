@@ -269,7 +269,6 @@ def insertCell2(sheet,count,datalist,keylist,dictlist):
                 cell = row.get(key)
                 if isinstance(cell,str):
                     cell = cell.strip()
-
                 if dt:
                      #根据key取value
                     sheet.write(count,j,dt[str(cell)],sstyle)
