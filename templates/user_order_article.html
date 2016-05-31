@@ -9,7 +9,7 @@
     {% include "common/nav.html" %}
     <div class="query comWidth" style="width: 100%;text-align: right;">
         <form method="post" id="submitForm" action=""></form>
-        <p>    <input class="query-enter" type="button" value="打印" onclick="javascript:printContent()">
+        <p>
             {% ifequal orderstatus.status 'Y'%}
                 <input class="query-enter" type="button" value="打印" onclick="javascript:printContent()">
             {% else %}
