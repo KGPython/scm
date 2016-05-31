@@ -17,71 +17,59 @@ def index(request):
      yesterday = date.strftime("%Y-%m-%d")
 
      #查询当月销售
-     sql = "CALL k_d_wholesale ('{start}','{end}') ".format(start=yesterday,end=yesterday)
-     cursor = connection.cursor()
-     cursor.execute(sql)
-     list = cursor.fetchall()
-     rlist = []
-     sumDict = {}
-     for item in list:
-        row = {}
-        rlist.append(row)
-        row.setdefault("sdate",item[0].strftime("%Y-%m-%d"))
-        row.setdefault("shopid",item[1])
-        row.setdefault("shopnm",item[2].strip())
-        if item[3]:
-            row.setdefault("tradeprice",float(item[3]))   #平均客单
-        else:
-            row.setdefault("tradeprice",0.00)
-        if item[4]:
-            row.setdefault("tradenumber",int(item[4]))  #总客流
-        else:
-            row.setdefault("tradenumber",0)
-        if item[5]:
-            row.setdefault("salevalue",float(item[5]))   #销售金额
-        else:
-            row.setdefault("salevalue",0.00)
-        if item[6]:
-            row.setdefault("discvalue",float(item[6]))   #折扣金额
-        else:
-            row.setdefault("discvalue",0.00)
-        if item[7]:
-            row.setdefault("sale",float(item[7]))    #实际销售
-        else:
-            row.setdefault("sale",0.00)
-        if item[8]:
-            row.setdefault("costvalue",float(item[8]))  #销售成本
-        else:
-            row.setdefault("costvalue",0.00)
-        if item[9]:
-            row.setdefault("salegain",float(item[9]))   #毛利
-        else:
-            row.setdefault("salegain",0.00)
-        if item[10]:
-            row.setdefault("gaintx",float(item[10]))   #毛利率
-        else:
-            row.setdefault("gaintx",0.00)
-        if item[11]:
-            row.setdefault("wsalevalue",float(item[11]))  #批发实际销售
-        else:
-            row.setdefault("wsalevalue",0.00)
-        if item[12]:
-            row.setdefault("wcostvalue",float(item[12])) #批发销售成本
-        else:
-            row.setdefault("wcostvalue",0.00)
-        if item[13]:
-            row.setdefault("wsalegain",float(item[13])) #批发毛利
-        else:
-            row.setdefault("wsalegain",0.00)
-        if item[14]:
-            row.setdefault("wgaintx",float(item[14]))  #批发毛利率
-        else:
-            row.setdefault("wgaintx",0.00)
+     try:
+         sql = "CALL k_d_wholesale ('{start}','{end}') ".format(start=yesterday,end=yesterday)
+         conn = mtu.getMysqlConn()
+         cur = conn.cursor()
+         cur.execute(sql)
+         list = cur.fetchall()
+         rlist = []
+         sumDict = {}
+         sum = {"shopid":"合计","shopnm":"","tradeprice":0.0,"tradenumber":0,"salevalue":0.0,"discvalue":0.0,"sale":0.0,
+                    "costvalue":0.0,"salegain":0.0,"gaintx":"","yhzhanbi":"","wsalevalue":0.0,"wcostvalue":0.0,"wsalegain":0.0,"wgaintx":""}
+         sumDict.setdefault("sum1",sum)
 
+         unsumkey = ["gaintx","wgaintx"]
+         for obj in list:
+            row = {}
+            for key in obj.keys():
+                item = obj[key]
+                newkey = key.lower()
+                if item:
+                    if isinstance(item,int) or isinstance(item,decimal.Decimal):
+                        if newkey not in unsumkey:
+                            row.setdefault(newkey,float(item))
+                            sum[newkey] += float(item)
+                        else:
+                            row.setdefault(newkey,"%0.2f" % item+"%")
+                    elif isinstance(item,datetime.datetime):
+                        row.setdefault(newkey,item.strftime("%Y-%m-%d"))
+                    else:
+                        row.setdefault(newkey,item)
+                else:
+                    row.setdefault(newkey,"")
+
+            if row["sale"]>0:
+                yhzhanbi = "%0.2f" % (row["discvalue"]*100.0/row["sale"]) + "%"
+            else:
+                yhzhanbi = ""
+
+            row.setdefault("yhzhanbi",yhzhanbi)
+            rlist.append(row)
+
+         sum["gaintx"] = "%0.2f" % (sum["salegain"]*100.0/sum["sale"]) + "%"
+         sum["yhzhanbi"] = "%0.2f" % (sum["discvalue"]*100.0/sum["sale"]) + "%"
+         sum["wgaintx"] = "%0.2f" % (sum["wsalegain"]*100.0/sum["wsalevalue"]) + "%"
+         for key in sum.keys():
+             item = sum[key]
+             if not isinstance(item,str) and not isinstance(item,int):
+                 sum[key] = "%0.2f" % item
+     except Exception as e:
+        print(">>>>>>>>>>>>[异常]",e)
      #计算月累加合计
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
-         return render(request, "report/daily/group_sale.html",{"rlist":rlist,"sumDict":sumDict})
+         return render(request,"report/daily/group_sale.html",{"gslist":rlist,"sumDict":sumDict})
      else:
          return export(request,rlist,sumDict)
 
@@ -90,7 +78,7 @@ def export(request,rlist,sumList):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
 
     #写入sheet1 月累计销售报表
-   #writeDataToSheet1(wb,rlist,sumList)
+    writeDataToSheet1(wb,rlist,sumList)
 
     outtype = 'application/vnd.ms-excel;'
     fname = datetime.date.today().strftime("%m.%d")+"group_daily_sale"
@@ -98,3 +86,26 @@ def export(request,rlist,sumList):
     response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
     wb.save(response)
     return response
+
+def writeDataToSheet1(wb,rlist,sumDict):
+    date = DateUtil.get_day_of_day(-1)
+    yesterday = date.strftime("%Y-%m-%d")
+
+    sheet = wb.add_sheet("宽广集团销售日报表",cell_overwrite_ok=True)
+
+    titles = [[("宽广集团销售日报表",2,1,13)],
+              [("数据日期：",0,1,2),(yesterday,2,1,1),("单位：元",4,1,1)],
+              [("机构编码",0,2,1),("机构名称",1,2,1),("POS销售数据",3,1,9),("批发销售数据",4,1,4)],
+              [("总客流量",2,1,1),("平均客单价",3,1,1),("销售金额",4,1,1),("折扣金额",5,1,1),("实际销售",6,1,1),("销售成本",7,1,1),
+               ("毛利",8,1,1),("毛利率",9,1,1),("优惠占比",10,1,1),("实际销售",11,1,1),("销售成本",12,1,1),("毛利",13,1,1),("毛利率",14,1,1)],
+            ]
+
+    keylist = ['shopid','shopnm','tradenumber','tradeprice','salevalue','discvalue','sale','costvalue',
+               'salegain','gaintx','yhzhanbi','wsalevalue','wcostvalue','wsalegain',
+               'wgaintx']
+
+    widthList = [600,400,1000,800,400,800,800,800,800,800,800,800,800,800,800]
+
+    mtu.insertTitle2(sheet,titles,keylist,widthList)
+    count = mtu.insertCell2(sheet,4,rlist,keylist,None)
+    mtu.insertSum2(sheet,keylist,count,sumDict,2)
