@@ -49,6 +49,7 @@ class BasShopRegion(models.Model):
     region = models.CharField(db_column='Region', max_length=8, blank=True, null=True)  # Field name made lowercase.
     opentime = models.DateTimeField(db_column='OpenTime', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
     type = models.CharField(db_column='Type', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    shoptype = models.IntegerField(db_column='ShopType')  # Field name made lowercase.
 
     class Meta:
         managed = False
