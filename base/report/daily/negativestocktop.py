@@ -195,7 +195,6 @@ def writeDataToSheet1(wb,listTop,TotalDict):
     trow1 = titles[1]
     trow2 = titles[2]
 
-
     n = 6
     for d in range(1,lastDay+1):
         trow1.append((str(d)+'日排名(不含联营)',n,1,4))

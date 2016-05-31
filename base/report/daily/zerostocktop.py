@@ -26,7 +26,6 @@ def index(request):
     cur = conn.cursor()
     cur.execute(sqlTop)
     listTop = cur.fetchall()
-
     listTotal = {'ShopID':'合计','shopname':'','qtyzSum':0} #初始化最后一行
     #转换数据类型并求纵向合计
     for i in range(0,len(listTop)):

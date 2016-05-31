@@ -278,7 +278,6 @@ def insertCell2(sheet,count,datalist,keylist,dictlist):
         count += 1
     return count
 
-
 #添加标题
 def insertTitle(sheet,titles):
      #设置导出文件标题样式

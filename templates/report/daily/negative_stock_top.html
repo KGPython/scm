@@ -173,7 +173,7 @@
             mergeCells: mergeCellsList,
             cells: function (row, col, prop) {
                 var cellProperties = {};
-                if (row == rowLight[1] || row <= rowLight[0]) {  //查找行或列的位置
+                if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
                     cellProperties.renderer = headerRenderer;
                 }
                 return cellProperties;
