@@ -249,3 +249,4 @@ def writeDataToSheet2(wb,listDeptDetail,listDept):
 
     mtu.insertCell2(sheet2,3,listDeptDetail,keylistSheet2,None)
     mtu.insertCell2(sheet3,3,listDept,keylistSheet3,None)
+
