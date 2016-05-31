@@ -24,7 +24,7 @@ def index(request):
      lastDay = calendar.monthrange(year,month)[1]
 
      #查询所有超市门店
-     slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").order_by("region","shopid")
+     slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").filter(shoptype=11).order_by("region","shopid")
 
      #查询当月销售
      karrs.setdefault("sdate__gte","{start} 00:00:00".format(start=start))
@@ -160,7 +160,8 @@ def index(request):
      sumDict,esumDict ={},{}
      yearlist = []
      yearSumDict = {}
-     sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,erlist,esumDict,yeardict,yearlist,yearSumDict,yydict)
+     sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,
+          erlist,esumDict,yeardict,yearlist,yearSumDict,yydict)
 
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
