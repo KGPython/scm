@@ -94,7 +94,7 @@
     table.push(theadRow1);
     table.push(theadRow2);
     //拼接tbody数据
-    var tbody = {{ listRes | safe }};
+    var tbody = {{ listTop | safe }};
     table = table.concat(tbody);
     //拼接最后一行合计数据
     var tfooter = {{ listTotal | safe }}

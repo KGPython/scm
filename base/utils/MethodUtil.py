@@ -235,6 +235,8 @@ def insertSum2(sheet,keylist,count,sdict,index):
             if k in item:
                 val = item[k]
                 sheet.write(count,j,val,sstyle)
+            else:
+                sheet.write(count,j,'',sstyle)
         count += 1
     return count
 

@@ -1,0 +1,649 @@
+Index: .idea/shelf/Uncommitted_changes_before_update_operation_at_2016_5_23_17_54_[Default]1.patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>GBK
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_update_operation_at_2016_5_23_17_54_[Default]1.patch	(revision )
++++ .idea/shelf/Uncommitted_changes_before_update_operation_at_2016_5_23_17_54_[Default]1.patch	(revision )
+@@ -0,0 +1,1 @@
++
+\ No newline at end of file
+Index: .idea/shelf/Uncommitted_changes_before_update_operation_at_2016_5_23_17_54_[Default].patch
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- .idea/shelf/Uncommitted_changes_before_update_operation_at_2016_5_23_17_54_[Default].patch	(revision )
++++ .idea/shelf/Uncommitted_changes_before_update_operation_at_2016_5_23_17_54_[Default].patch	(revision )
+@@ -0,0 +1,631 @@
++Index: templates/report/daily/negative_stock_dept.html
++===================================================================
++--- templates/report/daily/negative_stock_dept.html	(revision )
+++++ templates/report/daily/negative_stock_dept.html	(revision )
++@@ -0,0 +1,47 @@
+++{% load basefilter %}
+++<html>
+++<head>
+++    <meta charset="UTF-8">
+++    <title>商业供应链系统</title>
+++    <style>
+++
+++    </style>
+++</head>
+++<body>
+++    {% include "common/nav.html" %}
+++    <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+++    <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+++    <div class="tTitle tTitle-report">
+++        <h1>课组汇总日报（{{ date }}）</h1>
+++    </div>
+++    <div id="tableReport" style="width: 800px;margin: 0 auto">
+++    </div>
+++    {% include "common/footer.html" %}
+++    <script>
+++    container = document.getElementById('tableReport');
+++    var table = [];
+++    var thead={'deptid':'课组编码','deptidname':'课组名称','qtyz':'课组汇总','qtyl':'负库存数','zhonbi':'占比'};
+++    var tbody = {{list | safe}};
+++    table.push(thead);
+++    table = table.concat(tbody);
+++    var hot = new Handsontable(container,{
+++        data: table,
+++        colWidths: 140,
+++        className: "htCenter htMiddle",
+++        rowHeaders: true,
+++        colHeaders: true,
+++        contextMenu: false,
+++        fixedRowsTop: 1,
+++        manualColumnResize: true,
+++        manualRowMove: true,
+++        manualColumnMove: true,
+++        columnSorting: true,
+++        sortIndicator: true,
+++        readOnly:true,
+++        columns:[
+++            {data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
+++        ]
+++    })
+++</script>
+++</body>
+++</html>
++\ No newline at end of file
++Index: base/report/daily/negStockDeptDetail.py
++===================================================================
++--- base/report/daily/negStockDeptDetail.py	(revision )
+++++ base/report/daily/negStockDeptDetail.py	(revision )
++@@ -0,0 +1,30 @@
+++# -*- coding:utf-8 -*-
+++__author__ = 'admin'
+++import datetime
+++from django.shortcuts import render
+++from base.utils import MethodUtil
+++
+++def index(request):
+++    conn = MethodUtil.getMysqlConn()
+++    yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
+++    sql = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE sdate = "'\
+++          +str(yesterday)+'" GROUP BY deptid,shopid'
+++    cur = conn.cursor()
+++    cur.execute(sql)
+++    list = cur.fetchall()
+++    for obj in list:
+++        if(not obj['zhonbi']):
+++            obj['zhonbi']= 0
+++        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
+++        if(not obj['qtyl']):
+++            obj['qtyl']= 0
+++        obj['qtyl'] = float(obj['qtyl'])
+++        if(not obj['qtyz']):
+++            obj['qtyz']= 0
+++        obj['qtyz'] = float(obj['qtyz'])
+++
+++
+++    conn.close()
+++    cur.close()
+++    date = str(yesterday)[0:10]
+++    return render(request,'report/daily/negative_stock_dept_detail.html',locals())
++Index: templates/report/daily/negative_stock_dept_detail.html
++===================================================================
++--- templates/report/daily/negative_stock_dept_detail.html	(revision )
+++++ templates/report/daily/negative_stock_dept_detail.html	(revision )
++@@ -0,0 +1,51 @@
+++{% load basefilter %}
+++<html>
+++<head>
+++    <meta charset="UTF-8">
+++    <title>商业供应链系统</title>
+++    <style>
+++
+++    </style>
+++</head>
+++<body>
+++    {% include "common/nav.html" %}
+++    <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+++    <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+++    <div class="tTitle tTitle-report">
+++        <h1>负库存课组明细日报（{{ date }}）</h1>
+++    </div>
+++    <div id="tableReport" style="width: 1000px;margin: 0 auto">
+++    </div>
+++
+++    {% include "common/footer.html" %}
+++    <script>
+++    var container = document.getElementById('tableReport');
+++    var table = []
+++    var thead={'shopid':'门店编码','shopname':'门店名称','deptid':'课组编码','deptidname':'课组名称','qtyz':'课组汇总',
+++        'qtyl':'负库存数','zhonbi':'占比'}
+++    var tbody = {{list | safe}};
+++
+++    table.push(thead);
+++    table=table.concat(tbody);
+++
+++    var hot = new Handsontable(container,{
+++        data: table,
+++        colWidths: 120,
+++        className: "htCenter htMiddle",
+++        rowHeaders: true,
+++        colHeaders: true,
+++        contextMenu: false,
+++        fixedRowsTop: 1,
+++        manualColumnResize: true,
+++        manualRowMove: true,
+++        manualColumnMove: true,
+++        columnSorting: true,
+++        sortIndicator: true,
+++        readOnly:true,
+++        columns:[
+++            {data:'shopid'},{data:'shopname'},{data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
+++        ]
+++    })
+++</script>
+++</body>
+++</html>
++\ No newline at end of file
++Index: templates/report/daily/zero_stock_top.html
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++--- templates/report/daily/zero_stock_top.html	(date 1463996761000)
+++++ templates/report/daily/zero_stock_top.html	(revision )
++@@ -1,303 +1,80 @@
++ {% load basefilter %}
++ <html>
++-    <head>
++-        <meta charset="UTF-8">
++-        <title>商业供应链系统</title>
+++<head>
+++    <meta charset="UTF-8">
+++    <title>商业供应链系统</title>
++-        <link data-jsfiddle="common" rel="stylesheet" media="screen" href="{{ static }}/js/handsontable/jquery.handsontable.css">
++-    </head>
++-    <body>
++-        {% include 'common/nav.html' %}
+++</head>
+++<body>
+++{% include 'common/nav.html' %}
++-        <div class="notice noticeOrder comWidth">
++-            <div class="tTitle">
++-                <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
++-                <div class="container">
++-                    <ul class="nav nav-tabs">
++-                      <li role="presentation" class="active"><a href="#">7月零库存总排名（门店）</a></li>
++-                      <li role="presentation"><a href="#">7月零库存每日排名（门店）</a></li>
++-                      <li role="presentation"><a href="#">7月零库存排名总表（课组）</a></li>
++-                      <li role="presentation"><a href="#">7月各店零库存排名表（课组）</a></li>
++-                    </ul>
++-                    <div class="list-tabs container">
++-                        <div class="table" style="display:block">
++-                             <div id="example1" style="height:550px;margin-left: 10px; "> </div>
+++<script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+++<link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+++<div class="tTitle tTitle-report">
+++    <h1>零库存排名日报（）</h1>
++-                        </div>
+++</div>
++-                        <div class="table">
++-                              <div id="example2" style="height:550px; "></div>
+++<div id="tableReport">
++-                        </div>
+++</div>
++-                        <div class="table">
++-                             <div id="example3" style="height:550px;"></div>
++-                        </div>
++-                        <div class="table">
++-                            <div class="card_tab1">
++-                                <div class="con">
++-                                    <ul>
++-                                        <li class="current ti1">
++-                                            <h3>德惠店</h3>
++-                                            <div class="show_content" >
++-                                                 <div id="example1"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>商城店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example5"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>双百店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example6"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>滦河店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>宽城广场店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>宽城购物中心超市店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>围场店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>丰润店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>丰宁一店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>平泉店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>滦平店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>隆化店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>双滦广场店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>安定里店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>奥体店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>天山店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>围场美神店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>丰宁二店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>嘉禾店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>名都店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti1">
++-                                            <h3>下板城店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                        <li class="ti2">
++-                                            <h3>迁安店</h3>
++-                                            <div class="show_content">
++-                                                  <div id="example7"> </div>
++-                                            </div>
++-                                        </li>
++-                                    </ul>
++-                                </div>
++-                            </div>
++-                        </div>
++-                    </div>
++-                </div>
++-            </div>
++-        </div>
++-        {% include "common/footer.html" %}
+++{% include "common/footer.html" %}
++-        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/jquery.handsontable.js"></script>
++-        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/jquery.handsontable.helper.js"></script>
++-        <script data-jsfiddle="example1">
++-            current = "ribao";
++-        </script>
++-        <script type="text/javascript">
++-            $('.nav-tabs li').click(function (e) {
++-                e.preventDefault();
++-                $(this).addClass("active").siblings().removeClass("active");
++-                i=$(this).index();
++-                $(".list-tabs .table").eq(i).show().siblings().hide();
++-            })
++-
++-            $(".card_tab1 .con ul li").click(function(){
++-                $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
++-            });
++-        </script>
++-        <script >
+++<script>
++-            var rsdata = [];
++-            {% for item in tlist %}
++-                var item = [ '{{ item.0 }}', '{{ item.1 }}', '{{ item.2 }}', '{{ item.3 }}', '{{ item.4 }}', '{{ item.5 }}', '{{ item.6 }}', '{{ item.7 }}', '{{ item.8 }}', '{{ item.9 }}'];
++-                rsdata.push(item);
++-            {% endfor %}
+++    var tody = new Date();
+++    var yesterday = getYestodayDate(tody);
+++    yesterday = yesterday.getDate()
++ 
++-           {% comment %}  var data = [
++-                  { shopcode:"C001",shopname:"德惠店",m1: 1, m2: "4", m3: "7", m4: "1", d1: "4", d2: "6", d3: "9", d4: "3" },
++-                  { shopcode:"C002",shopname:"商城店",m1: 2, m2: "5", m3: "8", m4: "2", d1: "3", d2: "8", d3: "3", d4: "4" },
++-                  { shopcode:"C003",shopname:"嘉禾店",m1: 3, m2: "6", m3: "9", m4: "3", d1: "5", d2: "3", d3: "1", d4: "8" },
+++    var table = [];
+++    var theadRow1 = {'shopid':'门店编码','shopname':'门店名称','yxSum':'','zeroSum':'','zhonbiSum':'','mingciSum':'月累计排名（不含联营和烟2001）'};
+++    var theadRow2 = {'shopid':'','shopname':'','yxSum':'有效商品数','zeroSum':'零库存数','zhonbiSum':'占比','mingciSum':'名次'};
+++    var mergeCellsList = [
+++        {row: 0, col: 0, rowspan: 2, colspan: 1},
+++        {row: 0, col: 1, rowspan: 2, colspan: 1},
+++        {row: 0, col: 2, rowspan: 1, colspan: 4}
++-            ];
+++    ];
++-            var colHeaders = [
++-                { id: 'shopcode', name: '门店编号', depth: 1, leafs: 1},
++-                { id: 'shopname', name: '门店', depth: 1, leafs: 1 },
++-                {
++-                    id: 'month', name: '<span style="color:red;">本月</span>累计排名(不含联营和新品)', depth: 1, leafs: 4, children: [
++-                        { id: 'm1', name: '有效商品数', depth: 2, leafs: 0 },
++-                        { id: 'm2', name: '零库存数', depth: 2, leafs: 0},
++-                        { id: 'm3', name: '占比', depth: 2, leafs: 0},
++-                        { id: 'm4', name: '排名', depth: 2, leafs: 0}
++-                    ],
++-                },
++-                {
++-                    id: 'today', name: '<span style="color:red;">当日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
++-                        { id: 'd1', name: '有效商品数', depth: 2, leafs: 0},
++-                        { id: 'd2', name: '零库存数', depth: 2, leafs: 0},
++-                        { id: 'd3', name: '占比', depth: 2, leafs: 0},
++-                        { id: 'd4', name: '排名', depth: 2, leafs: 0}
++-                    ],
++-                }
++-            ];
++-            var container = $("#example1");
++-            container.handsontable({
++-                width:1300,
++-                rowHeaders: true,//是否显示序号
++-                colHeaders: true,//是否显示序号
++-                minCreateRows: 1,//每次最少创建行数
++-                autoWrapRow: true,
++-                colWidths: [100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100],//宽度
++-                columns: treeToColumns(colHeaders),
++-                readOnly:false,
++-                contextMenu:false,
++-                afterRender: function ()
++-                {
++-                }
++-            });
++-            container.handsontable("setMcolHeaders", colHeaders);//设置表头
++-            container.handsontable("loadData", data);//加载数据{% endcomment %}
++ 
++-            var data2 = [
++-                  { shopcode:"C001",shopname:"德惠店",id11: 1, id12: "2", id13: "3", id14: "4", id21:5, id22: "6", id23: "7", id24: "8",id31: 9, id32: "10", id33: "11", id34: "12",id41:13, id42: "14", id43: "15", id44: "16"},
++-                  { shopcode:"C002",shopname:"商城店",id11: 1, id12: "2", id13: "3", id14: "4", id21:5, id22: "6", id23: "7", id24: "8",id31: 9, id32: "10", id33: "11", id34: "12",id41:13, id42: "14", id43: "15", id44: "16"},
++-                  { shopcode:"C003",shopname:"嘉禾店",id11: 1, id12: "2", id13: "3", id14: "4", id21:5, id22: "6", id23: "7", id24: "8",id31: 9, id32: "10", id33: "11", id34: "12",id41:13, id42: "14", id43: "15", id44: "16"},
++-            ];
++-            var colHeaders2 = [
++-                { id: 'shopcode', name: '门店编号', depth: 1, leafs: 1},
++-                { id: 'shopname', name: '门店', depth: 1, leafs: 1 },
++-                {
++-                    id: 'id1', name: '<span style="color:red;">1日</span>累计排名(不含联营和新品)', depth: 1, leafs: 4, children: [
++-                        { id: 'id11', name: '有效商品数', depth: 2, leafs: 0 },
++-                        { id: 'id12', name: '零库存数', depth: 2, leafs: 0},
++-                        { id: 'id13', name: '占比', depth: 2, leafs: 0},
++-                        { id: 'id14', name: '排名', depth: 2, leafs: 0}
++-                    ],
++-                },
++-                {
++-                    id: 'id2', name: '<span style="color:red;">2日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
++-                        { id: 'id21', name: '有效商品数', depth: 2, leafs: 0},
++-                        { id: 'id22', name: '零库存数', depth: 2, leafs: 0},
++-                        { id: 'id23', name: '占比', depth: 2, leafs: 0},
++-                        { id: 'id24', name: '排名', depth: 2, leafs: 0}
++-                    ],
++-                },
++-                {
++-                    id: 'id3', name: '<span style="color:red;">3日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
++-                        { id: 'id31', name: '有效商品数', depth: 2, leafs: 0},
++-                        { id: 'id32', name: '零库存数', depth: 2, leafs: 0},
++-                        { id: 'id33', name: '占比', depth: 2, leafs: 0},
++-                        { id: 'id34', name: '排名', depth: 2, leafs: 0}
++-                    ],
++-                },
++-                {
++-                    id: 'id4', name: '<span style="color:red;">4日</span>排名(不含联营和新品)', depth: 1, leafs: 4, children: [
++-                        { id: 'id41', name: '有效商品数', depth: 2, leafs: 0},
++-                        { id: 'id42', name: '零库存数', depth: 2, leafs: 0},
++-                        { id: 'id43', name: '占比', depth: 2, leafs: 0},
++-                        { id: 'id44', name: '排名', depth: 2, leafs: 0}
++-                    ],
++-                }
++-            ];
++-            var container2 =  $("#example2");
++-            container2.handsontable({
++-                width:1400,
++-                rowHeaders: true,//是否显示序号
++-                colHeaders: true,//是否显示序号
++-                autoWrapRow: true,
++-                fixedColumnsLeft:2,
++-                columns: treeToColumns(colHeaders2),
++-                readOnly:false,
++-                contextMenu:false,
++-                colWidths: [80,80, 80,80,80,80, 80,80,80,80,80,80,80,80,80,80, 80,80],//宽度
++-                afterRender  : function () {
+++    var i=0;
+++    var j=1;
+++    var k=6;
+++    do{
+++        //第一行表头
+++        theadRow1['yx_'+j]=j.toString()+'日排名(不含联营和烟2001)';
+++        theadRow1['zero_'+j]='';
+++        theadRow1['zhonbi_'+j]='';
+++        theadRow1['mingci_'+j]= '';
+++        //第二行表头
+++        theadRow2['yx_'+j]='有效商品数';
+++        theadRow2['zero_'+j]='零库存数';
+++        theadRow2['zhonbi_'+j]='占比';
+++        theadRow2['mingci_'+j]= '名次';
+++        //单元格合并处理
+++        var mergeCell = {};
+++        mergeCell['row'] = 0;
+++        mergeCell['col'] = k;
+++        mergeCell['rowspan'] = 1;
+++        mergeCell['colspan'] = 4;
+++        mergeCellsList.push(mergeCell);
++ 
++-                },
++-            });
++-            container2.handsontable("setMcolHeaders", colHeaders2);//设置表头
++-            container2.handsontable("loadData", data2);//加载数据
+++        i+=4;//每日单元格数量
+++        j+=1;//日期
+++        k+=4;//每次合并单元格数量
+++    }while(i<yesterday*4);
+++    table.push(theadRow1);
+++    table.push(theadRow2);
++ 
+++    var container = document.getElementById('tableReport');
+++    var hot = new Handsontable(container,{
+++        data: table,
+++        colWidths: 120,
+++        className: "htCenter htMiddle",
+++        rowHeaders: true,
+++        colHeaders: true,
+++        contextMenu: false,
+++        fixedRowsTop: 2,
+++        fixedColumnsLeft: 6,
+++        manualColumnResize: true,
+++        manualRowMove: true,
+++        manualColumnMove: true,
+++        columnSorting: true,
+++        sortIndicator: true,
+++        readOnly:true,
+++        mergeCells: mergeCellsList
+++    })
++-          </script>
++-    </body>
+++</script>
+++</body>
++ </html>
++\ No newline at end of file
++Index: base/urls.py
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++--- base/urls.py	(date 1463996761000)
+++++ base/urls.py	(revision )
++@@ -104,13 +104,10 @@
++     url(r'^base/admin/reconciltype/', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
++ 
++     #报表中心
++-    # url(r'^base/',include('base.report.urls')),
+++    url(r'^base/',include('base.report.urls')),
++ 
++      #欢迎页面（临时）
++     url(r'^welcome/$','base.login.views.welcome'),
++-
++-    #负库存
++-    url(r'^base/report/daily/negStock/$','base.report.daily.negativestocktop.index')
++ ]
++ 
++ 
++Index: base/report/daily/zerostocktop.py
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++--- base/report/daily/zerostocktop.py	(date 1463996761000)
+++++ base/report/daily/zeroStockTop.py	(revision )
++@@ -3,27 +3,32 @@
++ 
++ from django.shortcuts import render
++ from django.views.decorators.csrf import csrf_exempt
++-from base.models import RepShopZeroStock
+++import datetime
+++from base.utils import MethodUtil
++ 
++ @csrf_exempt
++ def index(request):
++-     print('zero stock')
++-     tlist = []
++-     for i in range(1,22):
++-         item = ['C0%s' % i,'Test%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i,'%s'%i]
++-         tlist.append(item)
+++    monthFirst = str(datetime.date.today().replace(day=1))
+++    today = str(datetime.datetime.today().strftime('%y-%m-%d'))
+++    conn = MethodUtil.getMysqlConn()
++ 
++-     tlist2 = []
++-     for i in range(1,22):
++-         item = ['1%s' % i,'课组%s'%i,'%s'%i,'%s'%i,'%s'%i]
++-         tlist2.append(item)
+++    sql = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyz,SUM(qtyl) AS qtyl,(sum(qtyl) / sum(qtyz)) AS zhonbi ' \
+++          'FROM Kzerostock ' \
+++          'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
+++    cur = conn.cursor();
+++    cur.execute(sql)
+++    listSum = cur.fetchall()
++ 
++-     rlist = RepShopZeroStock.objects.all().order_by("shopid");
++-     for item in rlist:
++-         print(item.shopid)
++-         #1.计算门店总排名
++-
++-     return render(request,"report/daily/zero_stock_top.html",{'tlist':tlist,'tlist2':tlist2})
+++    for obj in listSum:
+++        sql = "SELECT b.sdate,b.qtyz, b.qtyl, b.zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
+++              "FROM Kzerostock AS b " \
+++              "WHERE ShopID ='" + obj['ShopID'] + \
+++              "' ORDER BY sdate"
+++        cur.execute(sql)
+++        listDetail = cur.fetchall()
+++        # for item in listDetail:
+++        #     date = item['sdate'][7:9]
+++    return render(request,"report/daily/zero_stock_top.html",locals())
++ 
++ @csrf_exempt
++ def query():
++\ No newline at end of file
++Index: base/report/urls.py
++IDEA additional info:
++Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
++<+>UTF-8
++===================================================================
++--- base/report/urls.py	(date 1463996761000)
+++++ base/report/urls.py	(revision )
++@@ -12,6 +12,13 @@
++     url(r'^report/daily/negativestock/index/','base.report.daily.negativestocktop.index',name='negativeStockTopIndex'),
++     url(r'^report/daily/negativestock/query/','base.report.daily.negativestocktop.query',name='negativeStockTopQuery'),
++     url(r'^report/daily/negativestock/download/','base.report.daily.negativestocktop.download',name='negativeStockTopDownload'),
+++    #负库存课组明细
+++    url(r'^report/daily/negStockDeptDetail/$','base.report.daily.negStockDeptDetail.index',name='negStockDeptDetail'),
+++    #负库存课组汇总
+++    url(r'^report/daily/negStockDept/$','base.report.daily.negStockDept.index',name='negStockDept'),
+++
+++    #零库存排名
+++    url(r'^report/daily/zreoStockTop/$','base.report.daily.zeroStockTop.index',name='zeroStockTop'),
++ 
++     #集团营运日报表
++     url(r'^report/daily/grpoperate/index/','base.report.daily.group_operate.index',name='grpOperateIndex'),
++\ No newline at end of file

@@ -6,8 +6,8 @@ from django.conf.urls import url
 urlpatterns = [
     #负库存排名
     url(r'^report/daily/negativestock/index/','base.report.daily.negativestocktop.index',name='negativeStockTopIndex'),
-    url(r'^report/daily/negativestock/query/','base.report.daily.negativestocktop.query',name='negativeStockTopQuery'),
-    url(r'^report/daily/negativestock/download/','base.report.daily.negativestocktop.download',name='negativeStockTopDownload'),
+    # url(r'^report/daily/negativestock/query/','base.report.daily.negativestocktop.query',name='negativeStockTopQuery'),
+    # url(r'^report/daily/negativestock/download/','base.report.daily.negativestocktop.download',name='negativeStockTopDownload'),
     #负库存课组明细
     url(r'^report/daily/negStockDeptDetail/$','base.report.daily.negStockDeptDetail.index',name='negStockDeptDetail'),
     #负库存课组汇总

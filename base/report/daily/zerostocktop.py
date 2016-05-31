@@ -4,7 +4,7 @@ __author__ = ''
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 import datetime
-from base.utils import MethodUtil
+from base.utils import MethodUtil as mtu
 
 @csrf_exempt
 def index(request):
@@ -17,7 +17,7 @@ def index(request):
     if(today[7:8]=='01'):
         monthFirst = str(lastMonthFirst.strftime('%y-%m-%d'))
         today = str(lastMonthEnd.strftime('%y-%m-%d'))
-    conn = MethodUtil.getMysqlConn()
+    conn = mtu.getMysqlConn()
 
     #月份汇总数据
     sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
@@ -25,33 +25,33 @@ def index(request):
           'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
     cur.execute(sqlTop)
-    listRes= cur.fetchall()
+    listTop= cur.fetchall()
 
     listTotal = {'ShopID':'合计','shopname':'','qtyzSum':0} #初始化最后一行
     #转换数据类型并求纵向合计
-    for i in range(0,len(listRes)):
-        if(not listRes[i]['qtyzSum']):
-            listRes[i]['qtyzSum']=0
+    for i in range(0,len(listTop)):
+        if(not listTop[i]['qtyzSum']):
+            listTop[i]['qtyzSum']=0
         else:
-            listRes[i]['qtyzSum'] = float(listRes[i]['qtyzSum'])
+            listTop[i]['qtyzSum'] = float(listTop[i]['qtyzSum'])
         if 'qtyzSum' in listTotal:
-            listTotal['qtyzSum'] += listRes[i]['qtyzSum']
+            listTotal['qtyzSum'] += listTop[i]['qtyzSum']
         else:
-            listTotal['qtyzSum'] = listRes[i]['qtyzSum']
+            listTotal['qtyzSum'] = listTop[i]['qtyzSum']
 
-        if(not listRes[i]['qtylSum']):
-            listRes[i]['qtylSum']=0
+        if(not listTop[i]['qtylSum']):
+            listTop[i]['qtylSum']=0
         else:
-            listRes[i]['qtylSum'] = float(listRes[i]['qtylSum'])
+            listTop[i]['qtylSum'] = float(listTop[i]['qtylSum'])
         if 'qtylSum' in listTotal:
-            listTotal['qtylSum'] += listRes[i]['qtylSum']
+            listTotal['qtylSum'] += listTop[i]['qtylSum']
         else:
-            listTotal['qtylSum'] = listRes[i]['qtylSum']
+            listTotal['qtylSum'] = listTop[i]['qtylSum']
 
-        if(not listRes[i]['zhonbiSum']):
-            listRes[i]['zhonbiSum']=0
+        if(not listTop[i]['zhonbiSum']):
+            listTop[i]['zhonbiSum']=0
         else:
-            listRes[i]['zhonbiSum'] = float('%0.2f'%(listRes[i]['zhonbiSum']*100))
+            listTop[i]['zhonbiSum'] = float('%0.2f'%(listTop[i]['zhonbiSum']*100))
         listTotal['zhonbiSum'] = listTotal['qtylSum']/listTotal['qtyzSum']
         listTotal['zhonbiSum'] = str(float('%0.2f'%(listTotal['zhonbiSum']*100)))+'%'
 
@@ -59,49 +59,49 @@ def index(request):
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM Kzerostock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM Kzerostock AS b " \
-              "WHERE ShopID ='" + listRes[i]['ShopID'] +"' AND sdate BETWEEN '"+monthFirst+"' AND '"+today+"' GROUP BY sdate"
+              "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate BETWEEN '"+monthFirst+"' AND '"+today+"' GROUP BY sdate"
         cur.execute(sql)
         listDetail = cur.fetchall()
 
         for item in listDetail:
             date = str(item['sdate'])[8:10]
             if(not item['qtyz']):
-                listRes[i]['qtyz_'+date]=0
+                listTop[i]['qtyz_'+date]=0
             else:
-                listRes[i]['qtyz_'+date]=float(item['qtyz'])
+                listTop[i]['qtyz_'+date]=float(item['qtyz'])
             if 'qtyz_'+date in listTotal:
-                listTotal['qtyz_'+date] += listRes[i]['qtyz_'+date]
+                listTotal['qtyz_'+date] += listTop[i]['qtyz_'+date]
             else:
-                listTotal['qtyz_'+date] = listRes[i]['qtyz_'+date]
+                listTotal['qtyz_'+date] = listTop[i]['qtyz_'+date]
 
             if(not item['qtyl']):
-                listRes[i]['qtyl_'+date]=0
+                listTop[i]['qtyl_'+date]=0
             else:
-                listRes[i]['qtyl_'+date]=float(item['qtyl'])
+                listTop[i]['qtyl_'+date]=float(item['qtyl'])
             if 'qtyl_'+date in listTotal:
-                listTotal['qtyl_'+date] += listRes[i]['qtyl_'+date]
+                listTotal['qtyl_'+date] += listTop[i]['qtyl_'+date]
             else:
-                listTotal['qtyl_'+date] = listRes[i]['qtyl_'+date]
+                listTotal['qtyl_'+date] = listTop[i]['qtyl_'+date]
 
             if(not item['zhonbi']):
-                listRes[i]['zhonbi_'+date]=0
+                listTop[i]['zhonbi_'+date]=0
             else:
-                listRes[i]['zhonbi_'+date]=float('%0.2f'%(item['zhonbi']*100))
+                listTop[i]['zhonbi_'+date]=float('%0.2f'%(item['zhonbi']*100))
             listTotal['zhonbi_'+date] = listTotal['qtyl_'+date]/listTotal['qtyz_'+date]
             listTotal['zhonbi_'+date] = str(float('%0.2f'%(listTotal['zhonbi_'+date]*100)))+'%'
 
             listTotal['mingci_'+date] = ''
 
     # 排序生成总排名
-    listRes = ranking(listRes,'zhonbiSum','mingciSum')
+    listTop = ranking(listTop,'zhonbiSum','mingciSum')
     # 排序生成每日排名
     for date in range(12,datetime.date.today().day+1):
         if(date<10):
-            listRes = ranking(listRes,'zhonbi_0'+str(date),'mingci_0'+str(date))
+            listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
         else:
-            listRes = ranking(listRes,'zhonbi_'+str(date),'mingci_'+str(date))
+            listTop = ranking(listTop,'zhonbi_'+str(date),'mingci_'+str(date))
     # 按门店排序
-    listRes.sort(key=lambda x:x['ShopID'])
+    listTop.sort(key=lambda x:x['ShopID'])
 
     ###课组汇总###
     yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
