@@ -9,7 +9,7 @@
     {% include "common/nav.html" %}
     <div class="query comWidth" style="width: 100%;text-align: right;">
         <form method="post" id="submitForm" action=""></form>
-        <p>
+        <p>    <input class="query-enter" type="button" value="打印" onclick="javascript:printContent()">
             {% ifequal orderstatus.status 'Y'%}
                 <input class="query-enter" type="button" value="打印" onclick="javascript:printContent()">
             {% else %}
@@ -35,19 +35,21 @@
                           <td colspan="2" width="15%">机构编码</td>
                           <td  colspan="3" width="15%" style="text-align: left;">{{ order.shopcode }}</td>
                           <td  colspan="2" width="10%">订货日期</td>
-                          <td  colspan="3" width="15%" style="text-align: left;">{{ order.purdate|date:"Y-m-d"  }}</td>
+                          <td  colspan="4" width="15%" style="text-align: left;">{{ order.purdate|date:"Y-m-d"  }}</td>
                     </tr>
                     <tr>
                           <td colspan="2">供应商编码</td>
                           <td colspan="2" style="text-align: left;">{{ order.spercode }}</td>
-                          <td colspan="2">管理部类</td><td  colspan="3" style="text-align: left;">{{ order.teamcode }}</td>
-                          <td  colspan="2">送货截止</td><td  colspan="3" style="text-align: left;">{{ order.sdate|date:"Y-m-d" }}</td>
+                          <td colspan="2">管理部类</td>
+                          <td  colspan="3" style="text-align: left;">{{ order.teamcode }}</td>
+                          <td  colspan="2">送货截止</td>
+                          <td  colspan="4" style="text-align: left;">{{ order.sdate|date:"Y-m-d" }}</td>
                     </tr>
                      <tr>
                           <td colspan="2">供应商名称</td>
                           <td colspan="7" style="text-align: left;">{{ order.spername }}</td>
                           <td colspan="2">预约送货</td>
-                          <td  colspan="3" align="left" style="width:16%;text-align: left;">
+                          <td  colspan="4" align="left" style="width:16%;text-align: left;">
                                  {% ifequal orderstatus.status 'Y'%}
                                      {{ orderstatus.yyshdate|date:"Y-m-d" }}
                                  {% else %}
@@ -56,7 +58,7 @@
                           </td>
                     </tr>
                     <tr>
-                          <td colspan="2">备注</td><td colspan="12" style="text-align: left;">{{ order.remark }}</td>
+                          <td colspan="2">备注</td><td colspan="13" style="text-align: left;">{{ order.remark }}</td>
                     </tr>
                     <tr style="background-color:grey">
                           <td >序号</td>
@@ -106,25 +108,25 @@
                           <td></td>
                           <td><span class="noprint">{{ sum2|floatformat:2 }}</span></td>
                           <td><span class="noprint">{{ sum3|floatformat:2 }}</span></td>
-                          <td colspan="3"></td>
+                          <td colspan="4"></td>
                     </tr>
                     <tr class="tbottom" style="background-color: lightskyblue">
                           <td ></td>
                           <td ></td>
                           <td colspan="2">收货员</td>
                           <td colspan="4">防损员</td>
-                          <td colspan="6">供货商</td>
+                          <td colspan="7">供货商</td>
                     </tr>
                     <tr class="tbottom">
                           <td ></td>
                           <td >签字处</td>
                           <td colspan="2"></td>
                           <td colspan="4"></td>
-                          <td colspan="6"></td>
+                          <td colspan="7"></td>
                     </tr>
                     <tr class="tbottom" >
                           <td colspan="2">说明</td>
-                          <td colspan="12" style="text-align: left;"><span class="noprint">A4纸打印。</span>导入：{{ order.scmpurdate|date:"Y-m-d" }}&emsp;打印：{{ today|date:"Y-m-d" }}&emsp;审核：{{ order.checker }}&emsp;地址：{{ shop.address|trim  }}{% ifnotequal shop.tel "" %}-{{ shop.tel}}{% endifnotequal %}</td>
+                          <td colspan="13" style="text-align: left;"><span class="noprint">A4纸打印。</span>导入：{{ order.scmpurdate|date:"Y-m-d" }}&emsp;打印：{{ today|date:"Y-m-d" }}&emsp;审核：{{ order.checker }}&emsp;地址：{{ shop.address|trim  }}{% ifnotequal shop.tel "" %}-{{ shop.tel}}{% endifnotequal %}</td>
                     </tr>
               </tbody>
           </table>
