@@ -25,7 +25,7 @@ def index(request):
           'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
     cur.execute(sqlTop)
-    listTop= cur.fetchall()
+    listTop = cur.fetchall()
 
     listTotal = {'ShopID':'合计','shopname':'','qtyzSum':0} #初始化最后一行
     #转换数据类型并求纵向合计

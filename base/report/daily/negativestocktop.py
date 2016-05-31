@@ -199,7 +199,6 @@ def writeDataToSheet1(wb,listTop,TotalDict):
     n = 6
     for d in range(1,lastDay+1):
         trow1.append((str(d)+'日排名(不含联营)',n,1,4))
-
         trow2.append(('有效商品数',n,1,1))
         trow2.append(('合计',n+1,1,1))
         trow2.append(('占比',n+2,1,1))
