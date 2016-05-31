@@ -50,7 +50,6 @@
         {row: 0, col: 1, rowspan: 2, colspan: 1},
         {row: 0, col: 2, rowspan: 1, colspan: 4}
     ];
-
     var i=0;
     var j=1;
     var k=6;
@@ -94,13 +93,13 @@
     table.push(theadRow1);
     table.push(theadRow2);
     //拼接tbody数据
-    var tbody = {{ listRes | safe }};
+    var tbody = {{ listTop | safe }};
     table = table.concat(tbody);
     //拼接最后一行合计数据
     var tfooter = {{ listTotal | safe }}
     table.push(tfooter);
     var len = table.length;
-    var mergeCellTotal = {}
+    var mergeCellTotal = {};
     mergeCellTotal['row'] = len-1;
     mergeCellTotal['col'] = 0;
     mergeCellTotal['rowspan'] = 1;

@@ -235,6 +235,8 @@ def insertSum2(sheet,keylist,count,sdict,index):
             if k in item:
                 val = item[k]
                 sheet.write(count,j,val,sstyle)
+            else:
+                sheet.write(count,j,'',sstyle)
         count += 1
     return count
 
@@ -267,7 +269,6 @@ def insertCell2(sheet,count,datalist,keylist,dictlist):
                 cell = row.get(key)
                 if isinstance(cell,str):
                     cell = cell.strip()
-
                 if dt:
                      #根据key取value
                     sheet.write(count,j,dt[str(cell)],sstyle)
@@ -275,7 +276,6 @@ def insertCell2(sheet,count,datalist,keylist,dictlist):
                     sheet.write(count,j,cell,sstyle)
         count += 1
     return count
-
 
 #添加标题
 def insertTitle(sheet,titles):
