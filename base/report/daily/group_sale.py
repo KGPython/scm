@@ -57,9 +57,18 @@ def index(request):
             row.setdefault("yhzhanbi",yhzhanbi)
             rlist.append(row)
 
-         sum["gaintx"] = "%0.2f" % (sum["salegain"]*100.0/sum["sale"]) + "%"
-         sum["yhzhanbi"] = "%0.2f" % (sum["discvalue"]*100.0/sum["sale"]) + "%"
-         sum["wgaintx"] = "%0.2f" % (sum["wsalegain"]*100.0/sum["wsalevalue"]) + "%"
+         if sum["sale"] > 0:
+             sum["gaintx"] = "%0.2f" % (sum["salegain"]*100.0/sum["sale"]) + "%"
+             sum["yhzhanbi"] = "%0.2f" % (sum["discvalue"]*100.0/sum["sale"]) + "%"
+         else:
+            sum["gaintx"] = ""
+            sum["yhzhanbi"] = ""
+
+         if sum["wsalevalue"] > 0:
+            sum["wgaintx"] = "%0.2f" % (sum["wsalegain"]*100.0/sum["wsalevalue"]) + "%"
+         else:
+            sum["wgaintx"] = ""
+
          for key in sum.keys():
              item = sum[key]
              if not isinstance(item,str) and not isinstance(item,int):
