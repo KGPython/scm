@@ -10,26 +10,23 @@ import xlwt3 as xlwt
 
 @csrf_exempt
 def index(request):
-    monthFirst = str(datetime.date.today().replace(day=1))
-    today = str(datetime.datetime.today().strftime('%y-%m-%d'))
-    lastMonthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
-    lastMonthEnd = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
-    # 修正每个月1号的查询条件
-    if(today[7:8]=='01'):
-        monthFirst = str(lastMonthFirst.strftime('%y-%m-%d'))
-        today = str(lastMonthEnd.strftime('%y-%m-%d'))
+    monthFirst = datetime.date.today().replace(day=1)
+    today = datetime.datetime.today()
+    if(str(today)[8:10]=='01'):
+        monthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
+        today = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
+    todayStr = today.strftime('%y-%m-%d')
+    monthFirstStr = str(monthFirst)
 
     conn = mtu.getMysqlConn()
-
     sqlTop= 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
             'FROM KNegativestock ' \
-            'WHERE sdate BETWEEN "'+monthFirst+'" AND "'+today+'" GROUP BY ShopID ORDER BY ShopID'
+            'WHERE sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
     cur.execute(sqlTop)
     listTop= cur.fetchall()
 
     listTotal = {'ShopID': '合计', 'shopname': '', 'qtyzSum': 0}  # 初始化最后一行
-
     for i in range(0,len(listTop)):
         if(not listTop[i]['qtyzSum']):
             listTop[i]['qtyzSum']=0
@@ -61,7 +58,7 @@ def index(request):
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM KNegativestock AS b " \
-              "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate BETWEEN '" + monthFirst + "' AND '" + today + "' GROUP BY sdate"
+              "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
 
         cur.execute(sql)
         listDetail = cur.fetchall()
@@ -97,7 +94,8 @@ def index(request):
     TotalDict = {'listTotal':listTotal}
 
     listTop = ranking(listTop,'zhonbiSum','mingciSum')
-    for date  in range(12,datetime.date.today().day+1):
+
+    for date in range(12,today.day+1):
         if(date<10):
             listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
         else:
@@ -144,9 +142,6 @@ def index(request):
     else:
         return export(request,listTop,TotalDict,listDeptDetail,listDept)
 def ranking(lis,key,name):
-    """
-    排名函数
-    """
     lis.sort(key=lambda x:x[key])
     j = 1
     for i in range(0,len(lis)):

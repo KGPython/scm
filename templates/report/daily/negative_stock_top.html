@@ -55,13 +55,14 @@
          initDate(1);
      });
     function initDate(tab){
-        var fixedRow,fixedCol,mergeCellsList;
+        var fixedRow,fixedCol;
+        var mergeCellsList = [];
         var table = [];
         var rowLight = [];
         if(tab==1){
             var tody = new Date();
             var yesterday = getYestodayDate(tody);
-            yesterday = yesterday.getDate()
+            yesterday = yesterday.getDate();
             fixedRow = 2;
             fixedCol = 6;
             var theadRow1 = {'ShopID':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
@@ -115,9 +116,7 @@
             //拼接tbody数据
             var tbody = {{ listTop | safe }};
             table = table.concat(tbody);
-
             var tfooter = {{ TotalDict.listTotal | safe }}
-            console.log(tfooter);
             table.push(tfooter);
             var len = table.length;
             var mergeCellTotal = {};
@@ -134,9 +133,9 @@
             var tbody = {{listDeptDetail | safe}};
             table.push(thead);
             table=table.concat(tbody);
-            mergeCellsList = [
+            /*mergeCellsList = [
                 {data:'shopid'},{data:'shopname'},{data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
-            ];
+            ];*/
             rowLight=[0];
         }if(tab==3){
             fixedRow = 1;
@@ -145,9 +144,9 @@
             var tbody = {{listDept | safe}};
             table.push(thead);
             table = table.concat(tbody);
-            mergeCellsList = [
+            /*mergeCellsList = [
                 {data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
-            ];
+            ];*/
             rowLight=[0];
         }
         initTable(tab,table,fixedRow,fixedCol,mergeCellsList,rowLight)
