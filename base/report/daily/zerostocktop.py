@@ -1,6 +1,5 @@
 #-*- coding:utf-8 -*-
-__author__ = ''
-
+__author__ = 'CHEN'
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -111,13 +110,22 @@ def index(request):
             shopTotal['shopname']=''
             shopTotal['deptid']=''
             shopTotal['deptidname']=''
-            d['qtyz'] = float(d['qtyz'])
+            if(not d['qtyz']):
+                d['qtyz'] = 0
+            else:
+                d['qtyz'] = float(d['qtyz'])
             shopTotal['qtyz'] += float(d['qtyz'])
-            d['qtyl'] = float(d['qtyl'])
+            if(not d['qtyl']):
+                d['qtyl'] = 0
+            else:
+                d['qtyl'] = float(d['qtyl'])
             shopTotal['qtyl'] += float(d['qtyl'])
-            d['zhonbi'] = str(float('%2.f'%(d['zhonbi']*100)))+'%'
-            shopTotal['zhonbi'] = float('%0.4f'%(shopTotal['qtyl']/shopTotal['qtyz']))
-            shopTotal['zhonbi'] = str(shopTotal['zhonbi']*100)+'%'
+            if(not d['zhonbi']):
+                d['zhonbi'] = '0.0%'
+            else:
+                d['zhonbi'] = str(float('%2.f'%(d['zhonbi']*100)))+'%'
+            shopTotal['zhonbi'] = (shopTotal['qtyl']/shopTotal['qtyz'])*100
+            shopTotal['zhonbi'] = str(float('%0.2f'%shopTotal['zhonbi']))+'%'
         listShopTotal.append(shopTotal)
         listShops.append(listShop)
 
