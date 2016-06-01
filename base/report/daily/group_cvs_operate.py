@@ -185,7 +185,7 @@ def export(request,rlist,sumList,erlist,esumlist,yearlist,yearSum):
 
     date = DateUtil.get_day_of_day(-1)
     outtype = 'application/vnd.ms-excel;'
-    fname = date.strftime("%m.%d")+"group_daily_operate"
+    fname = date.strftime("%m.%d")+"grp_daily_cvs_opt"
 
     response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
     wb.save(response)
