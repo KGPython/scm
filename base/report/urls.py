@@ -18,6 +18,8 @@ urlpatterns = [
     url(r'^report/daily/zeroStockDept/$','base.report.daily.zeroStockDept.index',name='zeroStockDept'),
     #集团营运日报表
     url(r'^report/daily/grpoperate/index/$','base.report.daily.group_operate.index',name='grpOperateIndex'),
+    url(r'^report/daily/grpgeneralopt/index/$','base.report.daily.group_general_operate.index',name='grpGenOptIndex'),
+    url(r'^report/daily/grpcvsopt/index/$','base.report.daily.group_cvs_operate.index',name='grpCvsOptIndex'),
     url(r'^report/daily/grpsale/index/$','base.report.daily.group_sale.index',name='grpSaleIndex'),
     # 各课组门店销售前十
     url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),

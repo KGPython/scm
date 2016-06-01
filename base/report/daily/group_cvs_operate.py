@@ -24,7 +24,7 @@ def index(request):
      lastDay = calendar.monthrange(year,month)[1]
 
      #查询所有超市门店
-     slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").filter(shoptype=11).order_by("region","shopid")
+     slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").filter(shoptype=13).order_by("region","shopid")
      shopids = [ shop["shopid"] for shop in slist]
 
      #查询当月销售
@@ -168,7 +168,7 @@ def index(request):
 
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
-         return render(request, "report/daily/group_operate.html",{"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict})
+         return render(request, "report/daily/group_cvs_operate.html",{"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict})
      else:
          return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
 
@@ -185,57 +185,11 @@ def export(request,rlist,sumList,erlist,esumlist,yearlist,yearSum):
 
     date = DateUtil.get_day_of_day(-1)
     outtype = 'application/vnd.ms-excel;'
-    fname = date.strftime("%m.%d")+"grp_daily_shop_opt"
+    fname = date.strftime("%m.%d")+"grp_daily_cvs_opt"
 
     response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
     wb.save(response)
     return response
-
-def countSum2(sumList,days):
-    date = DateUtil.get_day_of_day(-1)
-    year = date.year
-    month = date.month
-    lastDay = calendar.monthrange(year,month)[1]
-
-    """合计运算"""
-
-    for key in sumList.keys():
-        sum = sumList[key]
-        for k in sum:
-            sum[k] = "%0.2f" % float(sum[k])
-
-        for d in range(1,lastDay+1):
-            salevalue = "salevalue_{year}{month}{day}".format(year=year,month=month,day=d)
-            salevalueesti = "salevalueesti_{year}{month}{day}".format(year=year,month=month,day=d)
-            saledifference = "saledifference_{year}{month}{day}".format(year=year,month=month,day=d)
-            saleaccomratio = "saleaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
-            #差异
-            sum[saledifference] = str("%0.2f" % (float(sum[salevalue])-float(sum[salevalueesti])))
-
-            #达成率
-            if float(sum[salevalueesti]) > 0:
-                sum[saleaccomratio] = str("%0.2f" % (float(sum[salevalue])*100/float(sum[salevalueesti])))+"%"
-            else:
-                sum[saleaccomratio] = str("0.00%")
-
-            salegain = "salegain_{year}{month}{day}".format(year=year,month=month,day=d)
-            salegainesti = "salegainesti_{year}{month}{day}".format(year=year,month=month,day=d)
-            salegaindifference = "salegaindifference_{year}{month}{day}".format(year=year,month=month,day=d)
-            salegainaccomratio = "salegainaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
-
-            #差异
-            sum[salegaindifference] = str("%0.2f" % (float(sum[salegain])-float(sum[salegainesti])))
-
-            #达成率
-            if float(sum[salegainesti]) > 0:
-                sum[salegainaccomratio] = str("%0.2f" % (float(sum[salegain])*100/float(sum[salegainesti])))+"%"
-            else:
-                sum[salegainaccomratio] = str("0.00%")
-
-    sumList["sum1"].setdefault("region","集团合计")
-    # sumList["sum2"].setdefault("region","同店合计")
-    sumList["sum3"].setdefault("region","市区合计")
-    sumList["sum4"].setdefault("region","外埠区合计")
 
 def writeDataToSheet1(wb,rlist,sumDict):
     date = DateUtil.get_day_of_day(-1)
@@ -402,23 +356,16 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardi
 
      sumDict.setdefault("sum1",{})
      sumDict.setdefault("sum2",{})
-     sumDict.setdefault("sum3",{})
-     sumDict.setdefault("sum4",{})
 
      sumDict2.setdefault("sum1",{})
-     # sumList2.setdefault("sum2",{})
-     sumDict2.setdefault("sum3",{})
-     sumDict2.setdefault("sum4",{})
 
      yearSumDict.setdefault("sum1",{})
      yearSumDict.setdefault("sum2",{})
-     yearSumDict.setdefault("sum3",{})
-     yearSumDict.setdefault("sum4",{})
 
      yestoday = DateUtil.get_day_of_day(-1)
      d1 = datetime.date(year = yestoday.year,month=1,day=1)
-     oldtoday = datetime.date(year = yestoday.year-1,month=yestoday.month,day=yestoday.day)
      oldd1 = datetime.date(year = yestoday.year-1,month=1,day=1)
+     oldtoday = datetime.date(year = yestoday.year-1,month=yestoday.month,day=yestoday.day)
      ydays = DateUtil.subtract(yestoday,d1)
      ydaysold = DateUtil.subtract(oldtoday,oldd1)
      for item in slist:
@@ -458,10 +405,10 @@ def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
      #累计求和
     setSumValue3(yearSum,ritem)
 
-    if ritem["region"]=="13080":
-         region = "承德市区"
+    if ritem["region"]=="13083":
+         region = "便利店"
     else:
-         region = "外埠区"
+        region = ""
 
     ritem["region"] = region
     yearlist.append(ritem)
@@ -494,14 +441,13 @@ def mergeData2(item,edict,rlist2,sumList2):
     #累计求和
     setSumValue2(sumList2,ritem,year,month,lastDay)
 
-    if ritem["region"]=="13080":
-         region = "承德市区"
+    if ritem["region"]=="13083":
+         region = "便利店"
     else:
-         region = "外埠区"
+        region = ""
 
     ritem["region"] = region
     rlist2.append(ritem)
-
 
 def mergeData(item,ddict,mdict,ydict,rlist,sumList):
      ritem = {}
@@ -528,13 +474,14 @@ def mergeData(item,ddict,mdict,ydict,rlist,sumList):
      #累计求和
      setSumValue(sumList,ritem)
 
-     if ritem["region"]=="13080":
-         region = "承德市区"
+     if ritem["region"]=="13083":
+         region = "便利店"
      else:
-         region = "外埠区"
+        region = ""
 
      ritem["region"] = region
      rlist.append(ritem)
+
 
 def countSum3(sumList):
     """合计运算"""
@@ -615,10 +562,53 @@ def countSum3(sumList):
             sum["tradeprice_ynygrowth"] = str("0.00%")
 
 
-    sumList["sum1"].setdefault("region","集团合计")
+    sumList["sum1"].setdefault("region","便利店全部合计")
     sumList["sum2"].setdefault("region","同店合计")
-    sumList["sum3"].setdefault("region","市区合计")
-    sumList["sum4"].setdefault("region","外埠区合计")
+
+
+def countSum2(sumList,days):
+    date = DateUtil.get_day_of_day(-1)
+    year = date.year
+    month = date.month
+    lastDay = calendar.monthrange(year,month)[1]
+
+    """合计运算"""
+
+    for key in sumList.keys():
+        sum = sumList[key]
+        for k in sum:
+            sum[k] = "%0.2f" % float(sum[k])
+
+        for d in range(1,lastDay+1):
+            salevalue = "salevalue_{year}{month}{day}".format(year=year,month=month,day=d)
+            salevalueesti = "salevalueesti_{year}{month}{day}".format(year=year,month=month,day=d)
+            saledifference = "saledifference_{year}{month}{day}".format(year=year,month=month,day=d)
+            saleaccomratio = "saleaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
+            #差异
+            sum[saledifference] = str("%0.2f" % (float(sum[salevalue])-float(sum[salevalueesti])))
+
+            #达成率
+            if float(sum[salevalueesti]) > 0:
+                sum[saleaccomratio] = str("%0.2f" % (float(sum[salevalue])*100/float(sum[salevalueesti])))+"%"
+            else:
+                sum[saleaccomratio] = str("0.00%")
+
+            salegain = "salegain_{year}{month}{day}".format(year=year,month=month,day=d)
+            salegainesti = "salegainesti_{year}{month}{day}".format(year=year,month=month,day=d)
+            salegaindifference = "salegaindifference_{year}{month}{day}".format(year=year,month=month,day=d)
+            salegainaccomratio = "salegainaccomratio_{year}{month}{day}".format(year=year,month=month,day=d)
+
+            #差异
+            sum[salegaindifference] = str("%0.2f" % (float(sum[salegain])-float(sum[salegainesti])))
+
+            #达成率
+            if float(sum[salegainesti]) > 0:
+                sum[salegainaccomratio] = str("%0.2f" % (float(sum[salegain])*100/float(sum[salegainesti])))+"%"
+            else:
+                sum[salegainaccomratio] = str("0.00%")
+
+    sumList["sum1"].setdefault("region","便利店全部合计")
+
 
 def countSum(sumList,days):
     """合计运算"""
@@ -758,10 +748,9 @@ def countSum(sumList,days):
         else:
             sum["month_tradeprice_ynygrowth"] = str("0.00%")
 
-    sumList["sum1"].setdefault("region","集团合计")
+    sumList["sum1"].setdefault("region","便利店全部合计")
     sumList["sum2"].setdefault("region","同店合计")
-    sumList["sum3"].setdefault("region","市区合计")
-    sumList["sum4"].setdefault("region","外埠区合计")
+
 
 def setShopInfo(ritem,item):
     """设置门店信息"""
@@ -1058,42 +1047,18 @@ def setSumValue(sumList,ritem):
     if ritem["type"] == "同店":
         setValue(sumList["sum2"],ritem)
 
-    if ritem["region"]=="13080":
-        #市区合计
-        setValue(sumList["sum3"],ritem)
-    else:
-        #外埠区合计
-        setValue(sumList["sum4"],ritem)
-
 def setSumValue2(sumList,ritem,year,month,lastDay):
     """ 计算合计 """
-    #集团合计
     setValue2(sumList["sum1"],ritem,year,month,lastDay)
-    #同店合计
-    # if ritem["type"] == "同店":
-    #     setValue2(sumList["sum2"],ritem,year,month,lastDay)
 
-    if ritem["region"]=="13080":
-        #市区合计
-        setValue2(sumList["sum3"],ritem,year,month,lastDay)
-    else:
-        #外埠区合计
-        setValue2(sumList["sum4"],ritem,year,month,lastDay)
 
 def setSumValue3(sumList,ritem):
     """ 计算合计 """
-    #集团合计
     setValue3(sumList["sum1"],ritem)
     #同店合计
     if ritem["type"] == "同店":
         setValue3(sumList["sum2"],ritem)
 
-    if ritem["region"]=="13080":
-        #市区合计
-        setValue3(sumList["sum3"],ritem)
-    else:
-        #外埠区合计
-        setValue3(sumList["sum4"],ritem)
 
 def setValue3(sum1,ritem):
    if "salevalue" in sum1:
@@ -1290,9 +1255,9 @@ def findYearEstimate(shopids):
 
      karrs = {}
      karrs.setdefault("shopid__in",shopids)
-     # karrs.setdefault("dateid__gte","{start}".format(start=start))
+    # karrs.setdefault("dateid__gte","{start}".format(start=start))
      # karrs.setdefault("dateid__lte","{end}".format(end=yesterday))
-     karrs.setdefault("dateid__year",year)
+     karrs.setdefault("dateid__year","{year}".format(year=year))
      elist = Estimate.objects.values("shopid")\
                      .filter(**karrs).order_by("shopid")\
                      .annotate(y_salevalue=Sum('salevalue')/10000,y_salegain=Sum('salegain')/10000)

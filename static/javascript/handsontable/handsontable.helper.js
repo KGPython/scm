@@ -24,3 +24,24 @@ function rowRenderer2(instance, td, row, col, prop, value, cellProperties) {
   td.style.color = '#000';
   td.style.background = '#92D050';
 }
+//设置cells样式 ，手动将该函数注册到Handsontable ，注册方式：Handsontable.renderers.registerRenderer('negativeValueRenderer', negativeValueRenderer);
+function negativeValueRenderer(instance, td, row, col, prop, value, cellProperties) {
+    Handsontable.renderers.TextRenderer.apply(this, arguments);
+    // if row contains negative number
+    if (parseInt(value) < 100) {
+      // add class "negative"
+      td.style.fontWeight = 'bold';
+      td.style.color = '#BD0000';
+      td.style.background = '#D8D4BB';
+    }
+
+    if (!value || value === '') {
+      td.style.background = '#EEE';
+    }
+    else {
+      if (value === 'Nissan') {
+        td.style.fontStyle = 'italic';
+      }
+      td.style.background = '';
+    }
+  }
