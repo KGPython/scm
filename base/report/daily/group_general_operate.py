@@ -25,15 +25,18 @@ def index(request):
 
      #查询所有超市门店
      slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").filter(shoptype=12).order_by("region","shopid")
+     shopids = [ shop["shopid"] for shop in slist]
 
      #查询当月销售
      karrs.setdefault("sdate__gte","{start} 00:00:00".format(start=start))
      karrs.setdefault("sdate__lte","{end} 23:59:59".format(end=yesterday))
+     karrs.setdefault("shopid__in",shopids)
      baselist = Kshopsale.objects.values('shopid','sdate','salevalue','salegain','tradenumber','tradeprice','salevalueesti','salegainesti',
                                          'sdateold','tradenumberold','tradepriceold','salevalueold','salegainold').filter(**karrs).order_by("shopid")
 
      karrs.clear()
      karrs.setdefault("sdate__year","{year}".format(year=year))
+     karrs.setdefault("shopid__in",shopids)
      yearlist = Kshopsale.objects.values("shopid")\
                      .filter(**karrs).order_by("shopid")\
                      .annotate(salevalue=Sum('salevalue')/10000,salegain=Sum('salegain')/10000,tradenumber=Sum('tradenumber')
@@ -147,13 +150,13 @@ def index(request):
          item['m_tradepriceold'] = item['m_tradepriceold'] / days
 
      #查询当月全月销售预算，毛利预算
-     ydict = findMonthEstimate()
+     ydict = findMonthEstimate(shopids)
 
      for item in yearlist:
          yeardict.setdefault(item["shopid"],item)
 
      #全年预算
-     yydict = findYearEstimate()
+     yydict = findYearEstimate(shopids)
 
      #计算月累加合计
      rlist,erlist = [],[]
@@ -180,8 +183,9 @@ def export(request,rlist,sumList,erlist,esumlist,yearlist,yearSum):
     #写入sheet4 年累计销售报表
     writeDataToSheet3(wb,yearlist,yearSum)
 
+    date = DateUtil.get_day_of_day(-1)
     outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d")+"group_daily_operate"
+    fname = date.strftime("%m.%d")+"group_daily_operate"
 
     response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
     wb.save(response)
@@ -358,11 +362,11 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardi
      yearSumDict.setdefault("sum1",{})
      yearSumDict.setdefault("sum2",{})
 
-     today = DateUtil.get_day_of_day(-1)
-     d1 = datetime.date(year = today.year,month=1,day=1)
-     oldtoday = datetime.date(year = today.year-1,month=1,day=1)
-     oldd1 = datetime.date(year = today.year-1,month=today.month,day=today.day)
-     ydays = DateUtil.subtract(today,d1)
+     yestoday = DateUtil.get_day_of_day(-1)
+     d1 = datetime.date(year = yestoday.year,month=1,day=1)
+     oldd1 = datetime.date(year = yestoday.year-1,month=1,day=1)
+     oldtoday = datetime.date(year = yestoday.year-1,month=yestoday.month,day=yestoday.day)
+     ydays = DateUtil.subtract(yestoday,d1)
      ydaysold = DateUtil.subtract(oldtoday,oldd1)
      for item in slist:
          #月累计
@@ -410,8 +414,9 @@ def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
     yearlist.append(ritem)
 
 def mergeData2(item,edict,rlist2,sumList2):
-    year = datetime.date.today().year
-    month = datetime.date.today().month
+    yestoday = DateUtil.get_day_of_day(-1)
+    year = yestoday.year
+    month = yestoday.month
     lastDay = calendar.monthrange(year,month)[1]
 
     ritem = {}
@@ -1241,7 +1246,7 @@ def setValue(sum1,ritem):
        sum1["month_tradenumberold"] = str(int(ritem["month_tradenumberold"]))
 
 
-def findYearEstimate():
+def findYearEstimate(shopids):
      edict = {}
      date = DateUtil.get_day_of_day(-1)
      year = date.year
@@ -1249,9 +1254,10 @@ def findYearEstimate():
      yesterday = date.strftime("%Y%m%d")
 
      karrs = {}
-     karrs.setdefault("shopid__contains","C")
-     karrs.setdefault("dateid__gte","{start}".format(start=start))
-     karrs.setdefault("dateid__lte","{end}".format(end=yesterday))
+     karrs.setdefault("shopid__in",shopids)
+     # karrs.setdefault("dateid__gte","{start}".format(start=start))
+     # karrs.setdefault("dateid__lte","{end}".format(end=yesterday))
+     karrs.setdefault("dateid__year","{year}".format(year=year))
      elist = Estimate.objects.values("shopid")\
                      .filter(**karrs).order_by("shopid")\
                      .annotate(y_salevalue=Sum('salevalue')/10000,y_salegain=Sum('salegain')/10000)
@@ -1261,11 +1267,12 @@ def findYearEstimate():
 
      return edict
 
-def findMonthEstimate():
-     month = datetime.date.today().month
+def findMonthEstimate(shopids):
+     date = DateUtil.get_day_of_day(-1)
+     month = date.month
      edict = {}
      karrs = {}
-     karrs.setdefault("shopid__contains","C")
+     karrs.setdefault("shopid__in",shopids)
      karrs.setdefault("dateid__month","{month}".format(month=month))
      elist = Estimate.objects.values("shopid")\
                      .filter(**karrs)\
@@ -1314,7 +1321,9 @@ def initDayItem(item):
     dayItem.setdefault('tradeprice',0.00)
     dayItem.setdefault('tradepriceold',0.00)
     dayItem.setdefault('salegain',0.00)
+    dayItem.setdefault('salegainold',0.00)
     dayItem.setdefault('salegainesti',0.00)
+    dayItem.setdefault('sdateold',"")
     return dayItem
 
 def initMonthItem(item):
