@@ -29,7 +29,7 @@ class Billhead0Status(models.Model):
 class Estimate(models.Model):
     shopid = models.CharField(db_column='ShopID', max_length=4)  # Field name made lowercase.
     datetype = models.IntegerField(db_column='DateType')  # Field name made lowercase.
-    dateid = models.IntegerField(db_column='DateID')  # Field name made lowercase.
+    dateid = models.DateTimeField(db_column='DateID',auto_now_add=True)  # Field name made lowercase.
     deptlevelid = models.IntegerField(db_column='DeptLevelID')  # Field name made lowercase.
     groupid = models.IntegerField(db_column='GroupID')  # Field name made lowercase.
     weatherid = models.IntegerField(db_column='WeatherID')  # Field name made lowercase.
