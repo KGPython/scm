@@ -272,4 +272,3 @@ def writeDataToSheet2(wb,listShops,listShopTotal,listDept):
 
     mtu.insertTitle2(sheets[len(sheets)-1],titlesSheetLast,keylistSheet3,widthList)
     mtu.insertCell2(sheets[len(sheets)-1],3,listDept,keylistSheet3,None)
-

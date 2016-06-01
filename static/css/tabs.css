@@ -32,7 +32,6 @@
    .list-tabs .table{
         display: none;
    }
-
    .card_tab1{ width:1220px; height:550px; margin:50px auto; padding:10px; box-shadow:0 0 10px #000;list-style:none;overflow: hidden;}
    .card_tab1 .con{ width:1220px; height:550px;}
    .card_tab1 .con ul li{ width:26px; height:550px; position:relative; float:left;}

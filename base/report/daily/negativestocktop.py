@@ -92,7 +92,6 @@ def index(request):
 
             listTotal['mingci_' + date] = ''
     TotalDict = {'listTotal':listTotal}
-
     listTop = ranking(listTop,'zhonbiSum','mingciSum')
 
     for date in range(12,today.day+1):

@@ -41,8 +41,7 @@
         $(".list-tabs .table").eq(i).show().siblings().hide();
         //加载数据
         initDate(i+1);
-    })
-
+    });
     $(".card_tab1 .con ul li").click(function(){
         $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
     });
