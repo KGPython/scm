@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-__author__ = 'end-e'
+__author__ = 'end-e 20160602'
 
 from django.shortcuts import render
 from django.http import HttpResponse
