@@ -12,12 +12,13 @@ def index(request):
     ###门店排名###
     monthFirst = datetime.date.today().replace(day=1)
     today = datetime.datetime.today()
+    yesterday = datetime.date.today()-datetime.timedelta(days=1)
     if(str(today)[8:10]=='01'):
         monthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
         today = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
     todayStr = today.strftime('%y-%m-%d')
     monthFirstStr = str(monthFirst)
-
+    yesterdayStr = yesterday.strftime('%y-%m-%d')
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
 
@@ -97,10 +98,9 @@ def index(request):
             listTotal['mingci_'+date] = ''
 
         #各个门店的sheet数据
-        sqlShop = "SELECT b.ShopID,b.shopname,b.deptid,b.deptidname,b.qtyz,b.qtyl, b.zhonbi " \
-                  "FROM Kzerostock AS b " \
-                  "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate BETWEEN '"+monthFirstStr+"' AND '"+todayStr+\
-                  "' GROUP BY sdate"
+        sqlShop = "SELECT ShopID,shopname,deptid,deptidname,qtyz,qtyl,zhonbi " \
+                  "FROM Kzerostock " \
+                  "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate = '"+yesterdayStr+"'"
         cur.execute(sqlShop)
         listShop = cur.fetchall()
         #门店合计、转换数据格式
@@ -123,7 +123,7 @@ def index(request):
             if(not d['zhonbi']):
                 d['zhonbi'] = '0.0%'
             else:
-                d['zhonbi'] = str(float('%2.f'%(d['zhonbi']*100)))+'%'
+                d['zhonbi'] = str(float((d['zhonbi']*100)))+'%'
             shopTotal['zhonbi'] = (shopTotal['qtyl']/shopTotal['qtyz'])*100
             shopTotal['zhonbi'] = str(float('%0.2f'%shopTotal['zhonbi']))+'%'
         listShopTotal.append(shopTotal)
@@ -134,7 +134,7 @@ def index(request):
     # 排序生成总排名
     listTop = ranking(listTop,'zhonbiSum','mingciSum')
     # 排序生成每日排名
-    for date in range(12,today.day+1):
+    for date in range(1,today.day):
         if(date<10):
             listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
         else:
