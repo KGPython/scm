@@ -150,6 +150,13 @@ def get_today_month(n=0):
     return "-".join("%s" %i for i in arr)
 
 
+def get_yesterday():
+    today = datetime.date.today()
+    oneday = datetime.timedelta(days=1)
+    yesterday = today - oneday
+    return yesterday
+
+
 if __name__=="__main__":
     print(todaystr())
     print(datetimestr())
