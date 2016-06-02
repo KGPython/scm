@@ -136,6 +136,8 @@ def index(request):
             obj['qtyz']= 0
         obj['qtyz'] = float(obj['qtyz'])
     qtype = mtu.getReqVal(request,"qtype","1")
+    cur.close()
+    conn.close()
     if qtype== "1":
         return render(request,"report/daily/negative_stock_top.html",locals())
     else:

@@ -159,7 +159,8 @@ def index(request):
         if(not obj['zhonbi']):
             obj['zhonbi'] = 0
         obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
-
+    cur.close()
+    conn.close()
     qtype = mtu.getReqVal(request,"qtype","1")
     if qtype== "1":
         return render(request,"report/daily/zero_stock_top.html",locals())
