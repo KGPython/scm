@@ -46,7 +46,7 @@ def index(request):
     subcate10 = subcate.get('10')
     sqlsubcate10 = ','.join(subcate10)
 
-    sql = "select sdate, shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate10 + ") " \
                                                 "and sdate='" + yesterday + "' order by shopcode, num desc"
@@ -58,20 +58,32 @@ def index(request):
     # 获取10 部类下的销售数据
     rows = cur.fetchall()
 
-    lis = []
+    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
+    for i in range(0, len(rows)):
+        for key in rows[i].keys():
+            row = rows[i][key]
+            if row is None:
+                rows[i][key] = ''
+            else:
+                if isinstance(row, int):
+                    rows[i][key] = str(rows[i][key])
+                elif isinstance(row, decimal.Decimal):
+                    rows[i][key] = "%0.2f" % float(rows[i][key])
+
+    lis10 = []
 
     for sid in shopsid:
         i = 0
         for row in rows:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                lis.append(row)
+                lis10.append(row)
                 i += 1
             else:
                 continue
 
     # 关闭数据库
     mtu.close(conn, cur)
-    return render(request, "report/daily/sale_top_10.html", locals())
+    return render(request, "report/daily/saletop10.html", locals())
 
 
 def getshopid():
@@ -135,4 +147,3 @@ def getallcode():
         lis.append(y['classsx'])
 
     return lis
-
