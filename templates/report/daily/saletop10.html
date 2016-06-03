@@ -9,16 +9,18 @@
 <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
 <script type="text/javascript" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+<div id="example"></div>
 <div class="notice noticeOrder comWidth" style="width: inherit">
     <div class="tTitle">
         <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
         <div class="container">
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active"><a href="#">10熟食</a></li>
+                <li role="presentation"><a href="#">11水产</a></li>
                 <li role="presentation"><a href="#">12蔬菜</a></li>
                 <li role="presentation"><a href="#">13烘烤</a></li>
                 <li role="presentation"><a href="#">14鲜肉</a></li>
-                <li role="presentation"><a href="#">15水果干货</a></li>
+                <li role="presentation"><a href="#">15干果干货</a></li>
                 <li role="presentation"><a href="#">16主食厨房</a></li>
                 <li role="presentation"><a href="#">17水果</a></li>
                 <li role="presentation"><a href="#">2食品</a></li>
@@ -36,22 +38,28 @@
                     <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
                 <div class="table">
-                    <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                    <div id="tableReport4" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
                 <div class="table">
-                    <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                    <div id="tableReport5" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
                 <div class="table">
-                    <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                    <div id="tableReport6" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
                 <div class="table">
-                    <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                    <div id="tableReport7" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
                 <div class="table">
-                    <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                    <div id="tableReport8" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
                 <div class="table">
-                    <div id="tableReport3" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                    <div id="tableReport9" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table">
+                    <div id="tableReport10" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table">
+                    <div id="tableReport11" style="height:700px;width:900px;overflow: auto;margin: 0 auto"></div>
                 </div>
             </div>
         </div>
@@ -83,122 +91,42 @@
         var mergeCellsList = [];
         var table = [];
         var rowLight = [];
-        if (tab == 1) {
-            var tody = new Date();
-            var yesterday = getYestodayDate(tody);
-            yesterday = yesterday.getDate();
-            fixedRow = 2;
-            fixedCol = 6;
-            var theadRow1 = {
-                'ShopID': '门店编码',
-                'shopname': '门店名称',
-                'qtyzSum': '月累计排名（不含联营）',
-                'qtylSum': '',
-                'zhonbiSum': '',
-                'mingciSum': ''
-            };
-            var theadRow2 = {
-                'ShopID': '',
-                'shopname': '',
-                'qtyzSum': '有效商品数',
-                'qtylSum': '合计',
-                'zhonbiSum': '占比',
-                'mingciSum': '名次'
-            };
-            mergeCellsList = [
-                {row: 0, col: 0, rowspan: 2, colspan: 1},
-                {row: 0, col: 1, rowspan: 2, colspan: 1},
-                {row: 0, col: 2, rowspan: 1, colspan: 4}
-            ];
-            var i = 0;
-            var j = 1;
-            var k = 6;
-            do {
-                if (j < 10) {
-                    //第一行表头
-                    theadRow1['qtyz_0' + j] = j.toString() + '日排名(不含联营)';
-                    theadRow1['qtyl_0' + j] = '';
-                    theadRow1['zhonbi_0' + j] = '';
-                    theadRow1['mingci_0' + j] = '';
-                    //第二行表头
-                    theadRow2['qtyz_0' + j] = '有效商品数';
-                    theadRow2['qtyl_0' + j] = '合计';
-                    theadRow2['zhonbi_0' + j] = '占比';
-                    theadRow2['mingci_0' + j] = '名次';
-                } else {
-                    //第一行表头
-                    theadRow1['qtyz_' + j] = j.toString() + '日排名(不含联营)';
-                    theadRow1['qtyl_' + j] = '';
-                    theadRow1['zhonbi_' + j] = '';
-                    theadRow1['mingci_' + j] = '';
-                    //第二行表头
-                    theadRow2['qtyz_' + j] = '有效商品数';
-                    theadRow2['qtyl_' + j] = '合计';
-                    theadRow2['zhonbi_' + j] = '占比';
-                    theadRow2['mingci_' + j] = '名次';
-                }
-                //单元格合并处理
-                var mergeCell = {};
-                mergeCell['row'] = 0;
-                mergeCell['col'] = k;
-                mergeCell['rowspan'] = 1;
-                mergeCell['colspan'] = 4;
-                mergeCellsList.push(mergeCell);
 
-                i += 4;//每日单元格数量
-                j += 1;//日期
-                k += 4;//每次合并单元格数量
-            } while (i < yesterday * 4);
-            table.push(theadRow1);
-            table.push(theadRow2);
-            //拼接tbody数据
-            var tbody = {{ listTop | safe }};
-            table = table.concat(tbody);
-            var tfooter = {{ TotalDict.listTotal | safe }}
-                    table.push(tfooter);
-            var len = table.length;
-            var mergeCellTotal = {};
-            mergeCellTotal['row'] = len - 1;
-            mergeCellTotal['col'] = 0;
-            mergeCellTotal['rowspan'] = 1;
-            mergeCellTotal['colspan'] = 2;
-            mergeCellsList.push(mergeCellTotal);
-            rowLight = [1, len - 1];
-        }
-        if (tab == 2) {
+        if (tab == 1) {
             fixedRow = 1;
             fixedCol = 0;
-            var thead = {
-                'shopid': '门店编码',
-                'shopname': '门店名称',
-                'deptid': '课组编码',
-                'deptidname': '课组名称',
-                'qtyz': '课组汇总',
-                'qtyl': '负库存数',
-                'zhonbi': '占比'
+            var theadRow = {
+                'shopcode': '门店编码',
+                'paiming': '排名',
+                'pcode': '商品编码',
+                'num': '销售数量',
+                'svalue': '销售金额',
+                'scost': '成本金额',
+                'gpvalue': '毛利',
+                'gprate': '毛利率',
+                'closeqty': '当前库存数量',
+                'closevalue': '当前库存金额',
+                'costprice': '成本价',
+                'aveprice': '平均售价'
             };
-            var tbody = {{listDeptDetail | safe}};
-            table.push(thead);
+            var tbody = {{lis10 | safe}};
+            {#  循环单元格格式  #}
+            for (var i = 0; i < tbody.length / 10; i++) {
+                var cell = {};
+                cell['row'] = i * 10 + 1;
+                cell['col'] = 0;
+                cell['rowspan'] = 10;
+                cell['colspan'] = 1;
+                mergeCellsList.push(cell);
+            }
+            table.push(theadRow);
             table = table.concat(tbody);
-            /*mergeCellsList = [
-             {data:'shopid'},{data:'shopname'},{data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
-             ];*/
-            rowLight = [0];
-        }
-        if (tab == 3) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var thead = {'deptid': '课组编码', 'deptidname': '课组名称', 'qtyz': '课组汇总', 'qtyl': '负库存数', 'zhonbi': '占比'};
-            var tbody = {{listDept | safe}};
-            table.push(thead);
-            table = table.concat(tbody);
-            /*mergeCellsList = [
-             {data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
-             ];*/
+            var len = table.length;
             rowLight = [0];
         }
         initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight)
     }
+
     var tableSetting = {};
     function initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight) {
         tableSetting = {
@@ -207,7 +135,6 @@
             className: "htCenter htMiddle",
             rowHeaders: true,
             colHeaders: true,
-            contextMenu: false,
             fixedRowsTop: fixedRow,
             fixedColumnsLeft: fixedCol,
             manualColumnResize: true,
@@ -219,7 +146,7 @@
             mergeCells: mergeCellsList,
             cells: function (row, col, prop) {
                 var cellProperties = {};
-                if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
+                if (row == rowLight[0]) {
                     cellProperties.renderer = headerRenderer;
                 }
                 return cellProperties;
@@ -227,20 +154,13 @@
         };
         creatTable(tab, tableSetting)
     }
-    var hot1, hot2, hot3;
+
+    var hot1, hot2, hot3, hot4, hot5, hot6, hot7, hot8, hot9, hot10, hot11;
     function creatTable(tab, tableSetting) {
         var container = document.getElementById('tableReport' + tab);
-        if (tab == 1) {
-            if (!hot1) {
+        if(tab == 1) {
+            if(!hot1) {
                 hot1 = new Handsontable(container, tableSetting);
-            }
-        } else if (tab == 2) {
-            if (!hot2) {
-                hot2 = new Handsontable(container, tableSetting);
-            }
-        } else if (tab == 3) {
-            if (!hot3) {
-                hot3 = new Handsontable(container, tableSetting);
             }
         }
     }
