@@ -79,7 +79,7 @@
         $(this).stop().animate({width: "600px"}, 300).siblings().stop().animate({width: "26px"}, 300)
     });
     $("#btnExport").on("click", function () {
-        window.location.href = "{% url 'negativeStockTopIndex' %}?qtype=2";
+        window.location.href = "{% url 'saletop10Index' %}?exceltype=1";
     });
 </script>
 <script>
@@ -99,6 +99,7 @@
                 'shopcode': '门店编码',
                 'paiming': '排名',
                 'pcode': '商品编码',
+                'pname': '商品名称',
                 'num': '销售数量',
                 'svalue': '销售金额',
                 'scost': '成本金额',
@@ -158,8 +159,8 @@
     var hot1, hot2, hot3, hot4, hot5, hot6, hot7, hot8, hot9, hot10, hot11;
     function creatTable(tab, tableSetting) {
         var container = document.getElementById('tableReport' + tab);
-        if(tab == 1) {
-            if(!hot1) {
+        if (tab == 1) {
+            if (!hot1) {
                 hot1 = new Handsontable(container, tableSetting);
             }
         }
