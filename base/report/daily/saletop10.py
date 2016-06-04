@@ -19,7 +19,7 @@ def index(request):
     # 今天
     today = DateUtil.todaystr()
     # 昨天
-    yesterday = DateUtil.get_yesterday()
+    yesterday = DateUtil.get_day_of_day(-1)
 
     # 获取部类编码
     classcode = getclasscode()
@@ -49,7 +49,7 @@ def index(request):
     sql = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate10 + ") " \
-                                                "and sdate='" + yesterday + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
 
     # 连接数据库
     conn = mtu.getMysqlConn()
@@ -69,13 +69,16 @@ def index(request):
                     rows[i][key] = str(rows[i][key])
                 elif isinstance(row, decimal.Decimal):
                     rows[i][key] = "%0.2f" % float(rows[i][key])
-
+    # 10 熟食部类
     lis10 = []
 
     for sid in shopsid:
+        print(sid)
         i = 0
         for row in rows:
             if sid['ShopID'] == row['shopcode'] and i < 10:
+                row['shopcode'] = sid['ShopName'].strip()
+                row['paiming'] = i + 1
                 lis10.append(row)
                 i += 1
             else:
@@ -83,7 +86,11 @@ def index(request):
 
     # 关闭数据库
     mtu.close(conn, cur)
-    return render(request, "report/daily/saletop10.html", locals())
+    exceltype = mtu.getReqVal(request, "exceltype", "2")
+    if exceltype == '1':
+        return export(request, lis10)
+    else:
+        return render(request, "report/daily/saletop10.html", locals())
 
 
 def getshopid():
@@ -93,7 +100,7 @@ def getshopid():
     '''
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
-    sql = "select ShopID from bas_shop_region"
+    sql = "select ShopID, ShopName from bas_shop_region"
     cur.execute(sql)
     res = cur.fetchall()
     # 释放
@@ -147,3 +154,42 @@ def getallcode():
         lis.append(y['classsx'])
 
     return lis
+
+
+def export(request, lis10):
+    wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
+    # 写入sheet1
+    writeDataToSheet1(wb, lis10)
+
+    outtype = 'application/vnd.ms-excel;'
+    fname = datetime.date.today().strftime("%m.%d") + "saletop10_operate"
+    response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
+    wb.save(response)
+    return response
+
+
+def writeDataToSheet1(wb, lis10):
+    date = DateUtil.get_day_of_day(-1)
+    year = date.year
+    month = date.month
+    lastDay = calendar.monthrange(year, month)[1]
+
+    sheet = wb.add_sheet("（日）各店日销售排名", cell_overwrite_ok=True)
+
+    titles = [
+        [("（%s月%s日）各店日销售排名日报" % (month, date.day), 0, 1, 13)],
+        [("门店", 0, 2, 1), ("排名", 1, 2, 1), ("商品编码", 2, 2, 1), ("商品名称", 3, 2, 1), ("销售数量", 4, 2, 1),
+         ("销售金额", 5, 2, 1), ("成本金额", 6, 2, 1), ("毛利", 7, 2, 1), ("毛利率%", 8, 2, 1), ("当前库存数量", 9, 2, 1),
+         ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
+    ]
+
+    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
+               'costprice', 'aveprice']
+
+    widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
+
+    # 日销售报表
+    mtu.insertTitle2(sheet, titles, keylist, widthList)
+    mtu.insertCell2(sheet, 3, lis10, keylist, None)
+    titlesLen = len(titles)
+    listTopLen = len(lis10)
