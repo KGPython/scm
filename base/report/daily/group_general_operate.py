@@ -100,23 +100,36 @@ def index(request):
             edict.setdefault(shopid,eitem)
 
          #月累计
-         monthItem["m_salevalue"] += item["salevalue"]
-         monthItem["m_salevalueesti"] += item["salevalueesti"]
-         monthItem["m_salevalueold"] += item["salevalueold"]
-         monthItem["m_salegain"] += item["salegain"]
-         monthItem["m_salegainesti"] += item["salegainesti"]
-         monthItem["m_salegainold"] += item["salegainold"]
-         monthItem["m_tradenumber"] += item["tradenumber"]
-         monthItem["m_tradenumberold"] += item["tradenumberold"]
-         monthItem["m_tradeprice"] += item["tradeprice"]
-         monthItem["m_tradepriceold"] += item["tradepriceold"]
+         if  item["salevalue"]:
+            monthItem["m_salevalue"] += item["salevalue"]
+         if item["salevalueesti"]:
+            monthItem["m_salevalueesti"] += item["salevalueesti"]
+         if item["salevalueold"]:
+            monthItem["m_salevalueold"] += item["salevalueold"]
+         if item["salegain"]:
+            monthItem["m_salegain"] += item["salegain"]
+         if item["salegainesti"]:
+            monthItem["m_salegainesti"] += item["salegainesti"]
+         if  item["salegainold"]:
+            monthItem["m_salegainold"] += item["salegainold"]
+         if item["tradenumber"]:
+            monthItem["m_tradenumber"] += item["tradenumber"]
+         if item["tradenumberold"]:
+            monthItem["m_tradenumberold"] += item["tradenumberold"]
+         if item["tradeprice"]:
+            monthItem["m_tradeprice"] += item["tradeprice"]
+         if item["tradepriceold"]:
+            monthItem["m_tradepriceold"] += item["tradepriceold"]
 
          #日销售、毛利
-         eitem["m_salevalue"] +=  item["salevalue"]
-         eitem["m_salevalueesti"] += item["salevalueesti"]
-
-         eitem["m_salegain"] +=  item["salegain"]
-         eitem["m_salegainesti"] += item["salegainesti"]
+         if item["salevalue"]:
+            eitem["m_salevalue"] +=  item["salevalue"]
+         if item["salevalueesti"]:
+            eitem["m_salevalueesti"] += item["salevalueesti"]
+         if  item["salegain"]:
+            eitem["m_salegain"] +=  item["salegain"]
+         if item["salegainesti"]:
+            eitem["m_salegainesti"] += item["salegainesti"]
 
          day1 = item["sdate"].day
 
@@ -127,7 +140,10 @@ def index(request):
          eitem[salevalue1] = mtu.quantize(item["salevalue"])
          eitem[salevalueesti1] = mtu.quantize(item["salevalueesti"])
          eitem[saledifference1] = mtu.quantize(eitem[salevalue1] - eitem[salevalueesti1],"0.00",1)
-         eitem[accomratio1] = mtu.convertToStr(eitem[salevalue1] * decimal.Decimal("100.0") / eitem[salevalueesti1],"0.00",1) + "%"
+         if eitem[salevalueesti1] > 0:
+            eitem[accomratio1] = mtu.convertToStr(eitem[salevalue1] * decimal.Decimal("100.0") / eitem[salevalueesti1],"0.00",1) + "%"
+         else:
+            eitem[accomratio1] = ""
 
          salegain1 = "salegain_{year}{month}{day}".format(year=year,month=month,day=day1)
          salegainesti1 = "salegainesti_{year}{month}{day}".format(year=year,month=month,day=day1)
@@ -136,7 +152,10 @@ def index(request):
          eitem[salegain1] = mtu.quantize(item["salegain"])
          eitem[salegainesti1] = mtu.quantize(item["salegainesti"])
          eitem[salegaindifference1] = mtu.quantize(eitem[salegain1] - eitem[salegainesti1],"0.00",1)
-         eitem[salegainaccomratio1] = mtu.convertToStr(eitem[salegain1] * decimal.Decimal("100.0")/ eitem[salegainesti1],"0.00",1) + "%"
+         if eitem[salegainesti1]>0:
+            eitem[salegainaccomratio1] = mtu.convertToStr(eitem[salegain1] * decimal.Decimal("100.0")/ eitem[salegainesti1],"0.00",1) + "%"
+         else:
+            eitem[salegainaccomratio1] = ""
 
          itemShopId = item["shopid"]
 
@@ -847,7 +866,7 @@ def setDaiySale(ritem,dayItem):
     #    ritem.setdefault('day_salevalueesti','0.0')
 
     ritem.setdefault('day_sale_difference',mtu.convertToStr(mtu.quantize(dayItem["salevalue"])-mtu.quantize(dayItem["salevalueesti"]),"0.00",1))
-    if dayItem["salevalueesti"]>0:
+    if mtu.quantize(dayItem["salevalueesti"])>0:
         ritem.setdefault('day_accomratio',"{day_accomratio}%".format(day_accomratio=mtu.convertToStr(mtu.quantize(dayItem["salevalue"])*decimal.Decimal("100.0")/mtu.quantize(dayItem["salevalueesti"]),"0.00",1)))
     else:
         ritem.setdefault('day_accomratio',"0.0%")
@@ -863,7 +882,7 @@ def setDaiySale(ritem,dayItem):
     #else:
     #    ritem.setdefault('day_tradenumberold',str(int(0)))
 
-    if dayItem["tradenumberold"]>0:
+    if mtu.quantize(dayItem["tradenumberold"],"0",1)>0:
         ritem.setdefault('day_tradenumber_ynygrowth',mtu.convertToStr((dayItem["tradenumber"]-dayItem["tradenumberold"])*decimal.Decimal("100.0")/dayItem["tradenumberold"],"0.00",1)+"%")
     else:
         ritem.setdefault('day_tradenumber_ynygrowth',"0.00")
@@ -879,7 +898,7 @@ def setDaiySale(ritem,dayItem):
     #else:
     #    ritem.setdefault('day_tradepriceold', '0.00')
 
-    if dayItem["tradepriceold"] > 0:
+    if  mtu.quantize(dayItem["tradepriceold"],"0.00",1) > 0:
         ritem.setdefault('day_tradeprice_ynygrowth',mtu.convertToStr((dayItem["tradeprice"]-dayItem["tradepriceold"])*decimal.Decimal("100.0")/dayItem["tradepriceold"],"0.00",1)+"%")
     else:
         ritem.setdefault('day_tradeprice_ynygrowth',"0.00")
@@ -897,12 +916,12 @@ def setDaiySale(ritem,dayItem):
 
     ritem.setdefault('day_salegain_difference',mtu.convertToStr(mtu.quantize(dayItem["salegain"])-mtu.quantize(dayItem["salegainesti"]),"0.00",1))
 
-    if dayItem["salegainesti"] > 0:
+    if mtu.quantize(dayItem["salegainesti"]) > 0:
         ritem.setdefault('day_salegain_accomratio',mtu.convertToStr(mtu.quantize(dayItem["salegain"])*decimal.Decimal("100.0")/mtu.quantize(dayItem["salegainesti"]),"0.00",1)+"%")
     else:
         ritem.setdefault('day_salegain_accomratio',"0.00")
 
-    if dayItem["salevalue"] > 0:
+    if mtu.quantize(dayItem["salevalue"]) > 0:
         ritem.setdefault('day_grossmargin',mtu.convertToStr(mtu.quantize(dayItem["salegain"])*decimal.Decimal("100.0")/mtu.quantize(dayItem["salevalue"]),"0.00",1)+"%")
     else:
         ritem.setdefault('day_grossmargin',"0.00")
@@ -1163,87 +1182,87 @@ def setValue(sum1,ritem):
    if "day_salevalue" in sum1:
        sum1["day_salevalue"] = str(float(sum1["day_salevalue"]) + float(ritem["day_salevalue"]))
    else:
-       sum1["day_salevalue"] = str(float(ritem["day_salevalue"]))
+       sum1["day_salevalue"] = ritem["day_salevalue"]
 
    if "day_salevalueold" in sum1:
        sum1["day_salevalueold"] = str(float(sum1["day_salevalueold"]) + float(ritem["day_salevalueold"]))
    else:
-       sum1["day_salevalueold"] = str(float(ritem["day_salevalueold"]))
+       sum1["day_salevalueold"] = ritem["day_salevalueold"]
 
    if "day_salevalueesti" in sum1:
        sum1["day_salevalueesti"] = str(float(sum1["day_salevalueesti"]) + float(ritem["day_salevalueesti"]))
    else:
-       sum1["day_salevalueesti"] = str(float(ritem["day_salevalueesti"]))
+       sum1["day_salevalueesti"] = ritem["day_salevalueesti"]
 
    if "day_tradenumber" in sum1:
        sum1["day_tradenumber"] = str(int(sum1["day_tradenumber"]) + int(ritem["day_tradenumber"]))
    else:
-       sum1["day_tradenumber"] = str(int(ritem["day_tradenumber"]))
+       sum1["day_tradenumber"] = ritem["day_tradenumber"]
 
    if "day_tradenumberold" in sum1:
        sum1["day_tradenumberold"] = str(int(sum1["day_tradenumberold"]) + int(ritem["day_tradenumberold"]))
    else:
-       sum1["day_tradenumberold"] = str(int(ritem["day_tradenumberold"]))
+       sum1["day_tradenumberold"] = ritem["day_tradenumberold"]
 
    if "day_salegain" in sum1:
        sum1["day_salegain"] = str(float(sum1["day_salegain"]) + float(ritem["day_salegain"]))
    else:
-       sum1["day_salegain"] = str(float(ritem["day_salegain"]))
+       sum1["day_salegain"] = ritem["day_salegain"]
 
    if "day_salegainesti" in sum1:
        sum1["day_salegainesti"] = str(float(sum1["day_salegainesti"]) + float(ritem["day_salegainesti"]))
    else:
-       sum1["day_salegainesti"] = str(float(ritem["day_salegainesti"]))
+       sum1["day_salegainesti"] = ritem["day_salegainesti"]
 
    if "month_salevalue" in sum1:
        sum1["month_salevalue"] = str(float(sum1["month_salevalue"]) + float(ritem["month_salevalue"]))
    else:
-       sum1["month_salevalue"] = str(float(ritem["month_salevalue"]))
+       sum1["month_salevalue"] = ritem["month_salevalue"]
 
    if "month_salevalueesti" in sum1:
        sum1["month_salevalueesti"] = str(float(sum1["month_salevalueesti"]) + float(ritem["month_salevalueesti"]))
    else:
-       sum1["month_salevalueesti"] = str(float(ritem["month_salevalueesti"]))
+       sum1["month_salevalueesti"] = ritem["month_salevalueesti"]
 
    if "month_sale_estimate" in sum1:
        sum1["month_sale_estimate"] = str(float(sum1["month_sale_estimate"]) + float(ritem["month_sale_estimate"]))
    else:
-       sum1["month_sale_estimate"] = str(float(ritem["month_sale_estimate"]))
+       sum1["month_sale_estimate"] = ritem["month_sale_estimate"]
 
    if "month_salevalueold" in sum1:
        sum1["month_salevalueold"] = str(float(sum1["month_salevalueold"]) + float(ritem["month_salevalueold"]))
    else:
-       sum1["month_salevalueold"] = str(float(ritem["month_salevalueold"]))
+       sum1["month_salevalueold"] = ritem["month_salevalueold"]
 
    if "month_salegain" in sum1:
        sum1["month_salegain"] = str(float(sum1["month_salegain"]) + float(ritem["month_salegain"]))
    else:
-       sum1["month_salegain"] = str(float(ritem["month_salegain"]))
+       sum1["month_salegain"] = ritem["month_salegain"]
 
    if "month_salegainesti" in sum1:
        sum1["month_salegainesti"] = str(float(sum1["month_salegainesti"]) + float(ritem["month_salegainesti"]))
    else:
-       sum1["month_salegainesti"] = str(float(ritem["month_salegainesti"]))
+       sum1["month_salegainesti"] = ritem["month_salegainesti"]
 
    if "month_salegain_estimate" in sum1:
        sum1["month_salegain_estimate"] = str(float(sum1["month_salegain_estimate"]) + float(ritem["month_salegain_estimate"]))
    else:
-       sum1["month_salegain_estimate"] = str(float(ritem["month_salegain_estimate"]))
+       sum1["month_salegain_estimate"] = ritem["month_salegain_estimate"]
 
    if "month_salegainold" in sum1:
        sum1["month_salegainold"] = str(float(sum1["month_salegainold"]) + float(ritem["month_salegainold"]))
    else:
-       sum1["month_salegainold"] = str(float(ritem["month_salegainold"]))
+       sum1["month_salegainold"] = ritem["month_salegainold"]
 
    if "month_tradenumber" in sum1:
        sum1["month_tradenumber"] = str(int(sum1["month_tradenumber"]) + int(ritem["month_tradenumber"]))
    else:
-       sum1["month_tradenumber"] = str(int(ritem["month_tradenumber"]))
+       sum1["month_tradenumber"] = ritem["month_tradenumber"]
 
    if "month_tradenumberold" in sum1:
        sum1["month_tradenumberold"] = str(int(sum1["month_tradenumberold"]) + int(ritem["month_tradenumberold"]))
    else:
-       sum1["month_tradenumberold"] = str(int(ritem["month_tradenumberold"]))
+       sum1["month_tradenumberold"] = ritem["month_tradenumberold"]
 
 
 def findYearEstimate(shopids):
