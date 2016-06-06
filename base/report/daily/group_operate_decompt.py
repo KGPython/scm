@@ -26,45 +26,36 @@ def index(request):
      conn = mtu.getMysqlConn()
      cur = conn.cursor()
      #查询全月预算
-     sql = "SELECT dateid saledate,groupid,shopid shopcode,SUM(salevalue)/10000 sale,SUM(salegain)/10000 gain FROM Estimate " \
+     ysql = "SELECT dateid saledate,groupid,shopid shopcode,SUM(salevalue)/10000 sale,SUM(salegain)/10000 gain FROM Estimate " \
            " WHERE dateid BETWEEN '"+start+" 00:00:00' AND '"+end+" 23:59:59.999' AND deptlevelid=2   AND shopid IN ('"+shopids+"')  " \
            "and groupid < 50 and groupid <> 42 GROUP BY dateid,shopid,groupid ORDER BY dateid,shopid,groupid "
-     ydict1,ydict2 = queryData(cur,sql,lastDay,date.day)
+     yshopdict,ygrpdict = queryData(cur,ysql,lastDay,date.day)
 
      #查询全月销售实际
-     sql2 = "SELECT sdate saledate,shopcode,LEFT(sccode,2) groupid,SUM(svalue-discount)/10000 sale,SUM(svalue-discount-scost)/10000 gain   "\
+     sale_sql = "SELECT sdate saledate,shopcode,LEFT(sccode,2) groupid,SUM(svalue-discount)/10000 sale,SUM(svalue-discount-scost)/10000 gain   "\
             " FROM sales_pro_temp WHERE sdate BETWEEN '"+start+" 00:00:00' AND '"+yesterday+" 23:59:59.999' AND shopcode IN ('"+shopids+"') "\
             "and LEFT(sccode,2) < 50 and LEFT(sccode,2) <> 42 GROUP BY DATE_FORMAT(sdate,'%Y-%m-%d'),shopcode,LEFT(sccode,2) "
-     sdict1,sdict2 = queryData(cur,sql2,lastDay,date.day)
+     sshopdict,sgrpdict = queryData(cur,sale_sql,lastDay,date.day)
 
      #查询批发销售单
-     sql3 = "SELECT sdate saledate,shopid shopcode,LEFT(deptid,2) groupid,SUM(salevalue)/10000 sale,SUM(salevalue-costvalue)/10000 gain "\
+     pf_sale_sql = "SELECT sdate saledate,shopid shopcode,LEFT(deptid,2) groupid,SUM(salevalue)/10000 sale,SUM(salevalue-costvalue)/10000 gain "\
             " FROM kwholesale WHERE sdate BETWEEN '"+start+" 00:00:00' AND '"+yesterday+" 23:59:59.999' "\
             "and LEFT(deptid,2) < 50 and LEFT(deptid,2) <> 42  GROUP BY DATE_FORMAT(sdate,'%Y-%m-%d'),shopid,LEFT(deptid,2) "\
             "ORDER BY DATE_FORMAT(sdate,'%Y-%m-%d'),shopid,LEFT(deptid,2) "
-     ddict1,ddict2 = queryData(cur,sql3,lastDay,date.day)
+     pfshopdict,pfgrpdict = queryData(cur,pf_sale_sql,lastDay,date.day)
 
      #计算实际销售
      #门店
-     saledict1,zbdict1,sumlist1 = countSale(sdict1,ddict1,ydict1)
+     saledict1,zbdict1,sumlist1 = countSale(yshopdict,sshopdict,pfshopdict,lastDay)
      #课组
-     saledict2,zbdict2,sumlist2 = countSale(sdict2,ddict2,ydict2)
-     #
-     # #计划：    销售预算合计    销售预算累计     毛利预算合计       销售   毛利
-     # #实际达成：销售实际累计    销售实际累计     毛利实际累计
-     # #达成率：  实际/预算       实际/预算        实际/预算
-     #
-     # #销售 = 实际销售 + 批发销售单
-     #
+     saledict2,zbdict2,sumlist2 = countSale(ygrpdict,sgrpdict,pfgrpdict,lastDay)
+
      sx = [10,11,12,13,14,15,16,17,18,19]   #生鲜汇总
      sp = [20,21,22,23,24,25]               #食品汇总
      yp = [30,31,32,33,34,35,36,37,38]      #用品汇总
      jd = [40,41,43]                        #家电汇总
-     # #组合数据
-     rlist = []
-     # yslist = []
-     # xslist = []
 
+     rlist = []
      #计算合计占比
      countSumZb(sumlist1)
      # countSumZb(sumlist2)
@@ -72,7 +63,7 @@ def index(request):
      #合并list
      rlist.extend(sumlist1)
 
-     mergeData(rlist,slist,ydict1,saledict1,zbdict1)
+     mergeData(rlist,slist,yshopdict,saledict1,zbdict1)
 
      shoplist = []
      for row in slist:
@@ -87,11 +78,11 @@ def index(request):
      # else:
      #     return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
 
-def countSumZb(list):
-    if len(list)>1:
+def countSumZb(rlist):
+    if len(rlist)>1:
         sumdict = {}
-        yitem = list[0]
-        sitem = list[1]
+        yitem = rlist[0]
+        sitem = rlist[1]
 
         for key in yitem:
             est = yitem[key]
@@ -111,7 +102,7 @@ def countSumZb(list):
         yitem.setdefault("codelable","计划")
         sitem.setdefault("codelable","实际达成")
         sumdict.setdefault("codelable","达成率")
-        list.append(sumdict)
+        rlist.append(sumdict)
 
 def mergeData(rlist,slist,ydict1,saledict1,zbdict1):
     for shop in slist:
@@ -148,24 +139,29 @@ def queryData(cur,sql,lastDay,yesterday):
     cur.execute(sql)
     dlist = cur.fetchall()
     #实际：分别安门店，课组汇总
-    rdict5,rdict6 = sumByType(dlist)
+    shopdict,grpdict = sumByType(dlist)
     #实际：竖转横
-    ddict1,ddict2 = vertTohoriz(rdict5,rdict6,lastDay,yesterday)
-    return ddict1,ddict2
+    shopdict,grpdict = vertTohoriz(shopdict,grpdict,lastDay,yesterday)
+    return shopdict,grpdict
 
-def countSale(dict1,dict2,ydict):
+def countSale(ydict,sdict1,sdict2,lastDay):
     rsdict = {}
     zbdict = {}
 
     sumlist = []
-    sumdict1,sumdict2 = {},{}
-    sumlist.append(sumdict2)  #计划
-    sumlist.append(sumdict1)  #实际
+    ssumdict,ysumdict = {},{}
+    sumlist.append(ysumdict)  #计划
+    sumlist.append(ssumdict)  #实际
 
-    for key in dict1.keys():
-        item = dict1[key]
-        yitem = ydict[key]
-        new,zbitem, = {},{}
+    for key in sdict1.keys():
+        item = sdict1[key]
+        if key in ydict:
+            yitem = ydict[key]
+        else:
+            yitem = initItem(lastDay)
+            ydict.setdefault(key,yitem)
+
+        new,zbitem = {},{}
         new = dict(new,**item)
 
         for k in item:
@@ -173,8 +169,8 @@ def countSale(dict1,dict2,ydict):
             obj = item[k]
 
             #批发销售单
-            if key in dict2:
-                item2 = dict2[key]
+            if key in sdict2:
+                item2 = sdict2[key]
                 if item2 and k in item2:
                     obj2 = item2[k]
                 else:
@@ -187,7 +183,11 @@ def countSale(dict1,dict2,ydict):
             new[k] = val
 
             #计划
-            yobj = yitem[k]
+            if k in yitem:
+                yobj = yitem[k]
+            else:
+                yobj = decimal.Decimal("0.00")
+
             #占比
             if yobj>0:
                 zb = mtu.convertToStr(val*decimal.Decimal("100.0")/yobj,"0.00",1)+"%"
@@ -196,15 +196,15 @@ def countSale(dict1,dict2,ydict):
                 zbitem.setdefault(k,"")
 
             #销售合计
-            if k in sumdict1:
-                sumdict1[k] += val
+            if k in ssumdict:
+                ssumdict[k] += val
             else:
-                sumdict1.setdefault(k,val)
+                ssumdict.setdefault(k,val)
             #计划合计
-            if k in sumdict2:
-                sumdict2[k] += yobj
+            if k in ysumdict:
+                ysumdict[k] += yobj
             else:
-                sumdict2.setdefault(k,yobj)
+                ysumdict.setdefault(k,yobj)
 
         yitem.setdefault("codelable","计划")
         new.setdefault("codelable","实际达成")
@@ -247,14 +247,14 @@ def sumByType(list):
          tempval2 = groupval
      return rdict,rdict2
 
-def vertTohoriz(rdict,rdict2,lastDay,yesterday):
+def vertTohoriz(shopdict,grpdict,lastDay,yesterday):
      #按门店
-     ydict1 = {}
+     yshopdict = {}
      itemshopid = None
-     for row in rdict.values():
+     for row in shopdict.values():
         shopid = row["shopcode"]
         if itemshopid != shopid:
-            if shopid not in ydict1:
+            if shopid not in yshopdict:
                 item = {}
                 # item.setdefault("shopid",shopid)
                 item.setdefault("m_all_sale",decimal.Decimal("0.00"))
@@ -266,28 +266,28 @@ def vertTohoriz(rdict,rdict2,lastDay,yesterday):
                     newkey1 = "gain_d{saledate}".format(saledate=d)
                     item.setdefault(newkey,decimal.Decimal("0.00"))
                     item.setdefault(newkey1,decimal.Decimal("0.00"))
-                ydict1.setdefault(shopid,item)
+                yshopdict.setdefault(shopid,item)
 
         day = row["saledate"].day
         key = "sale_d{saledate}".format(saledate=day)
         key1 = "gain_d{saledate}".format(saledate=day)
-        ydict1[shopid][key] = row["sale"]
-        ydict1[shopid][key1] = row["gain"]
+        yshopdict[shopid][key] = row["sale"]
+        yshopdict[shopid][key1] = row["gain"]
 
-        ydict1[shopid]["m_all_sale"] += row["sale"]
-        ydict1[shopid]["m_all_gain"] += row["gain"]
+        yshopdict[shopid]["m_all_sale"] += row["sale"]
+        yshopdict[shopid]["m_all_gain"] += row["gain"]
         if day <= yesterday:
-            ydict1[shopid]["m_daily_sale"] += row["sale"]
-            ydict1[shopid]["m_daily_gain"] += row["gain"]
+            yshopdict[shopid]["m_daily_sale"] += row["sale"]
+            yshopdict[shopid]["m_daily_gain"] += row["gain"]
         itemshopid = shopid
 
      #按课组
-     ydict2 = {}
+     ygrpdict = {}
      itemgroupid = None
-     for row in rdict2.values():
+     for row in grpdict.values():
         groupid = str(row["groupid"])
         if itemgroupid != groupid:
-            if groupid not in ydict2:
+            if groupid not in ygrpdict:
                 item = {}
                 # item.setdefault("groupid",groupid)
                 item.setdefault("m_all_sale",decimal.Decimal("0.00"))
@@ -299,18 +299,31 @@ def vertTohoriz(rdict,rdict2,lastDay,yesterday):
                     newkey1 = "gain_d{saledate}".format(saledate=d)
                     item.setdefault(newkey,decimal.Decimal("0.00"))
                     item.setdefault(newkey1,decimal.Decimal("0.00"))
-                ydict2.setdefault(groupid,item)
+                ygrpdict.setdefault(groupid,item)
 
         key = "sale_d{saledate}".format(saledate=row["saledate"].day)
         key1 = "gain_d{saledate}".format(saledate=row["saledate"].day)
-        ydict2[groupid][key] = row["sale"]
-        ydict2[groupid][key1] = row["gain"]
+        ygrpdict[groupid][key] = row["sale"]
+        ygrpdict[groupid][key1] = row["gain"]
 
-        ydict2[groupid]["m_all_sale"] += row["gain"]
-        ydict2[groupid]["m_all_gain"] += row["gain"]
+        ygrpdict[groupid]["m_all_sale"] += row["gain"]
+        ygrpdict[groupid]["m_all_gain"] += row["gain"]
         if day <= yesterday:
-            ydict2[groupid]["m_daily_sale"] += row["gain"]
-            ydict2[groupid]["m_daily_gain"] += row["gain"]
+            ygrpdict[groupid]["m_daily_sale"] += row["gain"]
+            ygrpdict[groupid]["m_daily_gain"] += row["gain"]
 
         itemgroupid = groupid
-     return ydict1,ydict2
+     return yshopdict,ygrpdict
+
+def initItem(lastDay):
+    item = {}
+    item.setdefault("m_all_sale",decimal.Decimal("0.00"))
+    item.setdefault("m_all_gain",decimal.Decimal("0.00"))
+    item.setdefault("m_daily_sale",decimal.Decimal("0.00"))
+    item.setdefault("m_daily_gain",decimal.Decimal("0.00"))
+    for d in range(1,lastDay+1):
+        newkey = "sale_d{saledate}".format(saledate=d)
+        newkey1 = "gain_d{saledate}".format(saledate=d)
+        item.setdefault(newkey,decimal.Decimal("0.00"))
+        item.setdefault(newkey1,decimal.Decimal("0.00"))
+    return item
