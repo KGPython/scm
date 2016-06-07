@@ -24,6 +24,14 @@ function rowRenderer2(instance, td, row, col, prop, value, cellProperties) {
   td.style.color = '#000';
   td.style.background = '#92D050';
 }
+
+function sumRenderer(instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  td.style.fontWeight = 'bold';
+  td.style.color = '#000';
+  td.style.background = '#FFFF99';
+}
+
 //设置cells样式 ，手动将该函数注册到Handsontable ，注册方式：Handsontable.renderers.registerRenderer('negativeValueRenderer', negativeValueRenderer);
 function negativeValueRenderer(instance, td, row, col, prop, value, cellProperties) {
     Handsontable.renderers.TextRenderer.apply(this, arguments);

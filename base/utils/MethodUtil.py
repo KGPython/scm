@@ -28,7 +28,10 @@ def convertToStr(val,*arg):
     if isinstance(val,decimal.Decimal):
         return str(float((val/divisor).quantize(decimal.Decimal(str(fmt)))))
     else:
-        return str(float(val))
+        if val:
+            return str(float(val))
+        else:
+            return "0.00"
 
 def quantize(val,*arg):
     if arg:
@@ -44,7 +47,10 @@ def quantize(val,*arg):
     if isinstance(val,decimal.Decimal):
         return (val/divisor).quantize(decimal.Decimal(str(fmt)))
     else:
-        return val
+        if val:
+            return val
+        else:
+            return decimal.Decimal("0.00")
 
 def encodeStr(str):
     if str:

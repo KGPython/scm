@@ -180,6 +180,13 @@ def encodeStr(str):
     else:
         return ""
 
+@register.filter
+def toInt(val):
+    if val:
+        return int(val)
+    else:
+        return ""
+
 # register.filter('key',key)
 # register.filter('dtsub',dtsub)
 # register.filter('expired',expired)

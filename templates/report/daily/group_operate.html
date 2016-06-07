@@ -97,12 +97,12 @@
                       var h1 = {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','m_salevalue':'累计实际','m_salevalueesti':'累计预算',};
                       var h2 = {};
 
-                      var columnsArr = [{data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},{data:'m_salevalue'},{data:'m_salevalueesti'}];
+{#                      var columnsArr = [{data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},{data:'m_salevalue'},{data:'m_salevalueesti'}];#}
                       for(var i=1;i<=lastDay;i++){
-                          columnsArr.push({data:'salevalue_'+year+month+i});
-                          columnsArr.push({data:'salevalueesti_'+year+month+i});
-                          columnsArr.push({data:'saledifference_'+year+month+i});
-                          columnsArr.push({data:'saleaccomratio_'+year+month+i});
+{#                          columnsArr.push({data:'salevalue_'+year+month+i});#}
+{#                          columnsArr.push({data:'salevalueesti_'+year+month+i});#}
+{#                          columnsArr.push({data:'saledifference_'+year+month+i});#}
+{#                          columnsArr.push({data:'saleaccomratio_'+year+month+i});#}
 
                           var s = 'salevalue_'+year+month+i;
                           var e = 'salevalueesti_'+year+month+i;
@@ -134,12 +134,12 @@
                       var h1 = {'region':'区域','shopid':'店号','shopname':'店名','opentime':'开业时间','type':'类型','m_salegain':'月累计毛利','m_salegainesti':'月累计预算',};
                       var h2 = {};
 
-                      var columnsArr = [{data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},{data:'m_salegain'},{data:'m_salegainesti'}];
+{#                      var columnsArr = [{data: 'region'},{data: 'shopid'},{data: 'shopname'},{data: 'opentime'},{data: 'type'},{data:'m_salegain'},{data:'m_salegainesti'}];#}
                       for(var i=1;i<=lastDay;i++){
-                          columnsArr.push({data:'salegain_'+year+month+i});
-                          columnsArr.push({data:'salegainesti_'+year+month+i});
-                          columnsArr.push({data:'salegaindifference_'+year+month+i});
-                          columnsArr.push({data:'salegainaccomratio_'+year+month+i});
+{#                          columnsArr.push({data:'salegain_'+year+month+i});#}
+{#                          columnsArr.push({data:'salegainesti_'+year+month+i});#}
+{#                          columnsArr.push({data:'salegaindifference_'+year+month+i});#}
+{#                          columnsArr.push({data:'salegainaccomratio_'+year+month+i});#}
 
                           var s = 'salegain_'+year+month+i;
                           var e = 'salegainesti_'+year+month+i;
