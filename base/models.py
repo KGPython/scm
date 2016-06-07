@@ -13,6 +13,16 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class BasShopGroup(models.Model):
+    id = models.IntegerField(db_column='ID', primary_key=True)  # Field name made lowercase.
+    name = models.CharField(db_column='Name', max_length=40)  # Field name made lowercase.
+    parent = models.IntegerField(db_column='Parent', blank=True, null=True)  # Field name made lowercase.
+    note = models.CharField(db_column='Note', max_length=32, blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'bas_shop_group'
+
 class Billhead0Status(models.Model):
     sheetid = models.CharField(db_column='SheetId', max_length=32, blank=True, null=True)  # Field name made lowercase.
     inviocestatus = models.SmallIntegerField(db_column='InvioceStatus', blank=True, null=True)  # Field name made lowercase.

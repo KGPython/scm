@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.db.models import Sum
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kshopsale,BasShopRegion,Estimate
+from base.models import BasShopRegion
 from django.http import HttpResponse
 import datetime,calendar,decimal,time
 import xlwt3 as xlwt
@@ -46,24 +46,25 @@ def index(request):
 
      #计算实际销售
      #门店
-     saledict1,zbdict1,sumlist1 = countSale(yshopdict,sshopdict,pfshopdict,lastDay)
+     shop_saledict,shop_zbdict,shop_sumlist = countSale(yshopdict,sshopdict,pfshopdict,lastDay)
      #课组
-     saledict2,zbdict2,sumlist2 = countSale(ygrpdict,sgrpdict,pfgrpdict,lastDay)
+     group_saledict,group_zbdict,group_sumlist = countSale(ygrpdict,sgrpdict,pfgrpdict,lastDay)
 
-     sx = [10,11,12,13,14,15,16,17,18,19]   #生鲜汇总
-     sp = [20,21,22,23,24,25]               #食品汇总
-     yp = [30,31,32,33,34,35,36,37,38]      #用品汇总
-     jd = [40,41,43]                        #家电汇总
-
-     rlist = []
+     rslist = []
+     grslist = []
      #计算合计占比
-     countSumZb(sumlist1)
-     # countSumZb(sumlist2)
+     countSumZb(shop_sumlist)
+     countSumZb(group_sumlist)
 
      #合并list
-     rlist.extend(sumlist1)
+     rslist.extend(shop_sumlist)
+     grslist.extend(group_sumlist)
 
-     mergeData(rlist,slist,yshopdict,saledict1,zbdict1)
+     mergeData(rslist,slist,yshopdict,shop_saledict,shop_zbdict)
+     mergeGroupData(grslist,ygrpdict,group_saledict,group_zbdict,lastDay)
+
+     formate_data(rslist)
+     formate_data(grslist)
 
      shoplist = []
      for row in slist:
@@ -74,7 +75,7 @@ def index(request):
 
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
-         return render(request, "report/daily/group_opt_decompt.html",{"rlist":rlist,"shoplist":shoplist})
+         return render(request, "report/daily/group_opt_decompt.html",{"rlist":rslist,"shoplist":shoplist,"grslist":grslist})
      # else:
      #     return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
 
@@ -104,27 +105,24 @@ def countSumZb(rlist):
         sumdict.setdefault("codelable","达成率")
         rlist.append(sumdict)
 
-def mergeData(rlist,slist,ydict1,saledict1,zbdict1):
+def mergeData(rlist,slist,ydict,saledict,zbdict):
     for shop in slist:
         #预算
         row = {}
-        row.setdefault("shopid",shop["shopid"])
-        row.setdefault("idname","{shopid}{shopname}".format(shopid=shop["shopid"],shopname=shop["shopname"]))
-        yitem = ydict1[shop["shopid"]]
+        row.setdefault("idname","{id}{name}".format(id=shop["shopid"],name=shop["shopname"]))
+        yitem = ydict[shop["shopid"]]
         row = dict(row,**yitem)
         rlist.append(row)
         #实际
         row1 = {}
-        row1.setdefault("shopid",shop["shopid"])
-        row1.setdefault("idname","{shopid}{shopname}".format(shopid=shop["shopid"],shopname=shop["shopname"]))
-        sitem1 = saledict1[shop["shopid"]]
+        row1.setdefault("idname","{id}{name}".format(id=shop["shopid"],name=shop["shopname"]))
+        sitem1 = saledict[shop["shopid"]]
         row1 = dict(row1,**sitem1)
         rlist.append(row1)
         #占比
         row2 = {}
-        row2.setdefault("shopid",shop["shopid"])
-        row2.setdefault("idname","{shopid}{shopname}".format(shopid=shop["shopid"],shopname=shop["shopname"]))
-        sitem2 = zbdict1[shop["shopid"]]
+        row2.setdefault("idname","{id}{name}".format(id=shop["shopid"],name=shop["shopname"]))
+        sitem2 = zbdict[shop["shopid"]]
         row2 = dict(row2,**sitem2)
         rlist.append(row2)
 
@@ -134,6 +132,76 @@ def mergeData(rlist,slist,ydict1,saledict1,zbdict1):
             if isinstance(item,decimal.Decimal):
                 rows[k] = "%0.2f" % float(item)
 
+def mergeGroupData(grslist,ydict,saledict,zbdict,lastDay):
+    #生鲜
+    sx = [{"id":10,"name":"熟食"},{"id":11,"name":"水产"},{"id":12,"name":"蔬菜"},{"id":13,"name":"烘烤类"},{"id":14,"name":"鲜肉"},
+          {"id":15,"name":"干果干货"},{"id":16,"name":"主食厨房"},{"id":17,"name":"水果"},{"id":18,"name":"蛋品"},{"id":19,"name":"家禽"}]
+    #食品
+    sp = [{"id":20,"name":"烟/酒"},{"id":21,"name":"饮料"},{"id":22,"name":"休闲食品"},{"id":23,"name":"冷冻冷藏"},
+          {"id":24,"name":"冲调保健品"},{"id":25,"name":"粮油副食"}]
+    #非食
+    yp = [{"id":30,"name":"厨房用品类"},{"id":31,"name":"居家用品"},{"id":32,"name":"文化用品"},{"id":33,"name":"休闲用品"},
+          {"id":34,"name":"清洁用品"},{"id":35,"name":"纸品"},{"id":36,"name":"非季节性服饰"},{"id":37,"name":"季节性服饰"},{"id":38,"name":"鞋"}]
+    #家电
+    jd = [{"id":40,"name":"3C"},{"id":41,"name":"大家电"},{"id":43,"name":"小家电"}]
+
+    mergeBranchData(grslist,sx,ydict,saledict,zbdict,lastDay,"生鲜汇总")
+    mergeBranchData(grslist,sp,ydict,saledict,zbdict,lastDay,"食品/杂货汇总")
+    mergeBranchData(grslist,yp,ydict,saledict,zbdict,lastDay,"非食汇总")
+    mergeBranchData(grslist,jd,ydict,saledict,zbdict,lastDay,"家电汇总")
+
+def  mergeBranchData(rslist,glist,ydict,saledict,zbdict,lastDay,sumname):
+    sum1 = initItem(lastDay)
+    sum2 = initItem(lastDay)
+    sumlist = []
+    for group in glist:
+        id = str(group["id"])
+        #预算
+        row = {}
+        row.setdefault("idname","{id}{name}".format(id=id,name=group["name"]))
+        yitem = ydict[id]
+        row = dict(row,**yitem)
+        rslist.append(row)
+        #实际
+        row1 = {}
+        row1.setdefault("idname","{id}{name}".format(id=id,name=group["name"]))
+        sitem1 = saledict[id]
+        row1 = dict(row1,**sitem1)
+        rslist.append(row1)
+        #占比
+        row2 = {}
+        row2.setdefault("idname","{id}{name}".format(id=id,name=group["name"]))
+        sitem2 = zbdict[id]
+        row2 = dict(row2,**sitem2)
+        rslist.append(row2)
+
+        countSum(yitem,sum1)
+        countSum(sitem1,sum2)
+
+    sumlist.append(sum1)
+    sumlist.append(sum2)
+    countSumZb(sumlist)
+
+    sumlist[0]["idname"]=sumname
+    sumlist[1]["idname"]=sumname
+    sumlist[2]["idname"]=sumname
+    rslist.extend(sumlist)
+
+def formate_data(rlist):
+    for rows in rlist:
+        for k in rows.keys():
+            item = rows[k]
+            if isinstance(item,decimal.Decimal):
+                rows[k] = "%0.2f" % float(item)
+
+def countSum(item,sum):
+     for key in item.keys():
+            obj = item[key]
+            if isinstance(obj,decimal.Decimal):
+                if key in sum:
+                    sum[key] += obj
+                else:
+                    sum.setdefault(key,obj)
 
 def queryData(cur,sql,lastDay,yesterday):
     cur.execute(sql)
