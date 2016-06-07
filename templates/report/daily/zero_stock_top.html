@@ -160,29 +160,17 @@
             var j=1;
             var k=6;
             do{
-                if(j<10){
-                    //第一行表头
-                    theadRow1['qtyz_0'+j]=j.toString()+'日排名(不含联营)';
-                    theadRow1['qtyl_0'+j]='';
-                    theadRow1['zhonbi_0'+j]='';
-                    theadRow1['mingci_0'+j]= '';
-                    //第二行表头
-                    theadRow2['qtyz_0'+j]='有效商品数';
-                    theadRow2['qtyl_0'+j]='合计';
-                    theadRow2['zhonbi_0'+j]='占比';
-                    theadRow2['mingci_0'+j]= '名次';
-                }else{
-                    //第一行表头
-                    theadRow1['qtyz_'+j]=j.toString()+'日排名(不含联营)';
-                    theadRow1['qtyl_'+j]='';
-                    theadRow1['zhonbi_'+j]='';
-                    theadRow1['mingci_'+j]= '';
-                    //第二行表头
-                    theadRow2['qtyz_'+j]='有效商品数';
-                    theadRow2['qtyl_'+j]='合计';
-                    theadRow2['zhonbi_'+j]='占比';
-                    theadRow2['mingci_'+j]= '名次';
-                }
+                var date = j < 10 ? '0' + j : j.toString();
+                //第一行表头
+                theadRow1['qtyz_'+date]=j.toString()+'日排名(不含联营)';
+                theadRow1['qtyl_'+date]='';
+                theadRow1['zhonbi_'+date]='';
+                theadRow1['mingci_'+date]= '';
+                //第二行表头
+                theadRow2['qtyz_'+date]='有效商品数';
+                theadRow2['qtyl_'+date]='合计';
+                theadRow2['zhonbi_'+date]='占比';
+                theadRow2['mingci_'+date]= '名次';
                 //单元格合并处理
                 var mergeCell = {};
                 mergeCell['row'] = 0;
@@ -271,128 +259,13 @@
         };
         creatTable(tab,tableSetting);
     }
-    var hot1,hot2,hot3,hot4,hot5,hot6,hot7,hot8,hot9,hot10,hot11,hot12,hot13,hot14,hot15,
-            hot16,hot17,hot18,hot19,hot20,hot21,hot22,hot23;
-    {% comment %}var hots = [];
-    for(var i=1;i<lenShops+2;i++){
-        var hots[i] = new Object();
-    }{% endcomment %}
+    var hotArr = [];
+
     function creatTable(tab,tableSetting) {
         var container = document.getElementById('tableReport' + tab);
-        if(tab==1){
-            if(!hot1){
-                hot1 = new Handsontable(container,tableSetting );
-            }
-        }else if(tab>1 && tab<=lenShops+1){
-            if(tab==2){
-                if(!hot2){
-                    hot2 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==3){
-                if(!hot3){
-                    hot3 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==4){
-                if(!hot4){
-                    hot4 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==5){
-                if(!hot5){
-                    hot5 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==6){
-                if(!hot6){
-                    hot6 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==7){
-                if(!hot7){
-                    hot7 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==8){
-                if(!hot8){
-                    hot8 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==9){
-                if(!hot9){
-                    hot9 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==10){
-                if(!hot10){
-                    hot10 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==11){
-                if(!hot11){
-                    hot11 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==12){
-                if(!hot12){
-                    hot12 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==13){
-                if(!hot13){
-                    hot13 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==14){
-                if(!hot14){
-                    hot14 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==15){
-                if(!hot15){
-                    hot15 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==16){
-                if(!hot16){
-                    hot16 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==17){
-                if(!hot17){
-                    hot17 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==18){
-                if(!hot18){
-                    hot18 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==19){
-                if(!hot19){
-                    hot19 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==20){
-                if(!hot20){
-                    hot20 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==21){
-                if(!hot21){
-                    hot21 = new Handsontable(container,tableSetting );
-                }
-            }
-            if(tab==22){
-                if(!hot22){
-                    hot22 = new Handsontable(container,tableSetting );
-                }
-            }
-        }else if(tab>lenShops+1){
-            if(!hot23){
-                hot23 = new Handsontable(container,tableSetting );
-            }
+        if(!hotArr[tab]){
+            hot = new Handsontable(container,tableSetting );
+            hotArr[tab]=hot;console.log(hotArr)
         }
     }
 </script>
