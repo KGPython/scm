@@ -1,0 +1,153 @@
+{% load basefilter %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+</head>
+<body>
+{% include "common/nav.html" %}
+<script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+<script type="text/javascript" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
+<link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+<div class="notice noticeOrder comWidth" style="width: inherit">
+    <div class="tTitle">
+        <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
+        <div class="container">
+            <ul class="nav nav-tabs">
+              <li role="presentation" class="active"><a href="#">水果报损率</a></li>
+            </ul>
+            <div class="list-tabs container">
+                <div class="table" style="display:block;">
+                        <div id="tableReport1" style="height:770px;width:100%;overflow: auto;" > </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script type="text/javascript">
+    $('.nav-tabs li').click(function (e) {
+        e.preventDefault();
+        $(this).addClass("active").siblings().removeClass("active");
+        i=$(this).index();
+        $(".list-tabs .table").eq(i).show().siblings().hide();
+        //加载数据
+        initDate(i+1);
+    });
+    $(".card_tab1 .con ul li").click(function(){
+        $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
+    });
+    $("#btnExport").on("click",function(){
+        window.location.href="{% url 'fruitLost' %}?qtype=2";
+    });
+</script>
+<script>
+    $(function(){
+         initDate(1);
+     });
+    function initDate(tab) {
+        var fixedRow, fixedCol;
+        var mergeCellsList = [];
+        var columns = [];
+        var table = [];
+        var rowLight = [];
+        if (tab == 1) {
+            var tody = new Date();
+            var yesterday = getYestodayDate(tody);
+            yesterday = yesterday.getDate();
+            fixedRow = 2;
+            fixedCol = 5;
+            mergeCellsList = [
+                {row: 0, col: 0, rowspan: 2, colspan: 1},
+                {row: 0, col: 1, rowspan: 2, colspan: 1},
+                {row: 0, col: 2, rowspan: 1, colspan: 3}
+            ];
+            columns = [
+                {data: "shopid", width: 100}, {data: "shopname", width: 140}, {data: "lostvalueSum", width: 80},
+                {data: "costvalueSum", width: 100}, {data: "lrateSum", width: 80}
+            ];
+            var theadRow1 = {'shopid': '门店编码','shopname': '门店名称','lostvalueSum': '月累计报损','costvalueSum': '','lrateSum': ''};
+            var theadRow2 = {'shopid': '','shopname': '','lostvalueSum': '成本金额','costvalueSum': '销售成本金额','lrateSum': '报损率'};
+            var i = 0,j = 1,k = 5;//k:起始位置
+            do {
+                var date = j < 10 ? '0' + j : j.toString();
+                theadRow1['lostvalue_' + date] = date + '日';
+                theadRow1['costvalue_' + date] = '';
+                theadRow1['lrate_' + date] = '';
+                theadRow2['lostvalue_' + date] = '成本金额';
+                theadRow2['costvalue_' + date] = '销售成本金额';
+                theadRow2['lrate_' + date] = '报损率';
+                //数据填充
+                columns.push({data: 'lostvalue_' + date, width: 80});
+                columns.push({data: 'costvalue_' + date, width: 100});
+                columns.push({data: 'lrate_' + date, width: 80});
+                //单元格合并处理
+                mergeCellsList.push({'row': 0, 'col': k, 'rowspan': 1, 'colspan': 3});
+                i += 3;//每日单元格数量
+                j += 1;//日期
+                k += 3;//每次合并单元格数量
+            } while (i < yesterday * 3);
+            //拼接table数据（thead/tbody/tfooter）
+            table.push(theadRow1);
+            table.push(theadRow2);
+            var tbody = {{ shopTop | safe }};
+            table = table.concat(tbody);
+            var tfooter = {{ TotalDict.shopTopTotal | safe }}
+            table.push(tfooter);
+            //添加最后一列
+            theadRow1['reason'] = '报损率超6%门店解释原因';
+            columns.push({data: 'reason', readOnly: false, width: 300});
+            //处理单元格合并方式
+            mergeCellsList.push({'row': 0, 'col': 5 + i, 'rowspan': 2, 'colspan': 1});
+            var len = table.length;
+            var mergeCellTotal = {};
+            mergeCellTotal['row'] = len - 1;
+            mergeCellTotal['col'] = 0;
+            mergeCellTotal['rowspan'] = 1;
+            mergeCellTotal['colspan'] = 2;
+            mergeCellsList.push(mergeCellTotal);
+            rowLight = [1, 2];
+        }
+        initTable(tab,table,fixedRow,fixedCol,mergeCellsList,columns,rowLight)
+    }
+    var tableSetting = {};
+    function initTable(tab,table,fixedRow,fixedCol,mergeCellsList,columns,rowLight){
+        tableSetting = {
+            data: table,
+            className: "htCenter htMiddle",
+            autoWrapRow: true,
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: false,
+            fixedRowsTop: fixedRow,
+            fixedColumnsLeft: fixedCol,
+            manualColumnResize: true,
+            manualRowMove: true,
+            manualColumnMove: true,
+            columnSorting: false,
+            sortIndicator: true,
+            readOnly: true,
+            mergeCells: mergeCellsList,
+            columns: columns,
+            cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (row in rowLight) { //查找行或列的位置
+                    cellProperties.renderer = headerRenderer;
+                }
+                return cellProperties;
+            }
+        };
+        creatTable(tab,tableSetting)
+    }
+    var hot1;
+    function creatTable(tab,tableSetting) {
+        var container = document.getElementById('tableReport' + tab);
+        if(tab==1){
+            if(!hot1){
+                hot1 = new Handsontable(container,tableSetting );
+            }
+        }
+    }
+</script>
+</body>
+</html>
