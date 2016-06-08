@@ -72,7 +72,12 @@
                 var weekArray = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
                 var headers = [];
                 var h0 = {'idname':''+year+'年'+month+'月各店类别每日业绩指标分解达成表（单位：万元）',};
-                var h1 = {'idname':'门店编码','codelable':'日期'};
+                var h1;
+                if(tab==0){
+                   h1 = {'idname':'门店编码','codelable':'日期'};
+                }else{
+                   h1 = {'idname':'类别编码','codelable':'日期'};
+                }
                 var h2 = {'codelable':''+month+'月总指标','m_all_sale':'调整后销售指标','m_daily_sale':'累计计划销售达标率','m_all_gain':'调整后毛利指标','m_daily_gain':'累计计划毛利达标率'};
                 var h3 = {};
 
@@ -96,8 +101,8 @@
                     var data = {{ grslist|safe }};
                     headers = headers.concat(data);
                 }else{
-{#                    var data = srslist[tab];#}
-{#                    headers = headers.concat(data);#}
+                    var data = {{ srslist|safe }};
+                    headers = headers.concat(data[tab-2]);
                 }
                 var_arr[tab].loadData(headers);
              }
