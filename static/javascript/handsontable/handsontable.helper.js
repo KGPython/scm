@@ -31,6 +31,19 @@ function sumRenderer(instance, td, row, col, prop, value, cellProperties) {
   td.style.color = '#000';
   td.style.background = '#FFFF99';
 }
+function sumRenderer_middle(instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  td.style.fontWeight = 'bold';
+  td.style.color = '#000';
+  td.style.background = '#FFFF00';
+}
+
+function sumRenderer_deep(instance, td, row, col, prop, value, cellProperties) {
+  Handsontable.renderers.TextRenderer.apply(this, arguments);
+  td.style.fontWeight = 'bold';
+  td.style.color = '#000';
+  td.style.background = '#FFC000';
+}
 
 //设置cells样式 ，手动将该函数注册到Handsontable ，注册方式：Handsontable.renderers.registerRenderer('negativeValueRenderer', negativeValueRenderer);
 function negativeValueRenderer(instance, td, row, col, prop, value, cellProperties) {
