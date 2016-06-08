@@ -24,6 +24,8 @@ urlpatterns = [
     url(r'^report/daily/grpoptdecmpt/index/$','base.report.daily.group_operate_decompt.index',name='grpGptDecmptIndex'),
     # 各课组门店销售前十
     url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),
+    # 门店供应商退货率
+    url(r'^report/daily/suppret/index/', 'base.report.daily.supplier_returns.index', name='supplierReturnsIndex'),
     #散装破损率
     url(r'^report/daily/bulkLost/$','base.report.daily.bulkLost.inidex',name='bulkLost'),
     #蔬菜破损率

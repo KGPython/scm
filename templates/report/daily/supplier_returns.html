@@ -1,0 +1,128 @@
+{% load basefilter %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+</head>
+<body>
+{% include "common/nav.html" %}
+<script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+<script type="text/javascript" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
+<link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+<div class="notice noticeOrder comWidth" style="width: inherit">
+    <div class="tTitle">
+        <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
+        <div class="container">
+            <div id="tableReport" style="height:770px;width:100%;overflow: auto;"></div>
+        </div>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script type="text/javascript">
+    $("#btnExport").on("click", function () {
+        window.location.href = "{% url 'supplierReturnsIndex' %}?exceltype=1";
+    });
+</script>
+<script>
+    container = document.getElementById('tableReport');
+    var today = new Date();
+    var yesterday = getYestodayDate(today);
+    var month = today.getMonth();
+    yesterday = yesterday.getDate();
+    var table = [];
+    var thead1 = {
+        'sequenceNumber': '序号',
+        'shopid': '门店编码',
+        'shopname': '门店名称',
+        'costvaluesum': month + '月累计退货',
+        'rethsum': '',
+        'retrate': ''
+    };
+    var thead2 = {
+        'sequenceNumber': '',
+        'shopid': '',
+        'shopname': '',
+        'costvaluesum': '销售成本',
+        'rethsum': '退货金额',
+        'retrate': '退货率'
+    };
+    mergeCellsList = [
+        {row: 0, col: 0, rowspan: 2, colspan: 1},
+        {row: 0, col: 1, rowspan: 2, colspan: 1},
+        {row: 0, col: 2, rowspan: 2, colspan: 1},
+        {row: 0, col: 3, rowspan: 1, colspan: 3},
+        {row: 23, col: 0, rowspan: 1, colspan: 3}
+    ];
+    var i = 0;
+    var j = 1;
+    var k = 6;
+
+    do {
+        if (j < 10) {
+            //第一行表头
+            thead1['costvaluesum_0' + j] = month + '月' + j.toString() + '日';
+            thead1['rethsum_0' + j] = '';
+            thead1['retrate_0' + j] = '';
+            //第二行表头
+            thead2['costvaluesum_0' + j] = '销售成本';
+            thead2['rethsum_0' + j] = '退货金额';
+            thead2['retrate_0' + j] = '退货率';
+        } else {
+            //第一行表头
+            thead1['costvaluesum_' + j] = month + '月' + j.toString() + '日';
+            thead1['rethsum_' + j] = '';
+            thead1['retrate_' + j] = '';
+            //第二行表头
+            thead2['costvaluesum_' + j] = '销售成本';
+            thead2['rethsum_' + j] = '退货金额';
+            thead2['retrate_' + j] = '退货率';
+        }
+        //单元格合并处理
+        var mergeCell = {};
+        mergeCell['row'] = 0;
+        mergeCell['col'] = k;
+        mergeCell['rowspan'] = 1;
+        mergeCell['colspan'] = 3;
+        mergeCellsList.push(mergeCell);
+
+        i += 3;//每日单元格数量
+        j += 1;//日期
+        k += 3;//每次合并单元格数量
+    } while (i < yesterday * 3);
+    var tbody = {{listtop | safe}};
+    var tfooter = {{ listtopTotal | safe }}
+    table.push(thead1);
+    table.push(thead2);
+    console.log(table);
+    table = table.concat(tbody);
+    table.push(tfooter);
+    var len = table.length;
+    var rowLight = [1, len - 1];
+    var hot = new Handsontable(container, {
+        data: table,
+        colWidths: 140,
+        className: "htCenter htMiddle",
+        rowHeaders: true,
+        colHeaders: true,
+        contextMenu: false,
+        fixedRowsTop: 2,
+        fixedColumnsLeft: 6,
+        manualColumnResize: true,
+        manualRowMove: true,
+        manualColumnMove: true,
+        columnSorting: true,
+        sortIndicator: true,
+        readOnly: true,
+        mergeCells: mergeCellsList,
+        cells: function (row, col, prop) {
+            var cellProperties = {};
+            if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
+                cellProperties.renderer = headerRenderer;
+            }
+            return cellProperties;
+        }
+
+    })
+</script>
+</body>
+</html>
