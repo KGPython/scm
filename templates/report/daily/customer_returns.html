@@ -27,7 +27,7 @@
     container = document.getElementById('tableReport');
     var today = new Date();
     var yesterday = getYestodayDate(today);
-    var month = today.getMonth();
+    var month = today.getMonth() + 1;
     yesterday = yesterday.getDate();
     var table = [];
     var thead1 = {
