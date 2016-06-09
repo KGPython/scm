@@ -13,116 +13,221 @@
     <div class="tTitle">
         <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
         <div class="container">
-            <div id="tableReport" style="height:770px;width:100%;overflow: auto;"></div>
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#">退货率</a></li>
+                <li role="presentation"><a href="#">退货明细</a></li>
+            </ul>
+            <div class="list-tabs container">
+                <div class="table" style="display:block;">
+                    <div id="tableReport1" style="height:770px;width:100%;overflow: auto;"></div>
+                </div>
+                <div class="table">
+                    <div id="tableReport2" style="height:770px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
 {% include "common/footer.html" %}
 <script type="text/javascript">
+    $('.nav-tabs li').click(function (e) {
+        e.preventDefault();
+        $(this).addClass("active").siblings().removeClass("active");
+        i = $(this).index();
+        $(".list-tabs .table").eq(i).show().siblings().hide();
+        //加载数据
+        initDate(i + 1);
+    });
+    $(".card_tab1 .con ul li").click(function () {
+        $(this).stop().animate({width: "600px"}, 300).siblings().stop().animate({width: "26px"}, 300)
+    });
     $("#btnExport").on("click", function () {
         window.location.href = "{% url 'customerReturnsIndex' %}?exceltype=1";
     });
 </script>
 <script>
-    container = document.getElementById('tableReport');
     var today = new Date();
     var yesterday = getYestodayDate(today);
     var month = today.getMonth() + 1;
     yesterday = yesterday.getDate();
-    var table = [];
-    var thead1 = {
-        'sequenceNumber': '序号',
-        'shopid': '门店编码',
-        'shopname': '门店名称',
-        'shopsalesum': month + '月累计退货',
-        'retsum': '',
-        'retrate': ''
-    };
-    var thead2 = {
-        'sequenceNumber': '',
-        'shopid': '',
-        'shopname': '',
-        'shopsalesum': '销售金额',
-        'retsum': '退货金额',
-        'retrate': '退货率'
-    };
-    mergeCellsList = [
-        {row: 0, col: 0, rowspan: 2, colspan: 1},
-        {row: 0, col: 1, rowspan: 2, colspan: 1},
-        {row: 0, col: 2, rowspan: 2, colspan: 1},
-        {row: 0, col: 3, rowspan: 1, colspan: 3},
-        {row: 23, col: 0, rowspan: 1, colspan: 3}
-    ];
-    var i = 0;
-    var j = 1;
-    var k = 6;
 
-    do {
-        if (j < 10) {
-            //第一行表头
-            thead1['shopsalesum_0' + j] = month + '月' + j.toString() + '日';
-            thead1['retsum_0' + j] = '';
-            thead1['retrate_0' + j] = '';
-            //第二行表头
-            thead2['shopsalesum_0' + j] = '销售金额';
-            thead2['retsum_0' + j] = '退货金额';
-            thead2['retrate_0' + j] = '退货率';
-        } else {
-            //第一行表头
-            thead1['shopsalesum_' + j] = month + '月' + j.toString() + '日';
-            thead1['retsum_' + j] = '';
-            thead1['retrate_' + j] = '';
-            //第二行表头
-            thead2['shopsalesum_' + j] = '销售金额';
-            thead2['retsum_' + j] = '退货金额';
-            thead2['retrate_' + j] = '退货率';
+    $(function () {
+        initDate(1);
+    });
+
+    function initDate(tab) {
+        var fixedRow, fixedCol;
+        var mergeCellsList = [];
+        var table = [];
+        var rowLight = [];
+        var colWidths;
+
+        if (tab == 1) {
+            fixedRow = 2;
+            fixedCol = 6;
+            colWidths = 140;
+            var thead1 = {
+                'sequenceNumber': '序号',
+                'shopid': '门店编码',
+                'shopname': '门店名称',
+                'shopsalesum': month + '月累计退货',
+                'retsum': '',
+                'retrate': ''
+            };
+            var thead2 = {
+                'sequenceNumber': '',
+                'shopid': '',
+                'shopname': '',
+                'shopsalesum': '销售金额',
+                'retsum': '退货金额',
+                'retrate': '退货率'
+            };
+            mergeCellsList = [
+                {row: 0, col: 0, rowspan: 2, colspan: 1},
+                {row: 0, col: 1, rowspan: 2, colspan: 1},
+                {row: 0, col: 2, rowspan: 2, colspan: 1},
+                {row: 0, col: 3, rowspan: 1, colspan: 3},
+                {row: 23, col: 0, rowspan: 1, colspan: 3}
+            ];
+            var i = 0;
+            var j = 1;
+            var k = 6;
+
+            do {
+                if (j < 10) {
+                    //第一行表头
+                    thead1['shopsalesum_0' + j] = month + '月' + j.toString() + '日';
+                    thead1['retsum_0' + j] = '';
+                    thead1['retrate_0' + j] = '';
+                    //第二行表头
+                    thead2['shopsalesum_0' + j] = '销售金额';
+                    thead2['retsum_0' + j] = '退货金额';
+                    thead2['retrate_0' + j] = '退货率';
+                } else {
+                    //第一行表头
+                    thead1['shopsalesum_' + j] = month + '月' + j.toString() + '日';
+                    thead1['retsum_' + j] = '';
+                    thead1['retrate_' + j] = '';
+                    //第二行表头
+                    thead2['shopsalesum_' + j] = '销售金额';
+                    thead2['retsum_' + j] = '退货金额';
+                    thead2['retrate_' + j] = '退货率';
+                }
+                //单元格合并处理
+                var mergeCell = {};
+                mergeCell['row'] = 0;
+                mergeCell['col'] = k;
+                mergeCell['rowspan'] = 1;
+                mergeCell['colspan'] = 3;
+                mergeCellsList.push(mergeCell);
+
+                i += 3;//每日单元格数量
+                j += 1;//日期
+                k += 3;//每次合并单元格数量
+            } while (i < yesterday * 3);
+            var tbody = {{listtop | safe}};
+            var tfooter = {{ listtopTotal | safe }}
+            table.push(thead1);
+            table.push(thead2);
+            table = table.concat(tbody);
+            table.push(tfooter);
+            var len = table.length;
+            rowLight = [1, len - 1];
         }
-        //单元格合并处理
-        var mergeCell = {};
-        mergeCell['row'] = 0;
-        mergeCell['col'] = k;
-        mergeCell['rowspan'] = 1;
-        mergeCell['colspan'] = 3;
-        mergeCellsList.push(mergeCell);
-
-        i += 3;//每日单元格数量
-        j += 1;//日期
-        k += 3;//每次合并单元格数量
-    } while (i < yesterday * 3);
-    var tbody = {{listtop | safe}};
-    var tfooter = {{ listtopTotal | safe }}
-    table.push(thead1);
-    table.push(thead2);
-    console.log(table);
-    table = table.concat(tbody);
-    table.push(tfooter);
-    var len = table.length;
-    var rowLight = [1, len - 1];
-    var hot = new Handsontable(container, {
-        data: table,
-        colWidths: 140,
-        className: "htCenter htMiddle",
-        rowHeaders: true,
-        colHeaders: true,
-        contextMenu: false,
-        fixedRowsTop: 2,
-        fixedColumnsLeft: 6,
-        manualColumnResize: true,
-        manualRowMove: true,
-        manualColumnMove: true,
-        columnSorting: true,
-        sortIndicator: true,
-        readOnly: true,
-        mergeCells: mergeCellsList,
-        cells: function (row, col, prop) {
-            var cellProperties = {};
-            if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
-                cellProperties.renderer = headerRenderer;
+        if (tab == 2) {
+            fixedRow = 1;
+            fixedCol = 0;
+            colWidths = [60, 140, 140, 80, 80, 80, 80, 80, 500, 80, 80, 80];
+            var thead = {
+                'shopid': '门店编码',
+                'shopname': '门店名称',
+                'sdate': '销售日期',
+                'stime': '销售时间',
+                'listno': '退货小票',
+                'posid': 'posid',
+                'cashierid': '收银员工号',
+                'goodsid': '商品编码',
+                'goodsname': '商品名称',
+                'deptid': '类别编码',
+                'amount': '退货数量',
+                'sale': '退货金额'
+            };
+            var tbody = {{retdetail | safe}};
+            table.push(thead);
+            table=table.concat(tbody);
+            rowLight=[0];
+            console.log(table);
+        }
+        initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight, colWidths)
+    }
+    var tableSetting = {};
+    function initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight, colWidths) {
+        tableSetting = {
+            data: table,
+            colWidths: colWidths,
+            className: "htCenter htMiddle",
+            rowHeaders: true,
+            colHeaders: true,
+            fixedRowsTop: fixedRow,
+            fixedColumnsLeft: fixedCol,
+            manualColumnResize: true,
+            manualRowMove: true,
+            manualColumnMove: true,
+            columnSorting: true,
+            sortIndicator: true,
+            readOnly: true,
+            mergeCells: mergeCellsList,
+            cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (row == rowLight[1] || row <= rowLight[0]) {
+                    cellProperties.renderer = headerRenderer;
+                }
+                return cellProperties;
             }
-            return cellProperties;
+        };
+        creatTable(tab, tableSetting)
+    }
+    var hot1, hot2;
+    function creatTable(tab, tableSetting) {
+        var container = document.getElementById('tableReport' + tab);
+        if (tab == 1) {
+            if (!hot1) {
+                hot1 = new Handsontable(container, tableSetting);
+            }
         }
+        if (tab == 2) {
+            if (!hot2) {
+                hot2 = new Handsontable(container, tableSetting);
+            }
+        }
+    }
 
-    })
+    {#    container = document.getElementById('tableReport1');#}
+    {#    var hot = new Handsontable(container, {#}
+    {#        data: table,#}
+    {#        colWidths: 140,#}
+    {#        className: "htCenter htMiddle",#}
+    {#        rowHeaders: true,#}
+    {#        colHeaders: true,#}
+    {#        contextMenu: false,#}
+    {#        fixedRowsTop: 2,#}
+    {#        fixedColumnsLeft: 6,#}
+    {#        manualColumnResize: true,#}
+    {#        manualRowMove: true,#}
+    {#        manualColumnMove: true,#}
+    {#        columnSorting: true,#}
+    {#        sortIndicator: true,#}
+    {#        readOnly: true,#}
+    {#        mergeCells: mergeCellsList,#}
+    {#        cells: function (row, col, prop) {#}
+    {#            var cellProperties = {};#}
+    {#            if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置#}
+    {#                cellProperties.renderer = headerRenderer;#}
+    {#            }#}
+    {#            return cellProperties;#}
+    {#        }#}
+    {##}
+    {#    })#}
 </script>
 </body>
 </html>

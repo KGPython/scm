@@ -60,8 +60,6 @@ def index(request):
         tempshopsalesum += float(listtop[i]['shopsalesum'])
         tempretsum += float(listtop[i]['retsum'])
 
-        print(tempshopsalesum, tempretsum)
-
         # 添加序号
         listtop[i]['sequenceNumber'] = paiming
         paiming += 1
@@ -117,13 +115,36 @@ def index(request):
     listtopTotal['retsum'] = float("%0.2f" % tempretsum)
     listtopTotal['retrate'] = str("%0.2f" % float(float(listtopTotal['retsum'] / listtopTotal['shopsalesum']) * 100)) + '%'
 
-    mtu.close(conn, cur)
-
     # 转换为dict，导出excel
     TotalDict = {'listtopTotal':listtopTotal}
+
+
+    # 退货明细
+    sqldetail = "select shopid, shopname, sdate, stime, listno, posid, cashierid, goodsid, goodsname, deptid, amount, sale " \
+                "from `KGshopretsaleitem` " \
+                "where sdate='" + yesterday + "' order by shopid"
+    cur = conn.cursor()
+    cur.execute(sqldetail)
+    retdetail = cur.fetchall()
+    # 格式化数据
+    for i in range(0, len(retdetail)):
+        for key in retdetail[i].keys():
+            row = retdetail[i][key]
+            if row == None:
+                listtop[i][key] = ''
+            else:
+                if isinstance(row, decimal.Decimal):
+                    retdetail[i][key] = "%0.2f" % float(retdetail[i][key])
+                elif isinstance(row, datetime.datetime):
+                    retdetail[i][key] = retdetail[i][key].strftime("%Y-%m-%d")
+                else:
+                    retdetail[i][key] = retdetail[i][key]
+
+    mtu.close(conn, cur)
+
     exceltype = mtu.getReqVal(request, "exceltype", "2")
     if exceltype == '1':
-        return export(request, listtop, TotalDict)
+        return export(request, listtop, TotalDict, retdetail)
     else:
         return render(request, "report/daily/customer_returns.html", locals())
 
@@ -143,10 +164,12 @@ def getshopid():
     return res
 
 
-def export(request, listtop, TotalDict):
+def export(request, listtop, TotalDict, retdetail):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # 写入sheet1
     writeDataToSheet1(wb, listtop, TotalDict)
+    # 写入sheet2
+    writeDataToSheet2(wb, retdetail)
 
     outtype = 'application/vnd.ms-excel;'
     fname = datetime.date.today().strftime("%m.%d") + "customer_returns"
@@ -202,3 +225,47 @@ def writeDataToSheet1(wb, listtop, TotalDict):
     titlesLen = len(titles)
     listTopLen = len(listtop)
     mtu.insertSum2(sheet1, keylist, titlesLen + listTopLen, TotalDict, 3)
+
+
+def writeDataToSheet2(wb, retdetail):
+    date = DateUtil.get_day_of_day(-1)
+    year = date.year
+    month = date.month
+    lastDay = calendar.monthrange(year, month)[1]
+
+    sheet2 = wb.add_sheet("退货明细", cell_overwrite_ok=True)
+
+    titles = [
+        [("（%s月%s日）门店顾客退货明细" % (month, date.day), 0, 1, 12)],
+        [("门店编码", 0, 2, 1), ("门店名称", 1, 2, 1), ("销售日期", 2, 2, 1), ("销售时间", 3, 2, 1), ("退货小票", 4, 2, 1),
+         ("posid", 5, 2, 1), ("收银员工号", 6, 2, 1), ("商品编码", 7, 2, 1), ("商品名称", 8, 2, 1), ("类别编码", 9, 2, 1),
+         ("退货数量", 10, 2, 1), ("退货金额", 11, 2, 1)],
+    ]
+
+    keylist = ['shopid', 'shopname', 'sdate', 'stime', 'listno', 'posid', 'cashierid', 'goodsid', 'goodsname', 'deptid', 'amount',
+               'sale']
+
+    widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
+
+    # 日销售报表
+    mtu.insertTitle2(sheet2, titles, keylist, widthList)
+    mtu.insertCell2(sheet2, 3, retdetail, keylist, None)
+    titlesLen = len(titles)
+    listTopLen = len(retdetail)
+
+
+def ranking(lis,key,name):
+    lis.sort(key=lambda x:x[key])
+    j = 1
+    for i in range(0,len(lis)):
+        if i > 0:
+            a = lis[i-1]
+            b = lis[i]
+            if float(a[key]) != float(b[key]):
+                j += 1
+            b[name]= j
+            a[key] = str(a[key])+'%'
+        else:
+            a = lis[i]
+            a[name]= j
+    return lis
