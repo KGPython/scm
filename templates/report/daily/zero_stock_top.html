@@ -121,11 +121,8 @@
         $(".list-tabs .table").eq(i).show().siblings().hide();
         //加载数据
         initDate(i+1);
-    })
-
-    $(".card_tab1 .con ul li").click(function(){
-        $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
     });
+
     $("#btnExport").on("click",function(){
          window.location.href="{% url 'zeroStockTop' %}?qtype=2";
     });
@@ -161,22 +158,17 @@
             var k=6;
             do{
                 var date = j < 10 ? '0' + j : j.toString();
-                //第一行表头
+                //拼接表头
                 theadRow1['qtyz_'+date]=j.toString()+'日排名(不含联营)';
                 theadRow1['qtyl_'+date]='';
                 theadRow1['zhonbi_'+date]='';
                 theadRow1['mingci_'+date]= '';
-                //第二行表头
                 theadRow2['qtyz_'+date]='有效商品数';
                 theadRow2['qtyl_'+date]='合计';
                 theadRow2['zhonbi_'+date]='占比';
                 theadRow2['mingci_'+date]= '名次';
                 //单元格合并处理
-                var mergeCell = {};
-                mergeCell['row'] = 0;
-                mergeCell['col'] = k;
-                mergeCell['rowspan'] = 1;
-                mergeCell['colspan'] = 4;
+                var mergeCell = {row:0,col:k,rowspan:1,colspan:4};
                 mergeCellsList.push(mergeCell);
 
                 i+=4;//每日单元格数量
@@ -191,11 +183,7 @@
             var tfooter = {{ TotalDict.listTotal | safe }}
             table.push(tfooter);
             var len = table.length;
-            var mergeCellTotal = {};
-            mergeCellTotal['row'] = len - 1;
-            mergeCellTotal['col'] = 0;
-            mergeCellTotal['rowspan'] = 1;
-            mergeCellTotal['colspan'] = 2;
+            var mergeCellTotal = {row:len - 1,col:0,rowspan:1,colspan:2};
             mergeCellsList.push(mergeCellTotal);
             rowLight=[1,len-1];
         }if(tab>1 && tab<=lenShops+1){
@@ -213,12 +201,7 @@
             table.push(tfooter);
             var len = table.length;
             //最后一行表格合并处理
-            var mergeCellTotal = {};
-            mergeCellTotal['row'] = len - 1;
-            mergeCellTotal['col'] = 0;
-            mergeCellTotal['rowspan'] = 1;
-            mergeCellTotal['colspan'] = 2;
-            mergeCellsList.push(mergeCellTotal);
+            var mergeCellTotal = {row:len - 1,col:0,rowspan:1,colspan:2};
             rowLight=[0];
         }if(tab>lenShops+1){
             fixedRow = 1;
@@ -260,12 +243,11 @@
         creatTable(tab,tableSetting);
     }
     var hotArr = [];
-
     function creatTable(tab,tableSetting) {
         var container = document.getElementById('tableReport' + tab);
         if(!hotArr[tab]){
             hot = new Handsontable(container,tableSetting );
-            hotArr[tab]=hot;console.log(hotArr)
+            hotArr[tab]=hot;
         }
     }
 </script>

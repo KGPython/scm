@@ -34,9 +34,6 @@
         //加载数据
         initDate(i+1);
     });
-    $(".card_tab1 .con ul li").click(function(){
-        $(this).stop().animate({width:"600px"},300).siblings().stop().animate({width:"26px"},300)
-    });
     $("#btnExport").on("click",function(){
         window.location.href="{% url 'fruitLost' %}?qtype=2";
     });
