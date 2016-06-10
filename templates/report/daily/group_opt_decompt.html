@@ -28,7 +28,7 @@
                         </div>
                         {% for item in shoplist %}
                             <div class="table">
-                                <div id="group_operate{{ forloop.counter0|add:"2"|toInt}}" style="height:2440px;width:100%;overflow: auto;" > </div>
+                                <div id="group_operate{{ forloop.counter0|add:"2"|toInt}}" style="height:2480px;width:100%;overflow: auto;" > </div>
                             </div>
                         {% endfor %}
                     </div>
@@ -61,14 +61,13 @@
                  });
              });
              function loadDate(tab){
-                if(var_arr[tab]==undefined || var_arr[tab]==null || var_arr[tab]==''){
-                    initHot(tab);
-                }
-
                 var yesterday = getYestodayDate(new Date());
                 var year = yesterday.getFullYear();
-                var month = yesterday.getMonth()+1;
-                var lastDay = getLastDay(year,month);
+                var month = yesterday.getMonth()+1;  //+1
+                var lastDay = getLastDay(year,month-1);
+                if(var_arr[tab]==undefined || var_arr[tab]==null || var_arr[tab]==''){
+                    initHot(tab,lastDay);
+                }
                 var weekArray = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
                 var headers = [];
                 var h0 = {'idname':''+year+'年'+month+'月各店类别每日业绩指标分解达成表（单位：万元）',};
@@ -107,12 +106,7 @@
                 var_arr[tab].loadData(headers);
              }
 
-             function initHot(tab){
-                  var today = new Date();
-                  var yesterday = getYestodayDate(today);
-                  var year = yesterday.getFullYear();
-                  var month = yesterday.getMonth()+1;
-                  var lastDay = getLastDay(year,month);
+             function initHot(tab,lastDay){
                   var group_operate = document.getElementById('group_operate'+tab);
                   var columnsArr = [{data: 'idname'},{data: 'codelable'},{data: 'm_all_sale'},{data: 'm_daily_sale'},{data: 'm_all_gain'},{data:'m_daily_gain'}];
                   var mergeArr = [{row: 0, col: 0, rowspan: 1, colspan: 6},{row: 1, col: 0, rowspan: 3, colspan: 1},{row: 1, col: 1, rowspan: 1, colspan:5},

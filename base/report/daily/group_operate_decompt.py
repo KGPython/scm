@@ -12,7 +12,7 @@ import xlwt3 as xlwt
 
 @csrf_exempt
 def index(request):
-     date = DateUtil.get_day_of_day(-15)
+     date = DateUtil.get_day_of_day(-1)
      start = (date.replace(day=1)).strftime("%Y-%m-%d")
      yesterday = date.strftime("%Y-%m-%d")
      lastDay = calendar.monthrange(date.year,date.month)[1]
@@ -66,7 +66,7 @@ def index(request):
      rslist.extend(shop_sumlist)
      grslist.extend(group_sumlist)
 
-     mergeData(rslist,slist,yshopdict,shop_saledict,shop_zbdict)
+     mergeData(rslist,slist,yshopdict,shop_saledict,shop_zbdict,lastDay)
      mergeGroupData(grslist,ygrpdict,group_saledict,group_zbdict,lastDay)
 
      formate_data(rslist)
@@ -77,8 +77,16 @@ def index(request):
      for row in slist:
          temp_rslist = []
          sid = row["shopid"]
-         yshopdata = ys_grplist[sid]
-         sshopdata = ss_grplist[sid]
+         if sid in ys_grplist:
+            yshopdata = ys_grplist[sid]
+         else:
+            yshopdata = {}
+
+         if sid in ss_grplist:
+            sshopdata = ss_grplist[sid]
+         else:
+            sshopdata = {}
+
          if sid in pfs_grplist:
             pfshopdata = pfs_grplist[sid]
          else:
@@ -102,8 +110,6 @@ def index(request):
          item.setdefault("shopid",row["shopid"])
          item.setdefault("shopname",row["shopname"].strip())
          shoplist.append(item)
-
-     #shoplist.sort(key=lambda x:x["shopid"])
 
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
@@ -137,24 +143,37 @@ def countSumZb(rlist):
         sumdict.setdefault("codelable","达成率")
         rlist.append(sumdict)
 
-def mergeData(rlist,slist,ydict,saledict,zbdict):
+def mergeData(rlist,slist,ydict,saledict,zbdict,lastDay):
     for shop in slist:
+        sid = shop["shopid"]
         #预算
         row = {}
-        row.setdefault("idname","{id}{name}".format(id=shop["shopid"],name=shop["shopname"]))
-        yitem = ydict[shop["shopid"]]
+        row.setdefault("idname","{id}{name}".format(id=sid,name=shop["shopname"]))
+        if sid in ydict:
+            yitem = ydict[sid]
+        else:
+            yitem = initItem(lastDay)
+
         row = dict(row,**yitem)
         rlist.append(row)
         #实际
         row1 = {}
-        row1.setdefault("idname","{id}{name}".format(id=shop["shopid"],name=shop["shopname"]))
-        sitem1 = saledict[shop["shopid"]]
+        row1.setdefault("idname","{id}{name}".format(id=sid,name=shop["shopname"]))
+        if sid in saledict:
+            sitem1 = saledict[sid]
+        else:
+            sitem1 = initItem(lastDay)
+
         row1 = dict(row1,**sitem1)
         rlist.append(row1)
         #占比
         row2 = {}
-        row2.setdefault("idname","{id}{name}".format(id=shop["shopid"],name=shop["shopname"]))
-        sitem2 = zbdict[shop["shopid"]]
+        row2.setdefault("idname","{id}{name}".format(id=sid,name=shop["shopname"]))
+        if sid in zbdict:
+             sitem2 = zbdict[sid]
+        else:
+            sitem2 = initItem(lastDay)
+
         row2 = dict(row2,**sitem2)
         rlist.append(row2)
 
@@ -261,63 +280,67 @@ def countSale(ydict,sdict1,sdict2,lastDay):
     sumlist.append(ssumdict)  #实际
 
     for key in sdict1.keys():
-        item = sdict1[key]
+        sitem = sdict1[key]
         if key in ydict:
             yitem = ydict[key]
         else:
             yitem = initItem(lastDay)
             ydict.setdefault(key,yitem)
 
-        new,zbitem = {},{}
-        new = dict(new,**item)
+        newitem,zbitem = {},{}
+        newitem = dict(newitem,**sitem)
 
-        for k in item:
+        for k in sitem:
             #实际销售
-            obj = item[k]
+            val1 = sitem[k]
 
             #批发销售单
             if key in sdict2:
-                item2 = sdict2[key]
-                if item2 and k in item2:
-                    obj2 = item2[k]
+                sitem2 = sdict2[key]
+                if sitem2 and k in sitem2:
+                    val2 = sitem2[k]
                 else:
-                    obj2 = decimal.Decimal("0.00")
+                    val2 = decimal.Decimal("0.00")
             else:
-                 obj2 = decimal.Decimal("0.00")
+                val2 = decimal.Decimal("0.00")
 
             #真实销售 = 实际销售 + 批发销售
-            val = obj+obj2
-            new[k] = val
+            totalval = val1+val2
+            newitem[k] = totalval
 
             #计划
             if k in yitem:
                 yobj = yitem[k]
-            else:
-                yobj = decimal.Decimal("0.00")
-
-            #占比
-            if yobj>0:
-                zb = mtu.convertToStr(val*decimal.Decimal("100.0")/yobj,"0.00",1)+"%"
-                zbitem.setdefault(k,zb)
+                #占比
+                if yobj>0:
+                    zb = mtu.convertToStr(totalval*decimal.Decimal("100.0")/yobj,"0.00",1)+"%"
+                    zbitem.setdefault(k,zb)
+                else:
+                    zbitem.setdefault(k,"")
             else:
                 zbitem.setdefault(k,"")
 
             #销售合计
             if k in ssumdict:
-                ssumdict[k] += val
+                ssumdict[k] += totalval
             else:
-                ssumdict.setdefault(k,val)
-            #计划合计
+                ssumdict.setdefault(k,totalval)
+
+        newitem.setdefault("codelable","实际达成")
+        zbitem.setdefault("codelable","达成率")
+        rsdict.setdefault(key,newitem)
+        zbdict.setdefault(key,zbitem)
+
+    #计划合计
+    for ykey in ydict.keys():
+        yitem = ydict[ykey]
+        for k in yitem.keys():
+            yobj = yitem[k]
             if k in ysumdict:
                 ysumdict[k] += yobj
             else:
                 ysumdict.setdefault(k,yobj)
-
         yitem.setdefault("codelable","计划")
-        new.setdefault("codelable","实际达成")
-        zbitem.setdefault("codelable","达成率")
-        rsdict.setdefault(key,new)
-        zbdict.setdefault(key,zbitem)
     return rsdict,zbdict,sumlist
 
 def sumByType(list):
@@ -417,10 +440,10 @@ def getDataDict(datadict,lastDay,yesterday,unitkey):
         rsdict[id][key] = row["sale"]
         rsdict[id][key1] = row["gain"]
 
-        rsdict[id]["m_all_sale"] += row["gain"]
+        rsdict[id]["m_all_sale"] += row["sale"]
         rsdict[id]["m_all_gain"] += row["gain"]
         if day <= yesterday:
-            rsdict[id]["m_daily_sale"] += row["gain"]
+            rsdict[id]["m_daily_sale"] += row["sale"]
             rsdict[id]["m_daily_gain"] += row["gain"]
 
         itemid = id
