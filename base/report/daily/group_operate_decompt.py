@@ -114,8 +114,116 @@ def index(request):
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
          return render(request, "report/daily/group_opt_decompt.html",{"rlist":rslist,"shoplist":shoplist,"grslist":grslist,"srslist":srslist})
-     # else:
-     #     return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
+     else:
+         return export(rslist,shoplist,grslist,srslist,date)
+
+def export(rslist,shoplist,grslist,srslist,date):
+
+    wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
+    #写入sheet1 门店
+    writeDataToSheet1(wb,rslist,date)
+    #写入sheet2 类别
+    writeDataToSheet2(wb,grslist,date)
+    #写入sheet4 各个门店类别
+    writeDataToSheetN(wb,shoplist,srslist,date)
+
+    date = DateUtil.get_day_of_day(-1)
+    outtype = 'application/vnd.ms-excel;'
+    fname = date.strftime("%m.%d")+"grp_daily_opt_decompt"
+
+    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
+    wb.save(response)
+    return response
+
+def writeDataToSheet1(wb,rlist,date):
+    year = date.year
+    month = date.month
+
+    sheet = wb.add_sheet("门店",cell_overwrite_ok=True)
+
+    titles = [[("%s年%s月各店类别每日业绩指标分解达成表（单位：万元）" % (year,month),0,1,15)],
+              [("门店编码",0,3,1),("日期",1,1,5)],
+              [("%s月总指标" % month,1,2,1),("调整后销售指标",2,2,1),("累计计划销售达标率",3,2,1),("调整后毛利指标",4,2,1),("累计计划毛利达标率",5,2,1)],
+              []]
+
+    keylist = ['idname','codelable','m_all_sale','m_daily_sale','m_all_gain','m_daily_gain']
+    widthlist = [1200,800,800,800,800,800]
+
+    initExport(titles,keylist,widthlist,date)
+    mtu.insertTitle2(sheet,titles,keylist,widthlist)
+    mtu.insertCell2(sheet,4,rlist,keylist,None)
+
+def writeDataToSheet2(wb,rlist,date):
+    year = date.year
+    month = date.month
+
+    sheet = wb.add_sheet("类别",cell_overwrite_ok=True)
+
+    titles = [[("%s年%s月各店类别每日业绩指标分解达成表（单位：万元）" % (year,month),0,1,15)],
+              [("类别编码",0,3,1),("日期",1,1,5)],
+              [("%s月总指标" % month,1,2,1),("调整后销售指标",2,2,1),("累计计划销售达标率",3,2,1),("调整后毛利指标",4,2,1),("累计计划毛利达标率",5,2,1)],
+              []]
+
+    keylist = ['idname','codelable','m_all_sale','m_daily_sale','m_all_gain','m_daily_gain']
+    widthlist = [1200,800,800,800,800,800]
+
+    initExport(titles,keylist,widthlist,date)
+    mtu.insertTitle2(sheet,titles,keylist,widthlist)
+    mtu.insertCell2(sheet,4,rlist,keylist,None)
+
+def writeDataToSheetN(wb,shoplist,rlist,date):
+    year = date.year
+    month = date.month
+
+    for i in range(len(shoplist)):
+        shop = shoplist[i]
+        sheetname = "%s%s" % (shop["shopid"][2:4],shop["shopname"])
+        sheet = wb.add_sheet(sheetname,cell_overwrite_ok=True)
+
+        titles = [[("%s年%s月各店类别每日业绩指标分解达成表（单位：万元）" % (year,month),0,1,15)],
+                  [("类别编码",0,3,1),("日期",1,1,5)],
+                  [("%s月总指标" % month,1,2,1),("调整后销售指标",2,2,1),("累计计划销售达标率",3,2,1),("调整后毛利指标",4,2,1),("累计计划毛利达标率",5,2,1)],
+                  []]
+
+        keylist = ['idname','codelable','m_all_sale','m_daily_sale','m_all_gain','m_daily_gain']
+        widthlist = [1200,800,800,800,800,800]
+
+        initExport(titles,keylist,widthlist,date)
+        mtu.insertTitle2(sheet,titles,keylist,widthlist)
+        mtu.insertCell2(sheet,4,rlist[i],keylist,None)
+
+def initExport(titles,keylist,widthlist,date):
+    year = date.year
+    month = date.month
+    lastDay = calendar.monthrange(year,month)[1]
+
+    trow1 = titles[1]
+    trow2 = titles[2]
+    trow3 = titles[3]
+    n = 6
+    week_keys = ["星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"]
+    for d in range(1,lastDay+1):
+        t1 = ("{day}".format(day=d),n,1,2)
+        trow1.append(t1)
+
+        tempdate = datetime.datetime(year,month,d)
+        week = week_keys[tempdate.weekday()]
+        t2 = ("{week}".format(week=week),n,1,2)
+        trow2.append(t2)
+
+        t31 = ('销售',n,1,1)
+        t32 = ('毛利',n+1,1,1)
+        trow3.append(t31)
+        trow3.append(t32)
+
+        keylist.append("sale_d%s" % d)
+        keylist.append("gain_d%s" % d)
+
+        widthlist.append(800)
+        widthlist.append(800)
+
+        n += 2
+
 
 def countSumZb(rlist):
     if len(rlist)>1:
