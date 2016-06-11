@@ -8,7 +8,7 @@ from django.db.models import Q,Sum
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.views.decorators.csrf import csrf_exempt
-from base.models import OrdStatus,Ord,OrdD,BasShop
+from base.models import OrdStatus,Ord,OrdD,BasShop,BasSupplier
 from base.utils import MethodUtil
 from base.views import findShop
 
@@ -183,6 +183,18 @@ def find(request):
         shop.tel = shop.tel.strip()
     else:
         shop.tel = ""
+
+    if shop.shopnm:
+        shop.shopnm = shop.shopnm.strip()
+
+    #查询供应商信息
+    slist = BasSupplier.objects.filter(suppcode=order.spercode).values("suppcode","chnm","linkmen","phone1","phone2","paytypeid")
+    if slist:
+        supp = slist[0]
+        if not supp["phone1"].strip():
+           supp["phone1"] = supp["phone2"]
+    else:
+        supp = {}
 
     return render(request,"user_order_article.html",locals())
 

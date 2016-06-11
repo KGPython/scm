@@ -50,7 +50,7 @@ def key(d,key_name):
     value = ""
     try:
         if isinstance(d,dict):
-            value = d[str(key_name)]
+            value = d[str(key_name).strip()]
         else:
             value = d[key_name]
     except KeyError:

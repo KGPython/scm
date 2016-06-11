@@ -9,12 +9,12 @@
     {% include "common/nav.html" %}
     <div class="query comWidth" style="width: 100%;text-align: right;">
         <form method="post" id="submitForm" action=""></form>
-        <p>
-            {% ifequal orderstatus.status 'Y'%}
+        <p>    <input class="query-enter" type="button" value="打印" onclick="javascript:printContent()">
+           {% comment %} {% ifequal orderstatus.status 'Y'%}
                 <input class="query-enter" type="button" value="打印" onclick="javascript:printContent()">
             {% else %}
                 <input class="query-enter" type="button" id="saveBtn" value="保存确认" onclick="saveFun()">
-            {% endifequal %}
+            {% endifequal %}{% endcomment %}
             <input class="query-enter" type="button" value="返回" onclick="closeFun()">
         </p>
     </div>
@@ -25,111 +25,111 @@
     </div>
     <div class="notice noticeOrder comWidth" id="printContent" style="width: 100%">
           <div class="tTitle">
-            <h1>{{ curgrpname }}<span class="red">{%if order.logistics == 1 %}直送{% else %}配送{% endif %}</span>订货单({{ shop.shopnm }} )</h1>
-          </div>
-          <table border="0" cellpadding="3" cellspacing="1" align="center" width="90%" style="background-color: #999;margin: 0 auto">
-              <tbody>
-                    <tr>
-                          <td colspan="2" width="10%">单号</td>
-                          <td colspan="2" width="35%" style="text-align: left;">{{ order.ordercode }}</td>
-                          <td colspan="2" width="15%">机构编码</td>
-                          <td  colspan="3" width="15%" style="text-align: left;">{{ order.shopcode }}</td>
-                          <td  colspan="2" width="10%">订货日期</td>
-                          <td  colspan="4" width="15%" style="text-align: left;">{{ order.purdate|date:"Y-m-d"  }}</td>
-                    </tr>
-                    <tr>
-                          <td colspan="2">供应商编码</td>
-                          <td colspan="2" style="text-align: left;">{{ order.spercode }}</td>
-                          <td colspan="2">管理部类</td>
-                          <td  colspan="3" style="text-align: left;">{{ order.teamcode }}</td>
-                          <td  colspan="2">送货截止</td>
-                          <td  colspan="4" style="text-align: left;">{{ order.sdate|date:"Y-m-d" }}</td>
-                    </tr>
-                     <tr>
-                          <td colspan="2">供应商名称</td>
-                          <td colspan="7" style="text-align: left;">{{ order.spername }}</td>
-                          <td colspan="2">预约送货</td>
-                          <td  colspan="4" align="left" style="width:16%;text-align: left;">
-                                 {% ifequal orderstatus.status 'Y'%}
-                                     {{ orderstatus.yyshdate|date:"Y-m-d" }}
-                                 {% else %}
-                                      <input class="inline laydate-icon" id="yyshdate" type="text" value="{{ orderstatus.yyshdate|date:"Y-m-d" }}" style="width:40%;padding-left: 5px;">
-                                 {% endifequal %}
-                          </td>
-                    </tr>
-                    <tr>
-                          <td colspan="2">备注</td><td colspan="13" style="text-align: left;">{{ order.remark }}</td>
-                    </tr>
-                    <tr style="background-color:grey">
-                          <td >序号</td>
-                          <td>编码</td>
-                          <td>商品条码</td>
-                          <td>品名</td>
-                          <td>单位</td>
-                          <td>规格</td>
-                          <td>件装</td>
-                          <td>订数</td>
-                          <td>实送</td>
-                          <td>进价</td>
-                          <td>含税金额</td>
-                          <td>实收</td>
-                          <td>实收金额</td>
-                          <td>大件数量</td>
-                          <td>生产日期</td>
-                    </tr>
-                    {% for row in detailList %}
-                        <tr style="text-align: left;">
-                              <td style="text-align: center;">{{ forloop.counter }}</td>
-                              <td>{{ row.procode }}</td>
-                              <td>{{ row.barcode }}</td>
-                              <td>{{ row.pn }}</td>
-                              <td style="text-align: center;">{{ row.unit }}</td>
-                              <td style="text-align: center;">{{ row.classes|default_if_none:"" }}</td>
-                              <td>{{ row.num|floatformat:0 }}</td>
-                              <td style="color:dodgerblue;">{{ row.denums|floatformat:0 }}</td>
-                              <td></td>
-                              <td>{{ row.price_intax|floatformat:2 }}</td>
-                              <td>{{ row.jshj|floatformat:2 }}</td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+               <h1>{{shop.shopnm}}采购订单</h1>
+               <div class="printHead">
+                    <table class="table-noborder" >
+                        <tr>
+                            <td class="label" style="width:32%;text-align: left;">订单编号：{{ order.ordercode }}</td>
+                            <td class="label" style="width:34%;text-align: left;"></td>
+                            <td class="label" style="width:34%;text-align: left;"></td>
                         </tr>
-                    {% endfor %}
-                    <tr class="tbottom" style="background-color: lightskyblue">
-                          <td></td>
-                          <td >合计</td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td></td>
-                          <td><span class="noprint">{{ sum1|floatformat:0 }}</span></td>
-                          <td></td>
-                          <td><span class="noprint">{{ sum2|floatformat:2 }}</span></td>
-                          <td><span class="noprint">{{ sum3|floatformat:2 }}</span></td>
-                          <td colspan="4"></td>
-                    </tr>
-                    <tr class="tbottom" style="background-color: lightskyblue">
-                          <td ></td>
-                          <td ></td>
-                          <td colspan="2">收货员</td>
-                          <td colspan="4">防损员</td>
-                          <td colspan="7">供货商</td>
-                    </tr>
-                    <tr class="tbottom">
-                          <td ></td>
-                          <td >签字处</td>
-                          <td colspan="2"></td>
-                          <td colspan="4"></td>
-                          <td colspan="7"></td>
-                    </tr>
-                    <tr class="tbottom" >
-                          <td colspan="2">说明</td>
-                          <td colspan="13" style="text-align: left;"><span class="noprint">A4纸打印。</span>导入：{{ order.scmpurdate|date:"Y-m-d" }}&emsp;打印：{{ today|date:"Y-m-d" }}&emsp;审核：{{ order.checker }}&emsp;地址：{{ shop.address|trim  }}{% ifnotequal shop.tel "" %}-{{ shop.tel}}{% endifnotequal %}</td>
-                    </tr>
-              </tbody>
-          </table>
+                        <tr>
+                            <td class="label" style="width:32%;text-align: left;">订单类型：</td>
+                            <td class="label" style="width:34%;text-align: left;">管理部类：{{ order.teamcode|trim }}|{{ orgDict|key:order.teamcode }}</td>
+                            <td class="label" style="width:34%;text-align: left;">送货方式：{%if order.logistics == 1 %}直送{% else %}配送{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <td class="label" colspan="2"  style="text-align: left;">供应商：{{ order.spercode }}|{{ order.spername }}</td>
+                            <td class="label" style="text-align: left;">供应商联系人：{{ supp.linkmen }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label" style="text-align: left;">结算方式：{{ payTypeDict|key:supp.paytypeid }}</td>
+                            <td class="label" style="text-align: left;">制单日期：<span>{{ order.purdate|date:"Y/m/d H:i:s"  }}</span></td>
+                            <td class="label" style="text-align: left;">供应商传真：<span></span></td>
+                        </tr>
+                        <tr>
+                            <td class="label" style="text-align: left;">订货地：{{ order.shopcode }}|{{ shopDict|key:order.shopcode }}</td>
+                            <td class="label" style="text-align: left;">送货有限期：从{{ order.purdate|date:"Y/m/d"  }}到{{ order.sdate|date:"Y/m/d" }}</td>
+                            <td class="label" style="text-align: left;">供应商电话：{{ supp.phone1 }}</td>
+                        </tr>
+                        <tr>
+                            <td class="label" style="text-align: left;">送货地点：{{ shop.address|trim  }}</td>
+                            <td class="label" style="text-align: left;">预约收货电话：{{ shop.tel|default_if_none:""}}</td>
+                            <td class="label" style="text-align: left;">制单人：<span ></span></td>
+                        </tr>
+                        <tr>
+                            <td class="label" style="text-align: left;">采购员：</td>
+                            <td class="label" style="text-align: left;"><span >备注：</span></td>
+                            <td class="label" style="text-align: left;">审核人：{{ order.checker }}</td>
+                        </tr>
+                    </table>
+                    <table border="0" cellpadding="3" cellspacing="1" align="center" width="90%" style="background-color: #999;margin: 0 auto;margin-top: 5px;margin-bottom:5px; ">
+                        <tbody>
+                            <tr style="background-color:grey;">
+                                  <td style="width: 8%">商品编码</td>
+                                  <td style="width: 7%">商品条码</td>
+                                  <td style="width: 15%">商品名称</td>
+                                  <td style="width: 5%">规格</td>
+                                  <td style="width: 5%">单位</td>
+                                  <td style="width: 5%">包装数量</td>
+                                  <td style="width: 5%">订货数量</td>
+                                  <td style="width: 5%">赠品数量</td>
+                                  <td style="width: 8%">含税进价</td>
+                                  <td style="width: 8%">含税金额</td>
+                                  <td style="width: 5%">实收数量</td>
+                                  <td style="width: 8%">生产日期</td>
+                                  <td style="width: 7%">保质期</td>
+                            </tr>
+                            {% for row in detailList %}
+                                <tr style="text-align: left;">
+                                      <td>{{ row.procode }}</td>
+                                      <td>{{ row.barcode }}</td>
+                                      <td>{{ row.pn }}</td>
+                                      <td style="text-align: center;">{{ row.classes|default_if_none:"" }}</td>
+                                      <td style="text-align: center;">{{ row.unit }}</td>
+                                      <td>{{ row.num|floatformat:0 }}</td>
+                                      <td >{{ row.denums|floatformat:0 }}</td>
+                                      <td></td>
+                                      <td>{{ row.price_intax|floatformat:2 }}</td>
+                                      <td>{{ row.jshj|floatformat:2 }}</td>
+                                      <td></td>
+                                      <td></td>
+                                      <td></td>
+                                </tr>
+                            {% endfor %}
+                            <tr class="tbottom" style="background-color: lightskyblue">
+                                  <td colspan="6" class="sumlabel">至本单合计单品数：({{ detailList|length }})合计项</td>
+                                  <td><span>{{ sum1|floatformat:0 }}</span></td>
+                                  <td colspan="2" class="sumlabel">含税总额：</td>
+                                  <td >{{ sum3|floatformat:2 }}</td>
+                                  <td colspan="3"></td>
+                            </tr>
+
+                            <tr class="tbottom" >
+                                  <td colspan="2">说明</td>
+                                  <td colspan="13" style="text-align: left;"><span class="noprint">A4纸打印。</span>导入：{{ order.scmpurdate|date:"Y-m-d" }}&emsp;打印：{{ today|date:"Y-m-d" }}&emsp;</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <table  class="table-noborder2">
+                        <tr>
+                            <td colspan="3" style="text-align: left;font-size: small;">
+                                  <p>
+                                        <span style="margin-top:20px;margin-top:10px;margin-bottom:10px;width: 33%;float:left;">收货员：</span>
+                                        <span style="margin-top:20px;margin-top:10px;margin-bottom:10px;width: 33%;float:left;">验货员：</span>
+                                        <span style="margin-top:20px;margin-top:10px;margin-bottom:10px;width: 34%;float:left;">供应商：</span>
+                                  </p>
+                                  <p>
+                                     1.请供应商送货时附送上订单或在加盖公章的送货单上标明订单编号，无订单的商品本店有权拒绝收获。<br/>
+                                     2.请供应商按指定的时间送货，并提前一天与本收货部预约。如无预约，将安排到最后收货。如延期送货本店有权拒绝收货。<br/>
+                                     3.如订单有问题或暂缺货，请联系本公司采购部。<br/>
+                                     4.签字人员对以上数量完全认可。
+                                  </p>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+          </div>
     </div>
     {% include "common/footer.html" %}
     <script type="text/javascript">

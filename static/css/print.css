@@ -3,6 +3,13 @@ body{font-size: 10px;}
 .tTitle{
     text-align: center;
 }
+.printHead{
+    width: 100%;
+    overflow: hidden;
+	border: 0;
+    padding-bottom: 10px;
+    padding-right: 5px;
+}
 a{
     text-decoration:none;
     color: #333333;
@@ -31,6 +38,10 @@ table td {
     border-color: #666666;
     background-color: #ffffff;
     text-align: left;
+    /*float:left;*/
+}
+table .sumlabel {
+    text-align: center;
     /*float:left;*/
 }
 .table-noborder td{
@@ -92,4 +103,27 @@ table td {
 
 .noticeTemplate{
 	width:100%;
+}
+
+/*******************/
+.table-noborder2 td{
+    border-color:#fff ;
+    text-align: left;
+   /* border:1px solid #000000;*/
+}
+.table-noborder2 .label{
+    text-align: left;
+
+}
+.table-noborder2 p{
+    font-size: 10px;
+    font-family:SimSun;
+    width: auto;
+}
+
+.table-noborder2 p span{
+    margin-top:20px;
+    margin-top:10px;
+    width: 33%;
+    float:left;
 }
