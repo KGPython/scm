@@ -191,8 +191,11 @@ def find(request):
     slist = BasSupplier.objects.filter(suppcode=order.spercode).values("suppcode","chnm","linkmen","phone1","phone2","paytypeid")
     if slist:
         supp = slist[0]
-        if not supp["phone1"].strip():
-           supp["phone1"] = supp["phone2"]
+        if not supp["phone1"]:
+            if supp["phone2"]:
+                supp["phone1"] = supp["phone2"].strip()
+        else:
+           supp["phone1"] = supp["phone1"].strip()
     else:
         supp = {}
 
