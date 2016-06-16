@@ -228,8 +228,9 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardi
 
      #合计运算
      countSum(sumDict,days)
-     countSum2(sumDict2,days)
+     countSum2(sumDict2)
      countSum3(yearSumDict)
+
 
 
 def mergeData(item,ddict,mdict,ydict,rlist,sumList):
