@@ -163,8 +163,8 @@ def index(request):
      for key in mdict.keys():
          #月日均来客数 = 月累计来客数 / 天数
          item = mdict[key]
-         item['m_tradenumber'] = item['m_tradenumber'] / days
-         item['m_tradenumberold'] = item['m_tradenumberold'] / days
+         item['m_tradenumber'] = mtu.quantize(item['m_tradenumber'] / days,"0",1)
+         item['m_tradenumberold'] =  mtu.quantize(item['m_tradenumberold'] / days,"0",1)
          item['m_tradeprice'] = item['m_tradeprice'] / days
          item['m_tradepriceold'] = item['m_tradepriceold'] / days
 

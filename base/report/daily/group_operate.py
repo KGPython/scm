@@ -163,8 +163,8 @@ def index(request):
      for key in mdict.keys():
          #月日均来客数 = 月累计来客数 / 天数
          item = mdict[key]
-         item['m_tradenumber'] = item['m_tradenumber'] / days
-         item['m_tradenumberold'] = item['m_tradenumberold'] / days
+         item['m_tradenumber'] = mtu.quantize(item['m_tradenumber'] / days,"0",1)
+         item['m_tradenumberold'] =  mtu.quantize(item['m_tradenumberold'] / days,"0",1)
          item['m_tradeprice'] = item['m_tradeprice'] / days
          item['m_tradepriceold'] = item['m_tradepriceold'] / days
 
@@ -222,7 +222,7 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardi
          #月累计
          mergeData(item,ddict,mdict,ydict,rlist,sumDict)
          #日销售、毛利
-         mergeData2(item,edict,rlist2,sumDict2)
+         mergeData2(item,edict,rlist2,sumDict2,yestoday)
          #年累计
          mergeData3(item,yeardict,yearlist,yearSumDict,yydict,ydays,ydaysold)
 
@@ -437,8 +437,8 @@ def setDaiySale(ritem,dayItem):
         ritem.setdefault('day_accomratio',"0.0%")
 
     #来客数
-    ritem.setdefault('day_tradenumber',str(int(dayItem["tradenumber"])))
-    ritem.setdefault('day_tradenumberold',str(int(dayItem["tradenumberold"])))
+    ritem.setdefault('day_tradenumber',int(dayItem["tradenumber"]))
+    ritem.setdefault('day_tradenumberold',int(dayItem["tradenumberold"]))
 
     if mtu.quantize(dayItem["tradenumberold"],"0",1)>0:
         ritem.setdefault('day_tradenumber_ynygrowth',mtu.convertToStr((dayItem["tradenumber"]-dayItem["tradenumberold"])*decimal.Decimal("100.0")/dayItem["tradenumberold"],"0.00",1)+"%")
@@ -501,12 +501,12 @@ def setValue(sum1,ritem):
        sum1["day_salevalueesti"] = ritem["day_salevalueesti"]
 
    if "day_tradenumber" in sum1:
-       sum1["day_tradenumber"] = str(int(sum1["day_tradenumber"]) + int(ritem["day_tradenumber"]))
+       sum1["day_tradenumber"] = sum1["day_tradenumber"] + ritem["day_tradenumber"]
    else:
        sum1["day_tradenumber"] = ritem["day_tradenumber"]
 
    if "day_tradenumberold" in sum1:
-       sum1["day_tradenumberold"] = str(int(sum1["day_tradenumberold"]) + int(ritem["day_tradenumberold"]))
+       sum1["day_tradenumberold"] = sum1["day_tradenumberold"] + ritem["day_tradenumberold"]
    else:
        sum1["day_tradenumberold"] = ritem["day_tradenumberold"]
 
@@ -561,66 +561,15 @@ def setValue(sum1,ritem):
        sum1["month_salegainold"] = ritem["month_salegainold"]
 
    if "month_tradenumber" in sum1:
-       sum1["month_tradenumber"] = str(int(sum1["month_tradenumber"]) + int(ritem["month_tradenumber"]))
+       sum1["month_tradenumber"] = sum1["month_tradenumber"] + ritem["month_tradenumber"]
    else:
        sum1["month_tradenumber"] = ritem["month_tradenumber"]
 
    if "month_tradenumberold" in sum1:
-       sum1["month_tradenumberold"] = str(int(sum1["month_tradenumberold"]) + int(ritem["month_tradenumberold"]))
+       sum1["month_tradenumberold"] = sum1["month_tradenumberold"]+ ritem["month_tradenumberold"]
    else:
        sum1["month_tradenumberold"] = ritem["month_tradenumberold"]
 
-
-def mergeData2(item,edict,rlist2,sumList2):
-    yestoday = DateUtil.get_day_of_day(-1)
-    year = yestoday.year
-    month = yestoday.month
-    lastDay = calendar.monthrange(year,month)[1]
-
-    ritem = {}
-    setShopInfo(ritem,item)
-    if item["shopid"] in edict:
-         eitem = edict[item["shopid"]]
-    else:
-         eitem = initEitem(item,year,month,lastDay)
-
-    eitem["m_salevalue"] = mtu.quantize(eitem["m_salevalue"])
-    eitem["m_salevalueesti"] = mtu.quantize(eitem["m_salevalueesti"])
-    eitem["m_salegain"] = mtu.quantize(eitem["m_salegain"])
-    eitem["m_salegainesti"] = mtu.quantize(eitem["m_salegainesti"])
-
-    for k in eitem:
-        if isinstance(eitem[k],decimal.Decimal):
-            eitem[k] = float(eitem[k])
-
-    ritem = dict(ritem, **eitem)
-
-    #累计求和
-    setSumValue2(sumList2,ritem,year,month,lastDay)
-
-    if ritem["region"]=="13080":
-         region = "承德市区"
-    else:
-         region = "外埠区"
-
-    ritem["region"] = region
-    rlist2.append(ritem)
-
-def findMonthEstimate(shopids):
-     date = DateUtil.get_day_of_day(-1)
-     month = date.month
-     edict = {}
-     karrs = {}
-     karrs.setdefault("shopid__in",shopids)
-     karrs.setdefault("dateid__month","{month}".format(month=month))
-     elist = Estimate.objects.values("shopid")\
-                     .filter(**karrs)\
-                     .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
-
-     for item in elist:
-         edict.setdefault(str(item["shopid"]),item)
-
-     return edict
 
 def setMonthSale(ritem,monthItem,yitem):
     """设置月运营"""
@@ -678,8 +627,8 @@ def setMonthSale(ritem,monthItem,yitem):
         ritem.setdefault('month_salegain_grossmarginold',"0.00")
 
     #月日均来客数
-    ritem.setdefault('month_tradenumber',str(int(monthItem["m_tradenumber"])))
-    ritem.setdefault('month_tradenumberold',str(int(monthItem["m_tradenumberold"])))
+    ritem.setdefault('month_tradenumber',int(monthItem["m_tradenumber"]))
+    ritem.setdefault('month_tradenumberold',int(monthItem["m_tradenumberold"]))
 
     if monthItem["m_tradenumberold"] > 0:
         ritem.setdefault('month_tradenumber_ynygrowth',mtu.convertToStr((monthItem["m_tradenumber"]-monthItem["m_tradenumberold"])*decimal.Decimal("100.0")/(monthItem["m_tradenumberold"]),"0.00",1)+"%")
@@ -693,6 +642,58 @@ def setMonthSale(ritem,monthItem,yitem):
         ritem.setdefault('month_tradeprice_ynygrowth',mtu.convertToStr((monthItem["m_tradeprice"]-monthItem["m_tradepriceold"])*decimal.Decimal("100.0")/(monthItem["m_tradepriceold"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_tradeprice_ynygrowth',"0.00")
+
+def mergeData2(item,edict,rlist2,sumList2,yestoday):
+    year = yestoday.year
+    month = yestoday.month
+    lastDay = calendar.monthrange(year,month)[1]
+
+    ritem = {}
+    setShopInfo(ritem,item)
+    if item["shopid"] in edict:
+         eitem = edict[item["shopid"]]
+    else:
+         eitem = initEitem(item,year,month,lastDay)
+
+    eitem["m_salevalue"] = mtu.quantize(eitem["m_salevalue"])
+    eitem["m_salevalueesti"] = mtu.quantize(eitem["m_salevalueesti"])
+    eitem["m_salegain"] = mtu.quantize(eitem["m_salegain"])
+    eitem["m_salegainesti"] = mtu.quantize(eitem["m_salegainesti"])
+
+    for k in eitem:
+        if isinstance(eitem[k],decimal.Decimal):
+            eitem[k] = float(eitem[k])
+
+    ritem = dict(ritem, **eitem)
+
+    #累计求和
+    setSumValue2(sumList2,ritem,year,month,lastDay)
+
+    if ritem["region"]=="13080":
+         region = "承德市区"
+    else:
+         region = "外埠区"
+
+    ritem["region"] = region
+    rlist2.append(ritem)
+
+def findMonthEstimate(shopids):
+     date = DateUtil.get_day_of_day(-1)
+     month = date.month
+     edict = {}
+     karrs = {}
+     karrs.setdefault("shopid__in",shopids)
+     karrs.setdefault("dateid__month","{month}".format(month=month))
+     elist = Estimate.objects.values("shopid")\
+                     .filter(**karrs)\
+                     .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
+
+     for item in elist:
+         edict.setdefault(str(item["shopid"]),item)
+
+     return edict
+
+
 
 def setSumValue2(sumList,ritem,year,month,lastDay):
     """ 计算合计 """
