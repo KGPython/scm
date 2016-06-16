@@ -273,7 +273,7 @@ def writeDataToSheet1(wb,rlist,sumDict):
               [("区域",0,3,1),("店号",1,3,1),("店名",2,3,1),("开业时间",3,3,1),("类型",4,3,1),("当日销售",5,1,15),("月累计销售额",20,1,8),
                ("月毛利",28,1,10),("月日均来客数",38,1,3),("月客单价",41,1,3)],
               [("销售",5,1,4),("来客数",9,1,3),("客单价",12,1,3),("毛利",15,1,5),("实际",20,2,1),("预算",21,2,1),("差异",22,2,1),
-               ("达成率",23,2,1),("今日预算",24,2,1),("月预算进度",25,2,1),("去年销售",26,2,1),("同比增长",27,2,1),
+               ("达成率",23,2,1),("全月预算",24,2,1),("月预算进度",25,2,1),("去年销售",26,2,1),("同比增长",27,2,1),
                ("实际",28,2,1),("预算",29,2,1),("差异",30,2,1),("达成率",31,2,1),("全月预算",32,2,1),("月预算进度",33,2,1),("去年同期",34,2,1),
                ("同比增长",35,2,1),("毛利率",36,2,1),("去年同期毛利率",37,2,1),("月累计来客数",38,2,1),("去年",39,2,1),("同比增长",40,2,1),
                ("月累计客单价",41,2,1),("去年",42,2,1),("同比增长",43,2,1)],
@@ -434,10 +434,13 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardi
      yearSumDict.setdefault("sum3",{})
      yearSumDict.setdefault("sum4",{})
 
+     #今年日期
      yestoday = DateUtil.get_day_of_day(-1)
      d1 = datetime.date(year = yestoday.year,month=1,day=1)
+     #去年日期
      oldtoday = datetime.date(year = yestoday.year-1,month=yestoday.month,day=yestoday.day)
      oldd1 = datetime.date(year = yestoday.year-1,month=1,day=1)
+
      ydays = DateUtil.subtract(yestoday,d1)
      ydaysold = DateUtil.subtract(oldtoday,oldd1)
      for item in slist:
@@ -564,7 +567,7 @@ def countSum3(sumList):
             if k not in unkeys:
                 sum[k] = "%0.2f" % float(sum[k])
             else:
-                sum[k] = int(sum[k])
+                sum[k] = float(sum[k])
 
         #日销售-销售差异
         sum["sale_difference"] = str("%0.2f" % (float(sum["salevalue"])-float(sum["salevalueesti"])))
@@ -841,12 +844,15 @@ def setYearSale(ritem,ydays,ydaysold):
         ritem.setdefault('salegain_grossmargin',"")
 
     #来客数
-    ritem["tradenumber"] = int(ritem["tradenumber"])
-    ritem["tradenumberold"] = int(ritem["tradenumberold"])
+    ritem["tradenumber"] = ritem['tradenumber']/ydays
+    ritem["tradenumberold"] = ritem['tradenumberold']/ydaysold
     if ritem["tradenumberold"] > 0:
         ritem.setdefault('tradenumber_ynygrowth', mtu.convertToStr((ritem["tradenumber"]-ritem["tradenumberold"])*decimal.Decimal("100.0")/ritem["tradenumberold"],"0.00",1)+"%")
     else:
         ritem.setdefault('tradenumber_ynygrowth',"")
+
+    ritem["tradenumber"] = mtu.convertToStr(ritem['tradenumber'],"0",1)
+    ritem["tradenumberold"] = mtu.convertToStr(ritem['tradenumberold'],"0",1)
 
     #客单价
     ritem['tradeprice'] = mtu.convertToStr(ritem['tradeprice']/ydays,"0.00",1)
@@ -1047,7 +1053,7 @@ def setMonthSale(ritem,monthItem,yitem):
     #     ritem.setdefault('month_tradenumberold',"0")
 
     if monthItem["m_tradenumberold"] > 0:
-        ritem.setdefault('month_tradenumber_ynygrowth',mtu.convertToStr((monthItem["m_tradenumber"]-monthItem["m_tradenumberold"])*decimal.Decimal("100.0")/monthItem["m_tradenumberold"],"0.00",1)+"%")
+        ritem.setdefault('month_tradenumber_ynygrowth',mtu.convertToStr((monthItem["m_tradenumber"]-monthItem["m_tradenumberold"])*decimal.Decimal("100.0")/(monthItem["m_tradenumberold"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_tradenumber_ynygrowth',"0.00")
 
@@ -1065,7 +1071,7 @@ def setMonthSale(ritem,monthItem,yitem):
     #     ritem.setdefault('month_tradepriceold',"0.00")
 
     if monthItem["m_tradepriceold"] > 0:
-        ritem.setdefault('month_tradeprice_ynygrowth',mtu.convertToStr((monthItem["m_tradeprice"]-monthItem["m_tradepriceold"])*decimal.Decimal("100.0")/monthItem["m_tradepriceold"],"0.00",1)+"%")
+        ritem.setdefault('month_tradeprice_ynygrowth',mtu.convertToStr((monthItem["m_tradeprice"]-monthItem["m_tradepriceold"])*decimal.Decimal("100.0")/(monthItem["m_tradepriceold"]),"0.00",1)+"%")
     else:
         ritem.setdefault('month_tradeprice_ynygrowth',"0.00")
 
@@ -1131,14 +1137,14 @@ def setValue3(sum1,ritem):
        sum1["salevalueesti"] = str(float(ritem["salevalueesti"]))
 
    if "tradenumber" in sum1:
-       sum1["tradenumber"] = str(int(sum1["tradenumber"]) + int(ritem["tradenumber"]))
+       sum1["tradenumber"] = str(float(sum1["tradenumber"]) + float(ritem["tradenumber"]))
    else:
-       sum1["tradenumber"] = str(int(ritem["tradenumber"]))
+       sum1["tradenumber"] = str(float(ritem["tradenumber"]))
 
    if "tradenumberold" in sum1:
-       sum1["tradenumberold"] = str(int(sum1["tradenumberold"]) + int(ritem["tradenumberold"]))
+       sum1["tradenumberold"] = str(float(sum1["tradenumberold"]) + float(ritem["tradenumberold"]))
    else:
-       sum1["tradenumberold"] = str(int(ritem["tradenumberold"]))
+       sum1["tradenumberold"] = str(float(ritem["tradenumberold"]))
 
    if "salegain" in sum1:
        sum1["salegain"] = str(float(sum1["salegain"]) + float(ritem["salegain"]))
