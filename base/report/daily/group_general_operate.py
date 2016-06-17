@@ -2,7 +2,7 @@
 __author__ = 'liubf'
 
 from django.shortcuts import render
-from django.db.models import Sum
+from django.db.models import Sum,Avg
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import Kshopsale,BasShopRegion,Estimate
@@ -18,6 +18,8 @@ def index(request):
      days = date.day
      year = date.year
      month = date.month
+
+     oldtoday = datetime.date(year = date.year-1,month=date.month,day=date.day)
 
      start = (date.replace(day=1)).strftime("%Y-%m-%d")
      yesterday = date.strftime("%Y-%m-%d")
@@ -44,6 +46,11 @@ def index(request):
                                               ,salegainesti=Sum('salegainesti')/10000,sdateold=Sum('sdateold')
                                               ,tradenumberold=Sum('tradenumberold'),tradepriceold=Sum('tradepriceold')
                                               ,salevalueold=Sum('salevalueold')/10000,salegainold=Sum('salegainold')/10000)
+
+     yearavglist = Kshopsale.objects.values("shopid")\
+                     .filter(**karrs).order_by("shopid")\
+                     .annotate(tradenumber_avg = Avg('tradenumber'),tradenumberold_avg = Avg('tradenumberold'))
+
 
      ddict,mdict,edict,yeardict = {},{},{},{}
      itemShopId = None
@@ -164,15 +171,22 @@ def index(request):
          #月日均来客数 = 月累计来客数 / 天数
          item = mdict[key]
          item['m_tradenumber'] = mtu.quantize(item['m_tradenumber'] / days,"0",1)
-         item['m_tradenumberold'] =  mtu.quantize(item['m_tradenumberold'] / days,"0",1)
-         item['m_tradeprice'] = item['m_tradeprice'] / days
-         item['m_tradepriceold'] = item['m_tradepriceold'] / days
+         item['m_tradenumberold'] =  mtu.quantize(item['m_tradenumberold'] / oldtoday.day,"0",1)
 
+         if item['m_tradenumber'] > 0:
+            item['m_tradeprice'] = item['m_salevalue'] /days / item['m_tradenumber']
+         if item['m_tradenumberold'] > 0:
+            item['m_tradepriceold'] = item['m_salevalueold'] /days / item['m_tradenumberold']
      #查询当月全月销售预算，毛利预算
      ydict = findMonthEstimate(shopids)
 
      for item in yearlist:
          yeardict.setdefault(item["shopid"],item)
+
+     yearavgdict = {}
+     for item in yearavglist:
+         yearavgdict.setdefault(item["shopid"],item)
+
 
      #全年预算
      yydict = findYearEstimate(shopids)
@@ -183,7 +197,7 @@ def index(request):
      yearlist = []
      yearSumDict = {}
      sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,
-          erlist,esumDict,yeardict,yearlist,yearSumDict,yydict)
+          erlist,esumDict,yeardict,yearlist,yearSumDict,yydict,yearavgdict,date)
 
      qtype = mtu.getReqVal(request,"qtype","1")
      if qtype == "1":
@@ -371,7 +385,7 @@ def writeDataToSheet3(wb,yearlist,yearSumDict):
     count = mtu.insertSum2(sheet,keylist,4,yearSumDict,5)
     mtu.insertCell2(sheet,count,yearlist,keylist,None)
 
-def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardict,yearlist,yearSumDict,yydict):
+def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardict,yearlist,yearSumDict,yydict,yearavgdict,date):
 
      sumDict.setdefault("sum1",{})
      sumDict.setdefault("sum2",{})
@@ -381,26 +395,20 @@ def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardi
      yearSumDict.setdefault("sum1",{})
      yearSumDict.setdefault("sum2",{})
 
-     yestoday = DateUtil.get_day_of_day(-1)
-     d1 = datetime.date(year = yestoday.year,month=1,day=1)
-     oldd1 = datetime.date(year = yestoday.year-1,month=1,day=1)
-     oldtoday = datetime.date(year = yestoday.year-1,month=yestoday.month,day=yestoday.day)
-     ydays = DateUtil.subtract(yestoday,d1)
-     ydaysold = DateUtil.subtract(oldtoday,oldd1)
      for item in slist:
          #月累计
          mergeData(item,ddict,mdict,ydict,rlist,sumDict)
          #日销售、毛利
-         mergeData2(item,edict,rlist2,sumDict2)
+         mergeData2(item,edict,rlist2,sumDict2,date)
          #年累计
-         mergeData3(item,yeardict,yearlist,yearSumDict,yydict,ydays,ydaysold)
+         mergeData3(item,yeardict,yearlist,yearSumDict,yydict,yearavgdict)
 
      #合计运算
      countSum(sumDict,days)
      countSum2(sumDict2,days)
      countSum3(yearSumDict)
 
-def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
+def mergeData3(item,yeardict,yearlist,yearSum,yydict,yearavgdict):
     ritem = {}
     setShopInfo(ritem,item)
 
@@ -419,7 +427,7 @@ def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
 
     ritem = dict(ritem, **yitem)
 
-    setYearSale(ritem,ydays,ydaysold)
+    setYearSale(ritem,yearavgdict)
 
      #累计求和
     setSumValue3(yearSum,ritem)
@@ -432,8 +440,7 @@ def mergeData3(item,yeardict,yearlist,yearSum,yydict,ydays,ydaysold):
     ritem["region"] = region
     yearlist.append(ritem)
 
-def mergeData2(item,edict,rlist2,sumList2):
-    yestoday = DateUtil.get_day_of_day(-1)
+def mergeData2(item,edict,rlist2,sumList2,yestoday):
     year = yestoday.year
     month = yestoday.month
     lastDay = calendar.monthrange(year,month)[1]
@@ -782,7 +789,7 @@ def setShopInfo(ritem,item):
         ritem.setdefault("opentime","")
     ritem.setdefault("type",item["type"])
 
-def setYearSale(ritem,ydays,ydaysold):
+def setYearSale(ritem,yearavgdict):
     ritem['salevalue'] = mtu.convertToStr(ritem['salevalue'],"0.00",1)
     ritem['salevalueesti'] = mtu.convertToStr(ritem['salevalueesti'],"0.00",1)
     ritem.setdefault('sale_difference',mtu.convertToStr(decimal.Decimal(ritem["salevalue"])-decimal.Decimal(ritem["salevalueesti"]),"0.00",1))
@@ -829,26 +836,32 @@ def setYearSale(ritem,ydays,ydaysold):
     else:
         ritem.setdefault('salegain_grossmargin',"")
 
-    #来客数
-    ritem["tradenumber"] = ritem['tradenumber']/ydays
-    ritem["tradenumberold"] = ritem['tradenumberold']/ydaysold
+     #客单价 = 总销售 / 总客流
+    if  ritem["tradenumber"] > 0:
+        ritem['tradeprice'] = mtu.convertToStr(decimal.Decimal(ritem["salevalue"])*decimal.Decimal("10000")/ritem["tradenumber"],"0.00",1)
+    else:
+        ritem['tradeprice'] = "0.00"
+
+    if ritem["tradenumberold"] > 0:
+        ritem['tradepriceold'] = mtu.convertToStr(decimal.Decimal(ritem["salevalueold"])*decimal.Decimal("10000")/ritem["tradenumberold"],"0.00",1)
+
+    #来客数 = 总客流 / 天数
+    if ritem["shopid"] in yearavgdict:
+        numitem = yearavgdict[ritem["shopid"]]
+        ritem["tradenumber"] = int("%0.0f" % numitem['tradenumber_avg'])
+        ritem["tradenumberold"] = int("%0.0f" % numitem['tradenumberold_avg'])
+    else:
+        ritem["tradenumber"] = 0
+        ritem["tradenumberold"] = 0
+
     if ritem["tradenumberold"] > 0:
         ritem.setdefault('tradenumber_ynygrowth', mtu.convertToStr((ritem["tradenumber"]-ritem["tradenumberold"])*decimal.Decimal("100.0")/ritem["tradenumberold"],"0.00",1)+"%")
     else:
         ritem.setdefault('tradenumber_ynygrowth',"")
 
+    # ritem["sdateold"] = str(ritem["sdateold"])
     ritem["tradenumber"] = mtu.convertToStr(ritem['tradenumber'],"0",1)
     ritem["tradenumberold"] = mtu.convertToStr(ritem['tradenumberold'],"0",1)
-
-    #客单价
-    ritem['tradeprice'] = mtu.convertToStr(ritem['tradeprice']/ydays,"0.00",1)
-    ritem['tradepriceold'] = mtu.convertToStr(ritem['tradepriceold']/ydaysold,"0.00",1)
-    if decimal.Decimal(ritem["tradepriceold"]) > 0:
-        ritem.setdefault('tradeprice_ynygrowth',mtu.convertToStr((decimal.Decimal(ritem["tradeprice"])-decimal.Decimal(ritem["tradepriceold"]))*decimal.Decimal("100.0")/decimal.Decimal(ritem["tradepriceold"]),"0.00",1)+"%")
-    else:
-        ritem.setdefault('tradeprice_ynygrowth',"")
-
-    ritem["sdateold"] = str(ritem["sdateold"])
 
 def setDaiySale(ritem,dayItem):
     """设置日运营"""

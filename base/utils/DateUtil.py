@@ -13,18 +13,18 @@ hour = strftime("%H",localtime())
 min  = strftime("%M",localtime())
 sec  = strftime("%S",localtime())
 
-def strTodate(strdate):
+def strToDate(strdate):
     if strdate:
         t = strptime(strdate,"%Y-%m-%d")
         y,m,d = t[0:3]
-        return datetime.datetime(y,m,d)
+        return datetime.date(y,m,d)
     else:
         return None
 
 def subtract(d1,d2):
     """计算两日期间天数差：d1 - d2 """
     d = d1 - d2
-    return d.days
+    return d.days+1
 
 def todaystr():
     '''
