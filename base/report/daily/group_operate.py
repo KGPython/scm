@@ -441,8 +441,14 @@ def setDaiySale(ritem,dayItem):
         ritem.setdefault('day_accomratio',"0.0%")
 
     #来客数
-    ritem.setdefault('day_tradenumber',int(dayItem["tradenumber"]))
-    ritem.setdefault('day_tradenumberold',int(dayItem["tradenumberold"]))
+    if dayItem["tradenumber"]:
+        ritem.setdefault('day_tradenumber',int(dayItem["tradenumber"]))
+    else:
+        ritem.setdefault('day_tradenumber',0)
+    if dayItem['tradenumberold']:
+        ritem.setdefault('day_tradenumberold',int(dayItem["tradenumberold"]))
+    else:
+        ritem.setdefault('day_tradenumberold',0)
 
     if mtu.quantize(dayItem["tradenumberold"],"0",1)>0:
         ritem.setdefault('day_tradenumber_ynygrowth',mtu.convertToStr((dayItem["tradenumber"]-dayItem["tradenumberold"])*decimal.Decimal("100.0")/dayItem["tradenumberold"],"0.00",1)+"%")
@@ -816,7 +822,6 @@ def mergeData3(item,yeardict,yearlist,yearSum,yydict,yearavgdict):
         yitem = initYitem(item)
 
     ritem = dict(ritem, **yitem)
-
     setYearSale(ritem,yearavgdict)
 
      #累计求和

@@ -34,7 +34,7 @@ def index(request):
      karrs.setdefault("sdate__lte","{end} 23:59:59".format(end=yesterday))
      karrs.setdefault("shopid__in",shopids)
      baselist = Kshopsale.objects.values('shopid','sdate','salevalue','salegain','tradenumber','tradeprice','salevalueesti','salegainesti',
-                                         'sdateold','tradenumberold','tradepriceold','salevalueold','salegainold').filter(**karrs).order_by("shopid")
+                                         'tradenumberold','tradepriceold','salevalueold','salegainold').filter(**karrs).order_by("shopid")
 
      karrs.clear()
      karrs.setdefault("sdate__year","{year}".format(year=year))
@@ -43,7 +43,7 @@ def index(request):
                      .filter(**karrs).order_by("shopid")\
                      .annotate(salevalue=Sum('salevalue')/10000,salegain=Sum('salegain')/10000,tradenumber=Sum('tradenumber')
                                               ,tradeprice=Sum('tradeprice'),salevalueesti=Sum('salevalueesti')/10000
-                                              ,salegainesti=Sum('salegainesti')/10000,sdateold=Sum('sdateold')
+                                              ,salegainesti=Sum('salegainesti')/10000
                                               ,tradenumberold=Sum('tradenumberold'),tradepriceold=Sum('tradepriceold')
                                               ,salevalueold=Sum('salevalueold')/10000,salegainold=Sum('salegainold')/10000)
 
@@ -888,15 +888,14 @@ def setDaiySale(ritem,dayItem):
         ritem.setdefault('day_accomratio',"0.0%")
 
     #来客数
-    #if dayItem["tradenumber"]:
-    ritem.setdefault('day_tradenumber',str(int(dayItem["tradenumber"])))
-    #else:
-    #    ritem.setdefault('day_tradenumber',str(int(0)))
-
-    #if dayItem["tradenumberold"]:
-    ritem.setdefault('day_tradenumberold',str(int(dayItem["tradenumberold"])))
-    #else:
-    #    ritem.setdefault('day_tradenumberold',str(int(0)))
+    if dayItem["tradenumber"]:
+        ritem.setdefault('day_tradenumber',int(dayItem["tradenumber"]))
+    else:
+        ritem.setdefault('day_tradenumber',0)
+    if dayItem['tradenumberold']:
+        ritem.setdefault('day_tradenumberold',int(dayItem["tradenumberold"]))
+    else:
+        ritem.setdefault('day_tradenumberold',0)
 
     if mtu.quantize(dayItem["tradenumberold"],"0",1)>0:
         ritem.setdefault('day_tradenumber_ynygrowth',mtu.convertToStr((dayItem["tradenumber"]-dayItem["tradenumberold"])*decimal.Decimal("100.0")/dayItem["tradenumberold"],"0.00",1)+"%")
@@ -1358,7 +1357,7 @@ def initDayItem(item):
     dayItem.setdefault('salegain',0.00)
     dayItem.setdefault('salegainold',0.00)
     dayItem.setdefault('salegainesti',0.00)
-    dayItem.setdefault('sdateold',"")
+    # dayItem.setdefault('sdateold',"")
     return dayItem
 
 def initMonthItem(item):
@@ -1382,11 +1381,3 @@ def initYitem(item):
     eitem.setdefault("y_salegain",0.00)
     eitem.setdefault("y_salevalue",0.00)
     return eitem
-
-@csrf_exempt
-def query():
-    pass
-
-@csrf_exempt
-def download():
-    pass
