@@ -184,12 +184,12 @@ def writeDataToSheet1(wb, listtop, TotalDict):
         widthList.append(400)
         n += 3
         if d < 10:
-            keylist.append('rethsum_0' + str(d))
             keylist.append('costvaluesum_0' + str(d))
+            keylist.append('rethsum_0' + str(d))
             keylist.append('retrate_0' + str(d))
         else:
-            keylist.append('rethsum_' + str(d))
             keylist.append('costvaluesum_' + str(d))
+            keylist.append('rethsum_' + str(d))
             keylist.append('retrate_' + str(d))
 
     # 日销售报表

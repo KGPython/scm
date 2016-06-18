@@ -69,48 +69,48 @@ def index(request):
     sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate10 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate11 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate12 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate13 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate14 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate15 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate16 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate17 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
 
     sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate2 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate3 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
     sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate4 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, num desc"
+                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
 
     # 连接数据库
     conn = mtu.getMysqlConn()
@@ -367,7 +367,7 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows2:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
+            if sid['ShopID'] == row['shopcode'] and i < 20:
                 row['shopcode'] = sid['ShopName'].strip()
                 row['paiming'] = i + 1
                 lis2.append(row)
@@ -392,7 +392,7 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows3:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
+            if sid['ShopID'] == row['shopcode'] and i < 20:
                 row['shopcode'] = sid['ShopName'].strip()
                 row['paiming'] = i + 1
                 lis3.append(row)
@@ -413,17 +413,20 @@ def index(request):
                     rows4[i][key] = "%0.2f" % float(rows4[i][key])
     # 4 家电部类
     lis4 = []
+    templist = []
 
     for sid in shopsid:
         i = 0
         for row in rows4:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+            if sid['ShopID'] == row['shopcode']:
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis4.append(row)
                 i += 1
             else:
                 continue
+        templist.append(i)
+
 
     # 关闭数据库
     mtu.close(conn, cur10)
@@ -451,7 +454,7 @@ def getshopid():
     '''
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
-    sql = "select ShopID, ShopName from bas_shop_region"
+    sql = "select ShopID, ShopName from bas_shop_region where ShopType=11"
     cur.execute(sql)
     res = cur.fetchall()
     # 释放
