@@ -376,11 +376,11 @@
             };
             var tbody = {{lis2 | safe}};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            for (var i = 0; i < tbody.length / 20; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = i * 20 + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = 20;
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
             }
@@ -409,11 +409,11 @@
             };
             var tbody = {{lis3 | safe}};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            for (var i = 0; i < tbody.length / 20; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = i * 20 + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = 20;
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
             }
@@ -441,18 +441,22 @@
                 'aveprice': '平均售价'
             };
             var tbody = {{lis4 | safe}};
+            var tempcell = {{ templist | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var x;
+            var cellLength = 0;
+            for (x in tempcell) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = cellLength + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = tempcell[x];
                 cell['colspan'] = 1;
+                cellLength += parseInt(tempcell[x]);
                 mergeCellsList.push(cell);
             }
             table.push(theadRow);
             table = table.concat(tbody);
-            var len = table.length;
+            var len = cellLength;
             rowLight = [0];
         }
         initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight)
