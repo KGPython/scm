@@ -167,7 +167,7 @@ def index(request):
         i = 0
         for row in rows10:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis10.append(row)
                 i += 1
@@ -192,7 +192,7 @@ def index(request):
         i = 0
         for row in rows11:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis11.append(row)
                 i += 1
@@ -217,7 +217,7 @@ def index(request):
         i = 0
         for row in rows12:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis12.append(row)
                 i += 1
@@ -242,7 +242,7 @@ def index(request):
         i = 0
         for row in rows13:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis13.append(row)
                 i += 1
@@ -267,7 +267,7 @@ def index(request):
         i = 0
         for row in rows14:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis14.append(row)
                 i += 1
@@ -293,7 +293,7 @@ def index(request):
         i = 0
         for row in rows15:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis15.append(row)
                 i += 1
@@ -318,7 +318,7 @@ def index(request):
         i = 0
         for row in rows16:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis16.append(row)
                 i += 1
@@ -343,7 +343,7 @@ def index(request):
         i = 0
         for row in rows17:
             if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis17.append(row)
                 i += 1
@@ -368,7 +368,7 @@ def index(request):
         i = 0
         for row in rows2:
             if sid['ShopID'] == row['shopcode'] and i < 20:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis2.append(row)
                 i += 1
@@ -393,7 +393,7 @@ def index(request):
         i = 0
         for row in rows3:
             if sid['ShopID'] == row['shopcode'] and i < 20:
-                row['shopcode'] = sid['ShopName'].strip()
+                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis3.append(row)
                 i += 1
