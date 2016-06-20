@@ -160,6 +160,7 @@ def index(request):
                     rows10[i][key] = str(rows10[i][key])
                 elif isinstance(row, decimal.Decimal):
                     rows10[i][key] = "%0.2f" % float(rows10[i][key])
+
     # 10 熟食部类
     lis10 = []
 
@@ -401,24 +402,33 @@ def index(request):
                 continue
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows4)):
-        for key in rows4[i].keys():
-            row = rows4[i][key]
+    for x in range(0, len(rows4)):
+        for key in rows4[x].keys():
+            row = rows4[x][key]
             if row is None:
-                rows4[i][key] = ''
+                rows4[x][key] = ''
             else:
                 if isinstance(row, int):
-                    rows4[i][key] = str(rows4[i][key])
+                    rows4[x][key] = str(rows4[x][key])
                 elif isinstance(row, decimal.Decimal):
-                    rows4[i][key] = "%0.2f" % float(rows4[i][key])
+                    rows4[x][key] = "%0.2f" % float(rows4[x][key])
+
+    # 将退货数据过滤，值为负
+    rows4filter = []
+    for i in range(0, len(rows4)):
+        if float(rows4[i]['num']) < 0:
+            continue
+        else:
+            rows4filter.append(rows4[i])
+
     # 4 家电部类
     lis4 = []
     templist = []
 
     for sid in shopsid:
         i = 0
-        for row in rows4:
-            if sid['ShopID'] == row['shopcode']:
+        for row in rows4filter:
+            if sid['ShopID'] == row['shopcode'] and i < 20:
                 row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis4.append(row)
