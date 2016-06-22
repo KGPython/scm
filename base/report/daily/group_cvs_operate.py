@@ -19,7 +19,8 @@ def index(request):
      year = date.year
      month = date.month
 
-     oldtoday = datetime.date(year = date.year-1,month=date.month,day=date.day)
+     oldyesterday = datetime.date(year=date.year - 1, month=date.month, day=date.day)
+     oldstart = datetime.date(year=date.year - 1, month=1, day=1)
 
      start = (date.replace(day=1)).strftime("%Y-%m-%d")
      yesterday = date.strftime("%Y-%m-%d")
@@ -47,9 +48,36 @@ def index(request):
                                               ,tradenumberold=Sum('tradenumberold'),tradepriceold=Sum('tradepriceold')
                                               ,salevalueold=Sum('salevalueold'),salegainold=Sum('salegainold'))
 
-     yearavglist = Kshopsale.objects.values("shopid")\
-                     .filter(**karrs).order_by("shopid")\
-                     .annotate(tradenumber_avg = Avg('tradenumber'),tradenumberold_avg = Avg('tradenumberold'))
+     avglist = Kshopsale.objects.values("shopid") \
+         .filter(**karrs).order_by("shopid") \
+         .annotate(tradenumber_avg=Avg('tradenumber'))
+
+     avgdict = {aitem["shopid"]: aitem["tradenumber_avg"] for aitem in avglist}
+
+     karrs.clear()
+     karrs.setdefault("sdateold__gte", "{start} 00:00:00".format(start=oldstart))
+     karrs.setdefault("sdateold__lte", "{end} 23:59:59".format(end=oldyesterday))
+     karrs.setdefault("shopid__in", shopids)
+     oldavglist = Kshopsale.objects.values("shopid") \
+         .filter(**karrs).order_by("shopid") \
+         .annotate(tradenumberold_avg=Avg('tradenumberold'))
+     oldavgdict = {aitem["shopid"]: aitem["tradenumberold_avg"] for aitem in oldavglist}
+
+     yearavglist = []
+     for shop in slist:
+         vagItem = {}
+         shopid = shop["shopid"]
+         vagItem.setdefault("shopid", shopid)
+         if shopid in avgdict:
+             vagItem.setdefault("tradenumber_avg", avgdict[shopid])
+         else:
+             vagItem.setdefault("tradenumber_avg", decimal.Decimal("0"))
+
+         if shopid in oldavgdict:
+             vagItem.setdefault("tradenumberold_avg", oldavgdict[shopid])
+         else:
+             vagItem.setdefault("tradenumberold_avg", decimal.Decimal("0"))
+         yearavglist.append(vagItem)
 
 
      ddict,mdict,edict,yeardict = {},{},{},{}
@@ -171,7 +199,7 @@ def index(request):
          #月日均来客数 = 月累计来客数 / 天数
          item = mdict[key]
          item['m_tradenumber'] = mtu.quantize(item['m_tradenumber'] / days,"0",1)
-         item['m_tradenumberold'] =  mtu.quantize(item['m_tradenumberold'] / oldtoday.day,"0",1)
+         item['m_tradenumberold'] =  mtu.quantize(item['m_tradenumberold'] / oldyesterday.day,"0",1)
 
          if item['m_tradenumber'] > 0:
             item['m_tradeprice'] = item['m_salevalue'] /days / item['m_tradenumber']
