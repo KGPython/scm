@@ -66,48 +66,48 @@ def index(request):
     sqlsubcate3 = ','.join(subcate3)
     sqlsubcate4 = ','.join(subcate4)
 
-    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate10 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate11 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate12 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate13 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate14 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate15 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate16 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate17 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
 
-    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate2 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate3 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, (svalue / num) as costprice, (svalue / num) as aveprice " \
+    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
           "from `kwsaletop` " \
           "where classsx in (" + sqlsubcate4 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
@@ -160,6 +160,7 @@ def index(request):
                     rows10[i][key] = str(rows10[i][key])
                 elif isinstance(row, decimal.Decimal):
                     rows10[i][key] = "%0.2f" % float(rows10[i][key])
+
     # 10 熟食部类
     lis10 = []
 
@@ -401,24 +402,33 @@ def index(request):
                 continue
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows4)):
-        for key in rows4[i].keys():
-            row = rows4[i][key]
+    for x in range(0, len(rows4)):
+        for key in rows4[x].keys():
+            row = rows4[x][key]
             if row is None:
-                rows4[i][key] = ''
+                rows4[x][key] = ''
             else:
                 if isinstance(row, int):
-                    rows4[i][key] = str(rows4[i][key])
+                    rows4[x][key] = str(rows4[x][key])
                 elif isinstance(row, decimal.Decimal):
-                    rows4[i][key] = "%0.2f" % float(rows4[i][key])
+                    rows4[x][key] = "%0.2f" % float(rows4[x][key])
+
+    # 将退货数据过滤，值为负
+    rows4filter = []
+    for i in range(0, len(rows4)):
+        if float(rows4[i]['num']) < 0:
+            continue
+        else:
+            rows4filter.append(rows4[i])
+
     # 4 家电部类
     lis4 = []
     templist = []
 
     for sid in shopsid:
         i = 0
-        for row in rows4:
-            if sid['ShopID'] == row['shopcode']:
+        for row in rows4filter:
+            if sid['ShopID'] == row['shopcode'] and i < 20:
                 row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis4.append(row)
