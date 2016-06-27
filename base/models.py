@@ -13,6 +13,27 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class Kgprofit(models.Model):
+    bbdate = models.DateTimeField(auto_now_add=True)
+    sdate = models.DateTimeField(auto_now_add=True)
+    shopid = models.CharField(max_length=4)
+    shopname = models.CharField(max_length=64)
+    goodsid = models.IntegerField()
+    goodsname = models.CharField(max_length=64)
+    deptid = models.IntegerField(db_column='DeptID')  # Field name made lowercase.
+    deptname = models.CharField(max_length=64)
+    qty = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    salevalue = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    discvalue = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    truevalue = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    costvalue = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    profit = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+    stockqty = models.DecimalField(max_digits=12, decimal_places=2, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'KGprofit'
+
 class BasShopGroup(models.Model):
     id = models.IntegerField(db_column='ID', primary_key=True)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=40)  # Field name made lowercase.
