@@ -142,17 +142,31 @@ if __name__ == "__main__":
     # print("月结30天" in "")
     # testSort2()
 
-    str = "CM01201603020064"
-    if str.startswith("CM",0,2):
-        print("包含")
-    else:
-        print("不包含")
+    # str = "CM01201603020064"
+    # if str.startswith("CM",0,2):
+    #     print("包含")
+    # else:
+    #     print("不包含")
+    #
+    # print(str[0:2:])
+    # pr = str[0:2:]
+    # if pr in ["CM","cM","cm","Cm",]:
+    #     print("true");
 
-    print(str[0:2:])
-    pr = str[0:2:]
-    if pr in ["CM","cM","cm","Cm",]:
-        print("true");
 
+    # a=[2,3,4,5]
+    # b=[2,5,8]
+    # print(list(set(a).union(set(b))))
+    # a.extend(b)
+    # print(a)
+
+    dayOfWeek = datetime.datetime.today().weekday()
+    print(dayOfWeek)
+    date = DateUtil.strTodate("2016-06-06")
+    print(date.weekday())
+
+    date = DateUtil.strTodate("2016-06-05")
+    print(date.weekday())
 
 
 
