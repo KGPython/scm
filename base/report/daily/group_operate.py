@@ -2,7 +2,7 @@
 __author__ = 'liubf'
 
 from django.shortcuts import render
-from django.db.models import Sum,Count,Avg
+from django.db.models import Sum,Avg
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import Kshopsale,BasShopRegion,Estimate
@@ -35,7 +35,7 @@ def index(request):
      karrs.setdefault("sdate__lte","{end} 23:59:59".format(end=yesterday))
      karrs.setdefault("shopid__in",shopids)
      baselist = Kshopsale.objects.values('shopid','sdate','salevalue','salegain','tradenumber','tradeprice','salevalueesti','salegainesti',
-                                         'sdateold','tradenumberold','tradepriceold','salevalueold','salegainold').filter(**karrs).order_by("shopid")
+                                         'tradenumberold','tradepriceold','salevalueold','salegainold').filter(**karrs).order_by("shopid")
 
      karrs.clear()
      karrs.setdefault("sdate__year","{year}".format(year=year))
@@ -668,7 +668,7 @@ def setMonthSale(ritem,monthItem,yitem):
     ritem.setdefault('month_tradenumberold',int(monthItem["m_tradenumberold"]))
 
     if monthItem["m_tradenumberold"] > 0:
-        ritem.setdefault('month_tradenumber_ynygrowth',mtu.convertToStr((monthItem["m_tradenumber"]-monthItem["m_tradenumberold"])*decimal.Decimal("100.0")/(monthItem["m_tradenumberold"]),"0.00",1)+"%")
+        ritem.setdefault('month_tradenumber_ynygrowth',mtu.convertToStr((monthItem["m_tradenumber"]-monthItem["m_tradenumberold"])*decimal.Decimal("100.0")/monthItem["m_tradenumberold"],"0.00",1)+"%")
     else:
         ritem.setdefault('month_tradenumber_ynygrowth',"0.00")
 
@@ -676,7 +676,7 @@ def setMonthSale(ritem,monthItem,yitem):
     ritem.setdefault('month_tradeprice',mtu.convertToStr(monthItem["m_tradeprice"],'0.00',1))
     ritem.setdefault('month_tradepriceold',mtu.convertToStr(monthItem["m_tradepriceold"],'0.00',1))
     if monthItem["m_tradepriceold"] > 0:
-        ritem.setdefault('month_tradeprice_ynygrowth',mtu.convertToStr((monthItem["m_tradeprice"]-monthItem["m_tradepriceold"])*decimal.Decimal("100.0")/(monthItem["m_tradepriceold"]),"0.00",1)+"%")
+        ritem.setdefault('month_tradeprice_ynygrowth',mtu.convertToStr((monthItem["m_tradeprice"]-monthItem["m_tradepriceold"])*decimal.Decimal("100.0")/monthItem["m_tradepriceold"],"0.00",1)+"%")
     else:
         ritem.setdefault('month_tradeprice_ynygrowth',"0.00")
 
@@ -918,7 +918,10 @@ def setYearSale(ritem,yearavgdict):
     if ritem["tradenumberold"] > 0:
         ritem['tradepriceold'] = mtu.convertToStr(decimal.Decimal(ritem["salevalueold"])*decimal.Decimal("10000")/ritem["tradenumberold"],"0.00",1)
 
-    #来客数 = 总客流 / 天数
+    #累计来客数
+    ritem.setdefault("tradenumber_total",int("%0.0f" % ritem['tradenumber']))
+    ritem.setdefault("tradenumberold_total",int("%0.0f" % ritem['tradenumberold']))
+
     if ritem["shopid"] in yearavgdict:
         numitem = yearavgdict[ritem["shopid"]]
         ritem["tradenumber"] = int("%0.0f" % numitem['tradenumber_avg'])
@@ -937,9 +940,9 @@ def setYearSale(ritem,yearavgdict):
     else:
         ritem.setdefault('tradeprice_ynygrowth',"")
 
-    # ritem["sdateold"] = str(ritem["sdateold"])
-    ritem["tradenumber"] = mtu.convertToStr(ritem['tradenumber'],"0",1)
-    ritem["tradenumberold"] = mtu.convertToStr(ritem['tradenumberold'],"0",1)
+    #日均来客数
+    # ritem["tradenumber"] = "%0.0f" % numitem['tradenumber_avg']
+    # ritem["tradenumberold"] = "%0.0f" % numitem['tradenumberold_avg']
 
 
 def setSumValue3(sumList,ritem):
@@ -974,14 +977,24 @@ def setValue3(sum1,ritem):
        sum1["salevalueesti"] = str(float(ritem["salevalueesti"]))
 
    if "tradenumber" in sum1:
-       sum1["tradenumber"] = str(float(sum1["tradenumber"]) + float(ritem["tradenumber"]))
+       sum1["tradenumber"] = sum1["tradenumber"] + ritem["tradenumber"]
    else:
-       sum1["tradenumber"] = str(float(ritem["tradenumber"]))
+       sum1["tradenumber"] = ritem["tradenumber"]
 
    if "tradenumberold" in sum1:
-       sum1["tradenumberold"] = str(float(sum1["tradenumberold"]) + float(ritem["tradenumberold"]))
+       sum1["tradenumberold"] = sum1["tradenumberold"] + ritem["tradenumberold"]
    else:
-       sum1["tradenumberold"] = str(float(ritem["tradenumberold"]))
+       sum1["tradenumberold"] = ritem["tradenumberold"]
+
+   if "tradenumber_total" in sum1:
+       sum1["tradenumber_total"] = sum1["tradenumber_total"] + ritem["tradenumber_total"]
+   else:
+       sum1["tradenumber_total"] = ritem["tradenumber_total"]
+
+   if "tradenumberold_total" in sum1:
+       sum1["tradenumberold_total"] = sum1["tradenumberold_total"] + ritem["tradenumberold_total"]
+   else:
+       sum1["tradenumberold_total"] = ritem["tradenumberold_total"]
 
    if "salegain" in sum1:
        sum1["salegain"] = str(float(sum1["salegain"]) + float(ritem["salegain"]))
@@ -1010,14 +1023,14 @@ def setValue3(sum1,ritem):
 
 def countSum3(sumList):
     """合计运算"""
-    unkeys = ["tradenumber","tradenumberold"]
+    unkeys = ["tradenumber","tradenumberold","tradenumber_total","tradenumberold_total"]
     for key in sumList.keys():
         sum = sumList[key]
         for k in sum:
             if k not in unkeys:
                 sum[k] = "%0.2f" % float(sum[k])
             else:
-                sum[k] = float(sum[k])
+                sum[k] = sum[k]
 
         #日销售-销售差异
         sum["sale_difference"] = str("%0.2f" % (float(sum["salevalue"])-float(sum["salevalueesti"])))
@@ -1069,14 +1082,14 @@ def countSum3(sumList):
             sum["tradenumber_ynygrowth"] = str("0.00%")
 
         #日销售-日客单价 = 日销售实际*10000 / 日来客数
-        if sum["tradenumber"] > 0:
-            sum["tradeprice"] = str("%0.2f" % (float(sum["salevalue"])*10000/sum["tradenumber"]))
+        if sum["tradenumber_total"] > 0:
+            sum["tradeprice"] = str("%0.2f" % (float(sum["salevalue"])*10000/sum["tradenumber_total"]))
         else:
             sum["tradeprice"] = str("0.00")
 
         #日销售-去年日客单价 = 去年日销售实际*10000 / 去年日来客数
-        if sum["tradenumberold"] > 0:
-            sum["tradepriceold"] = str("%0.2f" % (float(sum["salevalueold"])*10000/sum["tradenumberold"]))
+        if sum["tradenumberold_total"] > 0:
+            sum["tradepriceold"] = str("%0.2f" % (float(sum["salevalueold"])*10000/sum["tradenumberold_total"]))
         else:
             sum["tradepriceold"] = str("0.00")
 
@@ -1149,7 +1162,7 @@ def initDayItem(item):
     dayItem.setdefault('salegain',0.00)
     dayItem.setdefault('salegainold',0.00)
     dayItem.setdefault('salegainesti',0.00)
-    dayItem.setdefault('sdateold',"")
+    # dayItem.setdefault('sdateold',"")
     return dayItem
 
 def initMonthItem(item):
