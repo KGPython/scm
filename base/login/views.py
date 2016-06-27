@@ -231,13 +231,23 @@ def findGrpCodeBySuppCode(suppcode):
 #根据角色编码查询菜单
 def findPurByRcode(rcodes):
 
+    # sql = "select DISTINCT rp.pccode,rp.pcode,rp.status, "
+    # sql += "p.nm,p.bmoudule,p.parent_nm,p.grpname,pc.spec "
+    # sql += "from bas_role_pur rp,bas_pur p,bas_pchild pc "
+    # sql += "where rp.pcode=p.pcode and rp.pccode=pc.pccode "
+    # sql += "and rp.pcode<>'001' and p.status=1 "
+    # if rcodes:
+    #     sql += "and rp.rcode in ("+rcodes+") "
+    #
+    # sql += "order by p.parent_nm,p.pcode"
+
     sql = "select DISTINCT rp.pccode,rp.pcode,rp.status, "
-    sql += "p.nm,p.bmoudule,p.parent_nm,p.grpname,pc.spec "
-    sql += "from bas_role_pur rp,bas_pur p,bas_pchild pc "
-    sql += "where rp.pcode=p.pcode and rp.pccode=pc.pccode "
+    sql += "p.nm,p.bmoudule,p.parent_nm,p.grpname "
+    sql += "from bas_role_pur rp,bas_pur p "
+    sql += "where rp.pcode=p.pcode "
     sql += "and rp.pcode<>'001' and p.status=1 "
     if rcodes:
-        sql += "and rp.rcode in ("+rcodes+") "
+        sql += "and rp.rcode in (" + rcodes + ") "
 
     sql += "order by p.parent_nm,p.pcode"
 
@@ -255,7 +265,7 @@ def findPurByRcode(rcodes):
             item.append(("bmoudule",p[4]))
             item.append(("parentnm",p[5]))
             item.append(("grpname",p[6]))
-            item.append(("spec",p[7]))
+            # item.append(("spec",p[7]))
             rslist.append(dict(item))
     return rslist
 

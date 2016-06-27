@@ -34,6 +34,7 @@ class Kgprofit(models.Model):
         managed = False
         db_table = 'KGprofit'
 
+
 class BasShopGroup(models.Model):
     id = models.IntegerField(db_column='ID', primary_key=True)  # Field name made lowercase.
     name = models.CharField(db_column='Name', max_length=40)  # Field name made lowercase.

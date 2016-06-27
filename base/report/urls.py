@@ -22,6 +22,10 @@ urlpatterns = [
     url(r'^report/daily/grpcvsopt/index/$','base.report.daily.group_cvs_operate.index',name='grpCvsOptIndex'),
     url(r'^report/daily/grpsale/index/$','base.report.daily.group_sale.index',name='grpSaleIndex'),
     url(r'^report/daily/grpoptdecmpt/index/$','base.report.daily.group_operate_decompt.index',name='grpGptDecmptIndex'),
+    #异常数据
+    url(r'^report/abnormal/negprofit/index/$', 'base.report.abnormal.negprofit_past3days.index', name='negProfitPast3days'),
+    url(r'^report/abnormal/negprofit/lte200/$', 'base.report.abnormal.negprofit_lte200.index', name='negProfitLte200'),
+
     # 各课组门店销售前十
     url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),
     # 门店供应商退货率
