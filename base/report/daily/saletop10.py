@@ -66,48 +66,48 @@ def index(request):
     sqlsubcate3 = ','.join(subcate3)
     sqlsubcate4 = ','.join(subcate4)
 
-    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate10 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate11 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate12 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate13 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate14 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate15 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate16 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate17 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
 
-    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
+    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate2 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
+    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate3 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
+    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate4 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
