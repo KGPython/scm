@@ -588,7 +588,7 @@ def writeDataToSheet1(wb, lis10):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -615,7 +615,7 @@ def writeDataToSheet2(wb, lis11):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -642,7 +642,7 @@ def writeDataToSheet3(wb, lis12):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -669,7 +669,7 @@ def writeDataToSheet4(wb, lis13):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -696,7 +696,7 @@ def writeDataToSheet5(wb, lis14):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -723,7 +723,7 @@ def writeDataToSheet6(wb, lis15):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -750,7 +750,7 @@ def writeDataToSheet7(wb, lis16):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -777,7 +777,7 @@ def writeDataToSheet8(wb, lis17):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -804,7 +804,7 @@ def writeDataToSheet9(wb, lis2):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -831,7 +831,7 @@ def writeDataToSheet10(wb, lis3):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -858,7 +858,7 @@ def writeDataToSheet11(wb, lis4):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
