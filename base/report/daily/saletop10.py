@@ -4,8 +4,9 @@ __author__ = 'end-e 20160602'
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import datetime, calendar, decimal
 from base.utils import DateUtil, MethodUtil as mtu
+from base.models import BasPurLog
+import datetime, calendar, decimal
 import xlwt3 as xlwt
 
 
@@ -450,7 +451,23 @@ def index(request):
     mtu.close(conn, cur2)
     mtu.close(conn, cur3)
     mtu.close(conn, cur4)
+
     exceltype = mtu.getReqVal(request, "exceltype", "2")
+    # 操作日志
+    if exceltype=='2':
+        qtype = "1"
+    else:
+        qtype = "2"
+    key_state = mtu.getReqVal(request, "key_state", '')
+    if exceltype == '1' and (not key_state or key_state != '2'):
+        exceltype = '2'
+
+    path = request.path
+    today = datetime.datetime.today();
+    ucode = request.session.get("s_ucode")
+    uname = request.session.get("s_uname")
+    BasPurLog.objects.create(name="超市课组销售前十", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
+
     if exceltype == '1':
         return export(request, lis10, lis11, lis12, lis13, lis14, lis15, lis16, lis17, lis2, lis3, lis4)
     else:

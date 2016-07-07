@@ -13,6 +13,29 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class EstimateYear(models.Model):
+    shopid = models.CharField(db_column='ShopID', max_length=12, blank=True, null=True)  # Field name made lowercase.
+    dateid = models.DateField(db_column='DateID', blank=True, null=True)  # Field name made lowercase.
+    salevalue = models.DecimalField(db_column='SaleValue', max_digits=11, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salegain = models.DecimalField(db_column='SaleGain', max_digits=11, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    createtime = models.DateTimeField(db_column='CreateTime', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Estimate_year'
+
+class BasPurLog(models.Model):
+    name = models.CharField(db_column='Name', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    url = models.CharField(db_column='Url', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    qtype = models.SmallIntegerField(db_column='Qtype', blank=True, null=True)  # Field name made lowercase.
+    ucode = models.CharField(db_column='Ucode', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    uname = models.CharField(db_column='Uname', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    createtime = models.DateTimeField(db_column='CreateTime', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'bas_pur_log'
+
 class Kgprofit(models.Model):
     bbdate = models.DateTimeField(auto_now_add=True)
     sdate = models.DateTimeField(auto_now_add=True)

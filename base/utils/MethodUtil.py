@@ -281,6 +281,7 @@ def insertCell2(sheet,count,datalist,keylist,dictlist):
                 else:
                     sheet.write(count,j,cell,sstyle)
         count += 1
+#        sheet.row(i).hidden=1    隐藏行
     return count
 
 #添加标题

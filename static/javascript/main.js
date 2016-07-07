@@ -237,3 +237,11 @@ function getLastDay(year,month){
      return (new Date(new_date.getTime()-1000*60*60*24)).getDate();//获取当月最后一天日期
 }
 
+//excel文件下载
+function pub_export(url){
+    //soft_key_validator.checkKey(export_bar,url);
+    export_bar(url);
+}
+function export_bar(url){
+      window.location.href=url;
+}

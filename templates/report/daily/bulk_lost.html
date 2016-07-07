@@ -36,7 +36,7 @@
         initDate(i+1);
     });
     $("#btnExport").on("click",function(){
-        window.location.href="{% url 'bulkLost' %}?qtype=2";
+        pub_export("{% url 'bulkLost' %}?qtype=2");
     });
 </script>
 <script>

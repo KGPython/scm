@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.db.models import Sum
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kshopsale,BasShopRegion,Estimate
+from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
 from django.db import connection
 from django.http import HttpResponse
 import datetime,calendar,decimal
@@ -77,12 +77,26 @@ def index(request):
         print(">>>>>>>>>>>>[异常]",e)
      #计算月累加合计
      qtype = mtu.getReqVal(request,"qtype","1")
+
+     #操作日志
+     if not qtype:
+         qtype = "1"
+     key_state = mtu.getReqVal(request, "key_state", '')
+     if qtype=='2' and (not key_state or key_state!='2'):
+         qtype = '1'
+
+     path = request.path
+     today = datetime.datetime.today();
+     ucode = request.session.get("s_ucode")
+     uname = request.session.get("s_uname")
+     BasPurLog.objects.create(name="超市销售日报",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
+
      if qtype == "1":
          return render(request,"report/daily/group_sale.html",{"gslist":rlist,"sumDict":sumDict})
      else:
-         return export(request,rlist,sumDict)
+         return export(rlist,sumDict)
 
-def export(request,rlist,sumList):
+def export(rlist,sumList):
 
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
 

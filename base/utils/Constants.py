@@ -1,6 +1,8 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
+import os
+
 #协同信息类型
 PUBINFO_TYPE = {"0":"系统公告","1":"供应商通知","2":"促销动态","3":"新品发布","4":"招商引店"}
 
@@ -26,7 +28,8 @@ URL_SUPPLIER_HOME = "/scm/base/supp/home/"
 #零售商Home页地址
 URL_RETAILER_HOME = "/scm/base/admin/index/"
 
-BASE_ROOT = "/home/system/djangoapps/scm"
+#BASE_ROOT = "/home/system/djangoapps/scm"
+BASE_ROOT = os.getcwd()
 
 ERP_START_TIME = [2012,1,1]
 

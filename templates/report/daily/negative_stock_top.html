@@ -43,7 +43,7 @@
         initDate(i+1);
     });
      $("#btnExport").on("click",function(){
-         window.location.href="{% url 'negativeStockTopIndex' %}?qtype=2";
+         pub_export("{% url 'negativeStockTopIndex' %}?qtype=2");
      });
 </script>
 <script>

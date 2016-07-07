@@ -124,7 +124,7 @@
     });
 
     $("#btnExport").on("click",function(){
-         window.location.href="{% url 'zeroStockTop' %}?qtype=2";
+         pub_export("{% url 'zeroStockTop' %}?qtype=2");
     });
 </script>
 <script>

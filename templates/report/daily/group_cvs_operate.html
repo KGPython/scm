@@ -63,7 +63,7 @@
                  loadDate(1);
 
                  $("#btnExport").on("click",function(){
-                     window.location.href="{% url 'grpCvsOptIndex' %}?qtype=2";
+                     pub_export("{% url 'grpCvsOptIndex' %}?qtype=2");
                  });
              });
              function loadDate(tab){
