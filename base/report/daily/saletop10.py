@@ -67,48 +67,48 @@ def index(request):
     sqlsubcate3 = ','.join(subcate3)
     sqlsubcate4 = ','.join(subcate4)
 
-    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate10 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate11 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate12 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate13 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate14 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate15 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate16 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, ((svalue / num) / 2) as aveprice " \
+    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate17 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
 
-    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
+    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate2 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
+    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate3 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, ((svalue / num) / 2) as costprice, (svalue / num) as aveprice " \
+    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
           "from `kwsaletop10` " \
           "where classsx in (" + sqlsubcate4 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
@@ -164,6 +164,7 @@ def index(request):
 
     # 10 熟食部类
     lis10 = []
+    unit10 =[]
 
     for sid in shopsid:
         i = 0
@@ -175,6 +176,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit10.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows11)):
@@ -189,6 +191,7 @@ def index(request):
                     rows11[i][key] = "%0.2f" % float(rows11[i][key])
     # 11 水产部类
     lis11 = []
+    unit11 = []
 
     for sid in shopsid:
         i = 0
@@ -200,6 +203,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit11.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows12)):
@@ -214,6 +218,7 @@ def index(request):
                     rows12[i][key] = "%0.2f" % float(rows12[i][key])
     # 12 蔬菜部类
     lis12 = []
+    unit12 = []
 
     for sid in shopsid:
         i = 0
@@ -225,6 +230,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit12.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows13)):
@@ -239,6 +245,7 @@ def index(request):
                     rows13[i][key] = "%0.2f" % float(rows13[i][key])
     # 13 烘烤部类
     lis13 = []
+    unit13 = []
 
     for sid in shopsid:
         i = 0
@@ -250,6 +257,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit13.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows14)):
@@ -264,6 +272,7 @@ def index(request):
                     rows14[i][key] = "%0.2f" % float(rows14[i][key])
     # 14 鲜肉部类
     lis14 = []
+    unit14 = []
 
     for sid in shopsid:
         i = 0
@@ -275,6 +284,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit14.append(i)
 
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
@@ -290,6 +300,7 @@ def index(request):
                     rows15[i][key] = "%0.2f" % float(rows15[i][key])
     # 15 干鲜干果部类
     lis15 = []
+    unit15 = []
 
     for sid in shopsid:
         i = 0
@@ -301,6 +312,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit15.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows16)):
@@ -315,6 +327,7 @@ def index(request):
                     rows16[i][key] = "%0.2f" % float(rows16[i][key])
     # 16 主食厨房部类
     lis16 = []
+    unit16 = []
 
     for sid in shopsid:
         i = 0
@@ -326,6 +339,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit16.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows17)):
@@ -340,6 +354,7 @@ def index(request):
                     rows17[i][key] = "%0.2f" % float(rows17[i][key])
     # 17 水果部类
     lis17 = []
+    unit17 = []
 
     for sid in shopsid:
         i = 0
@@ -351,6 +366,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit17.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows2)):
@@ -365,6 +381,7 @@ def index(request):
                     rows2[i][key] = "%0.2f" % float(rows2[i][key])
     # 2 食品部类
     lis2 = []
+    unit2 = []
 
     for sid in shopsid:
         i = 0
@@ -376,6 +393,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit2.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows3)):
@@ -390,6 +408,7 @@ def index(request):
                     rows3[i][key] = "%0.2f" % float(rows3[i][key])
     # 3 用品部类
     lis3 = []
+    unit3 = []
 
     for sid in shopsid:
         i = 0
@@ -401,6 +420,7 @@ def index(request):
                 i += 1
             else:
                 continue
+        unit3.append(i)
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for x in range(0, len(rows4)):
@@ -585,7 +605,7 @@ def writeDataToSheet1(wb, lis10):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -612,7 +632,7 @@ def writeDataToSheet2(wb, lis11):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -639,7 +659,7 @@ def writeDataToSheet3(wb, lis12):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -666,7 +686,7 @@ def writeDataToSheet4(wb, lis13):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -693,7 +713,7 @@ def writeDataToSheet5(wb, lis14):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -720,7 +740,7 @@ def writeDataToSheet6(wb, lis15):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -747,7 +767,7 @@ def writeDataToSheet7(wb, lis16):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -774,7 +794,7 @@ def writeDataToSheet8(wb, lis17):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -801,7 +821,7 @@ def writeDataToSheet9(wb, lis2):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -828,7 +848,7 @@ def writeDataToSheet10(wb, lis3):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -855,7 +875,7 @@ def writeDataToSheet11(wb, lis4):
     ]
 
     keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'costprice', 'aveprice']
+               'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 

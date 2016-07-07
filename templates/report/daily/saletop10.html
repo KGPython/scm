@@ -107,18 +107,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis10 | safe}};
+            var unit10 = {{ unit10 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit10.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit10[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit10[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -140,18 +143,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis11 | safe}};
+            var unit11 = {{ unit11 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit11.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit11[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit11[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -173,18 +179,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis12 | safe}};
+            var unit12 = {{ unit12 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit12.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit12[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit12[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -206,18 +215,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis13 | safe}};
+            var unit13 = {{ unit13 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit13.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit13[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit13[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -239,18 +251,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis14 | safe}};
+            var unit14 = {{ unit14 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit14.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit14[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit14[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -272,18 +287,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis15 | safe}};
+            var unit15 = {{ unit15 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit15.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit15[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit15[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -305,18 +323,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis16 | safe}};
+            var unit16 = {{ unit16 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit16.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit16[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit16[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -338,18 +359,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis17 | safe}};
+            var unit17 = {{ unit17 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 10; i++) {
+            var j = 0;
+            for (var i = 0; i < unit17.length; i++) {
                 var cell = {};
-                cell['row'] = i * 10 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 10;
+                cell['rowspan'] = unit17[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit17[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -371,18 +395,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis2 | safe}};
+            var unit2 = {{ unit2 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 20; i++) {
+            var j = 0;
+            for (var i = 0; i < unit2.length; i++) {
                 var cell = {};
-                cell['row'] = i * 20 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 20;
+                cell['rowspan'] = unit2[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit2[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -404,18 +431,21 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis3 | safe}};
+            var unit3 = {{ unit3 | safe }};
             {#  循环单元格格式  #}
-            for (var i = 0; i < tbody.length / 20; i++) {
+            var j = 0;
+            for (var i = 0; i < unit3.length; i++) {
                 var cell = {};
-                cell['row'] = i * 20 + 1;
+                cell['row'] = j + 1;
                 cell['col'] = 0;
-                cell['rowspan'] = 20;
+                cell['rowspan'] = unit3[i];
                 cell['colspan'] = 1;
                 mergeCellsList.push(cell);
+                j += unit3[i];
             }
             table.push(theadRow);
             table = table.concat(tbody);
@@ -437,8 +467,8 @@
                 'gprate': '毛利率',
                 'closeqty': '当前库存数量',
                 'closevalue': '当前库存金额',
-                'costprice': '成本价',
-                'aveprice': '平均售价'
+                'cprice': '成本价',
+                'price': '平均售价'
             };
             var tbody = {{lis4 | safe}};
             var tempcell = {{ templist | safe }};
