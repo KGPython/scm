@@ -28,8 +28,8 @@ URL_SUPPLIER_HOME = "/scm/base/supp/home/"
 #零售商Home页地址
 URL_RETAILER_HOME = "/scm/base/admin/index/"
 
-#BASE_ROOT = "/home/system/djangoapps/scm"
-BASE_ROOT = os.getcwd()
+BASE_ROOT = "/home/system/djangoapps/scm"
+#BASE_ROOT = os.getcwd()
 
 ERP_START_TIME = [2012,1,1]
 
