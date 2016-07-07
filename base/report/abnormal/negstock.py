@@ -67,7 +67,7 @@ def writeDataToSheet2(wb,resList,title):
     keylistSheet2 = ['shopid','shopname','sgroupid','sgroupname','deptid','deptname','goodsid','goodsname','spec','unitname'
                      ,'qty','costvalue','reason1','reason2','reason3'
                      ]
-    widthList = [600,1100,600,600,600,800,600,1100,600,600,600,600,2000,2000,2000]
+    widthList = [600,1400,600,600,600,800,600,1400,600,600,600,600,2000,2000,2000]
 
     mtu.insertTitle2(sheet2,titlesSheet2,keylistSheet2,widthList)
     mtu.insertCell2(sheet2,3,resList,keylistSheet2,None)
