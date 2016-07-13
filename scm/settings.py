@@ -38,7 +38,7 @@ SECRET_KEY = '959pnv02y=9dyry1k0mypr8&m)a^pv7-x7cx3rtogleb4w*ty5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.122.146','127.0.0.1','localhost']
+ALLOWED_HOSTS = ['192.168.122.146','127.0.0.1','localhost']#
 
 
 # Application definition
@@ -50,8 +50,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base',
-    'djcelery',
-    'base.timer',
+    'djcelery',#
+    'base.timer',#
 )
 
 
@@ -61,7 +61,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'base.common.middlewares.LoginMiddleware',
+    'base.common.middlewares.LoginMiddleware',#
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -72,8 +72,7 @@ ROOT_URLCONF = 'scm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
-        ,
+        'DIRS': [os.path.join(BASE_DIR, 'templates')],#
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -81,8 +80,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'base.views.global_setting',
-
+                'base.views.global_setting',#
             ],
         },
     },
