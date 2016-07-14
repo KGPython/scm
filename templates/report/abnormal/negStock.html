@@ -35,7 +35,8 @@
         initDate(i+1);
     });
      $("#btnExport").on("click",function(){
-         window.location.href="{% url 'negStock' %}?qtype=2&sgroupid={{ sgroupid }}";
+{#         window.location.href="{% url 'negStock' %}?qtype=2&sgroupid={{ sgroupid }}";#}
+         pub_export("{% url 'negStock' %}?qtype=2&sgroupid={{ sgroupid }}",'{{ request.session.s_ucode }}');
      });
 </script>
 <script>
