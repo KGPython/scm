@@ -2,7 +2,6 @@
 __author__ = 'admin'
 
 from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
 import xlwt3 as xlwt
 from base.utils import MethodUtil as mtu,DateUtil
 from django.http import HttpResponse

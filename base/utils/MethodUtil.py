@@ -400,7 +400,7 @@ def insertSum(sheet,count,slist,fmtlist):
             sheet.write(count,i,sum,styleFooter)
 
 #生成验证码
-def verifycode(request,key):
+def   verifycode(request,key):
     # 随机颜色1:
     def rndColor():
         return (random.randint(64, 255), random.randint(64, 255), random.randint(64, 255))
