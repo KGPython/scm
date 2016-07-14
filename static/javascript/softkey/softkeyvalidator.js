@@ -68,11 +68,11 @@ function SoftKeyValidator(call,check_url){
         }
     }
 
-    this.checkKey = function(func,param){
+    this.checkKey = function(func,param,ucode){
         //获得随机数
         SoftKeyValidator.random();
         //如果是IE10及以下浏览器，则使用AVCTIVEX控件的方式
-        if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10(rnd,func,param);
+        if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10(rnd,func,param,ucode);
        //判断是否安装了服务程序，如果没有安装提示用户安装
         if(bConnect==0)
         {
@@ -176,7 +176,7 @@ function SoftKeyValidator(call,check_url){
                             user_name=UK_Data.return_value;//获得返回的UK地址1的字符串
                             //获到设置在锁中的用户密码,
                             //先从地址20读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-                            addr=20;
+                            addr=40;
                             s_simnew1.YReadEx(addr,1,"ffffffff","ffffffff",DevicePath);//发送命令取UK地址20的数据
                         }
                         break;
@@ -198,7 +198,7 @@ function SoftKeyValidator(call,check_url){
                             mylen=UK_Data.return_value;//获得返回的数据缓冲区中数据
 
                             //再从地址21读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-                            addr=21;
+                            addr=41;
                             s_simnew1.YReadString(addr,mylen,"ffffffff", "ffffffff", DevicePath);//发送命令从UK地址21中取字符串
                         }
                         break;
@@ -234,7 +234,7 @@ function SoftKeyValidator(call,check_url){
                             }
                             localMacAddr=UK_Data.return_value;//获得返回的UK中地址21的字符串
 
-                            addr=40;
+                            addr=80;
                             s_simnew1.YReadEx(addr,1,"ffffffff","ffffffff",DevicePath);//发送命令取UK地址40的数据
                         }
                         break;
@@ -256,7 +256,7 @@ function SoftKeyValidator(call,check_url){
                             mylen=UK_Data.return_value;//获得返回的数据缓冲区中数据
 
                             //再从地址41读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-                            addr=41;
+                            addr=81;
                             s_simnew1.YReadString(addr,mylen,"ffffffff", "ffffffff", DevicePath);//发送命令从UK地址41中取字符串
                         }
                         break;
@@ -271,7 +271,7 @@ function SoftKeyValidator(call,check_url){
                              //所有工作处理完成后，关掉Socket
                             s_simnew1.Socket_UK.close();
                             //后台验证
-                            checkValidity(func,param);
+                            checkValidity(func,param,ucode);
                         }
                         break;
                 }
@@ -284,7 +284,153 @@ function SoftKeyValidator(call,check_url){
             return false;
         }
     }
-   /* this.authorized= function(){
+
+    this.Handle_IE10 = function(rnd,func,param,ucode)
+    {
+        var DevicePath,ret,n,mylen;
+        try
+        {
+            //建立操作我们的锁的控件对象，用于操作我们的锁
+            var s_simnew1;
+            //创建控件
+            s_simnew1=new ActiveXObject("Syunew3A.s_simnew3");
+
+            //查找是否存在锁,这里使用了FindPort函数
+            DevicePath = s_simnew1.FindPort(0);
+            if( s_simnew1.LastError!= 0 )
+            {
+                window.alert ( "未发现加密锁，请插入加密锁。");
+                return false;
+            }
+
+             //'读取锁的ID
+            key_id=SoftKeyValidator.toHex(s_simnew1.GetID_1(DevicePath))+SoftKeyValidator.toHex(s_simnew1.GetID_2(DevicePath));
+
+            if( s_simnew1.LastError!= 0 )
+            {
+                window.alert( "返回ID号错误，错误码为："+s_simnew1.LastError.toString());
+                return false;
+            }
+
+            //获取设置在锁中的用户名
+            //先从地址0读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
+            ret=s_simnew1.YReadEx(0,1,"ffffffff","ffffffff",DevicePath);
+            mylen =s_simnew1.GetBuf(0);
+            //再从地址1读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
+            user_name=s_simnew1.YReadString(1,mylen, "ffffffff", "ffffffff", DevicePath);
+
+            if( s_simnew1.LastError!= 0 )
+            {
+                window.alert("读取用户名时错误，错误码为："+s_simnew1.LastError.toString());
+                return false;
+            }
+
+            //获到设置在锁中的用户密码,
+            //先从地址20读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
+            ret=s_simnew1.YReadEx(40,1,"ffffffff","ffffffff",DevicePath);
+            mylen =s_simnew1.GetBuf(0);
+            //再从地址21读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
+            user_pwd=s_simnew1.YReadString(41,mylen,"ffffffff", "ffffffff", DevicePath);
+
+            if( s_simnew1.LastError!= 0 )
+            {
+                window.alert( "读取用户密码时错误，错误码为："+s_simnew1.LastError.toString());
+                return false;
+            }
+
+            //这里返回对随机数的HASH结果
+            enc_data=s_simnew1.EncString(rnd,DevicePath);
+            if( s_simnew1.LastError!= 0 )
+            {
+                window.alert( "进行加密运行算时错误，错误码为："+s_simnew1.LastError.toString());
+                return false;
+            }
+
+            //先从地址40读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
+            ret=s_simnew1.YReadEx(80,1,"ffffffff","ffffffff",DevicePath);
+            mylen =s_simnew1.GetBuf(0);
+            //再从地址41读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
+            macAddr=s_simnew1.YReadString(81,mylen,"ffffffff", "ffffffff", DevicePath);
+            if( s_simnew1.LastError!= 0 )
+            {
+                window.alert( "读取用户mac时错误，错误码为："+s_simnew1.LastError.toString());
+                return false;
+            }
+
+            //后台验证
+            checkValidity(func,param,ucode);
+        }catch (e){
+            alert(e.name + "：" + e.message+"，可能是没有安装相应的控件或插件");
+            return false;
+        }
+    }
+
+    String.prototype.trim = function() {
+        return this.replace(/^\s+|\s+$/g,"");
+    }
+
+    function checkValidity(func,param,ucode){
+        var codestr = $.md5(ucode.trim());
+        if(codestr.trim()!=user_name.trim()){
+            alert("加密锁与当前用户不符！");
+            return false;
+        }
+
+        var jsonStr = {
+            keyId:key_id,
+            userName:user_name,
+            userPwd:user_pwd,
+            rnd:rnd,
+            encData:enc_data,
+        };
+
+        var data = {
+            call:call,
+            jsonStr: JSON.stringify(jsonStr)
+        };
+
+        $.ajax({
+            url:check_url,
+            type: "POST",
+            data: data,
+            dataType : 'jsonp',
+            jsonpCallback:"callBack",
+            cache: false,
+            success: function(result){
+                var succ = result.success.replace(/\"/g,"");
+                if(succ == '1'){
+                    alert('加密锁未启用');
+                    return false;
+                }else if(succ == '2'){
+                    if(param){
+                        param += "&key_state="+succ;
+
+                        func(param);
+                    }else{
+                        func();
+                    }
+                }else if(succ == '3'){
+                    alert('加密锁已冻结');
+                    return false;
+                }else if(succ == '4'){
+                    alert('加密锁已失效');
+                    return false;
+                }else if(succ == '5'){
+                    alert('加密锁已过期');
+                    return false;
+                }else if(succ == '6'){
+                    alert('加密锁验授权信息错误');
+                    return false;
+                }else{
+                    alert("请求错误，验证失败");
+                    return false;
+                }
+            }
+        });
+        function callBack(){}
+    }
+
+     /* this.authorized= function(){
         //如果是IE10及以下浏览器，则使用AVCTIVEX控件的方式
         if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10_1();
 
@@ -373,83 +519,6 @@ function SoftKeyValidator(call,check_url){
         }
     }*/
 
-    this.Handle_IE10 = function(rnd,func,param)
-    {
-        var DevicePath,ret,n,mylen;
-        try
-        {
-            //建立操作我们的锁的控件对象，用于操作我们的锁
-            var s_simnew1;
-            //创建控件
-            s_simnew1=new ActiveXObject("Syunew3A.s_simnew3");
-
-            //查找是否存在锁,这里使用了FindPort函数
-            DevicePath = s_simnew1.FindPort(0);
-            if( s_simnew1.LastError!= 0 )
-            {
-                window.alert ( "未发现加密锁，请插入加密锁。");
-                return false;
-            }
-
-             //'读取锁的ID
-            key_id=SoftKeyValidator.toHex(s_simnew1.GetID_1(DevicePath))+SoftKeyValidator.toHex(s_simnew1.GetID_2(DevicePath));
-
-            if( s_simnew1.LastError!= 0 )
-            {
-                window.alert( "返回ID号错误，错误码为："+s_simnew1.LastError.toString());
-                return false;
-            }
-
-            //获取设置在锁中的用户名
-            //先从地址0读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-            ret=s_simnew1.YReadEx(0,1,"ffffffff","ffffffff",DevicePath);
-            mylen =s_simnew1.GetBuf(0);
-            //再从地址1读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-            user_name=s_simnew1.YReadString(1,mylen, "ffffffff", "ffffffff", DevicePath);
-
-            if( s_simnew1.LastError!= 0 )
-            {
-                window.alert("读取用户名时错误，错误码为："+s_simnew1.LastError.toString());
-                return false;
-            }
-
-            //获到设置在锁中的用户密码,
-            //先从地址20读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-            ret=s_simnew1.YReadEx(20,1,"ffffffff","ffffffff",DevicePath);
-            mylen =s_simnew1.GetBuf(0);
-            //再从地址21读取相应的长度的字符串，,使用默认的读密码"FFFFFFFF","FFFFFFFF"
-            user_pwd=s_simnew1.YReadString(21,mylen,"ffffffff", "ffffffff", DevicePath);
-
-            if( s_simnew1.LastError!= 0 )
-            {
-                window.alert( "读取用户密码时错误，错误码为："+s_simnew1.LastError.toString());
-                return false;
-            }
-
-            //这里返回对随机数的HASH结果
-            enc_data=s_simnew1.EncString(rnd,DevicePath);
-            if( s_simnew1.LastError!= 0 )
-            {
-                window.alert( "进行加密运行算时错误，错误码为："+s_simnew1.LastError.toString());
-                return false;
-            }
-
-            //这里返回用户mac地址
-            macAddr = s_simnew1.MacAddr();
-            if( s_simnew1.LastError!= 0 )
-            {
-                window.alert( "读取客户mac地址时错误，错误码为："+s_simnew1.LastError.toString());
-                return false;
-            }
-
-            //后台验证
-            checkValidity(func,param);
-        }catch (e){
-            alert(e.name + "：" + e.message+"，可能是没有安装相应的控件或插件");
-            return false;
-        }
-    }
-
     //  this.Handle_IE10_1 = function()
     // {
     //     var DevicePath,ret,n,mylen;;
@@ -497,72 +566,4 @@ function SoftKeyValidator(call,check_url){
     //         return false;
     //     }
     // }
-
-    // String.prototype.trim = function() {
-    //     return this.replace(/^\s+|\s+$/g, "");
-    // }
-    function checkValidity(func,param){
-        // if(macAddr == undefined || macAddr==''){
-        //     alert("加密锁未与电脑绑定");
-        //     return false;
-        // }
-        //
-        // if(localMacAddr.trim()!=macAddr.trim()){
-        //     alert("非当前电脑加密锁");
-        //     return false;
-        // }
-
-        var jsonStr = {
-            keyId:key_id,
-            userName:user_name,
-            userPwd:user_pwd,
-            rnd:rnd,
-            encData:enc_data,
-        };
-
-        var data = {
-            call:call,
-            jsonStr: JSON.stringify(jsonStr)
-        };
-        console.log(check_url);
-        console.log(data);
-        $.ajax({
-            url:check_url,
-            type: "POST",
-            data: data,
-            dataType : 'jsonp',
-            jsonpCallback:"callBack",
-            cache: false,
-            success: function(result){
-                var succ = result.success.replace(/\"/g, "");
-                if(succ == '1'){
-                    alert('加密锁未启用');
-                    return false;
-                }else if(succ == '2'){
-                    if(param){
-                        param += "&state="+succ;
-                        func(param);
-                    }else{
-                        func();
-                    }
-                }else if(succ == '3'){
-                    alert('加密锁已冻结');
-                    return false;
-                }else if(succ == '4'){
-                    alert('加密锁已失效');
-                    return false;
-                }else if(succ == '5'){
-                    alert('加密锁已过期');
-                    return false;
-                }else if(succ == '6'){
-                    alert('加密锁验授权信息错误');
-                    return false;
-                }else{
-                    alert("请求错误，验证失败");
-                    return false;
-                }
-            }
-        });
-        function callBack(){}
-    }
 }
