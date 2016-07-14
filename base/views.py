@@ -46,6 +46,7 @@ def global_setting(request):
 
     # 加密狗验证服务地址
     SCM_SOFTKEY_URL = "http://192.168.250.8:8082/authservice/inf/main"
+    # SCM_SOFTKEY_URL = "http://192.168.122.120:8080/authservice/inf/main"   #本地测试地址
     return locals()
 
 
