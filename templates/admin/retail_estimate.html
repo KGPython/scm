@@ -7,28 +7,32 @@
     <link rel="stylesheet" href="{{ static }}/css/reset.css" type="text/css">
     <link rel="stylesheet" href="{{ static }}/css/main.css" type="text/css">
     <script type="text/javascript" src="{{ static }}/js/laydate.js"></script>
+    <style>
+         .msg_note{
+             width:20%;
+             margin-left:40%;
+             margin-right:40%;
+             padding-left:70px;
+             text-align: left;
+         }
+    </style>
 </head>
 
 <body>
     {% include "common/nav.html" %}
     <div class="mainHome">
         <h1>导入全年预算</h1>
-
         <div style="margin-top: 20px;">
-            <form id="fileForm" method="post" action="{% url 'retEstimateImpt' %}"  enctype="multipart/form-data" >
-                <ul >
-                    <li style="height: 30px;">
-                        <input type="file"  id="file" name="file">
-                    </li>
-                    <li>
-                        <p>注意：1、上传文件支持xls、xlsx类型文件。</p>
-                        <p>&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;2、如果全年预算调整需要重新导入预算数据。</p>
-                    </li>
-                    <li style="height: 30px;margin-top: 20px;">
-                        <input type="button" id="cal_btn" value="取消">&emsp;&emsp;
-                        <input type="button" id="sub_btn" value="导入">
-                    </li>
-                </ul>
+            <form id="fileForm" method="post" enctype="multipart/form-data" >
+                <p style="margin-bottom: 10px;"><input type="file"  id="file" name="file"></p>
+                <p class="msg_note">注意：</p>
+                <p class="msg_note">1、上传文件支持xls、xlsx类型文件。</p>
+                <p class="msg_note">2、如果全年预算调整需要重新导入预算数据。</p>
+                <p class="msg_note">3、文件名称不能含中文。</p>
+                <p style="margin-top: 10px;">
+                    <input type="button" id="cal_btn" value="取消">&emsp;&emsp;
+                    <input type="button" id="sub_btn" value="导入">
+                </p>
             </form>
         </div>
 
@@ -45,12 +49,15 @@
                      return false;
                  }
 
-                 if(false){
+                 if(!fileType(fval)){
                      alert("只支持xls,xlsx类型文件");
+                     $("#file").val("");
                      return false;
                  }
+                 $("#fileForm").attr("action","{% url 'retEstimateImpt' %}");
                  $("#fileForm").submit();
                  $("#sub_btn").attr("disabled",true);
+
              });
             $("#cal_btn").on("click",function(){
                    $("#file").val("");
@@ -60,6 +67,21 @@
         if(status=='success'){
             alert("导入成功！");
             $("#sub_btn").attr("disabled",false);
+        }
+
+        function fileType(filepath){
+            var filetypes =[".xls",".XLS",".xlsx",".XLSX"];
+            if(filepath){
+                var isnext = false;
+                var fileend = filepath.substring(filepath.indexOf("."));
+                for(var i =0; i<filetypes.length;i++){
+                    if(filetypes[i]==fileend){
+                        isnext = true;
+                        break;
+                    }
+                }
+            }
+            return isnext;
         }
     </script>
 </body>
