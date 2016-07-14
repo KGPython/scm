@@ -45,7 +45,7 @@
                  loadDate();
 
                  $("#btnExport").on("click",function(){
-                     pub_export("{% url 'negProfitPast3days' %}?qtype=2");
+                     pub_export("{% url 'negProfitPast3days' %}?qtype=2",'{{ request.session.s_ucode }}');
                  });
              });
              function loadDate(){

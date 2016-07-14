@@ -29,7 +29,7 @@
                  loadDate(1);
 
                  $("#btnExport").on("click",function(){
-                     pub_export("{% url 'grpSaleIndex' %}?qtype=2");
+                     pub_export("{% url 'grpSaleIndex' %}?qtype=2",'{{ request.session.s_ucode }}');
                  });
              });
              function loadDate(tab){
