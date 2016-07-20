@@ -281,6 +281,7 @@ def insertCell2(sheet,count,datalist,keylist,dictlist):
                 else:
                     sheet.write(count,j,cell,sstyle)
         count += 1
+#        sheet.row(i).hidden=1    隐藏行
     return count
 
 #添加标题
@@ -399,7 +400,7 @@ def insertSum(sheet,count,slist,fmtlist):
             sheet.write(count,i,sum,styleFooter)
 
 #生成验证码
-def verifycode(request,key):
+def   verifycode(request,key):
     # 随机颜色1:
     def rndColor():
         return (random.randint(64, 255), random.randint(64, 255), random.randint(64, 255))

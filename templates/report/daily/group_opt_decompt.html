@@ -57,7 +57,7 @@
                  loadDate(0);
 
                  $("#btnExport").on("click",function(){
-                     window.location.href="{% url 'grpGptDecmptIndex' %}?qtype=2";
+                     pub_export("{% url 'grpGptDecmptIndex' %}?qtype=2",'{{ request.session.s_ucode }}');
                  });
              });
              function loadDate(tab){

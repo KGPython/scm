@@ -3,8 +3,9 @@ __author__ = 'chen'
 
 from django.shortcuts import render
 from django.http import HttpResponse
-import datetime,decimal,calendar
 from base.utils import DateUtil,MethodUtil as mtu
+from base.models import BasPurLog
+import datetime,decimal,calendar
 import xlwt3 as xlwt
 
 def inidex(request):
@@ -79,6 +80,19 @@ def inidex(request):
 
     TotalDict = {'shopTopTotal':shopTopTotal}
     qtype = mtu.getReqVal(request,"qtype","1")
+    # 操作日志
+    if not qtype:
+        qtype = "1"
+    key_state = mtu.getReqVal(request, "key_state", '')
+    if qtype == '2' and (not key_state or key_state != '2'):
+        qtype = '1'
+
+    path = request.path
+    today = datetime.datetime.today();
+    ucode = request.session.get("s_ucode")
+    uname = request.session.get("s_uname")
+    BasPurLog.objects.create(name="超市蔬菜报损率", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
+
     if qtype== "1":
         return render(request,'report/daily/vegetable_lost.html',locals())
     else:

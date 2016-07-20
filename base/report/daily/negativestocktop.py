@@ -4,8 +4,9 @@ __author__ = 'liubf'
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-import datetime,calendar,decimal
 from base.utils import DateUtil,MethodUtil as mtu
+from base.models import BasPurLog
+import datetime,calendar,decimal
 import xlwt3 as xlwt
 
 @csrf_exempt
@@ -135,9 +136,23 @@ def index(request):
         if(not obj['qtyz']):
             obj['qtyz']= 0
         obj['qtyz'] = float(obj['qtyz'])
-    qtype = mtu.getReqVal(request,"qtype","1")
     cur.close()
     conn.close()
+
+    qtype = mtu.getReqVal(request,"qtype","1")
+    # 操作日志
+    if not qtype:
+        qtype = "1"
+    key_state = mtu.getReqVal(request, "key_state", '')
+    if qtype == '2' and (not key_state or key_state != '2'):
+        qtype = '1'
+
+    path = request.path
+    today = datetime.datetime.today();
+    ucode = request.session.get("s_ucode")
+    uname = request.session.get("s_uname")
+    BasPurLog.objects.create(name="超市负库存日报", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
+
     if qtype== "1":
         return render(request,"report/daily/negative_stock_top.html",locals())
     else:

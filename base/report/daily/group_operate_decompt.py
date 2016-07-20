@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.db.models import Sum
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
-from base.models import BasShopRegion
+from base.models import BasShopRegion,BasPurLog
 from django.http import HttpResponse
 import datetime,calendar,decimal,time
 import xlwt3 as xlwt
@@ -112,6 +112,17 @@ def index(request):
          shoplist.append(item)
 
      qtype = mtu.getReqVal(request,"qtype","1")
+     #操作日志
+     if not qtype:
+         qtype = "1"
+     key_state = mtu.getReqVal(request, "key_state", '')
+     if qtype == '2' and (not key_state or key_state != '2'):
+         qtype = '1'
+     path = request.path
+     today = datetime.datetime.today();
+     ucode = request.session.get("s_ucode")
+     uname = request.session.get("s_uname")
+     BasPurLog.objects.create(name="超市运营日分解",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
      if qtype == "1":
          return render(request, "report/daily/group_opt_decompt.html",{"rlist":rslist,"shoplist":shoplist,"grslist":grslist,"srslist":srslist})
      else:

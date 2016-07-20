@@ -9,9 +9,9 @@ urlpatterns = [
     # url(r'^report/daily/negativestock/query/','base.report.daily.negativestocktop.query',name='negativeStockTopQuery'),
     # url(r'^report/daily/negativestock/download/','base.report.daily.negativestocktop.download',name='negativeStockTopDownload'),
     #负库存课组明细
-    url(r'^report/daily/negStockDeptDetail/$','base.report.daily.negStockDeptDetail.index',name='negStockDeptDetail'),
+    # url(r'^report/daily/negStockDeptDetail/$','base.report.daily.negStockDeptDetail.index',name='negStockDeptDetail'),
     #负库存课组汇总
-    url(r'^report/daily/negStockDept/$','base.report.daily.negStockDept.index',name='negStockDept'),
+    # url(r'^report/daily/negStockDept/$','base.report.daily.negStockDept.index',name='negStockDept'),
 
     #零库存排名
     url(r'^report/daily/zeroStockTop/$','base.report.daily.zerostocktop.index',name='zeroStockTop'),
@@ -25,7 +25,7 @@ urlpatterns = [
     #异常数据
     url(r'^report/abnormal/negprofit/index/$', 'base.report.abnormal.negprofit_past3days.index', name='negProfitPast3days'),
     url(r'^report/abnormal/negprofit/lte200/$', 'base.report.abnormal.negprofit_lte200.index', name='negProfitLte200'),
-
+    url(r'^report/abnormal/neg/negstock/$', 'base.report.abnormal.negstock.index', name='negStock'),
     # 各课组门店销售前十
     url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),
     # 门店供应商退货率

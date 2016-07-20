@@ -6,9 +6,15 @@
 <script type="text/javascript" src="{{ static }}/js/jquery.cookie.js"></script>
 <script type="text/javascript" src="{{ static }}/js/csrf.js"></script>
 <script type="text/javascript" src="{{ static }}/js/print/jquery.jqprint-0.3.js"></script>
+<script type="text/javascript" src="{{ static }}/js/md5.js"></script>
+<script type="text/javascript" src="{{ static }}/js/base64.js"></script>
 <script type="text/javascript" src="{{ static }}/js/main.js"></script>
 <script type="text/javascript" src="{{ static }}/js/laydate.js"></script>
+<script type="text/javascript" src="{{ static }}/js/softkey/Syunew3.js"></script>
+<script type="text/javascript" src="{{ static }}/js/softkey/softkeyvalidator.js" charset="utf-8"></script>
 <script type="text/javascript">
+    var soft_key_validator = new SoftKeyValidator('101','{{ SCM_SOFTKEY_URL }}');
+    soft_key_validator.loadSoftKey();
    $(function(){
         if(typeof(current) != "undefined"){
             $('#nav_'+current).css({"background":"#fff","color":"#337AB7"});

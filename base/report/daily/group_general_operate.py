@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.db.models import Sum,Avg
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kshopsale,BasShopRegion,Estimate
+from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
 from django.http import HttpResponse
 import datetime,calendar,decimal
 import xlwt3 as xlwt
@@ -227,10 +227,23 @@ def index(request):
           erlist,esumDict,yeardict,yearlist,yearSumDict,yydict,yearavgdict,date)
 
      qtype = mtu.getReqVal(request,"qtype","1")
+
+     #操作日志
+     if not qtype:
+         qtype = "1"
+     key_state = mtu.getReqVal(request, "key_state", '')
+     if qtype == '2' and (not key_state or key_state != '2'):
+         qtype = '1'
+     path = request.path
+     today = datetime.datetime.today();
+     ucode = request.session.get("s_ucode")
+     uname = request.session.get("s_uname")
+     BasPurLog.objects.create(name="百货销售日报",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
+
      if qtype == "1":
          return render(request, "report/daily/group_general_operate.html",{"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict})
      else:
-         return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
+         return export(rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
 
 
 def sum1(slist,days,ddict,mdict,ydict,edict,rlist,sumDict,rlist2,sumDict2,yeardict,yearlist,yearSumDict,yydict,yearavgdict,yestoday):

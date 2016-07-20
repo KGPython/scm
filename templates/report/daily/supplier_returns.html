@@ -20,7 +20,7 @@
 {% include "common/footer.html" %}
 <script type="text/javascript">
     $("#btnExport").on("click", function () {
-        window.location.href = "{% url 'supplierReturnsIndex' %}?exceltype=1";
+        pub_export("{% url 'supplierReturnsIndex' %}?exceltype=1",'{{ request.session.s_ucode }}');
     });
 </script>
 <script>

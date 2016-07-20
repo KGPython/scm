@@ -35,7 +35,7 @@
         initDate(i+1);
     });
     $("#btnExport").on("click",function(){
-        window.location.href="{% url 'vegetableLost' %}?qtype=2";
+        pub_export("{% url 'vegetableLost' %}?qtype=2",'{{ request.session.s_ucode }}');
     });
 </script>
 <script>

@@ -5,7 +5,7 @@ from django.shortcuts import render
 from django.db.models import Sum,Avg
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kshopsale,BasShopRegion,Estimate
+from base.models import Kshopsale,BasShopRegion,Estimate,EstimateYear,BasPurLog
 from django.http import HttpResponse
 import datetime,calendar,decimal
 import xlwt3 as xlwt
@@ -226,10 +226,21 @@ def index(request):
           erlist,esumDict,yeardict,yearlist,yearSumDict,yydict,yearavgdict,date)
 
      qtype = mtu.getReqVal(request,"qtype","1")
+     #操作日志
+     if not qtype:
+         qtype = "1"
+     key_state = mtu.getReqVal(request, "key_state", '')
+     if qtype == '2' and (not key_state or key_state != '2'):
+         qtype = '1'
+     path = request.path
+     today = datetime.datetime.today();
+     ucode = request.session.get("s_ucode")
+     uname = request.session.get("s_uname")
+     BasPurLog.objects.create(name="超市运营日报",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
      if qtype == "1":
          return render(request, "report/daily/group_operate.html",{"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict})
      else:
-         return export(request,rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
+         return export(rlist,sumDict,erlist,esumDict,yearlist,yearSumDict)
 
 
 
@@ -1113,9 +1124,9 @@ def findYearEstimate(shopids):
      karrs = {}
      karrs.setdefault("shopid__in",shopids)
      karrs.setdefault("dateid__year",year)
-     elist = Estimate.objects.values("shopid")\
+     elist = EstimateYear.objects.values("shopid")\
                      .filter(**karrs).order_by("shopid")\
-                     .annotate(y_salevalue=Sum('salevalue')/10000,y_salegain=Sum('salegain')/10000)
+                     .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
 
      for item in elist:
          edict.setdefault(str(item["shopid"]),item)

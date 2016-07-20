@@ -4,7 +4,7 @@ __author__ = 'liubf'
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kgprofit
+from base.models import Kgprofit,BasPurLog
 from django.http import HttpResponse
 import datetime,calendar,decimal
 import xlwt3 as xlwt
@@ -22,6 +22,16 @@ def index(request):
      formate_data(rlist)
 
      qtype = mtu.getReqVal(request,"qtype","1")
+
+     #操作日志
+     if not qtype:
+         qtype = "1"
+     path = request.path
+     today = datetime.datetime.today();
+     ucode = request.session.get("s_ucode")
+     uname = request.session.get("s_uname")
+     BasPurLog.objects.create(name="负毛利大于200",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
+
      if qtype == "1":
          return render(request, "report/abnormal/negprofit_lte200.html", {"rlist":list(rlist)})
      else:

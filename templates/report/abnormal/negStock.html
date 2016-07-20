@@ -1,0 +1,124 @@
+{% load basefilter %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+</head>
+<body>
+{% include "common/nav.html" %}
+<script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
+<script type="text/javascript" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
+<link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+<div class="notice noticeOrder comWidth" style="width: inherit">
+    <div class="tTitle">
+        <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
+        <div class="container">
+            <ul class="nav nav-tabs">
+              <li role="presentation" class="active"><a href="#">{{ title }}负库存商品报告</a></li>
+            </ul>
+            <div class="list-tabs container">
+                <div class="table" style="display:block;">
+                        <div id="tableReport1" style="height:770px;width:100%;overflow: auto;" > </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script type="text/javascript">
+    $('.nav-tabs li').click(function (e) {
+        e.preventDefault();
+        $(this).addClass("active").siblings().removeClass("active");
+        i=$(this).index();
+        $(".list-tabs .table").eq(i).show().siblings().hide();
+        //加载数据
+        initDate(i+1);
+    });
+     $("#btnExport").on("click",function(){
+{#         window.location.href="{% url 'negStock' %}?qtype=2&sgroupid={{ sgroupid }}";#}
+         pub_export("{% url 'negStock' %}?qtype=2&sgroupid={{ sgroupid }}",'{{ request.session.s_ucode }}');
+     });
+</script>
+<script>
+    $(function(){
+         initDate(1);
+     });
+    function initDate(tab){
+        var fixedRow,fixedCol;
+        var mergeCellsList = [];
+        var columns = [];
+        var table = [];
+        var rowLight = [];
+        if(tab==1){
+            var tody = new Date();
+            var yesterday = getYestodayDate(tody);
+            yesterday = yesterday.getDate();
+            fixedRow = 0;
+            fixedCol = 0;
+            var theadRow1 = {
+                'shopid':'门店编码','shopname':'门店名称','sgroupid':'管理类别码','sgroupname':'管理类别名称',
+                'deptid':'小类编码','deptname':'小类名称','goodsid':'商品编码','goodsname':'商品名称','spec':'商品规格',
+                'unitname':'销售单位','qty':'负库存数量','costvalue':'负库存金额','reason1':'解释原因','reason2':'解决方案','reason3':'解决时间'
+            };
+            columns = [
+                {data: "shopid", width: 100}, {data: "shopname", width: 140}, {data: "sgroupid", width: 80},{data: "sgroupname", width: 140},
+                {data: "deptid", width: 100}, {data: "deptname", width: 200}, {data: "goodsid", width: 80}, {data: "goodsname", width: 300},
+                {data: "spec", width: 100}, {data: "unitname", width: 80}, {data: "qty", width: 80}, {data: "costvalue", width: 80},
+                {data: "reason1", width: 300}, {data: "reason2", width: 300}, {data: "reason3", width: 300}
+            ];
+            table.push(theadRow1);
+            //拼接tbody数据
+            var tbody = {{ resList | safe }};
+            table = table.concat(tbody);
+        }
+        initTable(tab,table,fixedRow,fixedCol,mergeCellsList,columns,rowLight)
+    }
+    var tableSetting = {};
+    function initTable(tab,table,fixedRow,fixedCol,mergeCellsList,columns,rowLight){
+        tableSetting = {
+            data: table,
+            colWidths: 140,
+            className: "htCenter htMiddle",
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: false,
+            fixedRowsTop: fixedRow,
+            fixedColumnsLeft: fixedCol,
+            manualColumnResize: true,
+            manualRowMove: true,
+            manualColumnMove: true,
+            columnSorting: true,
+            sortIndicator: true,
+            readOnly: true,
+            mergeCells: mergeCellsList,
+            columns: columns,
+            cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
+                    cellProperties.renderer = headerRenderer;
+                }
+                return cellProperties;
+            }
+        };
+        creatTable(tab,tableSetting)
+    }
+    var hot1,hot2,hot3;
+    function creatTable(tab,tableSetting) {
+        var container = document.getElementById('tableReport' + tab);
+        if(tab==1){
+            if(!hot1){
+                hot1 = new Handsontable(container,tableSetting );
+            }
+        }else if(tab==2){
+            if(!hot2){
+                hot2 = new Handsontable(container,tableSetting );
+            }
+        }else if(tab==3){
+            if(!hot3){
+                hot3 = new Handsontable(container,tableSetting );
+            }
+        }
+    }
+</script>
+</body>
+</html>

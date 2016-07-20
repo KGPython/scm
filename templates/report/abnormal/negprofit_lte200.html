@@ -27,7 +27,7 @@
         <script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.full.js"></script>
         <script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
         <script data-jsfiddle="example1">
-            current = "ribao";
+            current = "yichangshuju";
         </script>
         <script type="text/javascript">
             $('.nav-tabs li').click(function (e) {
@@ -45,7 +45,7 @@
                  loadDate();
 
                  $("#btnExport").on("click",function(){
-                     window.location.href="{% url 'negProfitLte200' %}?qtype=2";
+                     pub_export("{% url 'negProfitLte200' %}?qtype=2",'{{ request.session.s_ucode }}');
                  });
              });
              function loadDate(){

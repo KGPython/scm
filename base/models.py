@@ -13,6 +13,29 @@ from __future__ import unicode_literals
 import json,datetime,decimal
 from django.db import models
 
+class EstimateYear(models.Model):
+    shopid = models.CharField(db_column='ShopID', max_length=12, blank=True, null=True)  # Field name made lowercase.
+    dateid = models.DateField(db_column='DateID', blank=True, null=True)  # Field name made lowercase.
+    salevalue = models.DecimalField(db_column='SaleValue', max_digits=11, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    salegain = models.DecimalField(db_column='SaleGain', max_digits=11, decimal_places=2, blank=True, null=True)  # Field name made lowercase.
+    createtime = models.DateTimeField(db_column='CreateTime', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'Estimate_year'
+
+class BasPurLog(models.Model):
+    name = models.CharField(db_column='Name', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    url = models.CharField(db_column='Url', max_length=100, blank=True, null=True)  # Field name made lowercase.
+    qtype = models.SmallIntegerField(db_column='Qtype', blank=True, null=True)  # Field name made lowercase.
+    ucode = models.CharField(db_column='Ucode', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    uname = models.CharField(db_column='Uname', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    createtime = models.DateTimeField(db_column='CreateTime', blank=True, null=True,auto_now_add=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'bas_pur_log'
+
 class Kgprofit(models.Model):
     bbdate = models.DateTimeField(auto_now_add=True)
     sdate = models.DateTimeField(auto_now_add=True)
@@ -1590,3 +1613,29 @@ class RepShopNegativeStock(models.Model):
     class Meta:
         managed = False
         db_table = 'rep_shopnegativestock'
+
+
+class KgNegStock(models.Model):
+    shopid = models.CharField(max_length=4, blank=True, null=True)
+    shopname = models.CharField(max_length=64, blank=True, null=True)
+    sgroupid = models.IntegerField(db_column='sGroupID', blank=True, null=True)  # Field name made lowercase.
+    sgroupname = models.CharField(db_column='sGroupName', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    goodsid = models.IntegerField(db_column='GoodsID', blank=True, null=True)  # Field name made lowercase.
+    goodsname = models.CharField(db_column='GoodsName', max_length=64, blank=True, null=True)  # Field name made lowercase.
+    qty = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
+    costvalue = models.DecimalField(db_column='CostValue', max_digits=16, decimal_places=4, blank=True, null=True)  # Field name made lowercase.
+    spec = models.CharField(db_column='Spec', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    unitname = models.CharField(db_column='UnitName', max_length=8, blank=True, null=True)  # Field name made lowercase.
+    deptid = models.IntegerField(blank=True, null=True)
+    deptname = models.CharField(max_length=64, blank=True, null=True)
+    venderid = models.IntegerField(db_column='Venderid', blank=True, null=True)  # Field name made lowercase.
+    vendername = models.CharField(db_column='VenderName', max_length=128, blank=True, null=True)  # Field name made lowercase.
+    promflag = models.IntegerField(db_column='Promflag', blank=True, null=True)  # Field name made lowercase.
+    openqty = models.DecimalField(db_column='OpenQty', max_digits=16, decimal_places=4, blank=True, null=True)  # Field name made lowercase.
+    receiptdate = models.DateTimeField(db_column='ReceiptDate', blank=True, null=True)  # Field name made lowercase.
+    onreceiptqty = models.DecimalField(db_column='OnReceiptQty', max_digits=16, decimal_places=4, blank=True, null=True)  # Field name made lowercase.
+    saledate = models.DateTimeField(db_column='SaleDate', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'KGnegstock'

@@ -19,9 +19,18 @@
                     <li class="sideNav-list-item">
                         <a href="/scm/base/menu/?mtype=3" title="synNotice">协同信息</a>
                     </li>
+                    {% comment %} <li class="sideNav-list-item">
+                        <a href="javascript:void(0);" title="加密锁mac绑定" onclick="javascript:soft_key_validator.authorized();">绑定加密锁</a>
+                    </li>{% endcomment %}
                 </ul>
             </div>
             <div class="noticeHome right">
+                <div style="text-align: left;font-size: 15px;border:1px solid #d3d3d3;background-color:#fcedd9;height:30px;line-height:30px;padding-left: 5px;">
+                    <p>
+                        <span>提示：1、报表下载功能所需服务程序：<a href="{{ static }}/js/softkey/SetUp.exe" style="color:dodgerblue;">SetUp.exe-点击下载</a>，下载后需手动安装。</span><br/>
+                       {% comment %} <span>&emsp;&emsp;&emsp;2、一个加密锁只能同时绑定一台电脑，更换电脑时需要重新绑定并与管理员联系激活加密锁信息。</span>{% endcomment %}
+                    </p>
+                </div>
                 <div class="tTitle">
                     <h2>
                         供应商通知

@@ -42,7 +42,7 @@
         $(this).stop().animate({width: "600px"}, 300).siblings().stop().animate({width: "26px"}, 300)
     });
     $("#btnExport").on("click", function () {
-        window.location.href = "{% url 'customerReturnsIndex' %}?exceltype=1";
+        pub_export("{% url 'customerReturnsIndex' %}?exceltype=1",'{{ request.session.s_ucode }}');
     });
 </script>
 <script>

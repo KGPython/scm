@@ -1,0 +1,88 @@
+{% load basefilter %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+    <link rel="stylesheet" href="{{ static }}/css/reset.css" type="text/css">
+    <link rel="stylesheet" href="{{ static }}/css/main.css" type="text/css">
+    <script type="text/javascript" src="{{ static }}/js/laydate.js"></script>
+    <style>
+         .msg_note{
+             width:20%;
+             margin-left:40%;
+             margin-right:40%;
+             padding-left:70px;
+             text-align: left;
+         }
+    </style>
+</head>
+
+<body>
+    {% include "common/nav.html" %}
+    <div class="mainHome">
+        <h1>导入全年预算</h1>
+        <div style="margin-top: 20px;">
+            <form id="fileForm" method="post" enctype="multipart/form-data" >
+                <p style="margin-bottom: 10px;"><input type="file"  id="file" name="file"></p>
+                <p class="msg_note">注意：</p>
+                <p class="msg_note">1、上传文件支持xls、xlsx类型文件。</p>
+                <p class="msg_note">2、如果全年预算调整需要重新导入预算数据。</p>
+                <p class="msg_note">3、文件名称不能含中文。</p>
+                <p style="margin-top: 10px;">
+                    <input type="button" id="cal_btn" value="取消">&emsp;&emsp;
+                    <input type="button" id="sub_btn" value="导入">
+                </p>
+            </form>
+        </div>
+
+    </div>
+     {% include "common/footer.html" %}
+    <script>
+        current = "yusuan";
+
+        $(function(){
+             $("#sub_btn").on("click",function(){
+                 var fval= $("#file").val();
+                 if(!fval){
+                     alert("请选择文件！");
+                     return false;
+                 }
+
+                 if(!fileType(fval)){
+                     alert("只支持xls,xlsx类型文件");
+                     $("#file").val("");
+                     return false;
+                 }
+                 $("#fileForm").attr("action","{% url 'retEstimateImpt' %}");
+                 $("#fileForm").submit();
+                 $("#sub_btn").attr("disabled",true);
+
+             });
+            $("#cal_btn").on("click",function(){
+                   $("#file").val("");
+             });
+        });
+        var status = "{{ status }}";
+        if(status=='success'){
+            alert("导入成功！");
+            $("#sub_btn").attr("disabled",false);
+        }
+
+        function fileType(filepath){
+            var filetypes =[".xls",".XLS",".xlsx",".XLSX"];
+            if(filepath){
+                var isnext = false;
+                var fileend = filepath.substring(filepath.indexOf("."));
+                for(var i =0; i<filetypes.length;i++){
+                    if(filetypes[i]==fileend){
+                        isnext = true;
+                        break;
+                    }
+                }
+            }
+            return isnext;
+        }
+    </script>
+</body>
+</html>

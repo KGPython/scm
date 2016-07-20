@@ -102,6 +102,9 @@ urlpatterns = [
     url(r'^base/admin/supp_queryRole', 'base.admin.supprole.views.queryRole'),
     url(r'^base/admin/supp_savePur', 'base.admin.supprole.views.savePur'),
     url(r'^base/admin/reconciltype/', 'base.admin.reconcilType.views.reconcilType',name="reconciltype"),
+    url(r'^base/admin/retlog/purlog', 'base.admin.retlog.views.purlog',name="retPurlog"),
+    url(r'^base/admin/retlog/report', 'base.admin.retlog.views.report',name="retPurlogReport"),
+    url(r'^base/admin/estimate/impt', 'base.admin.estimate.views.impt',name="retEstimateImpt"),
 
     #报表中心
     url(r'^base/',include('base.report.urls')),
