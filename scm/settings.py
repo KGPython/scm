@@ -98,10 +98,6 @@ SESSION_COOKIE_AGE=60*30  #30 minute
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 from base.utils import Constants
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': Constants.SCM_DB_MYSQL_DATABASE,
