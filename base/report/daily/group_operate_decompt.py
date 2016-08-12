@@ -311,7 +311,8 @@ def mergeGroupData(grslist,ydict,saledict,zbdict,lastDay):
           {"id":24,"name":"冲调保健品"},{"id":25,"name":"粮油副食"}]
     #非食
     yp = [{"id":30,"name":"厨房用品类"},{"id":31,"name":"居家用品"},{"id":32,"name":"文化用品"},{"id":33,"name":"休闲用品"},
-          {"id":34,"name":"清洁用品"},{"id":35,"name":"纸品"},{"id":36,"name":"非季节性服饰"},{"id":37,"name":"季节性服饰"},{"id":38,"name":"鞋"}]
+          {"id":34,"name":"清洁用品"},{"id":35,"name":"纸品"},{"id":36,"name":"非季节性服饰"},{"id":37,"name":"季节性服饰"},{"id":38,"name":"鞋"},
+          {"id":39,"name":"孕婴童"}]
     #家电
     jd = [{"id":40,"name":"3C"},{"id":41,"name":"大家电"},{"id":43,"name":"小家电"}]
 
