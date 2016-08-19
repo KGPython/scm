@@ -1639,3 +1639,22 @@ class KgNegStock(models.Model):
     class Meta:
         managed = False
         db_table = 'KGnegstock'
+
+
+class KgListNoRet(models.Model):
+    shopid = models.CharField(max_length=4, blank=True, null=True),
+    sdate = models.DateTimeField(auto_now_add=True),
+    stime = models.DateTimeField(auto_now_add=True),
+    listno = models.IntegerField(max_length=11),
+    posid = models.CharField(max_length=4),
+    cashierid = models.CharField(max_length=4, blank=True, null=True),
+    name = models.CharField(max_length=10, blank=True, null=True),
+    payreson = models.CharField(max_length=10, blank=True, null=True),
+    paytype = models.CharField(max_length=10, blank=True, null=True),
+    payvalue = models.DecimalField(max_digits=14, decimal_places=2, blank=True, bull=True),
+    cardno = models.CharField(max_length=20, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'kglistnoret'
+
