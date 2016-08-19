@@ -4,15 +4,50 @@ __author__ = 'liubf'
 import xlwt3 as xlwt
 import os,decimal,datetime,time,random,hashlib
 from PIL import Image, ImageDraw, ImageFont
-
+from django.http import HttpResponse
 from django.conf import settings
-
 from base.utils import Constants
-import configparser
-
+import configparser,json
 import pymysql
 import pymssql
 import _mssql
+
+from base.models import BasPur
+def getSeeNum(request):
+    urlCur = request.POST.get('urlCur','')
+    res={}
+    try:
+        dataList = BasPur.objects.values('see_num').filter(bmoudule=urlCur)
+        if len(dataList)>0:
+            res=dataList[0]
+            res['msg']='0'
+        else:
+            res['msg']='2'
+    except Exception as e:
+        print(e)
+        res['msg']='1'
+
+    return HttpResponse(json.dumps(res))
+
+def setSeeNum(request):
+    urlCur = request.POST.get('urlCur','')
+    seeNum = request.POST.get('seeNum','')
+    seeNum = str(int(seeNum)+1)
+    res={}
+    try:
+        BasPur.objects.filter(bmoudule=urlCur).update(see_num=seeNum)
+        # conn = getMysqlConn()
+        # cur = conn.cursor()
+        #
+        # sql = 'update bas_pur set see_num = see_num+1 where bmoudule = "'+urlCur+'"'
+        # cur.execute(sql)
+        # conn.commit()
+        res['msg']='0'
+    except Exception as e:
+        print(e)
+        res['msg']='1'
+
+    return HttpResponse(json.dumps(res))
 
 def convertToStr(val,*arg):
     if arg:

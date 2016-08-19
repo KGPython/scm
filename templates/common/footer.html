@@ -1,3 +1,4 @@
+#-*- coding:utf-8 -*-
 <!--[if IE]>
 <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
 <![if !IE]>
@@ -20,4 +21,53 @@
             $('#nav_'+current).css({"background":"#fff","color":"#337AB7"});
         }
    });
+</script>
+<script>
+    function GetUrlRelativePath() {
+        var url = document.location.toString();
+        var arrUrl = url.split("//");
+        var start = arrUrl[1].indexOf("/");
+        var relUrl = arrUrl[1].substring(start);
+        if(relUrl.indexOf("?") != -1){
+            relUrl = relUrl.split("?")[0];
+        }
+        return relUrl;
+    }
+    var urlCur = GetUrlRelativePath();
+    getSeeNum(urlCur);
+
+
+    function getSeeNum(urlCur){
+        $.ajax({
+            url:'{% url 'getSeeNum' %}',
+            method:'post',
+            dataType:'json',
+            async : false,
+            data:{
+                'urlCur':urlCur
+            },
+            success: function (data) {
+                if(data.msg=='0'){
+                   setSeeNum(data.see_num,urlCur);
+                }
+            }
+        });
+    }
+
+function setSeeNum(see_num,urlCur){
+    $.ajax({
+        url:'{% url 'setSeeNum' %}',
+        method:'post',
+        dataType:'json',
+        async : false,
+        data:{
+            'urlCur':urlCur,
+            'seeNum':see_num
+        },
+        success: function (data) {
+
+        }
+    })
+}
+
 </script>

@@ -97,21 +97,21 @@
 
                 if(ucode.val()==='' ){
                     ucode.focus();
-                    setCnt("ucode","用户名不能为空","red")
+                    setCnt("ucode","用户名不能为空","red");
                     return false;
                 }else{
                     setCnt("ucode","","")
                 }
                 if(pwd.val()==='' ){
                     pwd.focus();
-                    setCnt("password","密码不能为空","red")
+                    setCnt("password","密码不能为空","red");
                     return false;
                 }else{
                     setCnt("password","","")
                 }
                 if(vcode.val()==='' ){
                     vcode.focus();
-                    setCnt("vcode","验证码不能为空","red")
+                    setCnt("vcode","验证码不能为空","red");
                     return false;
                 }else{
                     setCnt("vcode","","")
@@ -120,11 +120,11 @@
             }
 
             function setCnt(id,content,color){
-                $("#error_"+id).html(content)
+                $("#error_"+id).html(content);
                 if(color!='')
-                    $("#error_"+id).css({"color":color,"font-size":"12px"})
+                    $("#error_"+id).css({"color":color,"font-size":"12px"});
                 else
-                    $("#error_"+id).css({"font-size":"12px"})
+                    $("#error_"+id).css({"font-size":"12px"});
             }
 
             function changeValidateCode(id) {

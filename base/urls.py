@@ -25,6 +25,9 @@ urlpatterns = [
     url(r'^base/menu/', 'base.login.views.menu'),
     url(r'^base/updatepwd/','base.login.views.uppwd'),
 
+    url(r'^base/setseenum$','base.utils.MethodUtil.setSeeNum',name='setSeeNum'),
+    url(r'^base/getseenum$','base.utils.MethodUtil.getSeeNum',name='getSeeNum'),
+
     #供应商》首页
     url(r'^base/supp/home/','base.supplier.home.index'),
     url(r'^base/supp/repwd/','base.supplier.home.repwd'),
