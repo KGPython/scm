@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^report/abnormal/negprofit/index/$', 'base.report.abnormal.negprofit_past3days.index', name='negProfitPast3days'),
     url(r'^report/abnormal/negprofit/lte200/$', 'base.report.abnormal.negprofit_lte200.index', name='negProfitLte200'),
     url(r'^report/abnormal/neg/negstock/$', 'base.report.abnormal.negstock.index', name='negStock'),
+    url(r'^report/abnormal/retgoods/rec300/$', 'base.report.abnormal.ret_shopping_rec_300.index', name='negStock'),
     # 各课组门店销售前十
     url(r'^report/daily/saletop10/index/', 'base.report.daily.saletop10.index', name='saletop10Index'),
     # 门店供应商退货率
