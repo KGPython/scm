@@ -1,0 +1,125 @@
+{% load basefilter %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+    <link data-jsfiddle="common" rel="stylesheet" media="screen"
+          href="{{ static }}/js/handsontable/handsontable.full.css">
+</head>
+<body>
+{% include 'common/nav.html' %}
+<div class="notice noticeOrder comWidth" style="width: inherit;">
+
+    <div class="tTitle">
+        <a class="button right" style="height:35px;width: 80px;margin-bottom: 5px;" href="javascript:void(0);"
+           id="btnExport">导出Excel</a>
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#">单张小票退货超300</a></li>
+            </ul>
+            <div class="list-tabs container">
+                <div class="table" style="display:block;">
+                    <div id="group_operate" style="height:700px;width:100%;overflow: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.full.js"></script>
+<script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
+<script data-jsfiddle="example1">
+    current = "yichangshuju";
+</script>
+<script type="text/javascript">
+    $('.nav-tabs li').click(function (e) {
+        e.preventDefault();
+        $(this).addClass("active").siblings().removeClass("active");
+        i = $(this).index();
+        $(".list-tabs .table").eq(i).show().siblings().hide();
+        //加载数据
+        loadDate();
+    })
+</script>
+<script>
+    var hot1;
+    $(function () {
+        loadDate();
+
+        $("#btnExport").on("click", function () {
+            pub_export("{% url 'negProfitLte200' %}?qtype=2", '{{ request.session.s_ucode }}');
+        });
+    });
+    function loadDate() {
+        var headers = [];
+        var mergeArr = [{row: 0, col: 0, rowspan: 1, colspan: 10}];
+        var h0 = {'shopid': '单张小票退货超300'};
+        var h1 = {
+            'shopid': '机构编码',
+            'sdate': '销售日期',
+            'stime': '时间',
+            'listno': '小票单号',
+            'posid': 'pos机号',
+            'cashierid': '收银员号',
+            'name': '收银员名',
+            'payreson': '支付原因',
+            'paytype': '支付类型',
+            'payvalue': '支付金额',
+        };
+        headers.push(h0);
+        headers.push(h1);
+
+        var data = {{ rlist|safe }};
+        headers = headers.concat(data);
+        var tempid;
+        var n = 0;
+        var index = 2;
+        for (var i = 0; i < data.length; i++) {
+            if (data[i]) {
+                var shopid = data[i].shopid;
+                if (tempid && tempid != shopid) {
+                    mergeArr.push({row: index, col: 0, rowspan: n, colspan: 1});
+                    mergeArr.push({row: index, col: 1, rowspan: n, colspan: 1});
+                    index += n;
+                    n = 0;
+                }
+            }
+
+            n += 1;
+            tempid = shopid;
+            if (i == data.length - 1) {
+                mergeArr.push({row: index, col: 0, rowspan: n, colspan: 1});
+                mergeArr.push({row: index, col: 1, rowspan: n, colspan: 1});
+            }
+        }
+
+        var group_operate = document.getElementById('group_operate');
+        if (!hot1) {
+            hot1 = new Handsontable(group_operate, {
+                colWidths: [80, 150, 100, 80, 300, 100, 100, 100, 100, 100],
+                rowHeaders: true,
+                colHeaders: true,
+                fixedRowsTop: 2,
+                minSpareRows: 1,
+                contextMenu: false,
+                cells: function (row, col, prop) {
+                    var cellProperties = {};
+                    if (row <= 1) {
+                        cellProperties.renderer = headerRenderer;
+                    }
+                    return cellProperties;
+                },
+                columns: [
+                    {data: 'shopid'}, {data: 'sdate'}, {data: 'stime'}, {data: 'listno'}, {data: 'posid'}, {data: 'cashierid'},
+                    {data: 'name'}, {data: 'payreson'}, {data: 'paytype'}, {data: 'payvalue'}
+                ],
+                mergeCells: mergeArr
+            });
+        }
+
+        hot1.loadData(headers);
+    }
+
+</script>
+</body>
+</html>
