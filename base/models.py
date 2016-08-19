@@ -1651,7 +1651,7 @@ class KgListNoRet(models.Model):
     name = models.CharField(max_length=10, blank=True, null=True),
     payreson = models.CharField(max_length=10, blank=True, null=True),
     paytype = models.CharField(max_length=10, blank=True, null=True),
-    payvalue = models.DecimalField(max_digits=14, decimal_places=2, blank=True, bull=True),
+    payvalue = models.DecimalField(max_digits=14, decimal_places=2, blank=True, null=True),
     cardno = models.CharField(max_length=20, blank=True, null=True)
 
     class Meta:
