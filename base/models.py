@@ -1659,3 +1659,29 @@ class Kglistnoret(models.Model):
         managed = False
         db_table = 'kglistnoret'
 
+
+class Kggoodsret(models.Model):
+    shopid = models.CharField(max_length=4)
+    sdate = models.DateTimeField()
+    stime = models.CharField(max_length=8)
+    listno = models.IntegerField(max_length=11)
+    posid = models.CharField(max_length=4)
+    cashierid = models.CharField(max_length=4, blank=True, null=True)
+    name = models.CharField(max_length=10, blank=True, null=True)
+    deptid = models.IntegerField(db_column='DeptID', max_length=11)
+    deptname = models.CharField(db_column='DeptName', max_length=64, blank=True, null=True)
+    goodsid = models.IntegerField(max_length=11)
+    goodsname = models.CharField(max_length=64, blank=True, null=True)
+    xamount = models.DecimalField(db_column='xAmount', max_digits=14, decimal_places=6, blank=True, null=True)
+    salevalue = models.DecimalField(max_digits=14, decimal_places=2, blank=True, null=True)
+    discvalue = models.DecimalField(db_column='DiscValue', max_digits=14, decimal_places=2, blank=True, null=True)
+    truevalue = models.DecimalField(max_digits=14, decimal_places=2, blank=True, null=True)
+    saletype = models.DecimalField(db_column='SaleType', max_length=10, blank=True, null=True)
+    price = models.DecimalField(db_column='Price', max_digits=14, decimal_places=2, blank=True, null=True)
+    disctype = models.CharField(db_column='DiscType', max_length=10, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'kggoodsret'
+
+
