@@ -16,10 +16,14 @@
         <div class="container">
             <ul class="nav nav-tabs">
                 <li role="presentation" class="active"><a href="#">单张小票退货超300</a></li>
+                <li role="presentation"><a href="#">商品退货明细</a></li>
             </ul>
             <div class="list-tabs container">
                 <div class="table" style="display:block;">
-                    <div id="group_operate" style="height:700px;width:100%;overflow: auto;"></div>
+                    <div id="tableReport1" style="height:700px;width:100%;overflow: auto;"></div>
+                </div>
+                <div class="table">
+                    <div id="tableReport2" style="height:700px;width:100%;overflow: auto;"></div>
                 </div>
             </div>
         </div>
@@ -38,88 +42,116 @@
         i = $(this).index();
         $(".list-tabs .table").eq(i).show().siblings().hide();
         //加载数据
-        loadDate();
-    })
+        initDate(i + 1);
+    });
+
+    $("#btnExport").on("click", function () {
+        pub_export("{% url 'retShoppingRec300' %}?qtype=2", '{{ request.session.s_ucode }}');
+    });
 </script>
 <script>
-    var hot1;
     $(function () {
-        loadDate();
-
-        $("#btnExport").on("click", function () {
-            pub_export("{% url 'negProfitLte200' %}?qtype=2", '{{ request.session.s_ucode }}');
-        });
+        initDate(1);
     });
-    function loadDate() {
-        var headers = [];
-        var mergeArr = [{row: 0, col: 0, rowspan: 1, colspan: 10}];
-        var h0 = {'shopid': '单张小票退货超300'};
-        var h1 = {
-            'shopid': '机构编码',
-            'sdate': '销售日期',
-            'stime': '时间',
-            'listno': '小票单号',
-            'posid': 'pos机号',
-            'cashierid': '收银员号',
-            'name': '收银员名',
-            'payreson': '支付原因',
-            'paytype': '支付类型',
-            'payvalue': '支付金额',
-        };
-        headers.push(h0);
-        headers.push(h1);
-
-        var data = {{ rlist|safe }};
-        headers = headers.concat(data);
-        var tempid;
-        var n = 0;
-        var index = 2;
-        for (var i = 0; i < data.length; i++) {
-            if (data[i]) {
-                var shopid = data[i].shopid;
-                if (tempid && tempid != shopid) {
-                    mergeArr.push({row: index, col: 0, rowspan: n, colspan: 1});
-                    mergeArr.push({row: index, col: 1, rowspan: n, colspan: 1});
-                    index += n;
-                    n = 0;
-                }
-            }
-
-            n += 1;
-            tempid = shopid;
-            if (i == data.length - 1) {
-                mergeArr.push({row: index, col: 0, rowspan: n, colspan: 1});
-                mergeArr.push({row: index, col: 1, rowspan: n, colspan: 1});
-            }
+    function initDate(tab) {
+        var fixedRow, fixedCol;
+        var mergeCellsList = [];
+        var table = [];
+        var rowLight = [];
+        if (tab == 1) {
+            fixedRow = 1;
+            fixedCol = 0;
+            var thead = {
+                'shopid': '门店编码',
+                'sdate': '销售日期',
+                'stime': '时间',
+                'listno': '小票单号',
+                'posid': 'pos机号',
+                'cashierid': '收银员号',
+                'name': '收银员名',
+                'payreson': '支付原因',
+                'paytype': '支付类型',
+                'payvalue': '支付金额'
+            };
+            var tbody = {{rlist | safe}};
+            table.push(thead);
+            table = table.concat(tbody);
+            /*mergeCellsList = [
+             {data:'shopid'},{data:'shopname'},{data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
+             ];*/
+            rowLight = [0];
         }
-
-        var group_operate = document.getElementById('group_operate');
-        if (!hot1) {
-            hot1 = new Handsontable(group_operate, {
-                colWidths: [80, 150, 100, 80, 300, 100, 100, 100, 100, 100],
-                rowHeaders: true,
-                colHeaders: true,
-                fixedRowsTop: 2,
-                minSpareRows: 1,
-                contextMenu: false,
-                cells: function (row, col, prop) {
-                    var cellProperties = {};
-                    if (row <= 1) {
-                        cellProperties.renderer = headerRenderer;
-                    }
-                    return cellProperties;
-                },
-                columns: [
-                    {data: 'shopid'}, {data: 'sdate'}, {data: 'stime'}, {data: 'listno'}, {data: 'posid'}, {data: 'cashierid'},
-                    {data: 'name'}, {data: 'payreson'}, {data: 'paytype'}, {data: 'payvalue'}
-                ],
-                mergeCells: mergeArr
-            });
+        if (tab == 2) {
+            fixedRow = 1;
+            fixedCol = 0;
+            var thead = {
+                'shopid': '门店编码',
+                'sdate': '销售日期',
+                'stime': '时间',
+                'listno': '小票单号',
+                'posid': 'pos机号',
+                'cashierid': '收银员号',
+                'name': '收银员名',
+                'goodsname': '商品名称',
+                'deptid': '商品编码',
+                'xamount': '销售数量',
+                'salevalue': '销售金额',
+                'discvalue': '折扣金额',
+                'truevalue': '实际销售',
+                'saletype': '销售类型',
+                'price': '售价'
+            };
+            var tbody = {{dlist | safe}};
+            table.push(thead);
+            table = table.concat(tbody);
+            /*mergeCellsList = [
+             {data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
+             ];*/
+            rowLight = [0];
         }
-
-        hot1.loadData(headers);
+        initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight)
     }
-
+    var tableSetting = {};
+    function initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight) {
+        tableSetting = {
+            data: table,
+            colWidths: 140,
+            className: "htCenter htMiddle",
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: false,
+            fixedRowsTop: fixedRow,
+            fixedColumnsLeft: fixedCol,
+            manualColumnResize: true,
+            manualRowMove: true,
+            manualColumnMove: true,
+            columnSorting: true,
+            sortIndicator: true,
+            readOnly: true,
+            mergeCells: mergeCellsList,
+            cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
+                    cellProperties.renderer = headerRenderer;
+                }
+                return cellProperties;
+            }
+        };
+        creatTable(tab, tableSetting)
+    }
+    var hot1, hot2;
+    function creatTable(tab, tableSetting) {
+        var container = document.getElementById('tableReport' + tab);
+        if (tab == 1) {
+            if (!hot1) {
+                hot1 = new Handsontable(container, tableSetting);
+            }
+        } else if (tab == 2) {
+            if (!hot2) {
+                hot2 = new Handsontable(container, tableSetting);
+            }
+        }
+    }
 </script>
 </body>
 </html>
