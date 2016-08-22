@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil, MethodUtil as mtu
-from base.models import Kglistnoret, BasPurLog
+from base.models import Kglistnoret, Kggoodsret, BasPurLog
 from django.http import HttpResponse
 import datetime, calendar, decimal
 import xlwt3 as xlwt
@@ -12,10 +12,16 @@ import xlwt3 as xlwt
 def index(request):
     yesterday = DateUtil.get_day_of_day(-1)
 
-    rlist = Kglistnoret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "payreson",
-                                       "paytype", "payvalue", "cardno").filter(sdate=yesterday)
+    rlist = Kglistnoret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "payreson", \
+                                       "paytype", "payvalue").filter(sdate=yesterday)
 
     formate_data(rlist)
+
+    # 商品退货明细
+    dlist = Kggoodsret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "deptid", \
+                                      "deptname", "goodsid", "goodsname", "xamount", "salevalue", "discvalue", \
+                                      "truevalue", "saletype", "price", "disctype").filter(sdate=yesterday)
+    formate_data(dlist)
 
     qtype = mtu.getReqVal(request, "qtype", "1")
 
@@ -29,18 +35,20 @@ def index(request):
     BasPurLog.objects.create(name="单张小票退货超300", url=path, qtype=qtype, ucode=ucode, uname=uname, createtime=today)
 
     if qtype == "1":
-        return render(request, "report/abnormal/negprofit_lte200.html", {"rlist": list(rlist)})
+        return render(request, "report/abnormal/ret_shopping_rec_300.html", {"rlist": list(rlist), 'dlist': list(dlist)})
     else:
-        return export(rlist, yesterday)
+        return export(rlist, dlist, yesterday)
 
 
-def export(rlist, yesterday):
+def export(rlist, dlist, yesterday):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
-    # 写入sheet1 门店
+    # 写入sheet1
     writeDataToSheet1(wb, rlist)
+    # 写入sheet2
+    writeDataToSheet2(wb, dlist)
 
     outtype = 'application/vnd.ms-excel;'
-    fname = yesterday.strftime("%m.%d") + "negprofit_lte200"
+    fname = yesterday.strftime("%m.%d") + "ret_shopping_rec_300"
 
     response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
     wb.save(response)
@@ -50,14 +58,31 @@ def export(rlist, yesterday):
 def writeDataToSheet1(wb, rlist):
     sheet = wb.add_sheet("单张小票退货超300", cell_overwrite_ok=True)
 
-    titles = [[("负毛利大于200", 0, 1, 15)],
-              [("机构编码", 0, 1, 1), ("销售日期", 1, 1, 1), ("时间", 2, 1, 1), ("小票单号", 3, 1, 1), ("pos机号", 4, 1, 1),
+    titles = [[("单张小票退货超300", 0, 1, 10)],
+              [("门店编码", 0, 1, 1), ("销售日期", 1, 1, 1), ("时间", 2, 1, 1), ("小票单号", 3, 1, 1), ("pos机号", 4, 1, 1),
                ("收银员号", 5, 1, 1), ("收银员名", 6, 1, 1), ("支付原因", 7, 1, 1), ("支付类型", 8, 1, 1), ("支付金额", 9, 1, 1)],
               ]
 
-    keylist = ['shopid', 'sdate', 'stime', 'listno', 'posid', 'cashierid', 'name', 'payreson', 'paytype',
-               'payvalue', 'cardno']
-    widthlist = [800, 1000, 800, 800, 2000, 800, 800, 800, 800, 800, 800]
+    keylist = ['shopid', 'sdate', 'stime', 'listno', 'posid', 'cashierid', 'name', 'payreson', 'paytype', 'payvalue']
+    widthlist = [800, 800, 800, 800, 800, 800, 800, 800, 800, 800]
+
+    mtu.insertTitle2(sheet, titles, keylist, widthlist)
+    mtu.insertCell2(sheet, 2, rlist, keylist, None)
+
+
+def writeDataToSheet2(wb, rlist):
+    sheet = wb.add_sheet("商品退货明细", cell_overwrite_ok=True)
+
+    titles = [[("商品退货明细", 0, 1, 16)],
+              [("门店编码", 0, 1, 1), ("销售日期", 1, 1, 1), ("时间", 2, 1, 1), ("小票单号", 3, 1, 1), ("pos机号", 4, 1, 1),
+               ("收银员号", 5, 1, 1), ("收银员名", 6, 1, 1), ("商品名称", 7, 1, 1), ("商品编码", 8, 1, 1),
+               ("销售数量", 9, 1, 1), ("销售金额", 10, 1, 1), ("折扣金额", 11, 1, 1), ("实际销售", 12, 1, 1),
+               ("销售类型", 13, 1, 1), ("售价", 14, 1, 1), ("解释原因", 15, 1, 1)],
+              ]
+
+    keylist = ['shopid', 'sdate', 'stime', 'listno', 'posid', 'cashierid', 'name', 'goodsname', 'deptid', 'xamount', \
+               'salevalue', 'discvalue', 'truevalue', 'saletype', 'price']
+    widthlist = [800, 800, 800, 800, 800, 800, 800, 800, 800, 800, 800, 800, 800, 800, 800, 800]
 
     mtu.insertTitle2(sheet, titles, keylist, widthlist)
     mtu.insertCell2(sheet, 2, rlist, keylist, None)
