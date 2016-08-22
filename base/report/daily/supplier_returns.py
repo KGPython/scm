@@ -26,7 +26,7 @@ def index(request):
 
     conn = mtu.getMysqlConn()
     sqltop = "select shopid, sum(costvalue) as costvaluesum, sum(reth) as rethsum, (sum(reth) / sum(costvalue)) as retrate " \
-             "from `KGretshop` " \
+             "from 'KGretshop' " \
              "where sdate between '" + monfirstday + "' and '" + yesterday + "' " \
                                                                              "group by shopid " \
                                                                              "order by shopid"
@@ -130,7 +130,7 @@ def index(request):
         exceltype = '2'
 
     path = request.path
-    today = datetime.datetime.today();
+    today = datetime.datetime.today()
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="供应商退货率", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)

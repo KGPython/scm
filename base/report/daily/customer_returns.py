@@ -154,7 +154,7 @@ def index(request):
         exceltype = '2'
 
     path = request.path
-    today = datetime.datetime.today();
+    today = datetime.datetime.today()
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="顾客退货率", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)

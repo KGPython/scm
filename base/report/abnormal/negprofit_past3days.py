@@ -26,7 +26,7 @@ def index(request):
      if not qtype:
          qtype = "1"
      path = request.path
-     today = datetime.datetime.today();
+     today = datetime.datetime.today()
      ucode = request.session.get("s_ucode")
      uname = request.session.get("s_uname")
      BasPurLog.objects.create(name="商品连续3天负毛利",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)

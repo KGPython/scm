@@ -5,7 +5,7 @@ from django.shortcuts import render
 import xlwt3 as xlwt
 from base.utils import MethodUtil as mtu,DateUtil
 from django.http import HttpResponse
-from base.models import KgNegStock
+from base.models import KgNegStock,BasPurLog
 import decimal,datetime
 def index(request):
     sgroupid = request.REQUEST.get('sgroupid')
@@ -22,6 +22,14 @@ def index(request):
         .filter(**kwargs).order_by('shopid')
     formate_data(resList)
     qtype = mtu.getReqVal(request,"qtype","1")
+    #操作日志
+    if not qtype:
+        qtype = "1"
+    path = request.path
+    today = datetime.datetime.today()
+    ucode = request.session.get("s_ucode")
+    uname = request.session.get("s_uname")
+    BasPurLog.objects.create(name="商品连续3天负毛利",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
     if qtype == "1":
         return render(request,'report/abnormal/negStock.html',locals())
     else:
