@@ -69,48 +69,48 @@ def index(request):
 
     sql10 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate10 + ") " \
+          "where deptid in (" + sqlsubcate10 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql11 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate11 + ") " \
+          "where deptid in (" + sqlsubcate11 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql12 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate12 + ") " \
+          "where deptid in (" + sqlsubcate12 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql13 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate13 + ") " \
+          "where deptid in (" + sqlsubcate13 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql14 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate14 + ") " \
+          "where deptid in (" + sqlsubcate14 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql15 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate15 + ") " \
+          "where deptid in (" + sqlsubcate15 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql16 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate16 + ") " \
+          "where deptid in (" + sqlsubcate16 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql17 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate17 + ") " \
+          "where deptid in (" + sqlsubcate17 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
 
     sql2 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate2 + ") " \
+          "where deptid in (" + sqlsubcate2 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql3 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate3 + ") " \
+          "where deptid in (" + sqlsubcate3 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql4 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate4 + ") " \
+          "where deptid in (" + sqlsubcate4 + ") " \
                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
 
     # 连接数据库
@@ -437,7 +437,7 @@ def index(request):
     # 将退货数据过滤，值为负
     rows4filter = []
     for i in range(0, len(rows4)):
-        if float(rows4[i]['num']) < 0:
+        if float(rows4[i]['SaleQty']) < 0:
             continue
         else:
             rows4filter.append(rows4[i])
