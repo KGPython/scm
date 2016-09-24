@@ -50,8 +50,8 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'base',
-    'djcelery',#
-    'base.timer',#
+    'djcelery',
+    'base.timer',
 )
 
 
@@ -61,7 +61,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
-    'base.common.middlewares.LoginMiddleware',#
+    'base.common.middlewares.LoginMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
@@ -72,7 +72,8 @@ ROOT_URLCONF = 'scm.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],#
+        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        ,
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -80,7 +81,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                'base.views.global_setting',#
+                'base.views.global_setting',
+
             ],
         },
     },
@@ -96,14 +98,18 @@ SESSION_COOKIE_AGE=60*30  #30 minute
 
 # Database
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
-from base.utils import Constants
+
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': Constants.SCM_DB_MYSQL_DATABASE,
-        'USER': Constants.SCM_DB_MYSQL_USER,
-        'PASSWORD': Constants.SCM_DB_MYSQL_PASSWORD,
-        'HOST': Constants.SCM_DB_MYSQL_SERVER,
+        'NAME': 'kgscm',
+        'USER': 'root',
+        'PASSWORD': '10233201sn',
+        'HOST': '192.168.250.18',
         'PORT': '3306',
     }
 }

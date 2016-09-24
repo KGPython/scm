@@ -67,51 +67,51 @@ def index(request):
     sqlsubcate3 = ','.join(subcate3)
     sqlsubcate4 = ','.join(subcate4)
 
-    sql10 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+    sql10 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate10 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql11 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate10 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql11 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate11 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql12 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate11 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql12 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate12 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql13 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate12 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql13 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate13 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql14 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate13 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql14 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate14 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql15 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate14 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql15 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate15 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql16 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate15 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql16 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate16 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql17 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate16 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql17 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate17 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
+          "where deptid in (" + sqlsubcate17 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
 
-    sql2 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+    sql2 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate2 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql3 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate2 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql3 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate3 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
-    sql4 = "select shopcode, pcode, pname, num, svalue, scost, gpvalue, gprate, closeqty, closevalue, cprice, price " \
+          "where deptid in (" + sqlsubcate3 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+    sql4 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
           "from `kwsaletop10` " \
-          "where classsx in (" + sqlsubcate4 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopcode, svalue desc"
+          "where deptid in (" + sqlsubcate4 + ") " \
+                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
 
     # 连接数据库
     conn = mtu.getMysqlConn()
@@ -169,8 +169,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows10:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis10.append(row)
                 i += 1
@@ -196,8 +196,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows11:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis11.append(row)
                 i += 1
@@ -223,8 +223,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows12:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis12.append(row)
                 i += 1
@@ -250,8 +250,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows13:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis13.append(row)
                 i += 1
@@ -277,8 +277,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows14:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis14.append(row)
                 i += 1
@@ -305,8 +305,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows15:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis15.append(row)
                 i += 1
@@ -332,8 +332,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows16:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis16.append(row)
                 i += 1
@@ -359,8 +359,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows17:
-            if sid['ShopID'] == row['shopcode'] and i < 10:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 10:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis17.append(row)
                 i += 1
@@ -386,8 +386,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows2:
-            if sid['ShopID'] == row['shopcode'] and i < 20:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 20:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis2.append(row)
                 i += 1
@@ -413,8 +413,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows3:
-            if sid['ShopID'] == row['shopcode'] and i < 20:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 20:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis3.append(row)
                 i += 1
@@ -437,7 +437,7 @@ def index(request):
     # 将退货数据过滤，值为负
     rows4filter = []
     for i in range(0, len(rows4)):
-        if float(rows4[i]['num']) < 0:
+        if float(rows4[i]['SaleQty']) < 0:
             continue
         else:
             rows4filter.append(rows4[i])
@@ -449,8 +449,8 @@ def index(request):
     for sid in shopsid:
         i = 0
         for row in rows4filter:
-            if sid['ShopID'] == row['shopcode'] and i < 20:
-                row['shopcode'] = sid['ShopName'].strip() + sid['ShopID']
+            if sid['ShopID'] == row['shopid'] and i < 20:
+                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
                 lis4.append(row)
                 i += 1
@@ -604,8 +604,8 @@ def writeDataToSheet1(wb, lis10):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -631,8 +631,8 @@ def writeDataToSheet2(wb, lis11):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -658,8 +658,8 @@ def writeDataToSheet3(wb, lis12):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -685,8 +685,8 @@ def writeDataToSheet4(wb, lis13):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -712,8 +712,8 @@ def writeDataToSheet5(wb, lis14):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -739,8 +739,8 @@ def writeDataToSheet6(wb, lis15):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -766,8 +766,8 @@ def writeDataToSheet7(wb, lis16):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -793,8 +793,8 @@ def writeDataToSheet8(wb, lis17):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -820,8 +820,8 @@ def writeDataToSheet9(wb, lis2):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -847,8 +847,8 @@ def writeDataToSheet10(wb, lis3):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
@@ -874,8 +874,8 @@ def writeDataToSheet11(wb, lis4):
          ("当前库存金额", 10, 2, 1), ("成本价", 11, 2, 1), ("平均售价", 12, 2, 1)],
     ]
 
-    keylist = ['shopcode', 'paiming', 'pcode', 'pname', 'num', 'svalue', 'scost', 'gpvalue', 'gprate', 'closeqty', 'closevalue',
-               'cprice', 'price']
+    keylist = ['shopid', 'paiming', 'goodsid', 'goodsname', 'SaleQty', 'SaleValue', 'SaleCost', 'gpvalue', 'gprate', \
+               'qty', 'costvalue', 'cprice', 'price']
 
     widthList = [600, 300, 600, 600, 600, 600, 600, 600, 600, 600, 600, 600]
 
