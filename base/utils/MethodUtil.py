@@ -494,7 +494,7 @@ def rmbupper(arg):
     if type(arg) is float:
         for i in range(len(unit)-3, -3, -1):
             if arg >= 10**i or i < 1:
-                nums.append(int(round(arg/(10**i),2))%10)
+                nums.append(int(str(arg/(10**i)).split('.')[0])%10)
     else:
         nums = [int(i) for i in str(arg)+'00']
 
