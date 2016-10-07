@@ -15,11 +15,11 @@
 <script type="text/javascript">
     var soft_key_validator = new SoftKeyValidator('101','{{ SCM_SOFTKEY_URL }}');
     soft_key_validator.loadSoftKey();
-   $(function(){
+    $(function(){
         if(typeof(current) != "undefined"){
             $('#nav_'+current).css({"background":"#fff","color":"#337AB7"});
         }
-   });
+    });
 </script>
 <script>
     function GetUrlRelativePath() {

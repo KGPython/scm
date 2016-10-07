@@ -95,7 +95,8 @@ def index(request):
     TotalDict = {'listTotal':listTotal}
     listTop = ranking(listTop,'zhonbiSum','mingciSum')
 
-    for date in range(1,today.day+1):
+    monthFirstReal = int(str(listDetail[0]['sdate'])[8:10])
+    for date in range(monthFirstReal,today.day+1):
         if(date<10):
             listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
         else:

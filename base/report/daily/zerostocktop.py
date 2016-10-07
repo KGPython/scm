@@ -135,7 +135,8 @@ def index(request):
     # 排序生成总排名
     listTop = ranking(listTop,'zhonbiSum','mingciSum')
     # 排序生成每日排名
-    for date in range(1,today.day):
+    monthFirstReal = int(str(listDetail[0]['sdate'])[8:10])
+    for date in range(monthFirstReal,today.day):
         if(date<10):
             listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
         else:
