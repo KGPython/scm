@@ -1,262 +1,197 @@
-window.sha1 = (function() {
-
-/*
- * A JavaScript implementation of the Secure Hash Algorithm, SHA-1, as defined
- * in FIPS 180-1
- * Version 2.2 Copyright Paul Johnston 2000 - 2009.
- * Other contributors: Greg Holt, Andrew Kepert, Ydnar, Lostinet
- * Distributed under the BSD License
- * See http://pajhome.org.uk/crypt/md5 for details.
+/*   
+ *   A   JavaScript   implementation   of   the   Secure   Hash   Algorithm,   SHA-1,   as   defined   
+ *   in   FIPS   PUB   180-1   
+ *   Version   2.1-BETA   Copyright   Paul   Johnston   2000   -   2002.   
+ *   Other   contributors:   Greg   Holt,   Andrew   Kepert,   Ydnar,   Lostinet   
+ *   Distributed   under   the   BSD   License   
+ *   See   http://pajhome.org.uk/crypt/md5   for   details.   
  */
+/*   
+ *   Configurable   variables.   You   may   need   to   tweak   these   to   be   compatible   with   
+ *   the   server-side,   but   the   defaults   work   in   most   cases.   
+ */
+var hexcase = 0; /*   hex   output   format.   0   -   lowercase;   1   -   uppercase                 */
+var b64pad = ""; /*   base-64   pad   character.   "="   for   strict   RFC   compliance       */
+var chrsz = 8; /*   bits   per   input   character.   8   -   ASCII;   16   -   Unicode             */
 
-// Convert a raw string to a hex string
-function rawToHex(raw) {
-  var hex = "";
-  var hexChars = "0123456789abcdef";
-  for (var i = 0; i < raw.length; i++) {
-    var c = raw.charCodeAt(i);
-    hex += (
-      hexChars.charAt((c >>> 4) & 0x0f) +
-      hexChars.charAt(c & 0x0f));
-  }
-  return hex;
+/*   
+ *   These   are   the   functions   you'll   usually   want   to   call   
+ *   They   take   string   arguments   and   return   either   hex   or   base-64   encoded   strings   
+ */
+function hex_sha1(s) {
+    return binb2hex(core_sha1(str2binb(s), s.length * chrsz));
 }
 
-// Calculate the SHA1 of a raw string
-function sha1Raw(raw) {
-  return binaryToRaw(sha1Binary(rawToBinary(raw), raw.length * 8));
+function b64_sha1(s) {
+    return binb2b64(core_sha1(str2binb(s), s.length * chrsz));
 }
 
-/*
- * Convert an array of big-endian words to a string
- */
-function binaryToRaw(bin) {
-  var raw = "";
-  for (var i = 0, il = bin.length * 32; i < il; i += 8) {
-    raw += String.fromCharCode((bin[i >> 5] >>> (24 - i % 32)) & 0xff);
-  }
-  return raw;
+function str_sha1(s) {
+    return binb2str(core_sha1(str2binb(s), s.length * chrsz));
 }
 
-/*
- * Calculate the SHA-1 of an array of big-endian words, and a bit length
+function hex_hmac_sha1(key, data) {
+    return binb2hex(core_hmac_sha1(key, data));
+}
+
+function b64_hmac_sha1(key, data) {
+    return binb2b64(core_hmac_sha1(key, data));
+}
+
+function str_hmac_sha1(key, data) {
+    return binb2str(core_hmac_sha1(key, data));
+}
+
+/*   
+ *   Perform   a   simple   self-test   to   see   if   the   VM   is   working   
  */
-function sha1Binary(bin, len) {
-  // append padding
-  bin[len >> 5] |= 0x80 << (24 - len % 32);
-  bin[((len + 64 >> 9) << 4) + 15] = len;
+function sha1_vm_test() {
+    return hex_sha1("abc") == "a9993e364706816aba3e25717850c26c9cd0d89d";
+}
 
-  var w = new Array(80);
-  var a =  1732584193;
-  var b = -271733879;
-  var c = -1732584194;
-  var d =  271733878;
-  var e = -1009589776;
+/*   
+ *   Calculate   the   SHA-1   of   an   array   of   big-endian   words,   and   a   bit   length   
+ */
+function core_sha1(x, len) {
+    /*   append   padding   */
+    x[len >> 5] |= 0x80 << (24 - len % 32);
+    x[((len + 64 >> 9) << 4) + 15] = len;
 
-  for (var i = 0, il = bin.length; i < il; i += 16) {
-    var _a = a;
-    var _b = b;
-    var _c = c;
-    var _d = d;
-    var _e = e;
+    var w = Array(80);
+    var a = 1732584193;
+    var b = -271733879;
+    var c = -1732584194;
+    var d = 271733878;
+    var e = -1009589776;
 
-    for (var j = 0; j < 80; j++) {
-      if (j < 16) {
-        w[j] = bin[i + j];
-      } else {
-        w[j] = _rotateLeft(w[j-3] ^ w[j-8] ^ w[j-14] ^ w[j-16], 1);
-      }
-      var t = _add(_add(_rotateLeft(a, 5), _ft(j, b, c, d)),
-                   _add(_add(e, w[j]), _kt(j)));
-      e = d;
-      d = c;
-      c = _rotateLeft(b, 30);
-      b = a;
-      a = t;
+    for (var i = 0; i < x.length; i += 16) {
+        var olda = a;
+        var oldb = b;
+        var oldc = c;
+        var oldd = d;
+        var olde = e;
+
+        for (var j = 0; j < 80; j++) {
+            if (j < 16) w[j] = x[i + j];
+            else w[j] = rol(w[j - 3] ^ w[j - 8] ^ w[j - 14] ^ w[j - 16], 1);
+            var t = safe_add(safe_add(rol(a, 5), sha1_ft(j, b, c, d)), safe_add(safe_add(e, w[j]), sha1_kt(j)));
+            e = d;
+            d = c;
+            c = rol(b, 30);
+            b = a;
+            a = t;
+        }
+
+        a = safe_add(a, olda);
+        b = safe_add(b, oldb);
+        c = safe_add(c, oldc);
+        d = safe_add(d, oldd);
+        e = safe_add(e, olde);
     }
+    return Array(a, b, c, d, e);
 
-    a = _add(a, _a);
-    b = _add(b, _b);
-    c = _add(c, _c);
-    d = _add(d, _d);
-    e = _add(e, _e);
-  }
-  return [a, b, c, d, e];
 }
 
-// Add integers, wrapping at 2^32. This uses 16-bit operations internally
-// to work around bugs in some JS interpreters.
-function _add(x, y) {
-  var lsw = (x & 0xFFFF) + (y & 0xFFFF);
-  var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
-  return (msw << 16) | (lsw & 0xFFFF);
-}
-
-/*
- * Bitwise rotate a 32-bit number to the left.
+/*   
+ *   Perform   the   appropriate   triplet   combination   function   for   the   current   
+ *   iteration   
  */
-function _rotateLeft(n, count) {
-  return (n << count) | (n >>> (32 - count));
-}
-
-/*
- * Perform the appropriate triplet combination function for the current
- * iteration
- */
-function _ft(t, b, c, d) {
-  if (t < 20) {
-    return (b & c) | ((~b) & d);
-  } else if (t < 40) {
+function sha1_ft(t, b, c, d) {
+    if (t < 20) return (b & c) | ((~b) & d);
+    if (t < 40) return b ^ c ^ d;
+    if (t < 60) return (b & c) | (b & d) | (c & d);
     return b ^ c ^ d;
-  } else if (t < 60) {
-    return (b & c) | (b & d) | (c & d);
-  } else {
-    return b ^ c ^ d;
-  }
 }
 
-/*
- * Determine the appropriate additive constant for the current iteration
+/*   
+ *   Determine   the   appropriate   additive   constant   for   the   current   iteration   
  */
-function _kt(t) {
-  if (t < 20) {
-    return 1518500249;
-  } else if (t < 40) {
-    return 1859775393;
-  } else if (t < 60) {
-    return -1894007588;
-  } else {
-    return -899497514;
-  }
+function sha1_kt(t) {
+    return (t < 20) ? 1518500249 : (t < 40) ? 1859775393 : (t < 60) ? -1894007588 : -899497514;
 }
 
-// Convert a raw string to an array of big-endian words.
-// Characters >255 have their high-byte silently ignored.
-function rawToBinary(raw) {
-  var binary = new Array(raw.length >> 2);
-  for (var i = 0, il = binary.length; i < il; i++) {
-    binary[i] = 0;
-  }
-  for (i = 0, il = raw.length * 8; i < il; i += 8) {
-    binary[i>>5] |= (raw.charCodeAt(i / 8) & 0xFF) << (24 - i % 32);
-  }
-  return binary;
-}
+/*   
+ *   Calculate   the   HMAC-SHA1   of   a   key   and   some   data   
+ */
+function core_hmac_sha1(key, data) {
+    var bkey = str2binb(key);
+    if (bkey.length > 16) bkey = core_sha1(bkey, key.length * chrsz);
 
-// Encode a string as UTF-8.
-// For efficiency, this assumes the input is valid UTF-16.
-function stringToRaw(string) {
-  var raw = "", x, y;
-  var i = -1;
-  var il = string.length;
-  while (++i < il) {
-    // decode UTF-16 surrogate pairs
-    x = string.charCodeAt(i);
-    y = i + 1 < il ? string.charCodeAt(i + 1) : 0;
-    if (0xd800 <= x && x <= 0xdbff && 0xdc00 <= y && y <= 0xdfff) {
-      x = 0x10000 + ((x & 0x03ff) << 10) + (y & 0x03ff);
-      ++i;
+    var ipad = Array(16),
+        opad = Array(16);
+    for (var i = 0; i < 16; i++) {
+        ipad[i] = bkey[i] ^ 0x36363636;
+        opad[i] = bkey[i] ^ 0x5C5C5C5C;
     }
-    // encode output as UTF-8
-    if (x <= 0x7f) {
-      raw += String.fromCharCode(x);
-    } else if (x <= 0x7ff) {
-      raw += String.fromCharCode(0xc0 | ((x >>> 6 ) & 0x1f),
-                                    0x80 | ( x         & 0x3f));
-    } else if (x <= 0xffff) {
-      raw += String.fromCharCode(0xe0 | ((x >>> 12) & 0x0f),
-                                    0x80 | ((x >>> 6 ) & 0x3f),
-                                    0x80 | ( x         & 0x3f));
-    } else if (x <= 0x1fffff) {
-      raw += String.fromCharCode(0xf0 | ((x >>> 18) & 0x07),
-                                    0x80 | ((x >>> 12) & 0x3f),
-                                    0x80 | ((x >>> 6 ) & 0x3f),
-                                    0x80 | ( x         & 0x3f));
-    }
-  }
-  return raw;
+
+    var hash = core_sha1(ipad.concat(str2binb(data)), 512 + data.length * chrsz);
+    return core_sha1(opad.concat(hash), 512 + 160);
 }
 
-// Calculate the HMAC-SHA1 of a key and some data (raw strings)
-function hmacRaw(key, data) {
-  var binaryKey = rawToBinary(key);
-  if (binaryKey.length > 16) {
-    binaryKey = sha1Binary(binaryKey, key.length * 8);
-  }
-  var ipad = new Array(16);
-  var opad = new Array(16);
-  for(var i = 0; i < 16; i++) {
-    ipad[i] = binaryKey[i] ^ 0x36363636;
-    opad[i] = binaryKey[i] ^ 0x5c5c5c5c;
-  }
-  var hash = sha1Binary(ipad.concat(rawToBinary(data)), 512 + data.length * 8);
-  return binaryToRaw(sha1Binary(opad.concat(hash), 512 + 160));
+/*   
+ *   Add   integers,   wrapping   at   2^32.   This   uses   16-bit   operations   internally   
+ *   to   work   around   bugs   in   some   JS   interpreters.   
+ */
+function safe_add(x, y) {
+    var lsw = (x & 0xFFFF) + (y & 0xFFFF);
+    var msw = (x >> 16) + (y >> 16) + (lsw >> 16);
+    return (msw << 16) | (lsw & 0xFFFF);
 }
 
-var tests = {
-  hmac: {
-    "fbdb1d1b18aa6c08324b7d64b71fb76370690e1d":
-      ["", ""],
-    "de7c9b85b8b78aa6bc8a7a36f70a90701c9db4d9":
-      ["key", "The quick brown fox jumps over the lazy dog"]
-  },
-  sha1: {
-    "da39a3ee5e6b4b0d3255bfef95601890afd80709":
-      "",
-    "2fd4e1c67a2d28fced849ee1bb76e7391b93eb12":
-      "The quick brown fox jumps over the lazy dog",
-  }
-};
+/*   
+ *   Bitwise   rotate   a   32-bit   number   to   the   left.   
+ */
+function rol(num, cnt) {
+    return (num << cnt) | (num >>> (32 - cnt));
+}
 
-return {
-  sha1: function(s) {
-    return rawToHex(sha1Raw(stringToRaw(s)));
-  },
+/*   
+ *   Convert   an   8-bit   or   16-bit   string   to   an   array   of   big-endian   words   
+ *   In   8-bit   function,   characters   >255   have   their   hi-byte   silently   ignored.   
+ */
+function str2binb(str) {
+    var bin = Array();
+    var mask = (1 << chrsz) - 1;
+    for (var i = 0; i < str.length * chrsz; i += chrsz)
+    bin[i >> 5] |= (str.charCodeAt(i / chrsz) & mask) << (24 - i % 32);
+    return bin;
+}
 
-  sha1Hex: function(value) {
-    return rawToHex(sha1Raw(this.hexToString(value)));
-  },
+/*   
+ *   Convert   an   array   of   big-endian   words   to   a   string   
+ */
+function binb2str(bin) {
+    var str = "";
+    var mask = (1 << chrsz) - 1;
+    for (var i = 0; i < bin.length * 32; i += chrsz)
+    str += String.fromCharCode((bin[i >> 5] >>> (24 - i % 32)) & mask);
+    return str;
+}
 
-  hmac: function(k, d) {
-    return rawToHex(hmacRaw(stringToRaw(k), stringToRaw(d)));
-  },
-
-  hexToString: function(hex) {
-    var str = '';
-    for (var i = 0, il = hex.length; i < il; i += 2) {
-      str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+/*   
+ *   Convert   an   array   of   big-endian   words   to   a   hex   string.   
+ */
+function binb2hex(binarray) {
+    var hex_tab = hexcase ? "0123456789ABCDEF" : "0123456789abcdef";
+    var str = "";
+    for (var i = 0; i < binarray.length * 4; i++) {
+        str += hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8 + 4)) & 0xF) + hex_tab.charAt((binarray[i >> 2] >> ((3 - i % 4) * 8)) & 0xF);
     }
     return str;
-  },
+}
 
-  test: function() {
-    var success = true;
-    for (var expectedOutput in tests.sha1) {
-      if (tests.sha1.hasOwnProperty(expectedOutput)) {
-        var input = tests.sha1[expectedOutput];
-        var output = this.sha1(input).toLowerCase();
-        if (output !== expectedOutput) {
-          console.error(
-            "sha1(" + input + ") was " + output +
-            " (expected: " + expectedOutput + ")");
-          success = false;
+/*   
+ *   Convert   an   array   of   big-endian   words   to   a   base-64   string   
+ */
+function binb2b64(binarray) {
+    var tab = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    var str = "";
+    for (var i = 0; i < binarray.length * 4; i += 3) {
+        var triplet = (((binarray[i >> 2] >> 8 * (3 - i % 4)) & 0xFF) << 16) | (((binarray[i + 1 >> 2] >> 8 * (3 - (i + 1) % 4)) & 0xFF) << 8) | ((binarray[i + 2 >> 2] >> 8 * (3 - (i + 2) % 4)) & 0xFF);
+        for (var j = 0; j < 4; j++) {
+            if (i * 8 + j * 6 > binarray.length * 32) str += b64pad;
+            else str += tab.charAt((triplet >> 6 * (3 - j)) & 0x3F);
         }
-      }
     }
-    for (var expectedOutput in tests.hmac) {
-      if (tests.hmac.hasOwnProperty(expectedOutput)) {
-        var input = tests.hmac[expectedOutput];
-        var output = this.hmac(input[0], input[1]).toLowerCase();
-        if (output !== expectedOutput) {
-          console.error(
-            "hmac(" + input[0] + ", " + input[1] + ") was " + output +
-            " (expected: " + expectedOutput + ")");
-          success = false;
-        }
-      }
-    }
-    return success;
-  }
-};
-
-})();
+    return str;
+}

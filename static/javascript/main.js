@@ -238,10 +238,11 @@ function getLastDay(year,month){
 }
 
 //excel文件下载
-function pub_export(url,ucode){
-    //soft_key_validator.checkKey(export_bar,url,ucode);
-    export_bar(url);
+/*function pub_export(url,ucode){
+    soft_key_validator.callService_1(this.check_url);
+    soft_key_validator.checkKey(export_bar,url,ucode);
+    //export_bar(url);
 }
 function export_bar(url){
       window.location.href=url;
-}
+}*/

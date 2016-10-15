@@ -26,7 +26,7 @@ def index(request):
 
     conn = mtu.getMysqlConn()
     sqltop = "select shopid, sum(costvalue) as costvaluesum, sum(reth) as rethsum, (sum(reth) / sum(costvalue)) as retrate " \
-             "from 'KGretshop' " \
+             "from KGretshop " \
              "where sdate between '" + monfirstday + "' and '" + yesterday + "' " \
                                                                              "group by shopid " \
                                                                              "order by shopid"

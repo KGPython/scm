@@ -138,6 +138,18 @@ def getMysqlConn():
                            cursorclass=pymysql.cursors.DictCursor)
     return conn
 
+#获取加密锁验证数据库连接
+def getSoftKeySql():
+    conn = pymysql.connect(
+        host=Constants.SOFTKEY_DB_SERVER,
+        port=Constants.SOFTKEY_DB_PORT,
+        user=Constants.SOFTKEY_DB_USER,
+        password=Constants.SOFTKEY_DB_PASSWORD,
+        db=Constants.SOFTKEY_DB_DATABASE,
+        charset='utf8mb4',
+        cursorclass=pymysql.cursors.DictCursor
+    )
+    return conn
 #关闭连接
 def close(conn,cur):
     try:

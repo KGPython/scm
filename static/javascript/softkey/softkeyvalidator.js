@@ -3,15 +3,18 @@
  */
 
 function SoftKeyValidator(call,check_url){
+    var check_url = check_url;
+    var signClient = '';
     var bConnect=0;
     var key_id = '';
     var user_name = '';
     var user_pwd = '';
     var enc_data = '';
-    var rnd = '';
+    var numToClient = '';
     var localMacAddr='';
     var macAddr = '';
-
+    var DevicePath = ''
+    var ret,n,mylen,ID_1,ID_2,addr;
     SoftKeyValidator.toHex = function( n ) {
         var digitArray = new Array('0','1','2','3','4','5','6','7','8','9','a','b','c','d','e','f');
         var result = '';
@@ -27,11 +30,7 @@ function SoftKeyValidator(call,check_url){
         return ( result == '' ? '0' : result );
     };
 
-    SoftKeyValidator.random = function(){
-        var number1 = parseInt(Math.random()*65535)+1;
-        var number2 = parseInt(Math.random()*65535)+1;
-        rnd = number1.toString()+number2.toString();
-    };
+
 
     this.loadSoftKey = function(){
         //如果是IE10及以下浏览器，则跳过不处理
@@ -39,15 +38,12 @@ function SoftKeyValidator(call,check_url){
         try
         {
             var s_pnp=new SoftKey3W();
-
-             s_pnp.Socket_UK.onopen = function()
-            {
+             s_pnp.Socket_UK.onopen = function(){
                 bConnect=1;//代表已经连接，用于判断是否安装了客户端服务
             };
 
             //在使用事件插拨时，注意，一定不要关掉Sockey，否则无法监测事件插拨
-            s_pnp.Socket_UK.onmessage =function got_packet(Msg)
-            {
+            s_pnp.Socket_UK.onmessage =function got_packet(Msg){
                 var PnpData = JSON.parse(Msg.data);
                 if(PnpData.type=="PnpEvent")//如果是插拨事件处理消息
                 {
@@ -60,7 +56,6 @@ function SoftKeyValidator(call,check_url){
                     }
                 }
             };
-
             s_pnp.Socket_UK.onclose = function(){};
         }catch(e){
             alert(e.name + ": " + e.message);
@@ -68,11 +63,22 @@ function SoftKeyValidator(call,check_url){
         }
     };
 
-    this.checkKey = function(func,param,ucode){
-        //获得随机数
-        SoftKeyValidator.random();
+    this.callService_1 = function(func,curUrl,curCode){
+        $.ajax({
+            url:check_url,
+            method:'post',
+            dataType:'json',
+            data:{'call':100},
+            async: false,
+            success:function(data){
+                numToClient = data.randNum;
+                SoftKeyValidator.checkKey(func,curUrl,curCode);
+            }
+        });
+    };
+    SoftKeyValidator.checkKey = function(func,curUrl,curCode){
         //如果是IE10及以下浏览器，则使用AVCTIVEX控件的方式
-        if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10(rnd,func,param,ucode);
+        if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10(func,curUrl,curCode);
        //判断是否安装了服务程序，如果没有安装提示用户安装
         if(bConnect==0)
         {
@@ -80,7 +86,7 @@ function SoftKeyValidator(call,check_url){
             return false;
         }
 
-        var DevicePath,ret,n,mylen,ID_1,ID_2,addr;
+
         try{
             //由于是使用事件消息的方式与服务程序进行通讯，
             //好处是不用安装插件，不分系统及版本，控件也不会被拦截，同时安装服务程序后，可以立即使用，不用重启浏览器
@@ -112,6 +118,7 @@ function SoftKeyValidator(call,check_url){
                             }
                             DevicePath=UK_Data.return_value;//获得返回的UK的路径
                             s_simnew1.GetID_1(DevicePath); //发送命令取ID_1
+                            //console.log('DevicePath:'+DevicePath);
                         }
                         break;
                     case 2:
@@ -133,7 +140,7 @@ function SoftKeyValidator(call,check_url){
                             ID_2=UK_Data.return_value;//获得返回的UK的ID_2
 
                             key_id=SoftKeyValidator.toHex(ID_1)+SoftKeyValidator.toHex(ID_2);
-
+                            //console.log('key_id:'+key_id);
                             s_simnew1.ContinueOrder();//为了方便阅读，这里调用了一句继续下一行的计算的命令，因为在这个消息中没有调用我们的函数，所以要调用这个
                         }
                         break;
@@ -174,6 +181,7 @@ function SoftKeyValidator(call,check_url){
                                 return false;
                             }
                             user_name=UK_Data.return_value;//获得返回的UK地址1的字符串
+                            //console.log('user_name:'+user_name);
                             //获到设置在锁中的用户密码,
                             //先从地址20读取字符串的长度,使用默认的读密码"FFFFFFFF","FFFFFFFF"
                             addr=40;
@@ -209,9 +217,9 @@ function SoftKeyValidator(call,check_url){
                                 return false;
                             }
                             user_pwd=UK_Data.return_value;//获得返回的UK中地址21的字符串
-
+                            //console.log('user_pwd:'+user_pwd);
                             //这里返回对随机数的HASH结果
-                            s_simnew1.EncString(rnd,DevicePath);//发送命令让UK进行加密操作
+                            s_simnew1.EncString(numToClient,DevicePath);//发送命令让UK进行加密操作
                         }
                         break;
                     case 11:
@@ -222,7 +230,7 @@ function SoftKeyValidator(call,check_url){
                             }
                             var return_EncData=UK_Data.return_value;//获得返回的加密后的字符串
                             enc_data = return_EncData;
-
+                            //console.log('enc_data:'+enc_data);
                             s_simnew1.MacAddr();
                         }
                         break;
@@ -233,7 +241,7 @@ function SoftKeyValidator(call,check_url){
                                 return false;
                             }
                             localMacAddr=UK_Data.return_value;//获得返回的UK中地址21的字符串
-
+                            //console.log('localMacAddr:'+localMacAddr);
                             addr=80;
                             s_simnew1.YReadEx(addr,1,"ffffffff","ffffffff",DevicePath);//发送命令取UK地址40的数据
                         }
@@ -267,11 +275,11 @@ function SoftKeyValidator(call,check_url){
                                 return false;
                             }
                             macAddr=UK_Data.return_value;//获得返回的UK中地址41的字符串
-
+                            //console.log('macAddr：'+macAddr)
                              //所有工作处理完成后，关掉Socket
                             s_simnew1.Socket_UK.close();
                             //后台验证
-                            checkValidity(func,param,ucode);
+                            checkValidity(func,curUrl,curCode);
                         }
                         break;
                 }
@@ -285,7 +293,7 @@ function SoftKeyValidator(call,check_url){
         }
     }
 
-    this.Handle_IE10 = function(rnd,func,param,ucode)
+    this.Handle_IE10 = function(func,curUrl,curCode)
     {
         var DevicePath,ret,n,mylen;
         try
@@ -339,7 +347,7 @@ function SoftKeyValidator(call,check_url){
             }
 
             //这里返回对随机数的HASH结果
-            enc_data=s_simnew1.EncString(rnd,DevicePath);
+            enc_data=s_simnew1.EncString(numToClient,DevicePath);
             if( s_simnew1.LastError!= 0 )
             {
                 window.alert( "进行加密运行算时错误，错误码为："+s_simnew1.LastError.toString());
@@ -358,7 +366,7 @@ function SoftKeyValidator(call,check_url){
             }
 
             //后台验证
-            checkValidity(func,param,ucode);
+            checkValidity(func,curUrl,curCode);
         }catch (e){
             alert(e.name + "：" + e.message+"，可能是没有安装相应的控件或插件");
             return false;
@@ -367,35 +375,68 @@ function SoftKeyValidator(call,check_url){
 
     String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
-    }
+    };
+    SoftKeyValidator.signClient = function (time,codestr){
+        var sortArr = [key_id,codestr,numToClient.toString(),time.toString()];
+        sortArr = sortArr.sort();
+        var arrStr = sortArr.join("");
+        var sha1 = hex_sha1(arrStr);
+        signClient = sha1;
+    };
 
-    function checkValidity(func,param,ucode){
-        var codestr = $.md5(ucode.trim());
-        if(codestr.trim()!=user_name.trim()){
-            alert("加密锁与当前用户不符！");
-            return false;
-        }
-
-        var jsonStr = {
-            keyId:key_id,
-            userName:user_name,
-            userPwd:user_pwd,
-            rnd:rnd,
-            encData:enc_data,
-        };
+    function checkValidity(func,curUrl,curCode){
+        var codestr = curCode.trim();
+        var time = new Date().getTime();
+        SoftKeyValidator.signClient(time,codestr);
 
         var data = {
-            call:call,
-            jsonStr: JSON.stringify(jsonStr)
+            'signClient':signClient,
+            'time':time,
+            'keyId':key_id
         };
-
         $.ajax({
             url:check_url,
-            type: "POST",
+            data:data,
+            method:'post',
+            dataType:'json',
+            async : false,
+            success:function(result){
+                var succ = result.msg;
+                if(succ == 1){
+                    alert('加密锁未启用');
+                    return false;
+                }else if(succ == 2){
+                    if(curUrl){
+                        curUrl += "&key_state="+succ;
+
+                        func(curUrl);
+                    }else{
+                        func();
+                    }
+                }else if(succ == 3){
+                    alert('加密锁已冻结');
+                    return false;
+                }else if(succ == 4){
+                    alert('加密锁已失效');
+                    return false;
+                }else if(succ == 5){
+                    alert('加密锁已过期');
+                    return false;
+                }else if(succ == 6){
+                    alert('加密锁验授权信息错误');
+                    return false;
+                }else{
+                    alert("请求错误，验证失败");
+                    return false;
+                }
+            }
+        });
+
+        /*$.ajax({
+            url:this.check_url,
+            method:'post',
             data: data,
-            dataType : 'jsonp',
-            jsonpCallback:"callBack",
-            cache: false,
+            dataType : 'json',
             success: function(result){
                 var succ = result.success.replace(/\"/g,"");
                 if(succ == '1'){
@@ -427,7 +468,7 @@ function SoftKeyValidator(call,check_url){
                 }
             }
         });
-        function callBack(){}
+        function callBack(){}*/
     }
 
      /* this.authorized= function(){
