@@ -1,175 +1,194 @@
 {% load basefilter %}
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>商业供应链系统</title>
-        <link data-jsfiddle="common" rel="stylesheet" media="screen" href="{{ static }}/js/handsontable/handsontable.full.css">
-    </head>
-    <body>
-        {% include 'common/nav.html' %}
-        <div class="notice noticeOrder comWidth" style="width: inherit;">
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+    <link data-jsfiddle="common" rel="stylesheet" media="screen"
+          href="{{ static }}/js/handsontable/handsontable.full.css">
+</head>
+<body>
+{% include 'common/nav.html' %}
+<div class="notice noticeOrder comWidth" style="width: inherit;">
 
-            <div class="tTitle">
-                <a class="button right" style="height:35px;width: 80px;margin-bottom: 5px;" href="javascript:void(0);" id="btnExport">导出Excel</a>
-                <div class="container">
-                    <ul class="nav nav-tabs">
-                      <li role="presentation" class="active"><a href="#">门店</a></li>
-                      <li role="presentation" ><a href="#">类别</a></li>
-                      {% for item in shoplist %}
-                          <li role="presentation" ><a href="#">{{ item.shopname }}</a></li>
-                      {% endfor %}
-                    </ul>
-                    <div class="list-tabs container" style="height:700px;width:100%;overflow: auto;" >
-                        <div class="table" style="display:block;">
-                                <div id="group_operate0"> </div>
-                        </div>
-                        <div class="table">
-                                <div id="group_operate1"> </div>
-                        </div>
-                        {% for item in shoplist %}
-                            <div class="table">
-                                <div id="group_operate{{ forloop.counter0|add:"2"|toInt}}"> </div>
-                            </div>
-                        {% endfor %}
-                    </div>
+    <div class="tTitle">
+        <a class="button right" style="height:35px;width: 80px;margin-bottom: 5px;" href="javascript:void(0);"
+           id="btnExport">导出Excel</a>
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#">门店</a></li>
+                <li role="presentation"><a href="#">类别</a></li>
+                {% for item in shoplist %}
+                    <li role="presentation"><a href="#">{{ item.shopname }}</a></li>
+                {% endfor %}
+            </ul>
+            <div class="list-tabs container" style="height:700px;width:100%;overflow: auto;">
+                <div class="table" style="display:block;">
+                    <div id="group_operate0"></div>
                 </div>
+                <div class="table">
+                    <div id="group_operate1"></div>
+                </div>
+                {% for item in shoplist %}
+                    <div class="table">
+                        <div id="group_operate{{ forloop.counter0|add:"2"|toInt }}"></div>
+                    </div>
+                {% endfor %}
             </div>
         </div>
-        {% include "common/footer.html" %}
-        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.full.js"></script>
-        <script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
-        <script data-jsfiddle="example1">
-            current = "ribao";
-        </script>
-        <script type="text/javascript">
-            $('.nav-tabs li').click(function (e) {
-                e.preventDefault();
-                $(this).addClass("active").siblings().removeClass("active");
-                i=$(this).index();
-                $(".list-tabs .table").eq(i).show().siblings().hide();
-                //加载数据
-                loadDate(i);
-            })
-        </script>
-        <script >
-             window.var_arr = new Array();
-             $(function(){
-                 loadDate(0);
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.full.js"></script>
+<script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
+<script data-jsfiddle="example1">
+    current = "ribao";
+</script>
+<script type="text/javascript">
+    $('.nav-tabs li').click(function (e) {
+        e.preventDefault();
+        $(this).addClass("active").siblings().removeClass("active");
+        i = $(this).index();
+        $(".list-tabs .table").eq(i).show().siblings().hide();
+        //加载数据
+        loadDate(i);
+    })
+</script>
+<script>
+    window.var_arr = new Array();
+    $(function () {
+        loadDate(0);
 
-                 $("#btnExport").on("click",function(){
-                     pub_export("{% url 'grpGptDecmptIndex' %}?qtype=2",'{{ request.session.s_ucode }}');
-                 });
-             });
-             function loadDate(tab){
-                var yesterday = getYestodayDate(new Date());
-                var year = yesterday.getFullYear();
-                var month = yesterday.getMonth()+1;  //+1
-                var lastDay = getLastDay(year,month-1);
-                if(var_arr[tab]==undefined || var_arr[tab]==null || var_arr[tab]==''){
-                    initHot(tab,lastDay);
+        $("#btnExport").on("click", function () {
+            pub_export("{% url 'grpGptDecmptIndex' %}?qtype=2", '{{ request.session.s_ucode }}');
+        });
+    });
+    function loadDate(tab) {
+        var yesterday = getYestodayDate(new Date());
+        var year = yesterday.getFullYear();
+        var month = yesterday.getMonth() + 1;  //+1
+        var lastDay = getLastDay(year, month - 1);
+        if (var_arr[tab] == undefined || var_arr[tab] == null || var_arr[tab] == '') {
+            initHot(tab, lastDay);
+        }
+        var weekArray = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
+        var headers = [];
+        var h0 = {'idname': '' + year + '年' + month + '月各店类别每日业绩指标分解达成表（单位：万元）',};
+        var h1;
+        if (tab == 0) {
+            h1 = {'idname': '门店编码', 'codelable': '日期'};
+        } else {
+            h1 = {'idname': '类别编码', 'codelable': '日期'};
+        }
+        var h2 = {
+            'codelable': '' + month + '月总指标',
+            'm_all_sale': '调整后销售指标',
+            'm_daily_sale': '累计计划销售达标率',
+            'm_all_gain': '调整后毛利指标',
+            'm_daily_gain': '累计计划毛利达标率'
+        };
+        var h3 = {};
+
+        for (var i = 1; i <= lastDay; i++) {
+            var s = 'sale_d' + i;
+            var e = 'gain_d' + i;
+            h1[s] = i + '日';
+            h2[s] = weekArray[new Date(year, yesterday.getMonth(), i).getDay()];
+            h3[s] = '销售';
+            h3[e] = '毛利';
+        }
+
+        headers.push(h0);
+        headers.push(h1);
+        headers.push(h2);
+        headers.push(h3);
+        if (tab == 0) {
+            var data = {{ rlist|safe }};
+            headers = headers.concat(data);
+        } else if (tab == 1) {
+            var data = {{ grslist|safe }};
+            headers = headers.concat(data);
+        } else {
+            var data = {{ srslist|safe }};
+            headers = headers.concat(data[tab - 2]);
+        }
+        var_arr[tab].loadData(headers);
+    }
+
+    function initHot(tab, lastDay) {
+        var group_operate = document.getElementById('group_operate' + tab);
+        var columnsArr = [{data: 'idname'}, {data: 'codelable'}, {data: 'm_all_sale'}, {data: 'm_daily_sale'}, {data: 'm_all_gain'}, {data: 'm_daily_gain'}];
+        var mergeArr = [{row: 0, col: 0, rowspan: 1, colspan: 6}, {row: 1, col: 0, rowspan: 3, colspan: 1}, {
+            row: 1,
+            col: 1,
+            rowspan: 1,
+            colspan: 5
+        },
+            {row: 2, col: 1, rowspan: 2, colspan: 1}, {row: 2, col: 2, rowspan: 2, colspan: 1}, {
+                row: 2,
+                col: 3,
+                rowspan: 2,
+                colspan: 1
+            },
+            {row: 2, col: 4, rowspan: 2, colspan: 1}, {row: 2, col: 5, rowspan: 2, colspan: 1}];
+        var cwidths = [120, 80, 100, 100, 100, 100];
+        var n = 6;
+        for (var i = 1; i <= lastDay; i++) {
+            //字段
+            columnsArr.push({data: 'sale_d' + i});
+            columnsArr.push({data: 'gain_d' + i});
+            //合并
+            mergeArr.push({row: 1, col: n, rowspan: 1, colspan: 2});
+            mergeArr.push({row: 2, col: n, rowspan: 1, colspan: 2});
+            n += 2;
+            //宽度
+            cwidths.push(80);
+            cwidths.push(80);
+        }
+        rownum = 4;
+        var rowlen = 22;
+        if (tab > 0) {
+            rowlen = 36;
+        }
+
+        for (var i = 1; i <= rowlen; i++) {
+            mergeArr.push({row: rownum, col: 0, rowspan: 3, colspan: 1});
+            rownum += 3
+        }
+        initHandsontable(tab, group_operate, columnsArr, mergeArr, cwidths);
+    }
+
+    function initHandsontable(tab, obj, columns, mergecells, colwidths) {
+        var rows = [4, 5, 6];
+        var rows1 = [37, 38, 39, 61, 62, 63, 91, 92, 93, 103, 104, 105, 109, 110, 111];
+        var hot = new Handsontable(obj, {
+            colWidths: colwidths,
+            rowHeaders: true,
+            colHeaders: true,
+            fixedColumnsLeft: 6,
+            fixedRowsTop: 4,
+            minSpareRows: 1,
+            contextMenu: false,
+            cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (row <= 3) {
+                    cellProperties.renderer = headerRenderer;
+                } else if (rows.indexOf(row) != -1) {
+                    cellProperties.renderer = sumRenderer;
+                } else if (tab > 0 && rows1.indexOf(row) != -1) {
+                    cellProperties.renderer = sumRenderer_middle;
+                } else if (row >= 7 && ((row - 7) % 3 == 0 && col > 0)) {
+                    cellProperties.renderer = rowRenderer2;
                 }
-                var weekArray = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
-                var headers = [];
-                var h0 = {'idname':''+year+'年'+month+'月各店类别每日业绩指标分解达成表（单位：万元）',};
-                var h1;
-                if(tab==0){
-                   h1 = {'idname':'门店编码','codelable':'日期'};
-                }else{
-                   h1 = {'idname':'类别编码','codelable':'日期'};
+                if (row == 0 && col == 0) {
+                    cellProperties.renderer = headerTextRenderer;
                 }
-                var h2 = {'codelable':''+month+'月总指标','m_all_sale':'调整后销售指标','m_daily_sale':'累计计划销售达标率','m_all_gain':'调整后毛利指标','m_daily_gain':'累计计划毛利达标率'};
-                var h3 = {};
-
-                for(var i=1;i<=lastDay;i++){
-                  var s = 'sale_d'+i;
-                  var e = 'gain_d'+i;
-                  h1[s] = i+'日';
-                  h2[s] = weekArray[new Date(year,yesterday.getMonth(),i).getDay()];
-                  h3[s] = '销售';
-                  h3[e] = '毛利';
-                }
-
-                headers.push(h0);
-                headers.push(h1);
-                headers.push(h2);
-                headers.push(h3);
-                if(tab==0){
-                    var data = {{ rlist|safe }};
-                    headers = headers.concat(data);
-                }else if(tab==1){
-                    var data = {{ grslist|safe }};
-                    headers = headers.concat(data);
-                }else{
-                    var data = {{ srslist|safe }};
-                    headers = headers.concat(data[tab-2]);
-                }
-                var_arr[tab].loadData(headers);
-             }
-
-             function initHot(tab,lastDay){
-                  var group_operate = document.getElementById('group_operate'+tab);
-                  var columnsArr = [{data: 'idname'},{data: 'codelable'},{data: 'm_all_sale'},{data: 'm_daily_sale'},{data: 'm_all_gain'},{data:'m_daily_gain'}];
-                  var mergeArr = [{row: 0, col: 0, rowspan: 1, colspan: 6},{row: 1, col: 0, rowspan: 3, colspan: 1},{row: 1, col: 1, rowspan: 1, colspan:5},
-                                   {row: 2, col: 1, rowspan: 2, colspan:1},{row: 2, col: 2, rowspan: 2, colspan:1},{row: 2, col:3, rowspan: 2, colspan:1},
-                                   {row: 2, col: 4, rowspan: 2, colspan:1},{row: 2, col: 5, rowspan: 2, colspan:1}];
-                  var cwidths = [120, 80,100,100,100,100];
-                  var n = 6;
-                  for(var i=1;i<=lastDay;i++){
-                      //字段
-                      columnsArr.push({data:'sale_d'+i});
-                      columnsArr.push({data:'gain_d'+i});
-                      //合并
-                      mergeArr.push({row: 1, col:n, rowspan:1, colspan:2});
-                      mergeArr.push({row: 2, col:n, rowspan:1, colspan:2});
-                      n += 2;
-                      //宽度
-                      cwidths.push(80);
-                      cwidths.push(80);
-                  }
-                  rownum = 4;
-                  var rowlen = 22;
-                  if(tab>0){
-                     rowlen = 33;
-                  }
-                  for(var i=1;i<=rowlen;i++){
-                      mergeArr.push({row: rownum, col:0, rowspan:3, colspan:1});
-                      rownum+=3
-                  }
-                  initHandsontable(tab,group_operate,columnsArr,mergeArr,cwidths);
-             }
-
-             function initHandsontable(tab,obj,columns,mergecells,colwidths){
-                 var rows = [4,5,6];
-                 var rows1 = [37,38,39,58,59,60,91,92,93,103,104,105];
-                 var hot = new Handsontable(obj,{
-                        colWidths:colwidths,
-                        rowHeaders: true,
-                        colHeaders: true,
-                        fixedColumnsLeft:6,
-                        fixedRowsTop:4,
-                        minSpareRows: 1,
-                        contextMenu: false,
-                        cells: function (row, col, prop) {
-                            var cellProperties = {};
-                            if (row <= 3 ) {
-                                cellProperties.renderer = headerRenderer;
-                            }else if(rows.indexOf(row)!=-1) {
-                                cellProperties.renderer = sumRenderer;
-                            }else if(tab>0 && rows1.indexOf(row)!=-1){
-                                cellProperties.renderer = sumRenderer_middle;
-                            }else if(row >= 7 && ((row-7) % 3==0 && col>0) ){
-                                cellProperties.renderer = rowRenderer2;
-                            }
-                            if(row==0 && col==0){
-                                cellProperties.renderer = headerTextRenderer;
-                            }
-                            return cellProperties;
-                        } ,
-                        columns:columns ,
-                        mergeCells:mergecells,
-                  });
-                 var_arr[tab]=hot;
-             }
-          </script>
-    </body>
+                return cellProperties;
+            },
+            columns: columns,
+            mergeCells: mergecells,
+        });
+        var_arr[tab] = hot;
+    }
+</script>
+</body>
 </html>
