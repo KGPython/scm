@@ -1,0 +1,125 @@
+{% load basefilter %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>商业供应链系统</title>
+    <link data-jsfiddle="common" rel="stylesheet" media="screen"
+          href="{{ static }}/js/handsontable/handsontable.full.css">
+</head>
+<body>
+{% include 'common/nav.html' %}
+<div class="notice noticeOrder comWidth" style="width: inherit;">
+
+    <div class="tTitle">
+        <a class="button right" style="height:35px;width: 80px;margin-bottom: 5px;" href="javascript:void(0);"
+           id="btnExport">导出Excel</a>
+        <div class="container">
+            <ul class="nav nav-tabs">
+                <li role="presentation" class="active"><a href="#">单品报损超100</a></li>
+            </ul>
+            <div class="list-tabs container">
+                <div class="table" style="display:block;">
+                    <div id="tableReport1" style="height:700px;width:100%;overflow: auto;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% include "common/footer.html" %}
+<script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.full.js"></script>
+<script data-jsfiddle="common" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
+<script data-jsfiddle="example1">
+    current = "yichangshuju";
+</script>
+<script type="text/javascript">
+    $('.nav-tabs li').click(function (e) {
+        e.preventDefault();
+        $(this).addClass("active").siblings().removeClass("active");
+        i = $(this).index();
+        $(".list-tabs .table").eq(i).show().siblings().hide();
+        //加载数据
+        initDate(i + 1);
+    });
+
+    $("#btnExport").on("click", function () {
+        pub_export("{% url 'lossRate100' %}?qtype=2", '{{ request.session.s_ucode }}');
+    });
+</script>
+<script>
+
+    $(function () {
+        initDate(1);
+    });
+    function initDate(tab) {
+        var fixedRow, fixedCol;
+        var mergeCellsList = [];
+        var table = [];
+        var rowLight = [];
+        if (tab == 1) {
+            fixedRow = 1;
+            fixedCol = 0;
+            var thead = {
+                'shopid': '机构编码',
+                'shopname': '机构名称',
+                'sheetid': '单据编号',
+                'goodsid': '商品名称',
+                'goodsname': '商品编码',
+                'deptid': '类别编码',
+                'deptname': '类别名称',
+                'askqty': '申请数量',
+                'checkqty': '审批数量',
+                'qty': '实际报损数',
+                'costvalue':'成本金额',
+                'reason':'解释原因'
+            };
+            var tbody = {{data | safe}};
+            table.push(thead);
+            table = table.concat(tbody);
+            /*mergeCellsList = [
+             {data:'shopid'},{data:'shopname'},{data:'deptid'},{data:'deptidname'},{data:'qtyz'},{data:'qtyl'},{data:'zhonbi'}
+             ];*/
+            rowLight = [0];
+        }
+
+        initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight)
+    }
+    var tableSetting = {};
+    function initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight) {
+        tableSetting = {
+            data: table,
+            colWidths: 140,
+            className: "htCenter htMiddle",
+            rowHeaders: true,
+            colHeaders: true,
+            contextMenu: false,
+            fixedRowsTop: fixedRow,
+            fixedColumnsLeft: fixedCol,
+            manualColumnResize: true,
+            manualRowMove: true,
+            manualColumnMove: true,
+            columnSorting: true,
+            sortIndicator: true,
+            readOnly: true,
+            mergeCells: mergeCellsList,
+            cells: function (row, col, prop) {
+                var cellProperties = {};
+                if (row == rowLight[1] || row <= rowLight[0]) { //查找行或列的位置
+                    cellProperties.renderer = headerRenderer;
+                }
+                return cellProperties;
+            }
+        };
+        creatTable(tab, tableSetting)
+    }
+    var hot1;
+    function creatTable(tab, tableSetting) {
+        var container = document.getElementById('tableReport' + tab);
+        if (tab == 1) {
+            if (!hot1) {
+                hot1 = new Handsontable(container, tableSetting);
+            }
+        }
+    }
+</script>
+</body>
+</html>

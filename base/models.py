@@ -130,6 +130,23 @@ class Kshopsale(models.Model):
         db_table = 'Kshopsale'
         unique_together = (('sdate', 'shopid'),)
 
+class Kglossrate(models.Model):
+    checkdate = models.DateTimeField()
+    shopid = models.CharField(max_length=4, blank=True, null=True)
+    shopname = models.CharField(max_length=64, blank=True, null=True)
+    sheetid = models.CharField(max_length=16, blank=True, null=True)
+    goodsid = models.IntegerField(db_column='GoodsID', blank=True, null=True)  # Field name made lowercase.
+    goodsname = models.CharField(db_column='GoodsName', max_length=64, blank=True, null=True)  # Field name made lowercase.
+    deptid = models.IntegerField(blank=True, null=True)
+    deptname = models.CharField(max_length=64, blank=True, null=True)
+    askqty = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
+    checkqty = models.DecimalField(db_column='CheckQty', max_digits=16, decimal_places=4, blank=True, null=True)  # Field name made lowercase.
+    qty = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
+    costvalue = models.DecimalField(max_digits=16, decimal_places=4, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'KGLossrate'
 
 class Ret0(models.Model):
     sheetid = models.CharField(db_column='SheetID', primary_key=True, max_length=16)  # Field name made lowercase.
