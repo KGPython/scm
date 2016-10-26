@@ -19,7 +19,7 @@ def index(request):
     kwargs.setdefault('saledate',yesterday)
     kwargs.setdefault('sgroupid',sgroupid)
     resList = KgNegStock.objects.values('shopid','shopname','sgroupid','sgroupname','goodsid','goodsname','qty','costvalue','spec','unitname','deptid','deptname','venderid','vendername','promflag','openqty','receiptdate','onreceiptqty','saledate')\
-        .filter(**kwargs).order_by('shopid')
+        .filter(**kwargs).exclude(shopid='C009').order_by('shopid')
     formate_data(resList)
     qtype = mtu.getReqVal(request,"qtype","1")
     #操作日志

@@ -31,31 +31,32 @@ def index(request):
 
          unsumkey = ["gaintx","wgaintx"]
          for obj in list:
-            row = {}
-            for key in obj.keys():
-                item = obj[key]
-                newkey = key.lower()
-                if item:
-                    if isinstance(item,int) or isinstance(item,decimal.Decimal):
-                        if newkey not in unsumkey:
-                            row.setdefault(newkey,float(item))
-                            sum[newkey] += float(item)
+            if obj['shopid'] != 'C009':
+                row = {}
+                for key in obj.keys():
+                    item = obj[key]
+                    newkey = key.lower()
+                    if item:
+                        if isinstance(item,int) or isinstance(item,decimal.Decimal):
+                            if newkey not in unsumkey:
+                                row.setdefault(newkey,float(item))
+                                sum[newkey] += float(item)
+                            else:
+                                row.setdefault(newkey,"%0.2f" % item+"%")
+                        elif isinstance(item,datetime.datetime):
+                            row.setdefault(newkey,item.strftime("%Y-%m-%d"))
                         else:
-                            row.setdefault(newkey,"%0.2f" % item+"%")
-                    elif isinstance(item,datetime.datetime):
-                        row.setdefault(newkey,item.strftime("%Y-%m-%d"))
+                            row.setdefault(newkey,item)
                     else:
-                        row.setdefault(newkey,item)
+                        row.setdefault(newkey,"")
+
+                if row["sale"]>0:
+                    yhzhanbi = "%0.2f" % (row["discvalue"]*100.0/row["sale"]) + "%"
                 else:
-                    row.setdefault(newkey,"")
+                    yhzhanbi = ""
 
-            if row["sale"]>0:
-                yhzhanbi = "%0.2f" % (row["discvalue"]*100.0/row["sale"]) + "%"
-            else:
-                yhzhanbi = ""
-
-            row.setdefault("yhzhanbi",yhzhanbi)
-            rlist.append(row)
+                row.setdefault("yhzhanbi",yhzhanbi)
+                rlist.append(row)
 
          if sum["sale"] > 0:
              sum["gaintx"] = "%0.2f" % (sum["salegain"]*100.0/sum["sale"]) + "%"

@@ -17,7 +17,7 @@ def index(request):
      karrs.setdefault("bbdate", "{start}".format(start=yesterday))
      karrs.setdefault("profit__lte", "{profit}".format(profit=-200))
      rlist = Kgprofit.objects.values("bbdate","sdate","shopid","shopname","goodsid","goodsname","deptid","deptname","qty","profit","stockqty","truevalue","costvalue")\
-                     .filter(**karrs).order_by("bbdate","shopid","goodsid","sdate")
+                     .filter(**karrs).exclude(shopid='C009').order_by("bbdate","shopid","goodsid","sdate")
 
      formate_data(rlist)
 

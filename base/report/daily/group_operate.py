@@ -27,7 +27,7 @@ def index(request):
      lastDay = calendar.monthrange(year,month)[1]
 
      #查询所有超市门店
-     slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").filter(shoptype=11).order_by("region","shopid")
+     slist = BasShopRegion.objects.values("shopid","shopname","region","opentime","type").filter(shoptype=11).exclude(shopid='C009').order_by("region","shopid")
      shopids = [ shop["shopid"] for shop in slist]
 
      #查询当月销售
@@ -41,7 +41,7 @@ def index(request):
      karrs.setdefault("sdate__year","{year}".format(year=year))
      karrs.setdefault("shopid__in",shopids)
      yearlist = Kshopsale.objects.values("shopid")\
-                     .filter(**karrs).order_by("shopid")\
+                     .filter(**karrs).exclude(shopid='C009').order_by("shopid")\
                      .annotate(salevalue=Sum('salevalue')/10000,salegain=Sum('salegain')/10000,tradenumber=Sum('tradenumber')
                                               ,tradeprice=Sum('tradeprice'),salevalueesti=Sum('salevalueesti')/10000
                                               ,salegainesti=Sum('salegainesti')/10000
@@ -49,7 +49,7 @@ def index(request):
                                               ,salevalueold=Sum('salevalueold')/10000,salegainold=Sum('salegainold')/10000)
 
      avglist = Kshopsale.objects.values("shopid")\
-                     .filter(**karrs).order_by("shopid")\
+                     .filter(**karrs).exclude(shopid='C009').order_by("shopid")\
                      .annotate(tradenumber_avg = Avg('tradenumber'))
      avgdict = { aitem["shopid"]:aitem["tradenumber_avg"] for aitem in avglist}
 
@@ -58,7 +58,7 @@ def index(request):
      karrs.setdefault("sdateold__lte", "{end} 23:59:59".format(end=oldyesterday))
      karrs.setdefault("shopid__in", shopids)
      oldavglist = Kshopsale.objects.values("shopid") \
-         .filter(**karrs).order_by("shopid") \
+         .filter(**karrs).exclude(shopid='C009').order_by("shopid") \
          .annotate(tradenumberold_avg=Avg('tradenumberold'))
      oldavgdict = {aitem["shopid"]: aitem["tradenumberold_avg"] for aitem in oldavglist}
 

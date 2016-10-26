@@ -22,7 +22,7 @@ def index(request):
     conn = mtu.getMysqlConn()
     sqlTop= 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
             'FROM KNegativestock ' \
-            'WHERE sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
+            'WHERE ShopID!="C009" AND sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
     cur.execute(sqlTop)
     listTop= cur.fetchall()
@@ -106,7 +106,7 @@ def index(request):
     ###课组汇总###
     yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
     sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from KNegativestock' \
-          ' where sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
+          ' where ShopID!="C009" AND sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
     cur = conn.cursor()
     cur.execute(sqlDept)
     listDept = cur.fetchall()
@@ -122,7 +122,7 @@ def index(request):
         obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
 
     ###负库存课组明细###
-    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE sdate = "'\
+    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE ShopID!="C009" AND  sdate = "'\
           +str(yesterday)+'" GROUP BY deptid,shopid'
     cur = conn.cursor()
     cur.execute(sqlDeptDetail)

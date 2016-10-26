@@ -30,7 +30,7 @@ def index(request):
     #月份汇总数据
     sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
           'FROM Kzerostock ' \
-          'WHERE sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
+          'WHERE ShopID!="C009" AND sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
     cur.execute(sqlTop)
     listTop = cur.fetchall()
     #门店排名合计
@@ -147,7 +147,7 @@ def index(request):
     ###课组汇总###
     yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
     sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from Kzerostock' \
-          ' where sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
+          ' where ShopID!="C009" AND sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
 
     cur.execute(sqlDept)
     listDept = cur.fetchall()

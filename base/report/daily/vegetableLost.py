@@ -28,7 +28,7 @@ def inidex(request):
     #月累计报损
     sqlMonthTotal = 'select shopid,shopname,sum(costvalue) costvalueSum,sum(lostvalue) lostvalueSum,(sum(lostvalue)/sum(costvalue)) lrateSum ' \
                     'from KGshop12lost ' \
-                    'where sdate between "'+monthFirstStr+'" and "'+todayStr+'" ' \
+                    'where ShopID!="C009" AND sdate between "'+monthFirstStr+'" and "'+todayStr+'" ' \
                     'group by shopid order by shopid '
     cur.execute(sqlMonthTotal)
     shopTop = cur.fetchall()
@@ -36,7 +36,7 @@ def inidex(request):
     #每日报损
     sqlDaily = 'select sdate,shopid,costvalue,lostvalue,lrate ' \
                'from KGshop12lost ' \
-               'where sdate between "'+monthFirstStr+'" and "'+todayStr+'" ' \
+               'where ShopID!="C009" AND sdate between "'+monthFirstStr+'" and "'+todayStr+'" ' \
                'order by sdate '
     cur.execute(sqlDaily)
     listDaily = cur.fetchall()
