@@ -13,14 +13,15 @@ def index(request):
     yesterday = DateUtil.get_day_of_day(-1)
 
     rlist = Kglistnoret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "payreson", \
-                                       "paytype", "payvalue").filter(sdate=yesterday)
+                                       "paytype", "payvalue").filter(sdate=yesterday).exclude(shopid='C009')
 
     formate_data(rlist)
 
     # 商品退货明细
     dlist = Kggoodsret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "deptid", \
                                       "deptname", "goodsid", "goodsname", "xamount", "salevalue", "discvalue", \
-                                      "truevalue", "saletype", "price", "disctype").filter(sdate=yesterday)
+                                      "truevalue", "saletype", "price", "disctype").filter(sdate=yesterday).exclude(
+        shopid='C009')
     formate_data(dlist)
 
     qtype = mtu.getReqVal(request, "qtype", "1")
@@ -35,7 +36,8 @@ def index(request):
     BasPurLog.objects.create(name="单张小票退货超300", url=path, qtype=qtype, ucode=ucode, uname=uname, createtime=today)
 
     if qtype == "1":
-        return render(request, "report/abnormal/ret_shopping_rec_300.html", {"rlist": list(rlist), 'dlist': list(dlist)})
+        return render(request, "report/abnormal/ret_shopping_rec_300.html",
+                      {"rlist": list(rlist), 'dlist': list(dlist)})
     else:
         return export(rlist, dlist, yesterday)
 
