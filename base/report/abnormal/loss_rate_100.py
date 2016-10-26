@@ -18,7 +18,7 @@ def index(request):
     karrs.setdefault('checkdate__lte',timeEnd)
     karrs.setdefault('checkdate__gte',timeStart)
     data = Kglossrate.objects.values('shopid','shopname','sheetid','goodsid','goodsname','deptid','deptname','askqty','checkqty','qty','costvalue')\
-            .filter(**karrs).order_by('shopid')
+            .filter(**karrs).exclude(shopid='C009').order_by('shopid')
     for item in data:
         for key in item.keys():
             if isinstance(item[key],decimal.Decimal):
