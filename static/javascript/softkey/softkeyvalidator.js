@@ -63,7 +63,7 @@ function SoftKeyValidator(call,check_url){
         }
     };
 
-    this.callService_1 = function(func,curUrl,curCode){
+    this.callService_1 = function(func,curUrl){
         $.ajax({
             url:check_url,
             method:'post',
@@ -72,13 +72,13 @@ function SoftKeyValidator(call,check_url){
             async: false,
             success:function(data){
                 numToClient = data.randNum;
-                SoftKeyValidator.checkKey(func,curUrl,curCode);
+                SoftKeyValidator.checkKey(func,curUrl);
             }
         });
     };
-    SoftKeyValidator.checkKey = function(func,curUrl,curCode){
+    SoftKeyValidator.checkKey = function(func,curUrl){
         //如果是IE10及以下浏览器，则使用AVCTIVEX控件的方式
-        if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10(func,curUrl,curCode);
+        if(navigator.userAgent.indexOf("MSIE")>0 && !navigator.userAgent.indexOf("opera") > -1) return Handle_IE10(func,curUrl);
        //判断是否安装了服务程序，如果没有安装提示用户安装
         if(bConnect==0)
         {
@@ -279,7 +279,7 @@ function SoftKeyValidator(call,check_url){
                              //所有工作处理完成后，关掉Socket
                             s_simnew1.Socket_UK.close();
                             //后台验证
-                            checkValidity(func,curUrl,curCode);
+                            checkValidity(func,curUrl);
                         }
                         break;
                 }
@@ -293,7 +293,7 @@ function SoftKeyValidator(call,check_url){
         }
     }
 
-    this.Handle_IE10 = function(func,curUrl,curCode)
+    this.Handle_IE10 = function(func,curUrl)
     {
         var DevicePath,ret,n,mylen;
         try
@@ -366,7 +366,7 @@ function SoftKeyValidator(call,check_url){
             }
 
             //后台验证
-            checkValidity(func,curUrl,curCode);
+            checkValidity(func,curUrl);
         }catch (e){
             alert(e.name + "：" + e.message+"，可能是没有安装相应的控件或插件");
             return false;
@@ -376,18 +376,17 @@ function SoftKeyValidator(call,check_url){
     String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
     };
-    SoftKeyValidator.signClient = function (time,codestr){
-        var sortArr = [key_id,codestr,numToClient.toString(),time.toString()];
+    SoftKeyValidator.signClient = function (time){
+        var sortArr = [key_id,user_name,numToClient.toString(),time.toString()];
         sortArr = sortArr.sort();
         var arrStr = sortArr.join("");
         var sha1 = hex_sha1(arrStr);
         signClient = sha1;
     };
 
-    function checkValidity(func,curUrl,curCode){
-        var codestr = curCode.trim();
+    function checkValidity(func,curUrl){
         var time = new Date().getTime();
-        SoftKeyValidator.signClient(time,codestr);
+        SoftKeyValidator.signClient(time);
 
         var data = {
             'signClient':signClient,

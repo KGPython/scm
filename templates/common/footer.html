@@ -19,8 +19,8 @@
     var soft_key_validator = new SoftKeyValidator('','{% url 'keyCheck' %}');
     soft_key_validator.loadSoftKey();
 
-    function pub_export(curUrl,curCode){
-        soft_key_validator.callService_1(export_bar,curUrl,curCode);
+    function pub_export(curUrl){
+        soft_key_validator.callService_1(export_bar,curUrl);
 {#        soft_key_validator.checkKey(export_bar,url,ucode,numToClient);#}
         //export_bar(url);
     }

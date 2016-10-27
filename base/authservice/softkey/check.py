@@ -30,7 +30,10 @@ def index(request):
         cur = conn.cursor()
         cur.execute(sql)
         softKey = cur.fetchone()
-        userName = softKey['username']
+        userName = (softKey['username']).encode(encoding='UTF-8')
+        m = hashlib.md5()
+        m.update(userName)
+        userName = m.hexdigest()
 
         signList = [keyId,userName,randNum,timeStr]
         signList.sort()
