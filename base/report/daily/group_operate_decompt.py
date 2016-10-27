@@ -36,7 +36,7 @@ def index(request):
 
     # 查询全月销售实际
     sale_sql = "SELECT sdate saledate,shopcode,LEFT(sccode,2) groupid,SUM(svalue-discount)/10000 sale,SUM(svalue-discount-scost)/10000 gain   " \
-               " FROM sales_pro_temp WHERE sdate BETWEEN '" + start + " 00:00:00' AND '" + yesterday + " 23:59:59.999' AND shopcode IN ('" + shopids + "') " \
+               " FROM sales_pro WHERE sdate BETWEEN '" + start + " 00:00:00' AND '" + yesterday + " 23:59:59.999' AND shopcode IN ('" + shopids + "') " \
                                                                                                                                                        "and LEFT(sccode,2) < 50 and LEFT(sccode,2) <> 42 GROUP BY shopcode,LEFT(sccode,2),DATE_FORMAT(sdate,'%Y-%m-%d') "
     cur.execute(sale_sql)
     sale_list = cur.fetchall()
