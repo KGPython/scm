@@ -733,7 +733,7 @@ def findMonthEstimate(shopids):
      karrs.setdefault("shopid__in",shopids)
      karrs.setdefault("dateid__month","{month}".format(month=month))
      elist = Estimate.objects.values("shopid")\
-                     .filter(**karrs)\
+                     .filter(**karrs).exclude(shopid='C009')\
                      .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
 
      for item in elist:
@@ -1125,7 +1125,7 @@ def findYearEstimate(shopids):
      karrs.setdefault("shopid__in",shopids)
      karrs.setdefault("dateid__year",year)
      elist = EstimateYear.objects.values("shopid")\
-                     .filter(**karrs).order_by("shopid")\
+                     .filter(**karrs).order_by("shopid").exclude(shopid='C009')\
                      .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
 
      for item in elist:
