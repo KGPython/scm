@@ -894,7 +894,7 @@ def setYearSale(ritem,yearavgdict):
     if decimal.Decimal(ritem["salevalueold"]) > 0:
         ritem.setdefault('sale_ynygrowth',mtu.convertToStr((decimal.Decimal(ritem["salevalue"])-decimal.Decimal(ritem["salevalueold"]))*decimal.Decimal("100.0")/decimal.Decimal(ritem["salevalueold"]),"0.00",1)+"%")
     else:
-       ritem.setdefault('sale_ynygrowth',"");
+       ritem.setdefault('sale_ynygrowth',"")
 
     ritem['salegain'] = mtu.convertToStr(ritem['salegain'],"0.00",1)
     ritem['salegainesti'] = mtu.convertToStr(ritem['salegainesti'],"0.00",1)
