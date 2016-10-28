@@ -41,7 +41,7 @@ def index(request):
      karrs.setdefault("sdate__year","{year}".format(year=year))
      karrs.setdefault("shopid__in",shopids)
      yearlist = Kshopsale.objects.values("shopid")\
-                     .filter(**karrs).exclude(shopid='C009').order_by("shopid")\
+                     .filter(**karrs).order_by("shopid")\
                      .annotate(salevalue=Sum('salevalue')/10000,salegain=Sum('salegain')/10000,tradenumber=Sum('tradenumber')
                                               ,tradeprice=Sum('tradeprice'),salevalueesti=Sum('salevalueesti')/10000
                                               ,salegainesti=Sum('salegainesti')/10000
@@ -49,7 +49,7 @@ def index(request):
                                               ,salevalueold=Sum('salevalueold')/10000,salegainold=Sum('salegainold')/10000)
 
      avglist = Kshopsale.objects.values("shopid")\
-                     .filter(**karrs).exclude(shopid='C009').order_by("shopid")\
+                     .filter(**karrs).order_by("shopid")\
                      .annotate(tradenumber_avg = Avg('tradenumber'))
      avgdict = { aitem["shopid"]:aitem["tradenumber_avg"] for aitem in avglist}
 
@@ -58,7 +58,7 @@ def index(request):
      karrs.setdefault("sdateold__lte", "{end} 23:59:59".format(end=oldyesterday))
      karrs.setdefault("shopid__in", shopids)
      oldavglist = Kshopsale.objects.values("shopid") \
-         .filter(**karrs).exclude(shopid='C009').order_by("shopid") \
+         .filter(**karrs).order_by("shopid") \
          .annotate(tradenumberold_avg=Avg('tradenumberold'))
      oldavgdict = {aitem["shopid"]: aitem["tradenumberold_avg"] for aitem in oldavglist}
 
@@ -733,7 +733,7 @@ def findMonthEstimate(shopids):
      karrs.setdefault("shopid__in",shopids)
      karrs.setdefault("dateid__month","{month}".format(month=month))
      elist = Estimate.objects.values("shopid")\
-                     .filter(**karrs)\
+                     .filter(**karrs).exclude(shopid='C009')\
                      .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
 
      for item in elist:
@@ -894,7 +894,7 @@ def setYearSale(ritem,yearavgdict):
     if decimal.Decimal(ritem["salevalueold"]) > 0:
         ritem.setdefault('sale_ynygrowth',mtu.convertToStr((decimal.Decimal(ritem["salevalue"])-decimal.Decimal(ritem["salevalueold"]))*decimal.Decimal("100.0")/decimal.Decimal(ritem["salevalueold"]),"0.00",1)+"%")
     else:
-       ritem.setdefault('sale_ynygrowth',"");
+       ritem.setdefault('sale_ynygrowth',"")
 
     ritem['salegain'] = mtu.convertToStr(ritem['salegain'],"0.00",1)
     ritem['salegainesti'] = mtu.convertToStr(ritem['salegainesti'],"0.00",1)
@@ -1125,7 +1125,7 @@ def findYearEstimate(shopids):
      karrs.setdefault("shopid__in",shopids)
      karrs.setdefault("dateid__year",year)
      elist = EstimateYear.objects.values("shopid")\
-                     .filter(**karrs).order_by("shopid")\
+                     .filter(**karrs).order_by("shopid").exclude(shopid='C009')\
                      .annotate(y_salevalue=Sum('salevalue'),y_salegain=Sum('salegain'))
 
      for item in elist:
