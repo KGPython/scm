@@ -50,9 +50,9 @@ function SoftKeyValidator(call,check_url){
                     if(PnpData.IsIn)
                     {
                         //alert("UKEY已被插入，被插入的锁的路径是："+PnpData.DevicePath);
-                        alert("UKEY已被插入");
+                        alert("您是宽广集团管理层，拥有最较高权限，请注意数据安全");
                     }else{
-                        alert("UKEY已被拨出");
+                        alert("UKEY已拨出，数据是公司无形资产，受法律保护，再次提醒您注意数据安全");
                     }
                 }
             };
@@ -82,7 +82,7 @@ function SoftKeyValidator(call,check_url){
        //判断是否安装了服务程序，如果没有安装提示用户安装
         if(bConnect==0)
         {
-            window.alert ( "未能连接服务程序，请确定服务程序是否安装。");
+            window.alert ( "未能连接服务程序，请确定服务程序(UEKY驱动)是否安装。");
             return false;
         }
 
@@ -291,7 +291,7 @@ function SoftKeyValidator(call,check_url){
             alert(e.name + ": " + e.message);
             return false;
         }
-    }
+    };
 
     this.Handle_IE10 = function(func,curUrl)
     {
