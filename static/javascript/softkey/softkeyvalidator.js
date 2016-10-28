@@ -50,9 +50,9 @@ function SoftKeyValidator(call,check_url){
                     if(PnpData.IsIn)
                     {
                         //alert("UKEY已被插入，被插入的锁的路径是："+PnpData.DevicePath);
-                        alert("您是宽广集团管理层，拥有最较高权限，请注意数据安全");
+                        alert("您是宽广集团高管，拥有最高权限，请注意数据安全！");
                     }else{
-                        alert("UKEY已拨出，数据是公司无形资产，受法律保护，再次提醒您注意数据安全");
+                        alert("UKEY已拨出。数据是公司无形资产，受法律保护，再次提醒您注意数据安全！");
                     }
                 }
             };
