@@ -327,7 +327,6 @@ def msgCreate(request):
         else:
             succ = "2" #设置提交成功返回信息，在前端展现
 
-
     return render(request, 'noticeCreate.html',locals())
 
 def uploadFile(fileObj):
