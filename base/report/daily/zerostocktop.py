@@ -18,6 +18,8 @@ def index(request):
         monthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
         today = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
     todayStr = today.strftime('%y-%m-%d')
+    # 获取当月天数
+    dayNum = todayStr[-2:]
     monthFirstStr = str(monthFirst)
     yesterdayStr = yesterday.strftime('%y-%m-%d')
     conn = mtu.getMysqlConn()
@@ -41,6 +43,7 @@ def index(request):
             listTop[i]['qtyzSum']=0
         else:
             listTop[i]['qtyzSum'] = float(listTop[i]['qtyzSum'])
+            listTop[i]['qtyzSum'] = round((listTop[i]['qtyzSum']) / int(today.day))
         if 'qtyzSum' in listTotal:
             listTotal['qtyzSum'] += listTop[i]['qtyzSum']
         else:
@@ -50,6 +53,8 @@ def index(request):
             listTop[i]['qtylSum']=0
         else:
             listTop[i]['qtylSum'] = float(listTop[i]['qtylSum'])
+            listTop[i]['qtylSum'] = round((listTop[i]['qtylSum']) / int(today.day))
+
         if 'qtylSum' in listTotal:
             listTotal['qtylSum'] += listTop[i]['qtylSum']
         else:
@@ -59,6 +64,11 @@ def index(request):
             listTop[i]['zhonbiSum']=0
         else:
             listTop[i]['zhonbiSum'] = float('%0.2f'%(listTop[i]['zhonbiSum']*100))
+
+        # 有效商品数，有效商品数合计 除以天数 四舍五入取整
+        listTotal['qtyzSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
+        listTotal['qtylSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
+
         listTotal['zhonbiSum'] = listTotal['qtylSum']/listTotal['qtyzSum']
         listTotal['zhonbiSum'] = str(float('%0.2f'%(listTotal['zhonbiSum']*100)))+'%'
 
@@ -93,6 +103,7 @@ def index(request):
                 listTop[i]['zhonbi_'+date]=0
             else:
                 listTop[i]['zhonbi_'+date]=float('%0.2f'%(item['zhonbi']*100))
+
             listTotal['zhonbi_'+date] = listTotal['qtyl_'+date]/listTotal['qtyz_'+date]
             listTotal['zhonbi_'+date] = str(float('%0.2f'%(listTotal['zhonbi_'+date]*100)))+'%'
 
@@ -173,7 +184,7 @@ def index(request):
         qtype = '1'
 
     path = request.path
-    today = datetime.datetime.today();
+    today = datetime.datetime.today()
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="超市零库存日报", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
