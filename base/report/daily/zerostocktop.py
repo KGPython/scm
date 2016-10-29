@@ -65,10 +65,6 @@ def index(request):
         else:
             listTop[i]['zhonbiSum'] = float('%0.2f'%(listTop[i]['zhonbiSum']*100))
 
-        # 有效商品数，有效商品数合计 除以天数 四舍五入取整
-        listTotal['qtyzSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
-        listTotal['qtylSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
-
         listTotal['zhonbiSum'] = listTotal['qtylSum']/listTotal['qtyzSum']
         listTotal['zhonbiSum'] = str(float('%0.2f'%(listTotal['zhonbiSum']*100)))+'%'
 
