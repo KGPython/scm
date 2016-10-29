@@ -33,6 +33,7 @@ def index(request):
             listTop[i]['qtyzSum']=0
         else:
             listTop[i]['qtyzSum'] = float(listTop[i]['qtyzSum'])
+            listTop[i]['qtyzSum'] = round((listTop[i]['qtyzSum']) / int(today.day))
         if 'qtyzSum' in listTotal:
             listTotal['qtyzSum'] += listTop[i]['qtyzSum']
         else:
@@ -42,6 +43,7 @@ def index(request):
             listTop[i]['qtylSum'] = 0
         else:
             listTop[i]['qtylSum'] = float(listTop[i]['qtylSum'])
+            listTop[i]['qtylSum'] = round((listTop[i]['qtylSum']) / int(today.day))
 
         if 'qtylSum' in listTotal:
             listTotal['qtylSum'] += listTop[i]['qtylSum']
