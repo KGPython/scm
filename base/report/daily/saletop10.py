@@ -544,7 +544,7 @@ def getallcode():
     '''
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
-    sql = "select distinct(classsx) from kwsaletop"
+    sql = "select distinct(deptid) from kwsaletop10"
     cur.execute(sql)
     res = cur.fetchall()
     # 释放
