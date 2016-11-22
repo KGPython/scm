@@ -552,7 +552,7 @@ def getallcode():
     lis = []
 
     for y in res:
-        lis.append(y['classsx'])
+        lis.append(y['deptid'])
 
     return lis
 
