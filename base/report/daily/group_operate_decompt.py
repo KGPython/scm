@@ -10,15 +10,7 @@ from django.http import HttpResponse
 import datetime, calendar, decimal, time
 import xlwt3 as xlwt
 
-
-@csrf_exempt
-def index(request):
-    date = DateUtil.get_day_of_day(-1)
-    start = (date.replace(day=1)).strftime("%Y-%m-%d")
-    yesterday = date.strftime("%Y-%m-%d")
-    lastDay = calendar.monthrange(date.year, date.month)[1]
-    end = "{year}-{month}-{day}".format(year=date.year, month=date.month, day=lastDay)
-
+def query(date,start,end,yesterday,lastDay):
     # 查询所有超市门店
     slist = BasShopRegion.objects.values("shopid", "shopname") \
         .filter(shoptype=11).exclude(shopid='C009').order_by("shopid")
@@ -37,7 +29,7 @@ def index(request):
     # 查询全月销售实际
     sale_sql = "SELECT sdate saledate,shopcode,LEFT(sccode,2) groupid,SUM(svalue-discount)/10000 sale,SUM(svalue-discount-scost)/10000 gain   " \
                " FROM sales_pro WHERE sdate BETWEEN '" + start + " 00:00:00' AND '" + yesterday + " 23:59:59.999' AND shopcode IN ('" + shopids + "') " \
-                                                                                                                                                       "and LEFT(sccode,2) < 50 and LEFT(sccode,2) <> 42 GROUP BY shopcode,LEFT(sccode,2),DATE_FORMAT(sdate,'%Y-%m-%d') "
+                                                                                                                                                  "and LEFT(sccode,2) < 50 and LEFT(sccode,2) <> 42 GROUP BY shopcode,LEFT(sccode,2),DATE_FORMAT(sdate,'%Y-%m-%d') "
     cur.execute(sale_sql)
     sale_list = cur.fetchall()
     sshopdict, sgrpdict, ss_grplist = queryData(sale_list, lastDay, date.day)
@@ -112,6 +104,19 @@ def index(request):
         item.setdefault("shopname", row["shopname"].strip())
         shoplist.append(item)
 
+
+    data  = {"rlist": rslist, "shoplist": shoplist, "grslist": grslist, "srslist": srslist}
+    return data
+
+
+@csrf_exempt
+def index(request):
+    date = DateUtil.get_day_of_day(-1)
+    start = (date.replace(day=1)).strftime("%Y-%m-%d")
+    yesterday = date.strftime("%Y-%m-%d")
+    lastDay = calendar.monthrange(date.year, date.month)[1]
+    end = "{year}-{month}-{day}".format(year=date.year, month=date.month, day=lastDay)
+
     qtype = mtu.getReqVal(request, "qtype", "1")
     # 操作日志
     if not qtype:
@@ -124,14 +129,28 @@ def index(request):
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="超市运营日分解", url=path, qtype=qtype, ucode=ucode, uname=uname, createtime=today)
+
     if qtype == "1":
-        return render(request, "report/daily/group_opt_decompt.html",
-                      {"rlist": rslist, "shoplist": shoplist, "grslist": grslist, "srslist": srslist})
+        data = query(date,start,end,yesterday,lastDay)
+        return render(request, "report/daily/group_opt_decompt.html",data)
     else:
-        return export(rslist, shoplist, grslist, srslist, date)
+        name = '_daily_group_operate_decompt'
+        fname = date.strftime('%m.%d')+name+".xls"
+        return export(fname,date,start,end,yesterday,lastDay)
 
 
-def export(rslist, shoplist, grslist, srslist, date):
+
+import base.report.Excel as excel
+import json
+def export(fname,date,start,end,yesterday,lastDay):
+    if not excel.isExist(fname):
+        data = query(date, start, end, yesterday, lastDay)
+        createExcel(fname, date, data['rlist'], data['shoplist'], data['grslist'], data['srslist'])
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
+
+def createExcel(fname,date,rslist, shoplist, grslist, srslist):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # 写入sheet1 门店
     writeDataToSheet1(wb, rslist, date)
@@ -139,14 +158,7 @@ def export(rslist, shoplist, grslist, srslist, date):
     writeDataToSheet2(wb, grslist, date)
     # 写入sheet4 各个门店类别
     writeDataToSheetN(wb, shoplist, srslist, date)
-
-    date = DateUtil.get_day_of_day(-1)
-    outtype = 'application/vnd.ms-excel;'
-    fname = date.strftime("%m.%d") + "grp_daily_opt_decompt"
-
-    response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
-    wb.save(response)
-    return response
+    excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb, rlist, date):

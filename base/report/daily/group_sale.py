@@ -8,75 +8,81 @@ from base.utils import DateUtil,MethodUtil as mtu
 from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
 from django.db import connection
 from django.http import HttpResponse
-import datetime,calendar,decimal
+import datetime,calendar,decimal,json
 import xlwt3 as xlwt
 
-@csrf_exempt
-def index(request):
-     date = DateUtil.get_day_of_day(-1)
-     yesterday = date.strftime("%Y-%m-%d")
+def query(date):
+    yesterday = date.strftime("%Y-%m-%d")
+    # 查询当月销售
+    try:
+        sql = "CALL k_d_wholesale ('{start}','{end}') ".format(start=yesterday, end=yesterday)
+        conn = mtu.getMysqlConn()
+        cur = conn.cursor()
+        cur.execute(sql)
+        list = cur.fetchall()
+        rlist = []
+        sumDict = {}
+        sum = {"shopid": "合计", "shopnm": "", "tradeprice": 0.0, "tradenumber": 0, "salevalue": 0.0, "discvalue": 0.0,
+               "sale": 0.0,
+               "costvalue": 0.0, "salegain": 0.0, "gaintx": "", "yhzhanbi": "", "wsalevalue": 0.0, "wcostvalue": 0.0,
+               "wsalegain": 0.0, "wgaintx": ""}
+        sumDict.setdefault("sum1", sum)
 
-     #查询当月销售
-     try:
-         sql = "CALL k_d_wholesale ('{start}','{end}') ".format(start=yesterday,end=yesterday)
-         conn = mtu.getMysqlConn()
-         cur = conn.cursor()
-         cur.execute(sql)
-         list = cur.fetchall()
-         rlist = []
-         sumDict = {}
-         sum = {"shopid":"合计","shopnm":"","tradeprice":0.0,"tradenumber":0,"salevalue":0.0,"discvalue":0.0,"sale":0.0,
-                    "costvalue":0.0,"salegain":0.0,"gaintx":"","yhzhanbi":"","wsalevalue":0.0,"wcostvalue":0.0,"wsalegain":0.0,"wgaintx":""}
-         sumDict.setdefault("sum1",sum)
-
-         unsumkey = ["gaintx","wgaintx"]
-         for obj in list:
+        unsumkey = ["gaintx", "wgaintx"]
+        for obj in list:
             if obj['shopid'] != 'C009':
                 row = {}
                 for key in obj.keys():
                     item = obj[key]
                     newkey = key.lower()
                     if item:
-                        if isinstance(item,int) or isinstance(item,decimal.Decimal):
+                        if isinstance(item, int) or isinstance(item, decimal.Decimal):
                             if newkey not in unsumkey:
-                                row.setdefault(newkey,float(item))
+                                row.setdefault(newkey, float(item))
                                 sum[newkey] += float(item)
                             else:
-                                row.setdefault(newkey,"%0.2f" % item+"%")
-                        elif isinstance(item,datetime.datetime):
-                            row.setdefault(newkey,item.strftime("%Y-%m-%d"))
+                                row.setdefault(newkey, "%0.2f" % item + "%")
+                        elif isinstance(item, datetime.datetime):
+                            row.setdefault(newkey, item.strftime("%Y-%m-%d"))
                         else:
-                            row.setdefault(newkey,item)
+                            row.setdefault(newkey, item)
                     else:
-                        row.setdefault(newkey,"")
+                        row.setdefault(newkey, "")
 
-                if row["sale"]>0:
-                    yhzhanbi = "%0.2f" % (row["discvalue"]*100.0/row["sale"]) + "%"
+                if row["sale"] > 0:
+                    yhzhanbi = "%0.2f" % (row["discvalue"] * 100.0 / row["sale"]) + "%"
                 else:
                     yhzhanbi = ""
 
-                row.setdefault("yhzhanbi",yhzhanbi)
+                row.setdefault("yhzhanbi", yhzhanbi)
                 rlist.append(row)
 
-         if sum["sale"] > 0:
-             sum["gaintx"] = "%0.2f" % (sum["salegain"]*100.0/sum["sale"]) + "%"
-             sum["yhzhanbi"] = "%0.2f" % (sum["discvalue"]*100.0/sum["sale"]) + "%"
-         else:
+        if sum["sale"] > 0:
+            sum["gaintx"] = "%0.2f" % (sum["salegain"] * 100.0 / sum["sale"]) + "%"
+            sum["yhzhanbi"] = "%0.2f" % (sum["discvalue"] * 100.0 / sum["sale"]) + "%"
+        else:
             sum["gaintx"] = ""
             sum["yhzhanbi"] = ""
 
-         if sum["wsalevalue"] > 0:
-            sum["wgaintx"] = "%0.2f" % (sum["wsalegain"]*100.0/sum["wsalevalue"]) + "%"
-         else:
+        if sum["wsalevalue"] > 0:
+            sum["wgaintx"] = "%0.2f" % (sum["wsalegain"] * 100.0 / sum["wsalevalue"]) + "%"
+        else:
             sum["wgaintx"] = ""
 
-         for key in sum.keys():
-             item = sum[key]
-             if not isinstance(item,str) and not isinstance(item,int):
-                 sum[key] = "%0.2f" % item
-     except Exception as e:
-        print(">>>>>>>>>>>>[异常]",e)
-     #计算月累加合计
+        for key in sum.keys():
+            item = sum[key]
+            if not isinstance(item, str) and not isinstance(item, int):
+                sum[key] = "%0.2f" % item
+    except Exception as e:
+        print(">>>>>>>>>>>>[异常]", e)
+        # 计算月累加合计
+
+    data = {"gslist":rlist,"sumDict":sumDict}
+    return data
+
+
+@csrf_exempt
+def index(request):
      qtype = mtu.getReqVal(request,"qtype","1")
 
      #操作日志
@@ -92,24 +98,30 @@ def index(request):
      uname = request.session.get("s_uname")
      BasPurLog.objects.create(name="超市销售日报",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
 
+     date = DateUtil.get_day_of_day(-1)
      if qtype == "1":
-         return render(request,"report/daily/group_sale.html",{"gslist":rlist,"sumDict":sumDict})
+         data = query(date)
+         return render(request,"report/daily/group_sale.html",data)
      else:
-         return export(rlist,sumDict)
+         fname = date.strftime("%m.%d") + "_daily_group_sale.xls"
+         return export(fname,date)
 
-def export(rlist,sumList):
+import base.report.Excel as excel
+def export(fname,date):
+    if not excel.isExist(fname):
+        data = query(date)
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
 
+
+def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
-
     #写入sheet1 月累计销售报表
-    writeDataToSheet1(wb,rlist,sumList)
+    writeDataToSheet1(wb,data['gslist'],data['sumDict'])
+    excel.saveToExcel(fname,wb)
 
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d")+"group_daily_sale"
-
-    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
-    wb.save(response)
-    return response
 
 def writeDataToSheet1(wb,rlist,sumDict):
     date = DateUtil.get_day_of_day(-1)

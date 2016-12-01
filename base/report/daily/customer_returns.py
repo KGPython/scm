@@ -6,12 +6,10 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil, MethodUtil as mtu
 from base.models import BasPurLog
-import datetime, calendar, decimal
+import datetime, calendar, decimal,json
 import xlwt3 as xlwt
 
-
-@csrf_exempt
-def index(request):
+def query(yesterday):
     yearandmon = DateUtil.getyearandmonth()
     # 当前月份第一天
     monfirstday = DateUtil.get_firstday_of_month(yearandmon[0], yearandmon[1])
@@ -19,8 +17,7 @@ def index(request):
     monlastday = DateUtil.get_lastday_month()
     # 今天
     today = DateUtil.todaystr()
-    # 昨天
-    yesterday = DateUtil.get_yesterday()
+
     # 获取门店信息
     getshopname = getshopid()
 
@@ -28,14 +25,15 @@ def index(request):
     sqltop = "select shopid, sum(shopsale) as shopsalesum, sum(ret) as retsum, (sum(ret) / sum(shopsale)) as retrate " \
              "from `KGshopretsale` " \
              "where ShopID!='C009' AND sdate between '" + monfirstday + "' and '" + yesterday + "' " \
-                                                                             "group by shopid " \
-                                                                             "order by shopid"
+                                                                                                "group by shopid " \
+                                                                                                "order by shopid"
 
     cur = conn.cursor()
     cur.execute(sqltop)
     listtop = cur.fetchall()
     # 最后一行的合计
-    listtopTotal = {'sequenceNumber': '合计', 'shopid': '', 'shopname': '', 'shopsalesum': '', 'retsum': '', 'retrate': ''}
+    listtopTotal = {'sequenceNumber': '合计', 'shopid': '', 'shopname': '', 'shopsalesum': '', 'retsum': '',
+                    'retrate': ''}
     # 汇总总计（每月1日到当日）
     tempshopsalesum = 0.00
     tempretsum = 0.00
@@ -103,7 +101,8 @@ def index(request):
             # 添加当日汇总
             listtopTotal['retsum_' + date] = float("%0.2f" % (listtopTotal['retsum_' + date]))
             listtopTotal['shopsalesum_' + date] = float("%0.2f" % (listtopTotal['shopsalesum_' + date]))
-            listtopTotal['retrate_' + date] = str(float("%0.2f" % (listtopTotal['retsum_' + date] / listtopTotal['shopsalesum_' + date] * 100))) + '%'
+            listtopTotal['retrate_' + date] = str(
+                float("%0.2f" % (listtopTotal['retsum_' + date] / listtopTotal['shopsalesum_' + date] * 100))) + '%'
 
     # 添加门店名称
     for i in range(0, len(listtop)):
@@ -114,11 +113,11 @@ def index(request):
     # 合计转换数据格式
     listtopTotal['shopsalesum'] = float("%0.2f" % tempshopsalesum)
     listtopTotal['retsum'] = float("%0.2f" % tempretsum)
-    listtopTotal['retrate'] = str("%0.2f" % float(float(listtopTotal['retsum'] / listtopTotal['shopsalesum']) * 100)) + '%'
+    listtopTotal['retrate'] = str(
+        "%0.2f" % float(float(listtopTotal['retsum'] / listtopTotal['shopsalesum']) * 100)) + '%'
 
     # 转换为dict，导出excel
-    TotalDict = {'listtopTotal':listtopTotal}
-
+    TotalDict = {'listtopTotal': listtopTotal}
 
     # 退货明细
     sqldetail = "select shopid, shopname, sdate, stime, listno, posid, cashierid, goodsid, goodsname, deptid, amount, sale " \
@@ -142,7 +141,11 @@ def index(request):
                     retdetail[i][key] = retdetail[i][key]
 
     mtu.close(conn, cur)
+    return locals()
 
+
+@csrf_exempt
+def index(request):
     exceltype = mtu.getReqVal(request, "exceltype", "2")
     # 操作日志
     if exceltype=='2':
@@ -159,10 +162,14 @@ def index(request):
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="顾客退货率", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
 
+    # 昨天
+    yesterday = DateUtil.get_day_of_day(-1)
     if exceltype == '1':
-        return export(request, listtop, TotalDict, retdetail)
+        fname = yesterday.strftime("%m.%d") + "_daily_customer_returns.xls"
+        return export(fname,str(yesterday))
     else:
-        return render(request, "report/daily/customer_returns.html", locals())
+        data = query(str(yesterday))
+        return render(request, "report/daily/customer_returns.html", data)
 
 
 def getshopid():
@@ -179,19 +186,23 @@ def getshopid():
     mtu.close(conn, cur)
     return res
 
+import base.report.Excel as excel
+def export(fname,yesterday):
+    if not excel.isExist(fname):
+        data = query(yesterday)
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
 
-def export(request, listtop, TotalDict, retdetail):
+
+def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # 写入sheet1
-    writeDataToSheet1(wb, listtop, TotalDict)
+    writeDataToSheet1(wb, data['listtop'],data['TotalDict'])
     # 写入sheet2
-    writeDataToSheet2(wb, retdetail)
-
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d") + "customer_returns"
-    response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet2(wb, data['retdetail'])
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb, listtop, TotalDict):

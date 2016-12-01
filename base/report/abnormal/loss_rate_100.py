@@ -1,28 +1,34 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-import datetime,decimal,calendar
+import datetime,decimal
 import xlwt3 as xlwt
 from base.models import Kglossrate,BasPurLog
 from base.utils import MethodUtil as mth
 from base.utils import DateUtil
+import json
+from django.views.decorators.cache import cache_page
 
+def query(timeStart,timeEnd):
+    karrs = {}
+    karrs.setdefault('checkdate__lte', timeEnd)
+    karrs.setdefault('checkdate__gte', timeStart)
+    data = Kglossrate.objects.\
+                values('shopid', 'shopname', 'sheetid', 'goodsid', 'goodsname', 'deptid', 'deptname',
+                                     'askqty', 'checkqty', 'qty', 'costvalue') \
+                .filter(**karrs).exclude(shopid='C009').order_by('shopid')
+    for item in data:
+        for key in item.keys():
+            if isinstance(item[key], decimal.Decimal):
+                item[key] = float('%0.2f' % item[key])
+
+    return locals()
+
+@cache_page(60 * 2 ,key_prefix='loss_rate_100')
 def index(request):
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
-
     timeStart = datetime.date.today()-datetime.timedelta(days=1)
     timeEnd = datetime.date.today()
-    # timeStart = '2016-06-17'
-    # timeEnd = '2016-06-18'
-    karrs = {}
-    karrs.setdefault('checkdate__lte',timeEnd)
-    karrs.setdefault('checkdate__gte',timeStart)
-    data = Kglossrate.objects.values('shopid','shopname','sheetid','goodsid','goodsname','deptid','deptname','askqty','checkqty','qty','costvalue')\
-            .filter(**karrs).exclude(shopid='C009').order_by('shopid')
-    for item in data:
-        for key in item.keys():
-            if isinstance(item[key],decimal.Decimal):
-                item[key] = float('%0.2f'%item[key])
 
     # 操作日志
     qtype = mth.getReqVal(request, "qtype", "1")
@@ -33,24 +39,32 @@ def index(request):
         qtype = '1'
     path = request.path
     today = datetime.datetime.today()
-    ucode = request.session.get("s_ucode")
-    uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="单品报损超100", url=path, qtype=qtype, ucode=ucode, uname=uname, createtime=today)
+
     if qtype== "1":
-        return render(request, 'report/abnormal/loss_rate.html', locals())
+        data = query(timeStart,timeEnd)
+        return render(request, 'report/abnormal/loss_rate.html', data)
     else:
-        return export(data)
+        yesterday = DateUtil.get_day_of_day(-1)
+        name = '_loss_rate100'
+        fname = yesterday.strftime('%m.%d')+name+".xls"
+        return export(fname,timeStart,timeEnd)
 
-def export(data):
-    yesterday = DateUtil.get_day_of_day(-1)
-    wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
-    writeDataToSheet2(wb,data)
 
-    outtype = 'application/vnd.ms-excel;'
-    fname = yesterday.strftime('%m.%d')+"_abnormal_lossRate100"
-    response = mth.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
-    wb.save(response)
-    return response
+import base.report.Excel as excel
+def export(fname,timeStart,timeEnd):
+    if not excel.isExist(fname):
+        res = query(timeStart,timeEnd)
+        data = res['data']
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
+
+def createExcel(fname,data):
+    wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
+    writeDataToSheet2(wb, data)
+    excel.saveToExcel(fname, wb)
 
 def writeDataToSheet2(wb,data):
     date = DateUtil.get_day_of_day(-1)

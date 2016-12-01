@@ -2,7 +2,7 @@
 __author__ = 'liubf'
 
 from django.conf.urls import url
-
+from django.views.decorators.cache import cache_page
 urlpatterns = [
     #########################################  日报 start   ##############################################
     #负库存排名
@@ -35,7 +35,9 @@ urlpatterns = [
     url(r'^report/abnormal/negprofit/lte200/$', 'base.report.abnormal.negprofit_lte200.index', name='negProfitLte200'),
     url(r'^report/abnormal/neg/negstock/$', 'base.report.abnormal.negstock.index', name='negStock'),
     url(r'^report/abnormal/retgoods/rec300/$', 'base.report.abnormal.ret_shopping_rec_300.index', name='retShoppingRec300'),
-    url(r'^report/abnormal/lossrate100','base.report.abnormal.loss_rate_100.index',name='lossRate100')
-#########################################   异常数据 end  ##############################################
+    url(r'^report/abnormal/lossrate100','base.report.abnormal.loss_rate_100.index',name='lossRate100'),
+    #########################################   异常数据 end  ##############################################
 
+    #########################################   报表下载 end  ##############################################
+    url(r'^report/downloadExcel/$', 'base.report.Excel.downloadReportExcel', name='downloadReportExcel')
 ]

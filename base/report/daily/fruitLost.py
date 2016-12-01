@@ -5,42 +5,40 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import BasPurLog
-import datetime,decimal,calendar
+import datetime,decimal,calendar,json
 import xlwt3 as xlwt
 
-def inidex(request):
+def query():
+    today = datetime.date.today()
+    monthFirst = datetime.date.today().replace(day=1)
+
+    if (str(today)[8:10] == '01'):
+        monthFirst = datetime.date(datetime.date.today().year, datetime.date.today().month, 1)
+        today = datetime.date(datetime.date.today().year, datetime.date.today().month, 1) - datetime.timedelta(days=1)
+    todayStr = today.strftime('%y-%m-%d')
+    monthFirstStr = str(monthFirst)
+
     shopTop = []
-    shopTopTotal = {'shopid':'合计','shopname':''}
+    shopTopTotal = {'shopid': '合计', 'shopname': ''}
 
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
-
-    today = datetime.date.today()
-    monthFirst = datetime.date.today().replace(day=1)
-    yesterday = datetime.date.today() - datetime.timedelta(days=1)
-    if(str(today)[8:10]=='01'):
-        monthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month,1)
-        today = datetime.date(datetime.date.today().year,datetime.date.today().month,1) - datetime.timedelta(days=1)
-    todayStr = today.strftime('%y-%m-%d')
-    monthFirstStr = str(monthFirst)
-    yesterdayStr = yesterday.strftime('%y-%m-%d')
-
-    #月累计报损
+    # 月累计报损
     sqlMonthTotal = 'select shopid,shopname,sum(costvalue) costvalueSum,sum(lostvalue) lostvalueSum,(sum(lostvalue)/sum(costvalue)) lrateSum ' \
                     'from KGshop17lost ' \
-                    'where ShopID!="C009" AND sdate between "'+monthFirstStr+'" and "'+todayStr+'" ' \
-                    'group by shopid order by shopid '
+                    'where ShopID!="C009" AND sdate between "' + monthFirstStr + '" and "' + todayStr + '" ' \
+                                                                                                        'group by shopid order by shopid '
     cur.execute(sqlMonthTotal)
     shopTop = cur.fetchall()
 
-    #每日报损
+    # 每日报损
     sqlDaily = 'select sdate,shopid,costvalue,lostvalue,lrate ' \
                'from KGshop17lost ' \
-               'where ShopID!="C009" AND sdate between "'+monthFirstStr+'" and "'+todayStr+'" ' \
-               'order by sdate '
+               'where ShopID!="C009" AND sdate between "' + monthFirstStr + '" and "' + todayStr + '" ' \
+                                                                                                   'order by sdate '
     cur.execute(sqlDaily)
     listDaily = cur.fetchall()
-    #计算纵向合计、格式化数据、拼接月累计报损和每日报损
+    # 计算纵向合计、格式化数据、拼接月累计报损和每日报损
     for obj1 in shopTop:
         obj1['lostvalueSum'] = float(obj1['lostvalueSum']) if obj1['lostvalueSum'] else 0
         if 'lostvalueSum' in shopTopTotal:
@@ -54,31 +52,35 @@ def inidex(request):
         else:
             shopTopTotal['costvalueSum'] = obj1['costvalueSum']
 
-        obj1['lrateSum'] = str(float('%0.2f'%(obj1['lrateSum']*100)))+'%' if obj1['lrateSum'] else '0.00%'
-        shopTopTotal['lrateSum'] = shopTopTotal['lostvalueSum']/shopTopTotal['costvalueSum']
-        shopTopTotal['lrateSum'] = str(float('%0.2f'%(shopTopTotal['lrateSum']*100)))+'%'
+        obj1['lrateSum'] = str(float('%0.2f' % (obj1['lrateSum'] * 100))) + '%' if obj1['lrateSum'] else '0.00%'
+        shopTopTotal['lrateSum'] = shopTopTotal['lostvalueSum'] / shopTopTotal['costvalueSum']
+        shopTopTotal['lrateSum'] = str(float('%0.2f' % (shopTopTotal['lrateSum'] * 100))) + '%'
         for obj2 in listDaily:
             date = str(obj2['sdate'])[8:10]
             if obj1['shopid'] == obj2['shopid']:
-                obj1['costvalue_'+date] = float('%0.2f'%obj2['costvalue']) if obj2['costvalue'] else 0
-                if 'costvalue_'+date in shopTopTotal:
-                    shopTopTotal['costvalue_'+date] += obj1['costvalue_'+date]
-                    shopTopTotal['costvalue_'+date] = float('%0.2f'%shopTopTotal['costvalue_'+date])
+                obj1['costvalue_' + date] = float('%0.2f' % obj2['costvalue']) if obj2['costvalue'] else 0
+                if 'costvalue_' + date in shopTopTotal:
+                    shopTopTotal['costvalue_' + date] += obj1['costvalue_' + date]
+                    shopTopTotal['costvalue_' + date] = float('%0.2f' % shopTopTotal['costvalue_' + date])
                 else:
-                    shopTopTotal['costvalue_'+date] = obj1['costvalue_'+date]
+                    shopTopTotal['costvalue_' + date] = obj1['costvalue_' + date]
 
-                obj1['lostvalue_'+date] = float('%0.2f'%obj2['lostvalue']) if obj2['lostvalue'] else 0
-                if 'lostvalue_'+date in shopTopTotal:
-                    shopTopTotal['lostvalue_'+date] += obj1['lostvalue_'+date]
-                    shopTopTotal['lostvalue_'+date] = float('%0.2f'%shopTopTotal['lostvalue_'+date])
+                obj1['lostvalue_' + date] = float('%0.2f' % obj2['lostvalue']) if obj2['lostvalue'] else 0
+                if 'lostvalue_' + date in shopTopTotal:
+                    shopTopTotal['lostvalue_' + date] += obj1['lostvalue_' + date]
+                    shopTopTotal['lostvalue_' + date] = float('%0.2f' % shopTopTotal['lostvalue_' + date])
                 else:
-                    shopTopTotal['lostvalue_'+date] = obj1['lostvalue_'+date]
+                    shopTopTotal['lostvalue_' + date] = obj1['lostvalue_' + date]
 
-                obj1['lrate_'+date] = str(float(obj2['lrate']*100))+'%' if obj2['lrate'] else '0.00%'
-                shopTopTotal['lrate_'+date] = (shopTopTotal['lostvalue_'+date]/shopTopTotal['costvalue_'+date])
-                shopTopTotal['lrate_'+date] = str(float('%0.2f'%(shopTopTotal['lrate_'+date]*100)))+'%'
+                obj1['lrate_' + date] = str(float(obj2['lrate'] * 100)) + '%' if obj2['lrate'] else '0.00%'
+                shopTopTotal['lrate_' + date] = (shopTopTotal['lostvalue_' + date] / shopTopTotal['costvalue_' + date])
+                shopTopTotal['lrate_' + date] = str(float('%0.2f' % (shopTopTotal['lrate_' + date] * 100))) + '%'
 
-    TotalDict = {'shopTopTotal':shopTopTotal}
+    TotalDict = {'shopTopTotal': shopTopTotal}
+    return locals()
+
+def inidex(request):
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
     qtype = mtu.getReqVal(request,"qtype","1")
 
     # 操作日志
@@ -94,20 +96,26 @@ def inidex(request):
     BasPurLog.objects.create(name="超市水果报损率", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
 
     if qtype== "1":
-        return render(request,'report/daily/fruit_lost.html',locals())
+        data = query()
+        return render(request,'report/daily/fruit_lost.html',data)
     else:
-        return export(request,shopTop,TotalDict)
+        fname = yesterday.strftime("%m.%d") + "_daily_fruitLost.xls"
+        return export(fname)
 
-
-def export(request,shopTop,TotalDict):
+import base.report.Excel as excel
+def export(fname):
+    if not excel.isExist(fname):
+        data = query()
+        createExcel(fname,data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
+def createExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1
-    writeDataToSheet1(wb,shopTop,TotalDict)
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d")+"zero_daily_operate"
-    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet1(wb,data['shopTop'],data['TotalDict'])
+    excel.saveToExcel(fname,wb)
+
 
 def writeDataToSheet1(wb,shopTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)

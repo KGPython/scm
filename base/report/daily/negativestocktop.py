@@ -6,33 +6,33 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import BasPurLog
-import datetime,calendar,decimal
+import datetime,calendar,decimal,json
 import xlwt3 as xlwt
 
-@csrf_exempt
-def index(request):
+def query():
     monthFirst = datetime.date.today().replace(day=1)
     today = datetime.datetime.today()
-    if(str(today)[8:10]=='01'):
-        monthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
-        today = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
+    if (str(today)[8:10] == '01'):
+        monthFirst = datetime.date(datetime.date.today().year, datetime.date.today().month - 1, 1)
+        today = datetime.date(datetime.date.today().year, datetime.date.today().month, 1) - datetime.timedelta(1)
     todayStr = today.strftime('%y-%m-%d')
     monthFirstStr = str(monthFirst)
 
     conn = mtu.getMysqlConn()
-    sqlTop= 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
-            'FROM KNegativestock ' \
-            'WHERE ShopID!="C009" AND sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
+    sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
+             'FROM KNegativestock ' \
+             'WHERE ShopID!="C009" AND sdate BETWEEN "' + monthFirstStr + '" AND "' + todayStr + '" GROUP BY ShopID ORDER BY ShopID'
     cur = conn.cursor()
     cur.execute(sqlTop)
-    listTop= cur.fetchall()
+    listTop = cur.fetchall()
 
     listTotal = {'ShopID': '合计', 'shopname': '', 'qtyzSum': 0}  # 初始化最后一行
-    for i in range(0,len(listTop)):
-        if(not listTop[i]['qtyzSum']):
-            listTop[i]['qtyzSum']=0
+    for i in range(0, len(listTop)):
+        if (not listTop[i]['qtyzSum']):
+            listTop[i]['qtyzSum'] = 0
         else:
             listTop[i]['qtyzSum'] = float(listTop[i]['qtyzSum'])
+            listTop[i]['qtyzSum'] = round((listTop[i]['qtyzSum']) / int(today.day))
         if 'qtyzSum' in listTotal:
             listTotal['qtyzSum'] += listTop[i]['qtyzSum']
         else:
@@ -42,7 +42,7 @@ def index(request):
             listTop[i]['qtylSum'] = 0
         else:
             listTop[i]['qtylSum'] = float(listTop[i]['qtylSum'])
-
+            listTop[i]['qtylSum'] = round((listTop[i]['qtylSum']) / int(today.day))
         if 'qtylSum' in listTotal:
             listTotal['qtylSum'] += listTop[i]['qtylSum']
         else:
@@ -59,14 +59,15 @@ def index(request):
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM KNegativestock AS b " \
-              "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
+              "WHERE ShopID ='" + listTop[i][
+                  'ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
 
         cur.execute(sql)
         listDetail = cur.fetchall()
         for item in listDetail:
             date = str(item['sdate'])[8:10]
-            if(not item['qtyz']):
-                listTop[i]['qtyz_'+date]=0
+            if (not item['qtyz']):
+                listTop[i]['qtyz_' + date] = 0
             else:
                 listTop[i]['qtyz_' + date] = float(item['qtyz'])
             if 'qtyz_' + date in listTotal:
@@ -92,53 +93,59 @@ def index(request):
             listTotal['zhonbi_' + date] = str(float('%0.2f' % (listTotal['zhonbi_' + date] * 100))) + '%'
 
             listTotal['mingci_' + date] = ''
-    TotalDict = {'listTotal':listTotal}
-    listTop = ranking(listTop,'zhonbiSum','mingciSum')
+    TotalDict = {'listTotal': listTotal}
+    listTop = ranking(listTop, 'zhonbiSum', 'mingciSum')
 
     monthFirstReal = int(str(listDetail[0]['sdate'])[8:10])
-    for date in range(monthFirstReal,today.day+1):
-        if(date<10):
-            listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
+    for date in range(monthFirstReal, today.day + 1):
+        if (date < 10):
+            listTop = ranking(listTop, 'zhonbi_0' + str(date), 'mingci_0' + str(date))
         else:
-            listTop = ranking(listTop,'zhonbi_'+str(date),'mingci_'+str(date))
-    listTop.sort(key=lambda x:x['ShopID'])
+            listTop = ranking(listTop, 'zhonbi_' + str(date), 'mingci_' + str(date))
+    listTop.sort(key=lambda x: x['ShopID'])
 
     ###课组汇总###
-    yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
     sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from KNegativestock' \
-          ' where ShopID!="C009" AND sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
+              ' where ShopID!="C009" AND sdate="' + todayStr + '" group by deptid,deptidname order by deptid'
     cur = conn.cursor()
     cur.execute(sqlDept)
     listDept = cur.fetchall()
     for obj in listDept:
-        if(not obj['qtyz']):
+        if (not obj['qtyz']):
             obj['qtyz'] = 0
         obj['qtyz'] = float(obj['qtyz'])
-        if(not obj['qtyl']):
+        if (not obj['qtyl']):
             obj['qtyl'] = 0
         obj['qtyl'] = float(obj['qtyl'])
-        if(not obj['zhonbi']):
+        if (not obj['zhonbi']):
             obj['zhonbi'] = 0
-        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
+        obj['zhonbi'] = str(float('%0.4f' % obj['zhonbi']) * 100)[0:4] + '%'
 
     ###负库存课组明细###
-    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE ShopID!="C009" AND  sdate = "'\
-          +str(yesterday)+'" GROUP BY deptid,shopid'
+    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE ShopID!="C009" AND  sdate = "' \
+                    + todayStr + '" GROUP BY deptid,shopid'
     cur = conn.cursor()
     cur.execute(sqlDeptDetail)
     listDeptDetail = cur.fetchall()
     for obj in listDeptDetail:
-        if(not obj['zhonbi']):
-            obj['zhonbi']= 0
-        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
-        if(not obj['qtyl']):
-            obj['qtyl']= 0
+        if (not obj['zhonbi']):
+            obj['zhonbi'] = 0
+        obj['zhonbi'] = str(float('%0.4f' % obj['zhonbi']) * 100)[0:4] + '%'
+        if (not obj['qtyl']):
+            obj['qtyl'] = 0
         obj['qtyl'] = float(obj['qtyl'])
-        if(not obj['qtyz']):
-            obj['qtyz']= 0
+        if (not obj['qtyz']):
+            obj['qtyz'] = 0
         obj['qtyz'] = float(obj['qtyz'])
     cur.close()
     conn.close()
+
+    return locals()
+
+
+@csrf_exempt
+def index(request):
+
 
     qtype = mtu.getReqVal(request,"qtype","1")
     # 操作日志
@@ -154,10 +161,13 @@ def index(request):
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="超市负库存日报", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
 
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
     if qtype== "1":
-        return render(request,"report/daily/negative_stock_top.html",locals())
+        data = query()
+        return render(request,"report/daily/negative_stock_top.html",data)
     else:
-        return export(request,listTop,TotalDict,listDeptDetail,listDept)
+        fname = yesterday.strftime("%m.%d") + "_daily_negative_stock.xls"
+        return export(fname)
 def ranking(lis,key,name):
     lis.sort(key=lambda x:x[key])
     j = 1
@@ -174,18 +184,23 @@ def ranking(lis,key,name):
             a[name]= j
     return lis
 
-def export(request,listTop,TotalDict,listDeptDetail,listDept):
+import base.report.Excel as excel
+def export(fname):
+    if not excel.isExist(fname):
+        data = query()
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
+
+
+def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1
-    writeDataToSheet1(wb,listTop,TotalDict)
+    writeDataToSheet1(wb,data['listTop'],data['TotalDict'])
     #写入sheet2,sheet3
-    writeDataToSheet2(wb,listDeptDetail,listDept)
-
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d")+"negative_daily_operate"
-    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet2(wb,data['listDeptDetail'],data['listDept'])
+    excel.saveToExcel(fname,wb)
 
 def writeDataToSheet1(wb,listTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)

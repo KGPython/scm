@@ -6,20 +6,20 @@ from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import Kgprofit,BasPurLog
 from django.http import HttpResponse
-import datetime,calendar,decimal
+import datetime,calendar,decimal,json
 import xlwt3 as xlwt
+def query(date):
+    karrs = {}
+    karrs.setdefault("bbdate", "{start}".format(start=date))
+    rlist = Kgprofit.objects.values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
+                                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
+        .filter(**karrs).exclude(shopid='C009').order_by("bbdate", "shopid", "goodsid", "sdate")
+    formate_data(rlist)
+    return rlist
 
 @csrf_exempt
 def index(request):
      yesterday = DateUtil.get_day_of_day(-1)
-
-     karrs = {}
-     karrs.setdefault("bbdate", "{start}".format(start=yesterday))
-     rlist = Kgprofit.objects.values("bbdate","sdate","shopid","shopname","goodsid","goodsname","deptid","deptname","qty","profit","stockqty","truevalue","costvalue")\
-                     .filter(**karrs).exclude(shopid='C009').order_by("bbdate","shopid","goodsid","sdate")
-
-     formate_data(rlist)
-
      qtype = mtu.getReqVal(request,"qtype","1")
 
      #操作日志
@@ -32,22 +32,25 @@ def index(request):
      BasPurLog.objects.create(name="商品连续3天负毛利",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
 
      if qtype == "1":
-         return render(request, "report/abnormal/negprofit_past3days.html", {"rlist":list(rlist)})
+         data = query(yesterday)
+         return render(request, "report/abnormal/negprofit_past3days.html", {"rlist":list(data)})
      else:
-         return export(rlist,yesterday)
+         fname = yesterday.strftime("%m.%d") + "_negprofit_past3day.xls"
+         return export(fname,yesterday)
 
-def export(rlist,yesterday):
+import base.report.Excel as excel
+def export(fname,yesterday):
+    if not excel.isExist(fname):
+        data = query(yesterday)
+        creatExcel(fname,data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
 
+def creatExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
-    #写入sheet1 门店
-    writeDataToSheet1(wb,rlist)
-
-    outtype = 'application/vnd.ms-excel;'
-    fname = yesterday.strftime("%m.%d")+"negprofit_past3day"
-
-    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet1(wb,data)
+    excel.saveToExcel(fname,wb)
 
 def writeDataToSheet1(wb,rlist):
     sheet = wb.add_sheet("连续三天负毛利明细",cell_overwrite_ok=True)

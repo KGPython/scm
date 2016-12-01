@@ -6,12 +6,10 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil, MethodUtil as mtu
 from base.models import BasPurLog
-import datetime, calendar, decimal
+import datetime, calendar, decimal,json
 import xlwt3 as xlwt
 
-
-@csrf_exempt
-def index(request):
+def query(yesterday):
     yearandmon = DateUtil.getyearandmonth()
     # 当前月份第一天
     monfirstday = DateUtil.get_firstday_of_month(yearandmon[0], yearandmon[1])
@@ -20,7 +18,6 @@ def index(request):
     # 今天
     today = DateUtil.todaystr()
     # 昨天
-    yesterday = DateUtil.get_day_of_day(-1)
 
     # 获取部类编码
     classcode = getclasscode()
@@ -68,50 +65,50 @@ def index(request):
     sqlsubcate4 = ','.join(subcate4)
 
     sql10 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate10 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate10 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql11 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate11 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate11 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql12 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate12 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate12 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql13 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate13 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate13 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql14 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate14 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate14 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql15 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate15 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate15 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql16 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate16 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate16 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql17 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate17 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "from `kwsaletop10` " \
+            "where deptid in (" + sqlsubcate17 + ") " \
+                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
 
     sql2 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate2 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+           "from `kwsaletop10` " \
+           "where deptid in (" + sqlsubcate2 + ") " \
+                                               "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql3 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate3 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+           "from `kwsaletop10` " \
+           "where deptid in (" + sqlsubcate3 + ") " \
+                                               "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
     sql4 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-          "from `kwsaletop10` " \
-          "where deptid in (" + sqlsubcate4 + ") " \
-                                                "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+           "from `kwsaletop10` " \
+           "where deptid in (" + sqlsubcate4 + ") " \
+                                               "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
 
     # 连接数据库
     conn = mtu.getMysqlConn()
@@ -164,7 +161,7 @@ def index(request):
 
     # 10 熟食部类
     lis10 = []
-    unit10 =[]
+    unit10 = []
 
     for sid in shopsid:
         i = 0
@@ -285,7 +282,6 @@ def index(request):
             else:
                 continue
         unit14.append(i)
-
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
     for i in range(0, len(rows15)):
@@ -458,7 +454,6 @@ def index(request):
                 continue
         templist.append(i)
 
-
     # 关闭数据库
     mtu.close(conn, cur10)
     mtu.close(conn, cur11)
@@ -472,8 +467,11 @@ def index(request):
     mtu.close(conn, cur3)
     mtu.close(conn, cur4)
 
+    return locals()
+
+@csrf_exempt
+def index(request):
     exceltype = mtu.getReqVal(request, "exceltype", "2")
-    # 操作日志
     if exceltype=='2':
         qtype = "1"
     else:
@@ -482,16 +480,20 @@ def index(request):
     if exceltype == '1' and (not key_state or key_state != '2'):
         exceltype = '2'
 
+    # 操作日志
     path = request.path
     today = datetime.datetime.today()
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="超市课组销售前十", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
 
+    yesterday = DateUtil.get_day_of_day(-1)
     if exceltype == '1':
-        return export(request, lis10, lis11, lis12, lis13, lis14, lis15, lis16, lis17, lis2, lis3, lis4)
+        fname = yesterday.strftime("%m.%d") + "_daily_saletop10_operate.xls"
+        return export(fname,yesterday)
     else:
-        return render(request, "report/daily/saletop10.html", locals())
+        data = query(yesterday)
+        return render(request, "report/daily/saletop10.html", data)
 
 
 def getshopid():
@@ -556,37 +558,42 @@ def getallcode():
 
     return lis
 
+import base.report.Excel as excel
+def export(fname,yesterday):
+    if not excel.isExist(fname):
+        data = query(yesterday)
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
 
-def export(request, lis10, lis11, lis12, lis13, lis14, lis15, lis16, lis17, lis2, lis3, lis4):
+
+def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # 写入sheet1
-    writeDataToSheet1(wb, lis10)
+    writeDataToSheet1(wb, data['lis10'])
     # 写入sheet2
-    writeDataToSheet2(wb, lis11)
+    writeDataToSheet2(wb, data['lis11'])
     # 写入sheet3
-    writeDataToSheet3(wb, lis12)
+    writeDataToSheet3(wb, data['lis12'])
     # 写入sheet4
-    writeDataToSheet4(wb, lis13)
+    writeDataToSheet4(wb, data['lis13'])
     # 写入sheet5
-    writeDataToSheet5(wb, lis14)
+    writeDataToSheet5(wb, data['lis14'])
     # 写入sheet6
-    writeDataToSheet6(wb, lis15)
+    writeDataToSheet6(wb, data['lis15'])
     # 写入sheet7
-    writeDataToSheet7(wb, lis16)
+    writeDataToSheet7(wb, data['lis16'])
     # 写入sheet8
-    writeDataToSheet8(wb, lis17)
+    writeDataToSheet8(wb, data['lis17'])
     # 写入sheet9
-    writeDataToSheet9(wb, lis2)
+    writeDataToSheet9(wb, data['lis2'])
     # 写入sheet10
-    writeDataToSheet10(wb, lis3)
+    writeDataToSheet10(wb, data['lis3'])
     # 写入sheet11
-    writeDataToSheet11(wb, lis4)
+    writeDataToSheet11(wb, data['lis4'])
 
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d") + "saletop10_operate"
-    response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
-    wb.save(response)
-    return response
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb, lis10):

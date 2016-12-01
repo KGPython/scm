@@ -1,3 +1,6 @@
+<div id="loading" style="position: absolute;top: 45%;left: 45%;display: none;">
+    <img src="{{ static }}/image/loading3.gif" style="width:200px;height:200px;">
+</div>
 <!--[if IE]>
 <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
 <![if !IE]>
@@ -20,12 +23,24 @@
     soft_key_validator.loadSoftKey();
 
     function pub_export(curUrl){
+        $("#loading").show();
         soft_key_validator.callService_1(export_bar,curUrl);
 {#        soft_key_validator.checkKey(export_bar,url,ucode,numToClient);#}
         //export_bar(url);
     }
     function export_bar(url){
-          window.location.href=url;
+        $.get(url,function (data) {
+            var data = JSON.parse(data);
+            var fname = data.fname;
+            //console.log(fname);
+            if(fname){
+                $("#loading").hide();
+            }
+            downloadExcel(fname);
+        });
+    }
+    function downloadExcel(fname) {
+        window.location.href='{% url 'downloadReportExcel' %}'+'?fname='+fname;
     }
     $(function(){
         if(typeof(current) != "undefined"){

@@ -6,12 +6,10 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil, MethodUtil as mtu
 from base.models import BasPurLog
-import datetime, calendar, decimal
+import datetime, calendar, decimal,json
 import xlwt3 as xlwt
 
-
-@csrf_exempt
-def index(request):
+def query(yesterday):
     yearandmon = DateUtil.getyearandmonth()
     # 当前月份第一天
     monfirstday = DateUtil.get_firstday_of_month(yearandmon[0], yearandmon[1])
@@ -19,8 +17,7 @@ def index(request):
     monlastday = DateUtil.get_lastday_month()
     # 今天
     today = DateUtil.todaystr()
-    # 昨天
-    yesterday = DateUtil.get_yesterday()
+
     # 获取门店信息
     getshopname = getshopid()
 
@@ -28,8 +25,8 @@ def index(request):
     sqltop = "select shopid, sum(costvalue) as costvaluesum, sum(reth) as rethsum, (sum(reth) / sum(costvalue)) as retrate " \
              "from KGretshop " \
              "where ShopID!='C009' AND sdate between '" + monfirstday + "' and '" + yesterday + "' " \
-                                                                             "group by shopid " \
-                                                                             "order by shopid"
+                                                                                                "group by shopid " \
+                                                                                                "order by shopid"
 
     cur = conn.cursor()
     cur.execute(sqltop)
@@ -101,7 +98,8 @@ def index(request):
             # 添加当日汇总
             listtopTotal['rethsum_' + date] = float("%0.2f" % (listtopTotal['rethsum_' + date]))
             listtopTotal['costvaluesum_' + date] = float("%0.2f" % (listtopTotal['costvaluesum_' + date]))
-            listtopTotal['retrate_' + date] = str(float("%0.2f" % (listtopTotal['rethsum_' + date] / listtopTotal['costvaluesum_' + date] * 100))) + '%'
+            listtopTotal['retrate_' + date] = str(
+                float("%0.2f" % (listtopTotal['rethsum_' + date] / listtopTotal['costvaluesum_' + date] * 100))) + '%'
 
     # 添加门店名称
     for i in range(0, len(listtop)):
@@ -118,9 +116,14 @@ def index(request):
     mtu.close(conn, cur)
 
     # 转换为dict，导出excel
-    TotalDict = {'listtopTotal':listtopTotal}
+    TotalDict = {'listtopTotal': listtopTotal}
+
+    return locals()
+
+@csrf_exempt
+def index(request):
+
     exceltype = mtu.getReqVal(request, "exceltype", "2")
-    # 操作日志
     if exceltype=="2":
         qtype = "1"
     else:
@@ -129,16 +132,21 @@ def index(request):
     if exceltype == '1' and (not key_state or key_state != '2'):
         exceltype = '2'
 
+    # 操作日志
     path = request.path
     today = datetime.datetime.today()
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="供应商退货率", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
 
+    # 昨天
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
     if exceltype == '1':
-        return export(request, listtop, TotalDict)
+        fname = yesterday.strftime("%m.%d") + "_daily_supplier_returns.xls"
+        return export(fname, str(yesterday))
     else:
-        return render(request, "report/daily/supplier_returns.html", locals())
+        data = query(str(yesterday))
+        return render(request, "report/daily/supplier_returns.html", data)
 
 
 def getshopid():
@@ -155,17 +163,20 @@ def getshopid():
     mtu.close(conn, cur)
     return res
 
+import base.report.Excel as excel
+def export(fname, yesterday):
+    if not excel.isExist(fname):
+        data = query(yesterday)
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
 
-def export(request, listtop, TotalDict):
+def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # 写入sheet1
-    writeDataToSheet1(wb, listtop, TotalDict)
-
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d") + "supplier_returns"
-    response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet1(wb, data['listtop'],data['TotalDict'])
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb, listtop, TotalDict):

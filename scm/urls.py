@@ -26,3 +26,4 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^scm/',include("base.urls")),
 ]
+

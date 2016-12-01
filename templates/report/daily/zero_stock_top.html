@@ -138,9 +138,8 @@
 
         lenShops = listShops.length;
         if(tab==1){
-            var tody = new Date();
-            var yesterday = getYestodayDate(tody);
-            yesterday = yesterday.getDate();
+            var tody = new Date().getDate();
+
             fixedRow = 2;
             fixedCol = 6;
             var theadRow1 = {'ShopID':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
@@ -171,7 +170,7 @@
                 i+=4;//每日单元格数量
                 j+=1;//日期
                 k+=4;//每次合并单元格数量
-            }while(i<yesterday*4);
+            }while(i<tody*4);
             table.push(theadRow1);
             table.push(theadRow2);
             //拼接tbody数据

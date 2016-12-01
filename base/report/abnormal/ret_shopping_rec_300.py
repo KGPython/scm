@@ -4,28 +4,32 @@ from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil, MethodUtil as mtu
 from base.models import Kglistnoret, Kggoodsret, BasPurLog
 from django.http import HttpResponse
-import datetime, calendar, decimal
+import datetime, decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
-
-@csrf_exempt
-def index(request):
-    yesterday = DateUtil.get_day_of_day(-1)
-
+def query(date):
     rlist = Kglistnoret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "payreson", \
-                                       "paytype", "payvalue").filter(sdate=yesterday).exclude(shopid='C009')
+                                       "paytype", "payvalue").filter(sdate=date).exclude(shopid='C009')
 
     formate_data(rlist)
 
     # 商品退货明细
     dlist = Kggoodsret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "deptid", \
                                       "deptname", "goodsid", "goodsname", "xamount", "salevalue", "discvalue", \
-                                      "truevalue", "saletype", "price", "disctype").filter(sdate=yesterday).exclude(
+                                      "truevalue", "saletype", "price", "disctype").filter(sdate=date).exclude(
         shopid='C009')
     formate_data(dlist)
+    data = {"rlist": list(rlist), 'dlist': list(dlist)}
+    return data
+
+
+@cache_page(60*2 ,key_prefix='ret_shopping_rec_300')
+@csrf_exempt
+def index(request):
+    yesterday = DateUtil.get_day_of_day(-1)
 
     qtype = mtu.getReqVal(request, "qtype", "1")
-
     # 操作日志
     if not qtype:
         qtype = "1"
@@ -36,25 +40,28 @@ def index(request):
     BasPurLog.objects.create(name="单张小票退货超300", url=path, qtype=qtype, ucode=ucode, uname=uname, createtime=today)
 
     if qtype == "1":
-        return render(request, "report/abnormal/ret_shopping_rec_300.html",
-                      {"rlist": list(rlist), 'dlist': list(dlist)})
+        data = query(yesterday)
+        return render(request, "report/abnormal/ret_shopping_rec_300.html",data)
     else:
-        return export(rlist, dlist, yesterday)
+        fname = yesterday.strftime("%m.%d") + "_ret_shopping_rec_300.xls"
+        return export(fname,yesterday)
 
+import base.report.Excel as excel
+def export(fname,yesterday):
+    if not excel.isExist(fname):
+        data = query(yesterday)
+        createExcel(fname,data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
 
-def export(rlist, dlist, yesterday):
+def createExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     # 写入sheet1
-    writeDataToSheet1(wb, rlist)
+    writeDataToSheet1(wb, data['rlist'])
     # 写入sheet2
-    writeDataToSheet2(wb, dlist)
-
-    outtype = 'application/vnd.ms-excel;'
-    fname = yesterday.strftime("%m.%d") + "ret_shopping_rec_300"
-
-    response = mtu.getResponse(HttpResponse(), outtype, '%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet2(wb, data['dlist'])
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb, rlist):

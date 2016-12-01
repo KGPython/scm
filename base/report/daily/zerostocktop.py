@@ -5,42 +5,41 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil,MethodUtil as mtu
 from base.models import BasPurLog
-import datetime,calendar,decimal
+import datetime,calendar,decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
-@csrf_exempt
-def index(request):
+def query():
     ###门店排名###
     monthFirst = datetime.date.today().replace(day=1)
     today = datetime.datetime.today()
-    yesterday = datetime.date.today()-datetime.timedelta(days=1)
-    if(str(today)[8:10]=='01'):
-        monthFirst = datetime.date(datetime.date.today().year,datetime.date.today().month-1,1)
-        today = datetime.date(datetime.date.today().year,datetime.date.today().month,1)-datetime.timedelta(1)
+
+    if (str(today)[8:10] == '01'):
+        monthFirst = datetime.date(datetime.date.today().year, datetime.date.today().month - 1, 1)
+        today = datetime.date(datetime.date.today().year, datetime.date.today().month, 1) - datetime.timedelta(1)
     todayStr = today.strftime('%y-%m-%d')
     # 获取当月天数
     dayNum = todayStr[-2:]
     monthFirstStr = str(monthFirst)
-    yesterdayStr = yesterday.strftime('%y-%m-%d')
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
 
-    #各门店报表数据
+    # 各门店报表数据
     listShops = []
     listShopTotal = []
 
-    #月份汇总数据
+    # 月份汇总数据
     sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
-          'FROM Kzerostock ' \
-          'WHERE ShopID!="C009" AND sdate BETWEEN "'+monthFirstStr+'" AND "'+todayStr+'" GROUP BY ShopID ORDER BY ShopID'
+             'FROM Kzerostock ' \
+             'WHERE ShopID!="C009" AND sdate BETWEEN "' + monthFirstStr + '" AND "' + todayStr + '" GROUP BY ShopID ORDER BY ShopID'
     cur.execute(sqlTop)
     listTop = cur.fetchall()
-    #门店排名合计
-    listTotal = {'ShopID':'合计','shopname':'','qtyzSum':0} #初始化最后一行
-    #转换数据类型并求纵向合计
-    for i in range(0,len(listTop)):
-        if(not listTop[i]['qtyzSum']):
-            listTop[i]['qtyzSum']=0
+    # 门店排名合计
+    listTotal = {'ShopID': '合计', 'shopname': '', 'qtyzSum': 0}  # 初始化最后一行
+    # 转换数据类型并求纵向合计
+    for i in range(0, len(listTop)):
+        if (not listTop[i]['qtyzSum']):
+            listTop[i]['qtyzSum'] = 0
         else:
             listTop[i]['qtyzSum'] = float(listTop[i]['qtyzSum'])
             listTop[i]['qtyzSum'] = round((listTop[i]['qtyzSum']) / int(today.day))
@@ -49,132 +48,132 @@ def index(request):
         else:
             listTotal['qtyzSum'] = listTop[i]['qtyzSum']
 
-        if(not listTop[i]['qtylSum']):
-            listTop[i]['qtylSum']=0
+        if (not listTop[i]['qtylSum']):
+            listTop[i]['qtylSum'] = 0
         else:
             listTop[i]['qtylSum'] = float(listTop[i]['qtylSum'])
             listTop[i]['qtylSum'] = round((listTop[i]['qtylSum']) / int(today.day))
-
         if 'qtylSum' in listTotal:
             listTotal['qtylSum'] += listTop[i]['qtylSum']
         else:
             listTotal['qtylSum'] = listTop[i]['qtylSum']
 
-        if(not listTop[i]['zhonbiSum']):
-            listTop[i]['zhonbiSum']=0
+        if (not listTop[i]['zhonbiSum']):
+            listTop[i]['zhonbiSum'] = 0
         else:
-            listTop[i]['zhonbiSum'] = float('%0.2f'%(listTop[i]['zhonbiSum']*100))
+            listTop[i]['zhonbiSum'] = float('%0.2f' % (listTop[i]['zhonbiSum'] * 100))
 
-        # 有效商品数，有效商品数合计 除以天数 四舍五入取整
-        listTotal['qtyzSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
-        listTotal['qtylSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
-
-        listTotal['zhonbiSum'] = listTotal['qtylSum']/listTotal['qtyzSum']
-        listTotal['zhonbiSum'] = str(float('%0.2f'%(listTotal['zhonbiSum']*100)))+'%'
+        listTotal['zhonbiSum'] = listTotal['qtylSum'] / listTotal['qtyzSum']
+        listTotal['zhonbiSum'] = str(float('%0.2f' % (listTotal['zhonbiSum'] * 100))) + '%'
 
         listTotal['mingciSum'] = ''
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM Kzerostock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM Kzerostock AS b " \
-              "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate BETWEEN '"+monthFirstStr+"' AND '"+todayStr+"' GROUP BY sdate"
+              "WHERE ShopID ='" + listTop[i][
+                  'ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
         cur.execute(sql)
         listDetail = cur.fetchall()
         for item in listDetail:
             date = str(item['sdate'])[8:10]
-            if(not item['qtyz']):
-                listTop[i]['qtyz_'+date]=0
+            if (not item['qtyz']):
+                listTop[i]['qtyz_' + date] = 0
             else:
-                listTop[i]['qtyz_'+date]=float(item['qtyz'])
-            if 'qtyz_'+date in listTotal:
-                listTotal['qtyz_'+date] += listTop[i]['qtyz_'+date]
+                listTop[i]['qtyz_' + date] = float(item['qtyz'])
+            if 'qtyz_' + date in listTotal:
+                listTotal['qtyz_' + date] += listTop[i]['qtyz_' + date]
             else:
-                listTotal['qtyz_'+date] = listTop[i]['qtyz_'+date]
+                listTotal['qtyz_' + date] = listTop[i]['qtyz_' + date]
 
-            if(not item['qtyl']):
-                listTop[i]['qtyl_'+date]=0
+            if (not item['qtyl']):
+                listTop[i]['qtyl_' + date] = 0
             else:
-                listTop[i]['qtyl_'+date]=float(item['qtyl'])
-            if 'qtyl_'+date in listTotal:
-                listTotal['qtyl_'+date] += listTop[i]['qtyl_'+date]
+                listTop[i]['qtyl_' + date] = float(item['qtyl'])
+            if 'qtyl_' + date in listTotal:
+                listTotal['qtyl_' + date] += listTop[i]['qtyl_' + date]
             else:
-                listTotal['qtyl_'+date] = listTop[i]['qtyl_'+date]
+                listTotal['qtyl_' + date] = listTop[i]['qtyl_' + date]
 
-            if(not item['zhonbi']):
-                listTop[i]['zhonbi_'+date]=0
+            if (not item['zhonbi']):
+                listTop[i]['zhonbi_' + date] = 0
             else:
-                listTop[i]['zhonbi_'+date]=float('%0.2f'%(item['zhonbi']*100))
+                listTop[i]['zhonbi_' + date] = float('%0.2f' % (item['zhonbi'] * 100))
 
-            listTotal['zhonbi_'+date] = listTotal['qtyl_'+date]/listTotal['qtyz_'+date]
-            listTotal['zhonbi_'+date] = str(float('%0.2f'%(listTotal['zhonbi_'+date]*100)))+'%'
+            listTotal['zhonbi_' + date] = listTotal['qtyl_' + date] / listTotal['qtyz_' + date]
+            listTotal['zhonbi_' + date] = str(float('%0.2f' % (listTotal['zhonbi_' + date] * 100))) + '%'
 
-            listTotal['mingci_'+date] = ''
+            listTotal['mingci_' + date] = ''
 
-        #各个门店的sheet数据
+        # 各个门店的sheet数据
         sqlShop = "SELECT ShopID,shopname,deptid,deptidname,qtyz,qtyl,zhonbi " \
                   "FROM Kzerostock " \
-                  "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate = '"+yesterdayStr+"'"
+                  "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate = '" + todayStr + "'"
         cur.execute(sqlShop)
         listShop = cur.fetchall()
-        #门店合计、转换数据格式
-        shopTotal={'qtyz':0,'qtyl':0}
+        # 门店合计、转换数据格式
+        shopTotal = {'qtyz': 0, 'qtyl': 0}
         for d in listShop:
-            shopTotal['ShopID']='合计'
-            shopTotal['shopname']=''
-            shopTotal['deptid']=''
-            shopTotal['deptidname']=''
-            if(not d['qtyz']):
+            shopTotal['ShopID'] = '合计'
+            shopTotal['shopname'] = ''
+            shopTotal['deptid'] = ''
+            shopTotal['deptidname'] = ''
+            if (not d['qtyz']):
                 d['qtyz'] = 0
             else:
                 d['qtyz'] = float(d['qtyz'])
             shopTotal['qtyz'] += float(d['qtyz'])
-            if(not d['qtyl']):
+            if (not d['qtyl']):
                 d['qtyl'] = 0
             else:
                 d['qtyl'] = float(d['qtyl'])
             shopTotal['qtyl'] += float(d['qtyl'])
-            if(not d['zhonbi']):
+            if (not d['zhonbi']):
                 d['zhonbi'] = '0.0%'
             else:
-                d['zhonbi'] = str(float((d['zhonbi']*100)))+'%'
-            shopTotal['zhonbi'] = (shopTotal['qtyl']/shopTotal['qtyz'])*100
-            shopTotal['zhonbi'] = str(float('%0.2f'%shopTotal['zhonbi']))+'%'
+                d['zhonbi'] = str(float((d['zhonbi'] * 100))) + '%'
+            shopTotal['zhonbi'] = (shopTotal['qtyl'] / shopTotal['qtyz']) * 100
+            shopTotal['zhonbi'] = str(float('%0.2f' % shopTotal['zhonbi'])) + '%'
         listShopTotal.append(shopTotal)
         listShops.append(listShop)
 
-    #门店排名汇总数据
-    TotalDict = {'listTotal':listTotal}
+    # 门店排名汇总数据
+    TotalDict = {'listTotal': listTotal}
     # 排序生成总排名
-    listTop = ranking(listTop,'zhonbiSum','mingciSum')
+    listTop = ranking(listTop, 'zhonbiSum', 'mingciSum')
     # 排序生成每日排名
     monthFirstReal = int(str(listDetail[0]['sdate'])[8:10])
-    for date in range(monthFirstReal,today.day):
-        if(date<10):
-            listTop = ranking(listTop,'zhonbi_0'+str(date),'mingci_0'+str(date))
+    for date in range(monthFirstReal, today.day+1):
+        if (date < 10):
+            listTop = ranking(listTop, 'zhonbi_0' + str(date), 'mingci_0' + str(date))
         else:
-            listTop = ranking(listTop,'zhonbi_'+str(date),'mingci_'+str(date))
+            listTop = ranking(listTop, 'zhonbi_' + str(date), 'mingci_' + str(date))
     # 按门店排序
-    listTop.sort(key=lambda x:x['ShopID'])
+    listTop.sort(key=lambda x: x['ShopID'])
 
     ###课组汇总###
-    yesterday = (datetime.date.today()-datetime.timedelta(days=1)).strftime('%y-%m-%d %H:%M:%S')
     sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from Kzerostock' \
-          ' where ShopID!="C009" AND sdate="'+yesterday+'" group by deptid,deptidname order by deptid'
+              ' where ShopID!="C009" AND sdate="' + todayStr + '" group by deptid,deptidname order by deptid'
 
     cur.execute(sqlDept)
     listDept = cur.fetchall()
     for obj in listDept:
-        if(not obj['qtyz']):
+        if (not obj['qtyz']):
             obj['qtyz'] = 0
         obj['qtyz'] = float(obj['qtyz'])
-        if(not obj['qtyl']):
+        if (not obj['qtyl']):
             obj['qtyl'] = 0
         obj['qtyl'] = float(obj['qtyl'])
-        if(not obj['zhonbi']):
+        if (not obj['zhonbi']):
             obj['zhonbi'] = 0
-        obj['zhonbi'] = str(float('%0.4f'%obj['zhonbi'])*100)[0:4]+'%'
+        obj['zhonbi'] = str(float('%0.4f' % obj['zhonbi']) * 100)[0:4] + '%'
     cur.close()
     conn.close()
 
+    return locals()
+
+@cache_page(60*60*4,key_prefix='zero_stock_top')
+@csrf_exempt
+def index(request):
     qtype = mtu.getReqVal(request,"qtype","1")
     # 操作日志
     if not qtype:
@@ -189,10 +188,13 @@ def index(request):
     uname = request.session.get("s_uname")
     BasPurLog.objects.create(name="超市零库存日报", url=path, qtype=qtype, ucode=ucode,uname=uname, createtime=today)
 
+    yesterday = datetime.date.today() - datetime.timedelta(days=1)
     if qtype== "1":
-        return render(request,"report/daily/zero_stock_top.html",locals())
+        data = query()
+        return render(request,"report/daily/zero_stock_top.html",data)
     else:
-        return export(request,listTop,TotalDict,listShops,listShopTotal,listDept)
+        fname = yesterday.strftime("%m.%d") + "_daily_zero_stock.xls"
+        return export(fname)
 
 ###
 # 排名函数
@@ -216,18 +218,23 @@ def ranking(lis,key,name):
             a[name]= j
     return lis
 
-def export(request,listTop,TotalDict,listShops,listShopTotal,listDept):
+import base.report.Excel as excel
+def export(fname):
+    if not excel.isExist(fname):
+        data = query()
+        createExcel(fname, data)
+    res = {}
+    res['fname'] = fname
+    return HttpResponse(json.dumps(res))
+
+
+def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1
-    writeDataToSheet1(wb,listTop,TotalDict)
+    writeDataToSheet1(wb,data['listTop'],data['TotalDict'])
     #写入sheet2,sheet3
-    writeDataToSheet2(wb,listShops,listShopTotal,listDept)
-
-    outtype = 'application/vnd.ms-excel;'
-    fname = datetime.date.today().strftime("%m.%d")+"zero_daily_operate"
-    response = mtu.getResponse(HttpResponse(),outtype,'%s.xls' % fname)
-    wb.save(response)
-    return response
+    writeDataToSheet2(wb,data['listShops'],data['listShopTotal'],data['listDept'])
+    excel.saveToExcel(fname,wb)
 
 def writeDataToSheet1(wb,listTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)
