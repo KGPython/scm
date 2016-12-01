@@ -59,8 +59,7 @@ def query():
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM KNegativestock AS b " \
-              "WHERE ShopID ='" + listTop[i][
-                  'ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
+              "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
 
         cur.execute(sql)
         listDetail = cur.fetchall()

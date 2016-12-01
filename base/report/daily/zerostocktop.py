@@ -63,15 +63,18 @@ def query():
         else:
             listTop[i]['zhonbiSum'] = float('%0.2f' % (listTop[i]['zhonbiSum'] * 100))
 
-        listTotal['zhonbiSum'] = listTotal['qtylSum'] / listTotal['qtyzSum']
-        listTotal['zhonbiSum'] = str(float('%0.2f' % (listTotal['zhonbiSum'] * 100))) + '%'
+        # 有效商品数，有效商品数合计 除以天数 四舍五入取整
+        listTotal['qtyzSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
+        listTotal['qtylSum'] = round(float('%0.2f'%(listTotal['qtyzSum'] / int(dayNum))))
+
+        listTotal['zhonbiSum'] = listTotal['qtylSum']/listTotal['qtyzSum']
+        listTotal['zhonbiSum'] = str(float('%0.2f'%(listTotal['zhonbiSum']*100)))+'%'
 
         listTotal['mingciSum'] = ''
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM Kzerostock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM Kzerostock AS b " \
-              "WHERE ShopID ='" + listTop[i][
-                  'ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
+              "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate BETWEEN '"+monthFirstStr+"' AND '"+todayStr+"' GROUP BY sdate"
         cur.execute(sql)
         listDetail = cur.fetchall()
         for item in listDetail:
