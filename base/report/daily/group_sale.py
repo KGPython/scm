@@ -10,6 +10,7 @@ from django.db import connection
 from django.http import HttpResponse
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(date):
     yesterday = date.strftime("%Y-%m-%d")
@@ -80,7 +81,7 @@ def query(date):
     data = {"gslist":rlist,"sumDict":sumDict}
     return data
 
-
+@cache_page(60*60*4,key_prefix='daily_group_sale')
 @csrf_exempt
 def index(request):
      qtype = mtu.getReqVal(request,"qtype","1")

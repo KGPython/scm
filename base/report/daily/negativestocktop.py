@@ -8,6 +8,7 @@ from base.utils import DateUtil,MethodUtil as mtu
 from base.models import BasPurLog
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query():
     monthFirst = datetime.date.today().replace(day=1)
@@ -141,11 +142,9 @@ def query():
 
     return locals()
 
-
+@cache_page(60*60*4,key_prefix='daily_zero_stock_top')
 @csrf_exempt
 def index(request):
-
-
     qtype = mtu.getReqVal(request,"qtype","1")
     # 操作日志
     if not qtype:

@@ -7,6 +7,7 @@ from base.utils import DateUtil,MethodUtil as mtu
 from base.models import BasPurLog
 import datetime,decimal,calendar,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query():
     today = datetime.date.today()
@@ -79,6 +80,7 @@ def query():
     TotalDict = {'shopTopTotal': shopTopTotal}
     return locals()
 
+@cache_page(60*60*4,key_prefix='daily_fruit_lost')
 def inidex(request):
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     qtype = mtu.getReqVal(request,"qtype","1")

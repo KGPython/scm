@@ -7,6 +7,7 @@ from base.utils import MethodUtil as mtu,DateUtil
 from django.http import HttpResponse
 from base.models import KgNegStock,BasPurLog
 import decimal,datetime,json
+from django.views.decorators.cache import cache_page
 
 def query(sgroupid,date):
     title = ''
@@ -26,6 +27,7 @@ def query(sgroupid,date):
 
     return  locals()
 
+@cache_page(60 * 2 ,key_prefix='abnormal_negstock')
 def index(request):
     sgroupid = request.REQUEST.get('sgroupid')
     yesterday = DateUtil.get_day_of_day(-1)

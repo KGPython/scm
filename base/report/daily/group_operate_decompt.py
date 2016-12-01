@@ -9,6 +9,7 @@ from base.models import BasShopRegion, BasPurLog
 from django.http import HttpResponse
 import datetime, calendar, decimal, time
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(date,start,end,yesterday,lastDay):
     # 查询所有超市门店
@@ -108,7 +109,7 @@ def query(date,start,end,yesterday,lastDay):
     data  = {"rlist": rslist, "shoplist": shoplist, "grslist": grslist, "srslist": srslist}
     return data
 
-
+@cache_page(60*60*4,key_prefix='daily_group_operate_decompt')
 @csrf_exempt
 def index(request):
     date = DateUtil.get_day_of_day(-1)

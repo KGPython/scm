@@ -23,7 +23,7 @@ def query(timeStart,timeEnd):
 
     return locals()
 
-@cache_page(60 * 2 ,key_prefix='loss_rate_100')
+@cache_page(60 * 2 ,key_prefix='abnormal_loss_rate_100')
 def index(request):
     ucode = request.session.get("s_ucode")
     uname = request.session.get("s_uname")
@@ -46,7 +46,7 @@ def index(request):
         return render(request, 'report/abnormal/loss_rate.html', data)
     else:
         yesterday = DateUtil.get_day_of_day(-1)
-        name = '_loss_rate100'
+        name = '_abnormal_loss_rate100'
         fname = yesterday.strftime('%m.%d')+name+".xls"
         return export(fname,timeStart,timeEnd)
 

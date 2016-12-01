@@ -9,6 +9,7 @@ from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
 from django.http import HttpResponse
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(date):
     days = date.day
@@ -228,6 +229,8 @@ def query(date):
 
     data = {"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict}
     return data
+
+@cache_page(60*60*4,key_prefix='daily_group_general_operate')
 @csrf_exempt
 def index(request):
      date = DateUtil.get_day_of_day(-1)

@@ -24,7 +24,7 @@ def query(date):
     return data
 
 
-@cache_page(60*2 ,key_prefix='ret_shopping_rec_300')
+@cache_page(60*2 ,key_prefix='abnormal_ret_shopping_rec_300')
 @csrf_exempt
 def index(request):
     yesterday = DateUtil.get_day_of_day(-1)
@@ -43,7 +43,7 @@ def index(request):
         data = query(yesterday)
         return render(request, "report/abnormal/ret_shopping_rec_300.html",data)
     else:
-        fname = yesterday.strftime("%m.%d") + "_ret_shopping_rec_300.xls"
+        fname = yesterday.strftime("%m.%d") + "_abnormal_ret_shopping_rec_300.xls"
         return export(fname,yesterday)
 
 import base.report.Excel as excel

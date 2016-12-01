@@ -8,6 +8,7 @@ from base.utils import DateUtil, MethodUtil as mtu
 from base.models import BasPurLog
 import datetime, calendar, decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(yesterday):
     yearandmon = DateUtil.getyearandmonth()
@@ -143,7 +144,7 @@ def query(yesterday):
     mtu.close(conn, cur)
     return locals()
 
-
+@cache_page(60*60*4,key_prefix='daily_customer_return')
 @csrf_exempt
 def index(request):
     exceltype = mtu.getReqVal(request, "exceltype", "2")

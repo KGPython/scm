@@ -174,7 +174,7 @@ def query():
 
     return locals()
 
-@cache_page(60*60*4,key_prefix='zero_stock_top')
+@cache_page(60*60*4,key_prefix='daily_zero_stock_top')
 @csrf_exempt
 def index(request):
     qtype = mtu.getReqVal(request,"qtype","1")

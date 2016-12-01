@@ -8,6 +8,8 @@ from base.models import Kgprofit,BasPurLog
 from django.http import HttpResponse
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
+
 def query(date):
     karrs = {}
     karrs.setdefault("bbdate", "{start}".format(start=date))
@@ -17,6 +19,8 @@ def query(date):
     formate_data(rlist)
     return rlist
 
+
+@cache_page(60 * 2 ,key_prefix='abnormal_negprofit_past_3days')
 @csrf_exempt
 def index(request):
      yesterday = DateUtil.get_day_of_day(-1)
@@ -35,7 +39,7 @@ def index(request):
          data = query(yesterday)
          return render(request, "report/abnormal/negprofit_past3days.html", {"rlist":list(data)})
      else:
-         fname = yesterday.strftime("%m.%d") + "_negprofit_past3day.xls"
+         fname = yesterday.strftime("%m.%d") + "_abnormal_negprofit_past3day.xls"
          return export(fname,yesterday)
 
 import base.report.Excel as excel
