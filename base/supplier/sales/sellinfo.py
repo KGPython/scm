@@ -255,7 +255,7 @@ def detail(request):
         rslist = []
         if list:
             for row in list:
-                item = ["","","","","","","","",""]
+                item = ["","","","","",""]
 
                 if sum:
                     radio = (row[5] / sum * 100)   #占比
@@ -301,7 +301,7 @@ def exportDetail(rslist,sum1,sum2,sum3,pname):
               ("销售成本占比","2000"),("销售成本累计占比","2000")]
 
     sumlist = ["合计",sum1,sum2,sum3,"100.00","100.00"]
-    fmtlist = [None,"0.00","0.000","0.000","0.00","0.00"]
+    fmtlist = [None,"0.00","0.00","0.000","0.000","0.00"]
 
     book = mtu.exportXls(sname,titles,rslist,sumlist,None,fmtlist)
 

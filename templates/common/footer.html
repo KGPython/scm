@@ -17,22 +17,17 @@
 <script type="text/javascript" src="{{ static }}/js/softkey/Syunew3.js"></script>
 <script type="text/javascript" src="{{ static }}/js/softkey/softkeyvalidator.js" charset="utf-8"></script>
 <script type="text/javascript">
-{#    var soft_key_validator = new SoftKeyValidator('101','{{ SCM_SOFTKEY_URL }}');#}
-
     var soft_key_validator = new SoftKeyValidator('','{% url 'keyCheck' %}');
     soft_key_validator.loadSoftKey();
 
     function pub_export(curUrl){
         $("#loading").show();
         soft_key_validator.callService_1(export_bar,curUrl);
-{#        soft_key_validator.checkKey(export_bar,url,ucode,numToClient);#}
-        //export_bar(url);
     }
     function export_bar(url){
         $.get(url,function (data) {
             var data = JSON.parse(data);
             var fname = data.fname;
-            //console.log(fname);
             if(fname){
                 $("#loading").hide();
             }

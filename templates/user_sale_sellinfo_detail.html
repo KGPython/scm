@@ -8,10 +8,14 @@
         {% load basefilter %}
         {% include "common/nav.html" %}
         <div class="query comWidth">
-            <form class="query comWidth" style="width: 100%;text-align: right;">
+            <form id="queryForm" class="query comWidth" style="width: 100%;text-align: right;">
                 <p>
                     <input class="query-enter" type="button" value="返回" onclick="closeFun()">
-                    <input class="query-enter" type="button" value="导出到excel">
+                    <input class="query-enter" type="button" value="导出到excel" onclick="queryForm(2)">
+                    <input type="hidden" id="qtype" name="qtype">
+                    <input type="hidden" name="pcode" value="{{ pcode }}">
+                    <input type="hidden" name="start" value="{{ start }}">
+                    <input type="hidden" name="end" value="{{ end }}">
                 </p>
             </form>
         </div>
@@ -53,15 +57,9 @@
                 <tbody>
                     {% for row in rslist %}
                         <tr>
-                            <td class="col1">
-                                {{ row.0 }}
-                            </td>
-                            <td class="col1">
-                               {{ row.1|floatformat:2 }}
-                            </td>
-                            <td class="col1">
-                                {{ row.2|floatformat:3 }}
-                            </td>
+                            <td class="col1">{{ row.0 }}</td>
+                            <td class="col1">{{ row.1|floatformat:2 }}</td>
+                            <td class="col1">{{ row.2|floatformat:3 }}</td>
                             <td class="col1">
                                 {{ row.3|floatformat:3}}
                             </td>
@@ -103,6 +101,11 @@
                 //window.opener.location.reload();
                 self.close();
             }
+
+            function queryForm(val){
+                $("#qtype").attr("value",val);
+                $("#queryForm").submit();
+            };
         </script>
     </body>
 </html>
