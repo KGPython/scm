@@ -240,8 +240,50 @@ def adjustArticle(request):
         sum6+=sum4
         sum5+=round(adObj.get('anum'),3)
 
-    return render(request,'user_billAdjust_article.html',locals())
+    qtype = request.GET.get('qtype',1)
+    if qtype == 1:
+        return render(request,'user_billAdjust_article.html',locals())
+    else:
+        total = {'adbatchseq':'合计','pcode':'','barcode':'','pname':'','anum':sum5,'cprice_notax':'','dqhsjj':'','sum4':sum6}
+        TotalDict = {'listTotal': total}
+        return exportAdjustArticle(code,adBillList,suppiler,TotalDict)
 
+
+import xlwt3 as xlwt
+from django.http import HttpResponse
+def exportAdjustArticle(code,tbody,thead,total):
+    wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
+    writeDataToSheet1(wb, code,tbody, thead,total)
+
+    outtype = 'application/vnd.ms-excel'
+    fname = "AdjustArticle.xls"
+    response = mtu.getResponse(HttpResponse(), outtype, fname)
+    wb.save(response)
+    return response
+
+def writeDataToSheet1(wb,code,tbody, thead,total):
+
+    sheet = wb.add_sheet("往来单据额调整单明细",cell_overwrite_ok=True)
+
+    titles = [
+        [("往来单据额调整单明细",0,1,8)],
+        [("单位：承德宽广",5,1,3)],
+        [("单号：" + code,0,1,2), ("审核日期：" + thead['chdate'].strftime('%Y-%m-%d'),2,1,3), ("生成日期：" + thead['edate'].strftime('%Y-%m-%d'),5,1,3)],
+        [("门店：" + thead['shopname'],0,1,2), ("供应商代码：" + thead['spercode'],2,1,3),("供应商名称：" + thead['spername'],5,1,3)],
+        [("供应商编码",0,1,1),("批次号",1,1,1),("商品条码",2,1,1),('品名',3,1,1),('调整数量',4,1,1),('原含税单价',5,1,1),('新含税单价',6,1,1),('含税调整金额',7,1,1)]
+    ]
+
+    keylist = ['adbatchseq','pcode','barcode','pname','anum','cprice_notax','dqhsjj','sum4']
+
+    widthList = [1000,1000,1000,2500,1000,1000,1000,1000]
+
+
+    #日销售报表
+    mtu.insertTitle2(sheet,titles,keylist,widthList)
+    mtu.insertCell2(sheet,6,tbody,keylist,None)
+    titlesLen = len(titles)
+    listTopLen = len(tbody)
+    mtu.insertSum2(sheet,keylist,titlesLen+listTopLen,total,4)
 
 def billBack(request):
     sperCode = request.session.get('s_suppcode')   #用户所属单位

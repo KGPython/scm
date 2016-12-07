@@ -303,7 +303,7 @@ def detailArticle(request):
         total_sums_intax += obj[3]
         stockList.append(dic)
 
-    flagDict= {"0":u"正常","1":u"暂停订货","2":u"暂停销售","3":u"已清退","5":u"暂停经营","6":u"待清退","7":u"待启用","8":u"新品"}
+    flagDict = {"0":u"正常","1":u"暂停订货","2":u"暂停销售","3":u"已清退","5":u"暂停经营","6":u"待清退","7":u"待启用","8":u"新品"}
 
     if request.GET.get('action', None)=="outExcel":
         title = '单品:'+proName+'库存单明细 '

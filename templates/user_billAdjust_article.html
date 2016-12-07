@@ -6,7 +6,10 @@
     </head>
     <body>        
        {% include "common/nav.html" %}
-        <p class="comWidth"><input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;"></p>
+        <p class="comWidth">
+            <a class="button right" style="margin-top: 19px;margin-left: 15px;" href="{{ request.path }}?code={{ code }}&qtype=2">导出</a>
+            <input class="query-enter right" type="button" value="返回" onclick="window.history.back();return false;">
+        </p>
         <div class="notice noticeOrder comWidth">
             <div class="tTitle">
                 <h1>
@@ -66,9 +69,10 @@
                 </tbody>
             </table>
         </div>
+
        {% include "common/footer.html" %}
        <script type="text/javascript">
-           current = "danju"
+           current = "danju";
        </script>
     </body>
 </html>
