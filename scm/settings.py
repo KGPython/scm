@@ -16,7 +16,7 @@ import os
 from datetime import timedelta
 from celery.schedules import crontab
 import djcelery
-
+from base.utils import Constants
 djcelery.setup_loader()
 CELERY_TIMEZONE="Asia/Shanghai"
 BROKER_URL = 'redis://127.0.0.1:6379/0'
@@ -38,7 +38,7 @@ SECRET_KEY = '959pnv02y=9dyry1k0mypr8&m)a^pv7-x7cx3rtogleb4w*ty5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 # DEBUG = True
-DEBUG = True
+DEBUG = False
 # ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['218.11.132.35','127.0.0.1','localhost','.ikuanguang.com']
 
@@ -102,11 +102,15 @@ SESSION_COOKIE_AGE=60*30  #30 minute
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.sqlite3',
+    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'kgscm',
-        'USER': 'root',
-        'PASSWORD': '10233201sn',
+        'NAME': Constants.SCM_DB_MYSQL_DATABASE,
+        'USER': Constants.SCM_DB_MYSQL_USER,
+        'PASSWORD': Constants.SCM_DB_MYSQL_PASSWORD,
         'HOST': '192.168.250.18',
         'PORT': '3306',
     }
@@ -118,17 +122,15 @@ CACHES = {
         'LOCATION': '127.0.0.1:6379',
         "OPTIONS": {
             "CLIENT_CLASS": "redis_cache.client.DefaultClient",
-            # "PASSWORD":"kgredis"
-        },
-        "KEY_PREFIX":'scm',
-        "TIMEOUT":480,
-
+# "PASSWORD":"kgredis",
+	},
+	"KEY_PREFIX":"scm",
+	"TIMEOUT":480
     },
 }
-
-# REDIS_TIMEOUT=7*24*60*60
-# CUBES_REDIS_TIMEOUT=60*60
-# NEVER_REDIS_TIMEOUT=365*24*60*60
+#REDIS_TIMEOUT=7*24*60*60
+#CUBES_REDIS_TIMEOUT=60*60
+#NEVER_REDIS_TIMEOUT=365*24*60*60
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
