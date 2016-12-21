@@ -283,7 +283,7 @@ def writeDataToSheet1(wb,code,tbody, thead,total):
     mtu.insertCell2(sheet,6,tbody,keylist,None)
     titlesLen = len(titles)
     listTopLen = len(tbody)
-    mtu.insertSum2(sheet,keylist,titlesLen+listTopLen,total,4)
+    mtu.insertSum2(sheet,keylist,titlesLen+listTopLen+1,total,4)
 
 def billBack(request):
     sperCode = request.session.get('s_suppcode')   #用户所属单位
