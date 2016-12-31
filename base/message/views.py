@@ -26,27 +26,6 @@ def readFile(filePath, buf_size=262144):
             break
     f.close()
 
-#下载附件
-def download(request):
-    file = request.GET.get("filename","")
-    filename = file.split("/")
-    #path = os.getcwd()#本地测试
-    path = constants.BASE_ROOT
-    filePath = path+file
-    if not os.path.isfile(filePath):
-         pindex = request.GET.get("pindex")
-         request.message='no_file'
-         if pindex=='1':
-             return info(request)
-         else:
-             return msgPreview(request)
-    else:
-        response = StreamingHttpResponse(readFile(filePath))
-        response['Content-Type']='application/octet-stream'
-        response['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename[len(filename)-1])
-        response['Pragma'] = "no-cache"
-        response['Expires'] = "0"
-        return response
 
 def info(request):
     infocode = str(request.GET.get("infocode"))
@@ -327,13 +306,35 @@ def msgCreate(request):
         else:
             succ = "2" #设置提交成功返回信息，在前端展现
 
+
     return render(request, 'noticeCreate.html',locals())
 
-def uploadFile(fileObj):
-    # UPLOAD_ROOT = os.getcwd()+'/upload/message/'#服务器环境
-    UPLOAD_ROOT = constants.BASE_ROOT+'/upload/message/'
+#下载附件
+def download(request):
+    file = request.GET.get("filename","")
+    filename = file.split("/")
+    #path = os.getcwd()#本地测试
+    path = constants.BASE_ROOT
+    filePath = path+file
+    if not os.path.isfile(filePath):
+         pindex = request.GET.get("pindex")
+         request.message='no_file'
+         if pindex=='1':
+             return info(request)
+         else:
+             return msgPreview(request)
+    else:
+        response = StreamingHttpResponse(readFile(filePath))
+        response['Content-Type']='application/octet-stream'
+        response['Content-Disposition'] = 'attachment; filename="{0}"'.format(filename[len(filename)-1])
+        response['Pragma'] = "no-cache"
+        response['Expires'] = "0"
+        return response
 
-    # microsecond = datetime.datetime.now()
+def uploadFile(fileObj):
+    UPLOAD_ROOT = constants.BASE_ROOT+'/upload/message/'#服务器环境
+    # UPLOAD_ROOT = constants.BASE_ROOT+'/upload/message/'
+
     nowtime = time.time()
     file_name = fileObj.name #附件存储名称
     file_name_list = file_name.split(".")

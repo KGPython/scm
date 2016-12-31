@@ -10,10 +10,8 @@ def saveToExcel(name,wb):
 def downloadReportExcel(request):
     fname = request.GET.get('fname')
 
-    # FILE_ROOT = constants.BASE_ROOT + '/base/report/download/'#linux
-    FILE_ROOT = os.getcwd() + '/base/report/download/'  # window
+    FILE_ROOT = Constants.REPORT_EXCEL
     the_file_name = os.path.join(FILE_ROOT,fname)
-
     response = StreamingHttpResponse(readFile(the_file_name))
     response['Content-Type'] = 'application/octet-stream'
     response['Content-Disposition'] = 'attachment;filename="{0}"'.format(fname)

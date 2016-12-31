@@ -1,6 +1,6 @@
-<div id="loading" style="position: absolute;top: 45%;left: 45%;display: none;">
-    <img src="{{ static }}/image/loading3.gif" style="width:200px;height:200px;">
-</div>
+{#<div id="loading" style="position: absolute;top: 45%;left: 45%;display: none;">#}
+{#    <img src="{{ static }}/image/loading3.gif" style="width:200px;height:200px;">#}
+{#</div>#}
 <!--[if IE]>
 <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
 <![if !IE]>
@@ -21,16 +21,16 @@
     soft_key_validator.loadSoftKey();
 
     function pub_export(curUrl){
-        $("#loading").show();
+{#        $("#loading").show();#}
         soft_key_validator.callService_1(export_bar,curUrl);
     }
     function export_bar(url){
         $.get(url,function (data) {
             var data = JSON.parse(data);
             var fname = data.fname;
-            if(fname){
-                $("#loading").hide();
-            }
+{#            if(fname){#}
+{#                $("#loading").hide();#}
+{#            }#}
             downloadExcel(fname);
         });
     }
