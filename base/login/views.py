@@ -9,6 +9,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 from django.core.paginator import Paginator
+from django.core.cache import caches
 
 from base.message.views import findPubInfoAllByCon
 from base.utils import MethodUtil as mtu,Constants
@@ -55,89 +56,94 @@ def login(request):
                         request.session["s_utype"] = user.utype
                         request.session["menu_type"] = user.utype
                         #根据grpcode查询grpname：
+                        #   如果utype==3，登录用户为报表系统用户
                         #   如果utype==2，登录用户为供应商则grpname为供应商名称
                         #   如果utype==1，登录用户为零售商则grpname为零售商名称
-                        if user.utype == "2":    #供应商
-                            grpcode = findGrpCodeBySuppCode(user.grpcode)
-                            request.session["s_grpcode"] = grpcode
-                            try:
-                                fee =  BasFee.objects.get(suppcode=user.grpcode,grpcode=grpcode,ucode=ucode)
-                                request.session["s_fee"] = fee.toDict()
-                            except Exception as e:
-                                print(e)
-                                request.session["s_fee"] = {"status":"N"}
-                            request.session["s_suppcode"] = user.grpcode
-
-                            supp = findGrpNameByCode(user.grpcode,user.utype)
-                            request.session["s_suppname"] = supp.chnm
-                            request.session["s_contracttype"] = supp.contracttype
-                            request.session["s_paytypeid"] = supp.paytypeid
-                            request.session["s_bank"] = supp.bank
-                            request.session["s_accountno"] = supp.accountno
-
-                            grp = findGrpNameByCode(grpcode,"1")
-                            request.session["s_grpname"] = grp.grpnm
-
-                            response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
-
-                        else:    #零售商
-                            request.session["s_grpcode"] = user.grpcode
-
-                            grp = findGrpNameByCode(user.grpcode,user.utype)
-                            request.session["s_grpname"] = grp.grpnm
-                            request.session["s_fee"] = {}
-                            response_data['homeurl'] = Constants.URL_RETAILER_HOME
-
-                        request.session["homeurl"] = response_data['homeurl']
-                        #查询角色，多个角色用“，”分割
-                        urs = findRoleByUcode(user.ucode)
-                        if urs:
-                            urole = urs[0]
-                            #查询菜单权限
-                            purlist = findPurByRcode(urs[2])
-                            request.session["s_rcodes"] = urs[1]
-                            request.session["isadmin"] = urs[3]
-                            request.session["s_urole"] = urole
-                            request.session["s_umenu"] = getMenu(purlist)
-                            response_data['status'] = "0"
-
-                            #添加登录日志
-                            if user.utype=="2":
-                                lastlandtime = datetime.date.today().strftime("%Y-%m-%d")
-                                slist = BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime__gte="{lastlandtime} 00:00:00".format(lastlandtime=lastlandtime)).values("landcs")
-                                if slist and slist[0]:
-                                    sland = slist[0]
-                                    landcs=sland["landcs"]+1
-                                    BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime__gte="{lastlandtime} 00:00:00".format(lastlandtime=lastlandtime)).update(landcs=landcs,lastlandtime=datetime.datetime.today())
-                                else:
-                                    fee =  request.session.get("s_fee")
-                                    if fee:
-                                        status = fee["status"]
-                                    else:
-                                        status = "N"
-                                    suppname =  request.session.get("s_suppname")
-                                    lastLand = BasSuppLand.objects.values("allcs").latest("allcs")
-                                    if lastLand:
-                                        allcs = lastLand["allcs"]+1
-                                    else:
-                                        allcs = 1
-
-                                    bs =  BasSuppLand()
-                                    bs.grpcode = "00069"
-                                    bs.utype = "2"
-                                    bs.suppcode = user.grpcode
-                                    bs.landcs = 1
-                                    bs.lastlandtime = datetime.date.today()
-                                    bs.status = status
-                                    bs.supname = suppname
-                                    bs.remark=""
-                                    bs.ylzd1=""
-                                    bs.ylzd2=""
-                                    bs.allcs= allcs
-                                    bs.save()
-
+                        if user.utype == "3":
+                            getRbacRole(request,ucode)
+                            response_data['homeurl'] = Constants.URL_REPORT_HOME
                         else:
-                            response_data['status'] = "4"
+                            if user.utype == "2":    #供应商
+                                grpcode = findGrpCodeBySuppCode(user.grpcode)
+                                request.session["s_grpcode"] = grpcode
+                                try:
+                                    fee =  BasFee.objects.get(suppcode=user.grpcode,grpcode=grpcode,ucode=ucode)
+                                    request.session["s_fee"] = fee.toDict()
+                                except Exception as e:
+                                    print(e)
+                                    request.session["s_fee"] = {"status":"N"}
+                                request.session["s_suppcode"] = user.grpcode
+
+                                supp = findGrpNameByCode(user.grpcode,user.utype)
+                                request.session["s_suppname"] = supp.chnm
+                                request.session["s_contracttype"] = supp.contracttype
+                                request.session["s_paytypeid"] = supp.paytypeid
+                                request.session["s_bank"] = supp.bank
+                                request.session["s_accountno"] = supp.accountno
+
+                                grp = findGrpNameByCode(grpcode,"1")
+                                request.session["s_grpname"] = grp.grpnm
+
+                                response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
+
+                            if user.utype == "1":    #零售商
+                                request.session["s_grpcode"] = user.grpcode
+
+                                grp = findGrpNameByCode(user.grpcode,user.utype)
+                                request.session["s_grpname"] = grp.grpnm
+                                request.session["s_fee"] = {}
+                                response_data['homeurl'] = Constants.URL_RETAILER_HOME
+
+                            request.session["homeurl"] = response_data['homeurl']
+                            #查询角色，多个角色用“，”分割
+                            urs = findRoleByUcode(user.ucode)
+                            if urs:
+                                urole = urs[0]
+                                #查询菜单权限
+                                purlist = findPurByRcode(urs[2])
+                                request.session["s_rcodes"] = urs[1]
+                                request.session["isadmin"] = urs[3]
+                                request.session["s_urole"] = urole
+                                request.session["s_umenu"] = getMenu(purlist)
+                                response_data['status'] = "0"
+
+                                #添加登录日志
+                                if user.utype=="2":
+                                    lastlandtime = datetime.date.today().strftime("%Y-%m-%d")
+                                    slist = BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime__gte="{lastlandtime} 00:00:00".format(lastlandtime=lastlandtime)).values("landcs")
+                                    if slist and slist[0]:
+                                        sland = slist[0]
+                                        landcs=sland["landcs"]+1
+                                        BasSuppLand.objects.filter(suppcode=user.grpcode,lastlandtime__gte="{lastlandtime} 00:00:00".format(lastlandtime=lastlandtime)).update(landcs=landcs,lastlandtime=datetime.datetime.today())
+                                    else:
+                                        fee =  request.session.get("s_fee")
+                                        if fee:
+                                            status = fee["status"]
+                                        else:
+                                            status = "N"
+                                        suppname =  request.session.get("s_suppname")
+                                        lastLand = BasSuppLand.objects.values("allcs").latest("allcs")
+                                        if lastLand:
+                                            allcs = lastLand["allcs"]+1
+                                        else:
+                                            allcs = 1
+
+                                        bs =  BasSuppLand()
+                                        bs.grpcode = "00069"
+                                        bs.utype = "2"
+                                        bs.suppcode = user.grpcode
+                                        bs.landcs = 1
+                                        bs.lastlandtime = datetime.date.today()
+                                        bs.status = status
+                                        bs.supname = suppname
+                                        bs.remark=""
+                                        bs.ylzd1=""
+                                        bs.ylzd2=""
+                                        bs.allcs= allcs
+                                        bs.save()
+
+                            else:
+                                response_data['status'] = "4"
                     else:
                         response_data['status'] = "2"
                 else:
@@ -148,6 +154,8 @@ def login(request):
             response_data['status'] = "0"
             if olduser["utype"] == "1":
                 response_data['homeurl'] = Constants.URL_RETAILER_HOME
+            elif olduser["utype"] == "3":
+                response_data['homeurl'] = Constants.URL_REPORT_HOME
             else:
                 response_data['homeurl'] = Constants.URL_SUPPLIER_HOME
     except Exception as e:
@@ -179,7 +187,6 @@ def getCodeByName(name):
     else:
         return "system"
 
-
 #菜单分组
 def getMenu(purlist):
     rlist = []
@@ -209,7 +216,7 @@ def getMenu(purlist):
                 mls.append([m[0],dls,pinyin.hanzi2pinyin_split(string=mkey, split="")])
         dt[r] = mls
 
-    #print(">>>>>>菜单：",dt)
+    # print(">>>>>>菜单：",dt)
     return dt
 
 def cutStr(str,separator):
@@ -356,5 +363,59 @@ def uppwd(request):
 # 欢迎
 def welcome(request):
     return render(request,'welcome.html')
+
+from base.models import RbacUserRole,RbacRoleInfo,RbacMoudle
+def getRbacRole(request,ucode):
+    role_id = RbacUserRole.objects.values('role').filter(user_id=ucode)
+    role = RbacRoleInfo.objects.values('depart', 'category', 'module').filter(role_id=role_id)[0]
+    caches['redis2'].set('rbac_role', role,60*60*24)
+    request.session['rbac_role'] = role
+    # 业态
+    departStr = role['depart'].replace('},', '}$')
+    departList = departStr.split('$', )
+    companyIdList = []
+    for depart in departList:
+        depart = json.loads(depart)
+        companyIdList.append(depart['p_id'])
+    # 部类
+    categoryStr = role['category'].replace('},', '}$')
+    categoryList = categoryStr.split('$')
+    # 模块
+    moduleStr = role['module'].replace('},', '}$')
+    moduleList = moduleStr.split('$', )
+    moduleIdList = []
+    for module in moduleList:
+        module = json.loads(module)
+        moduleIdList.append(module['p_id'])
+        subModules = module['sub'][0:len(module['sub']) - 1].split(',')
+        moduleIdList = moduleIdList + subModules
+
+    menuList = RbacMoudle.objects.values('m_name', 'm_id', 'm_url', 'p_id').filter(m_type__in=companyIdList,m_id__in=moduleIdList)
+    menuList = createBbacMenu(menuList)
+
+    request.session['rbac_menu'] = menuList
+
+def createBbacMenu(menuList):
+    data = []
+    subList = []
+    for menu in menuList:
+        item = {}
+        if menu['p_id']== '0':
+            item['m_id'] = menu['m_id']
+            item['m_name'] = menu['m_name']
+            item['m_url'] = menu['m_url']
+            item['sub'] = []
+            data.append(item)
+        else:
+            subList.append(menu)
+    for obj in data:
+        p_id = obj['m_id']
+        for sub in subList:
+            if sub['p_id'] == p_id:
+                obj['sub'].append(sub)
+
+    return data
+
+
 
 
