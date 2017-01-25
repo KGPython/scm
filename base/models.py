@@ -556,6 +556,7 @@ class BasShop(models.Model):
     city = models.CharField(db_column='City', max_length=20, blank=True, null=True)  # Field name made lowercase.
     shopname = models.CharField(db_column='Shopname', max_length=50, blank=True, null=True)  # Field name made lowercase.
     cdno = models.CharField(db_column='Cdno', max_length=50, blank=True, null=True)  # Field name made lowercase.
+    khbank = models.CharField(db_column='KHBank',max_length=20, blank=True, null=True)
 
     class Meta:
         managed = False
@@ -1155,6 +1156,49 @@ class Pubinfo(models.Model):
         managed = False
         db_table = 'pubinfo'
 
+class RbacRoleInfo(models.Model):
+    role_id = models.CharField(unique=True, max_length=12)
+    depart = models.TextField()
+    category = models.TextField()
+    module = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_role_info'
+
+class RbacUserRole(models.Model):
+    user_id = models.CharField(max_length=12)
+    role = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_user_role'
+
+class RbacMoudle(models.Model):
+    m_id = models.CharField(max_length=12)
+    m_name = models.CharField(max_length=12)
+    m_type = models.CharField(max_length=20, blank=True, null=True)
+    m_url = models.CharField(max_length=255, blank=True, null=True)
+    p_id = models.CharField(max_length=12, blank=True, null=True)
+    status = models.CharField(max_length=1, blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_moudle'
+
+class RbacShop(models.Model):
+    grpcode = models.CharField(db_column='Grpcode', max_length=10)  # Field name made lowercase.
+    shopcode = models.CharField(db_column='Shopcode', max_length=20)  # Field name made lowercase.
+    shopnm = models.CharField(db_column='Shopnm', max_length=40)  # Field name made lowercase.
+    address = models.CharField(db_column='Address', max_length=80, blank=True, null=True)  # Field name made lowercase.
+    manager = models.CharField(db_column='Manager', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    tel = models.CharField(db_column='Tel', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    shoptype = models.CharField(db_column='Shoptype', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    enable = models.IntegerField(db_column='Enable', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_shop'
 
 class SaleVshopDaily(models.Model):
     sheetid = models.CharField(max_length=20)

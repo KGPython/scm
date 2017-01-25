@@ -7,15 +7,20 @@ from base.utils import MethodUtil as mth
 from base.utils import DateUtil
 import json
 from django.views.decorators.cache import cache_page
+from base.report.common import Method as reportMth
+
 
 def query(timeStart,timeEnd):
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+
     karrs = {}
     karrs.setdefault('checkdate__lte', timeEnd)
     karrs.setdefault('checkdate__gte', timeStart)
-    data = Kglossrate.objects.\
-                values('shopid', 'shopname', 'sheetid', 'goodsid', 'goodsname', 'deptid', 'deptname',
-                                     'askqty', 'checkqty', 'qty', 'costvalue') \
-                .filter(**karrs).exclude(shopid='C009').order_by('shopid')
+    karrs.setdefault('shopid__in', rbacDepartList)
+    data = Kglossrate.objects\
+           .values('shopid', 'shopname', 'sheetid', 'goodsid', 'goodsname', 'deptid', 'deptname',
+                  'askqty', 'checkqty', 'qty', 'costvalue') \
+           .filter(**karrs).order_by('shopid')
     for item in data:
         for key in item.keys():
             if isinstance(item[key], decimal.Decimal):

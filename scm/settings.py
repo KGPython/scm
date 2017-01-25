@@ -119,18 +119,37 @@ DATABASES = {
 CACHES = {
     'default': {
         'BACKEND': 'redis_cache.cache.RedisCache',
-        'LOCATION': '127.0.0.1:6379',
+        'LOCATION': [
+            '127.0.0.1:6379',
+        ],
+
         "OPTIONS": {
+            'DB':1,
+            "PASSWORD":"kgredis",
             "CLIENT_CLASS": "redis_cache.client.DefaultClient",
-# "PASSWORD":"kgredis",
-	},
-	"KEY_PREFIX":"scm",
-	"TIMEOUT":480
+        },
+        "KEY_PREFIX":'scm',
+        # "TIMEOUT":480,
+
+    },
+    'redis2': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        'LOCATION': [
+            '127.0.0.1:6380',
+        ],
+
+        "OPTIONS": {
+            'DB':2,
+            "PASSWORD":"kgredis",
+            "CLIENT_CLASS": "redis_cache.client.DefaultClient",
+        },
+        "KEY_PREFIX":'scm',
     },
 }
-#REDIS_TIMEOUT=7*24*60*60
-#CUBES_REDIS_TIMEOUT=60*60
-#NEVER_REDIS_TIMEOUT=365*24*60*60
+
+# REDIS_TIMEOUT=7*24*60*60
+# CUBES_REDIS_TIMEOUT=60*60
+# NEVER_REDIS_TIMEOUT=365*24*60*60
 
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/

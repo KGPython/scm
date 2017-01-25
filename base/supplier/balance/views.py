@@ -656,6 +656,7 @@ def getStartAndEndDate(contracttype,payTypeName):
             else:
                 n = -1   #前一个月一整月
 
+
             cstart = DateUtil.get_firstday_month(n)
             cend = DateUtil.get_lastday_month(n)
         else:

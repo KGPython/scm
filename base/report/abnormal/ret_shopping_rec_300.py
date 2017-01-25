@@ -7,24 +7,38 @@ from django.http import HttpResponse
 import datetime, decimal,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
+from base.report.common import Method as reportMth
 
 def query(date):
-    rlist = Kglistnoret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "payreson", \
-                                       "paytype", "payvalue").filter(sdate=date).exclude(shopid='C009')
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+    rbacClassList, rbacClass = reportMth.getRbacClass()
+
+    rlist = Kglistnoret.objects\
+            .values("shopid", "sdate", "stime", "listno", "posid", "cashierid",
+                    "name", "payreson","paytype", "payvalue")\
+            .filter(sdate=date,shopid__in=rbacDepartList)
 
     formate_data(rlist)
 
     # 商品退货明细
-    dlist = Kggoodsret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "deptid", \
-                                      "deptname", "goodsid", "goodsname", "xamount", "salevalue", "discvalue", \
-                                      "truevalue", "saletype", "price", "disctype").filter(sdate=date).exclude(
-        shopid='C009')
+    conn= mtu.getMysqlConn()
+    sql = "SELECT shopid, sdate, stime, listno, posid, cashierid, name, DeptID, DeptName, goodsid, goodsname, xAmount," \
+          "salevalue, DiscValue, truevalue, SaleType, Price, DiscType " \
+          "FROM `kggoodsret` " \
+          "WHERE (`shopid` IN ({rbacDepart}) AND `sdate` = '{date}' " \
+          "AND LEFT(`DeptID`,2) IN ({rbacClass}))"\
+          .format(rbacDepart=rbacDepart,date=date,rbacClass=rbacClass)
+    cur = conn.cursor()
+    cur.execute(sql)
+    dlist = cur.fetchall()
+    cur.close()
+    conn.close()
     formate_data(dlist)
     data = {"rlist": list(rlist), 'dlist': list(dlist)}
     return data
 
 
-@cache_page(60*2 ,key_prefix='abnormal_ret_shopping_rec_300')
+# @cache_page(60*2 ,key_prefix='abnormal_ret_shopping_rec_300')
 @csrf_exempt
 def index(request):
     yesterday = DateUtil.get_day_of_day(-1)

@@ -9,8 +9,12 @@ from base.models import BasPurLog
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
+from base.report.common import Method as reportMth
 
 def query():
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+    rbacClassList, rbacClass = reportMth.getRbacClass()
+
     monthFirst = datetime.date.today().replace(day=1)
     today = datetime.datetime.today()
     if (str(today)[8:10] == '01'):
@@ -22,7 +26,9 @@ def query():
     conn = mtu.getMysqlConn()
     sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
              'FROM KNegativestock ' \
-             'WHERE ShopID!="C009" AND sdate BETWEEN "' + monthFirstStr + '" AND "' + todayStr + '" GROUP BY ShopID ORDER BY ShopID'
+             'WHERE sdate BETWEEN "{monthFirstStr}" AND "{todayStr}" AND ShopID in ({rbacDepart}) ' \
+             'GROUP BY ShopID ORDER BY ShopID'\
+             .format(monthFirstStr=monthFirstStr,todayStr=todayStr,rbacDepart=rbacDepart)
     cur = conn.cursor()
     cur.execute(sqlTop)
     listTop = cur.fetchall()
@@ -60,7 +66,9 @@ def query():
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM KNegativestock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM KNegativestock AS b " \
-              "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate BETWEEN '" + monthFirstStr + "' AND '" + todayStr + "' GROUP BY sdate"
+              "WHERE ShopID ='{ShopID}' AND sdate BETWEEN '{monthFirstStr}' AND '{todayStr}' " \
+              "GROUP BY sdate"\
+              .format(ShopID = listTop[i]['ShopID'],monthFirstStr=monthFirstStr, todayStr=todayStr)
 
         cur.execute(sql)
         listDetail = cur.fetchall()
@@ -105,8 +113,11 @@ def query():
     listTop.sort(key=lambda x: x['ShopID'])
 
     ###课组汇总###
-    sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from KNegativestock' \
-              ' where ShopID!="C009" AND sdate="' + todayStr + '" group by deptid,deptidname order by deptid'
+    sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi ' \
+              'from KNegativestock ' \
+              'where sdate="{todayStr}" AND deptid in ({rbacClass}) ' \
+              'group by deptid,deptidname order by deptid'\
+              .format(todayStr=todayStr,rbacClass=rbacClass)
     cur = conn.cursor()
     cur.execute(sqlDept)
     listDept = cur.fetchall()
@@ -122,8 +133,11 @@ def query():
         obj['zhonbi'] = str(float('%0.4f' % obj['zhonbi']) * 100)[0:4] + '%'
 
     ###负库存课组明细###
-    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi FROM KNegativestock WHERE ShopID!="C009" AND  sdate = "' \
-                    + todayStr + '" GROUP BY deptid,shopid'
+    sqlDeptDetail = 'SELECT shopid,shopname,deptid,deptidname,qtyz,qtyl,zhonbi ' \
+                    'FROM KNegativestock ' \
+                    'WHERE sdate = "{todayStr}" AND shopid IN ({rbacDepart}) AND deptid in ({rbacClass})' \
+                    'GROUP BY deptid,shopid'\
+                    .format(todayStr=todayStr,rbacDepart=rbacDepart,rbacClass=rbacClass)
     cur = conn.cursor()
     cur.execute(sqlDeptDetail)
     listDeptDetail = cur.fetchall()
@@ -142,8 +156,8 @@ def query():
 
     return locals()
 
-@cache_page(60*60*4,key_prefix='daily_zero_stock_top')
-@csrf_exempt
+# @cache_page(60*60*4,key_prefix='daily_zero_stock_top')
+# @csrf_exempt
 def index(request):
     qtype = mtu.getReqVal(request,"qtype","1")
     # 操作日志

@@ -9,15 +9,22 @@ from django.http import HttpResponse
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
-
+from base.report.common import Method as reportMth
 
 def query(date):
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+    rbacClassList, rbacClass = reportMth.getRbacClass()
+
     karrs = {}
     karrs.setdefault("bbdate", "{start}".format(start=date))
     karrs.setdefault("profit__lte", "{profit}".format(profit=-200))
-    rlist = Kgprofit.objects.values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
-                                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
-        .filter(**karrs).exclude(shopid='C009').order_by("bbdate", "shopid", "goodsid", "sdate")
+    karrs.setdefault("shopid__in", rbacDepartList)
+    karrs.setdefault("deptid__in", rbacClassList)
+
+    rlist = Kgprofit.objects\
+            .values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
+                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
+            .filter(**karrs).order_by("bbdate", "shopid", "goodsid", "sdate")
 
     formate_data(rlist)
     data = {"rlist": list(rlist)}

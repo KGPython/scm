@@ -10,8 +10,11 @@ from django.http import HttpResponse
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
+from base.report.common import Method as reportMth
 
 def query(date):
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(12)
+
     days = date.day
     year = date.year
     month = date.month
@@ -24,8 +27,9 @@ def query(date):
     lastDay = calendar.monthrange(year, month)[1]
 
     # 查询所有超市门店
-    slist = BasShopRegion.objects.values("shopid", "shopname", "region", "opentime", "type").filter(
-        shoptype=12).order_by("region", "shopid")
+    slist = BasShopRegion.objects.\
+            values("shopid", "shopname", "region", "opentime", "type")\
+            .filter( shopid__in=rbacDepartList).order_by("region", "shopid")
     shopids = [shop["shopid"] for shop in slist]
 
     karrs = {}
@@ -33,17 +37,17 @@ def query(date):
     karrs.setdefault("sdate__gte", "{start} 00:00:00".format(start=start))
     karrs.setdefault("sdate__lte", "{end} 23:59:59".format(end=yesterday))
     karrs.setdefault("shopid__in", shopids)
-    baselist = Kshopsale.objects.values('shopid', 'sdate', 'salevalue', 'salegain', 'tradenumber', 'tradeprice',
-                                        'salevalueesti', 'salegainesti',
-                                        'tradenumberold', 'tradepriceold', 'salevalueold', 'salegainold').filter(
-        **karrs).order_by("shopid")
+    baselist = Kshopsale.objects.\
+               values('shopid', 'sdate', 'salevalue', 'salegain', 'tradenumber', 'tradeprice', 'salevalueesti',
+                      'salegainesti', 'tradenumberold', 'tradepriceold', 'salevalueold', 'salegainold')\
+               .filter( **karrs).order_by("shopid")
 
     karrs.clear()
     karrs.setdefault("sdate__year", "{year}".format(year=year))
     karrs.setdefault("shopid__in", shopids)
     yearlist = Kshopsale.objects.values("shopid") \
-        .filter(**karrs).order_by("shopid") \
-        .annotate(salevalue=Sum('salevalue') / 10000, salegain=Sum('salegain') / 10000, tradenumber=Sum('tradenumber')
+                .filter(**karrs).order_by("shopid") \
+                .annotate(salevalue=Sum('salevalue') / 10000, salegain=Sum('salegain') / 10000, tradenumber=Sum('tradenumber')
                   , tradeprice=Sum('tradeprice'), salevalueesti=Sum('salevalueesti') / 10000
                   , salegainesti=Sum('salegainesti') / 10000
                   , tradenumberold=Sum('tradenumberold'), tradepriceold=Sum('tradepriceold')
@@ -230,7 +234,7 @@ def query(date):
     data = {"rlist":rlist,"sumlist":sumDict,"erlist":erlist,"esumlist":esumDict,"yearlist":yearlist,"yearSum":yearSumDict}
     return data
 
-@cache_page(60*60*4,key_prefix='daily_group_general_operate')
+# @cache_page(60*60*4,key_prefix='daily_group_general_operate')
 @csrf_exempt
 def index(request):
      date = DateUtil.get_day_of_day(-1)

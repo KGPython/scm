@@ -8,9 +8,12 @@ from base.models import BasPurLog
 import datetime,decimal,calendar,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
-
+from django.core.cache import caches
+from base.report.common import Method as reportMth
 
 def query():
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+
     today = datetime.date.today()
     monthFirst = datetime.date.today().replace(day=1)
     if (str(today)[8:10] == '01'):
@@ -27,16 +30,18 @@ def query():
     # 月累计报损
     sqlMonthTotal = 'select shopid,shopname,sum(costvalue) costvalueSum,sum(lostvalue) lostvalueSum,(sum(lostvalue)/sum(costvalue)) lrateSum ' \
                     'from KGshop15lost ' \
-                    'where ShopID!="C009" AND sdate between "' + monthFirstStr + '" and "' + todayStr + '" ' \
-                                                                                                        'group by shopid order by shopid '
+                    'where sdate between "{monthFirstStr}" and "{todayStr}" and shopid in ({rbacDepart})' \
+                    'group by shopid order by shopid '\
+                    .format(monthFirstStr=monthFirstStr,todayStr=todayStr,rbacDepart=rbacDepart)
     cur.execute(sqlMonthTotal)
     shopTop = cur.fetchall()
 
     # 每日报损
     sqlDaily = 'select sdate,shopid,costvalue,lostvalue,lrate ' \
                'from KGshop15lost ' \
-               'where ShopID!="C009" AND sdate between "' + monthFirstStr + '" and "' + todayStr + '" ' \
-                                                                                                   'order by sdate '
+               'where sdate between "{monthFirstStr}" and "{todayStr}" and shopid in ({rbacDepart})' \
+               'order by sdate '\
+               .format(monthFirstStr=monthFirstStr,todayStr=todayStr,rbacDepart=rbacDepart)
     cur.execute(sqlDaily)
     listDaily = cur.fetchall()
     # 计算纵向合计、格式化数据、拼接月累计报损和每日报损
@@ -81,7 +86,7 @@ def query():
 
     return locals()
 
-@cache_page(60*60*4,key_prefix='daily_bulk_lost')
+# @cache_page(60*60*4,key_prefix='daily_bulk_lost')
 def inidex(request):
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     qtype = mtu.getReqVal(request,"qtype","1")

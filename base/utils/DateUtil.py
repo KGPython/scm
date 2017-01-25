@@ -123,7 +123,10 @@ def getyearandmonth(n=0):
             totalmon = addzero(totalmon)
             return (year,totalmon,days)
         else:
-            i = int(totalmon/12)
+            if totalmon>=0:
+                i = int(totalmon/12)
+            else:
+                i = -(int(totalmon/12)+1)
             j = int(totalmon%12)
             if(j==0):
                 i-=1

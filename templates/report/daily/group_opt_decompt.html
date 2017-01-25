@@ -68,7 +68,14 @@
         var month = yesterday.getMonth() + 1;  //+1
         var lastDay = getLastDay(year, month - 1);
         if (var_arr[tab] == undefined || var_arr[tab] == null || var_arr[tab] == '') {
-            initHot(tab, lastDay);
+            if (tab == 0) {
+                var data = {{ rlist|safe }};
+            } else if (tab == 1) {
+                var data = {{ grslist|safe }};
+            } else {
+                var data = {{ srslist|safe }};
+            }
+            initHot(tab,lastDay,data);
         }
         var weekArray = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六");
         var headers = [];
@@ -114,22 +121,19 @@
         var_arr[tab].loadData(headers);
     }
 
-    function initHot(tab, lastDay) {
+    function initHot(tab, lastDay,data) {
         var group_operate = document.getElementById('group_operate' + tab);
         var columnsArr = [{data: 'idname'}, {data: 'codelable'}, {data: 'm_all_sale'}, {data: 'm_daily_sale'}, {data: 'm_all_gain'}, {data: 'm_daily_gain'}];
-        var mergeArr = [{row: 0, col: 0, rowspan: 1, colspan: 6}, {row: 1, col: 0, rowspan: 3, colspan: 1}, {
-            row: 1,
-            col: 1,
-            rowspan: 1,
-            colspan: 5
-        },
-            {row: 2, col: 1, rowspan: 2, colspan: 1}, {row: 2, col: 2, rowspan: 2, colspan: 1}, {
-                row: 2,
-                col: 3,
-                rowspan: 2,
-                colspan: 1
-            },
-            {row: 2, col: 4, rowspan: 2, colspan: 1}, {row: 2, col: 5, rowspan: 2, colspan: 1}];
+        var mergeArr = [
+                {row: 0, col: 0, rowspan: 1, colspan: 6},
+                {row: 1, col: 0, rowspan: 3, colspan: 1},
+                {row: 1,col: 1,rowspan: 1,colspan: 5},
+                {row: 2, col: 1, rowspan: 2, colspan: 1},
+                {row: 2, col: 2, rowspan: 2, colspan: 1},
+                {row: 2,col: 3,rowspan: 2,colspan: 1},
+                {row: 2, col: 4, rowspan: 2, colspan: 1},
+                {row: 2, col: 5, rowspan: 2, colspan: 1}
+            ];
         var cwidths = [120, 80, 100, 100, 100, 100];
         var n = 6;
         for (var i = 1; i <= lastDay; i++) {
@@ -145,11 +149,17 @@
             cwidths.push(80);
         }
         rownum = 4;
-        var rowlen = 22;
-        if (tab > 0) {
-            rowlen = 36;
+        if(tab<=1){
+            var rowlen = data.length;
+        }else {
+            var rowlen = data[tab-2].length;
         }
 
+
+        {% comment %}if (tab > 0) {
+            rowlen = 36+21;
+        }{% endcomment %}
+        console.log(rowlen);
         for (var i = 1; i <= rowlen; i++) {
             mergeArr.push({row: rownum, col: 0, rowspan: 3, colspan: 1});
             rownum += 3
@@ -159,7 +169,7 @@
 
     function initHandsontable(tab, obj, columns, mergecells, colwidths) {
         var rows = [4, 5, 6];
-        var rows1 = [37, 38, 39, 61, 62, 63, 91, 92, 93, 103, 104, 105, 109, 110, 111];
+        var rows1 = [37, 38,39, 67, 68, 69, 100, 101, 102, 112, 113, 114, 130, 131, 132];
         var hot = new Handsontable(obj, {
             colWidths: colwidths,
             rowHeaders: true,

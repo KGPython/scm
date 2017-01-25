@@ -9,57 +9,61 @@
 <script type="text/javascript" src="{{ static }}/js/handsontable.full.min.js"></script>
 <script type="text/javascript" src="{{ static }}/js/handsontable/handsontable.helper.js"></script>
 <link type="text/css" rel="stylesheet" href="{{ static }}/css/handsontable.css">
+<style>
+    .nav-tabs li{display: none}
+</style>
 <div id="example"></div>
 <div class="notice noticeOrder comWidth" style="width: inherit">
     <div class="tTitle">
         <a class="button right" href="javascript:void(0);" id="btnExport">导出Excel</a>
         <div class="container">
             <ul class="nav nav-tabs">
-                <li role="presentation" class="active"><a href="#">10熟食</a></li>
-                <li role="presentation"><a href="#">11水产</a></li>
-                <li role="presentation"><a href="#">12蔬菜</a></li>
-                <li role="presentation"><a href="#">13烘烤</a></li>
-                <li role="presentation"><a href="#">14鲜肉</a></li>
-                <li role="presentation"><a href="#">15干果干货</a></li>
-                <li role="presentation"><a href="#">16主食厨房</a></li>
-                <li role="presentation"><a href="#">17水果</a></li>
-                <li role="presentation"><a href="#">2食品</a></li>
-                <li role="presentation"><a href="#">3用品</a></li>
-                <li role="presentation"><a href="#">4家电</a></li>
+                <li role="presentation" class="active" id="10"><a href="#">10熟食</a></li>
+                <li role="presentation" id="11"><a href="#">11水产</a></li>
+                <li role="presentation" id="12"><a href="#">12蔬菜</a></li>
+                <li role="presentation" id="13"><a href="#">13烘烤</a></li>
+                <li role="presentation" id="14"><a href="#">14鲜肉</a></li>
+                <li role="presentation" id="15"><a href="#">15干果干货</a></li>
+                <li role="presentation" id="16"><a href="#">16主食厨房</a></li>
+                <li role="presentation" id="17"><a href="#">17水果</a></li>
+                <li role="presentation" id="2"><a href="#">2食品</a></li>
+                <li role="presentation" id="3"><a href="#">3用品</a></li>
+                <li role="presentation" id="4"><a href="#">4家电</a></li>
             </ul>
             <div class="list-tabs container">
-                <div class="table" style="display:block;">
-                    <div id="tableReport1" style="height:700px;width:100%;overflow: auto;"></div>
+                <div class="table" id="table10" style="display:block;">
+                    <div id="tableReport10" style="height:700px;width:100%;overflow: auto;"></div>
                 </div>
-                <div class="table">
+                <div class="table" id="table11">
+                    <div id="tableReport11" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table" id="table12">
+                    <div id="tableReport12" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table" id="table13">
+                    <div id="tableReport13" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table" id="table14">
+                    <div id="tableReport14" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table" id="table15">
+                    <div id="tableReport15" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table" id="table16">
+                    <div id="tableReport16" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+                <div class="table" id="table17">
+                    <div id="tableReport17" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
+                </div>
+
+                <div class="table" id="table2">
                     <div id="tableReport2" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
                 </div>
-                <div class="table">
+                <div class="table" id="table3">
                     <div id="tableReport3" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
                 </div>
-                <div class="table">
+                <div class="table" id="table4">
                     <div id="tableReport4" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport5" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport6" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport7" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport8" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport9" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport10" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
-                </div>
-                <div class="table">
-                    <div id="tableReport11" style="height:700px;width:100%;overflow: auto;margin: 0 auto"></div>
                 </div>
             </div>
         </div>
@@ -68,12 +72,12 @@
 {% include "common/footer.html" %}
 <script type="text/javascript">
     $('.nav-tabs li').click(function (e) {
-        e.preventDefault();
+{#        e.preventDefault();#}
         $(this).addClass("active").siblings().removeClass("active");
-        i = $(this).index();
-        $(".list-tabs .table").eq(i).show().siblings().hide();
-        //加载数据
-        initDate(i + 1);
+        i = $(this).attr('id');//获取li的id
+        $(".list-tabs .table ").hide();
+        $(".list-tabs .table[id=table"+i+"]").show();
+        initDate(i);
     });
     $(".card_tab1 .con ul li").click(function () {
         $(this).stop().animate({width: "600px"}, 300).siblings().stop().animate({width: "26px"}, 300)
@@ -84,51 +88,55 @@
 </script>
 <script>
     $(function () {
-        initDate(1);
+        initDate(10);
     });
     function initDate(tab) {
         var fixedRow, fixedCol;
         var mergeCellsList = [];
         var table = [];
         var rowLight = [];
-
-        if (tab == 1) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis10 | safe}};
-            var unit10 = {{ unit10 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit10.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit10[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit10[i];
+        {% if lis10 %}
+            $('.nav-tabs li[id=10]').show();
+            if (tab == 10) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis10 | safe}};
+                var unit10 = {{ unit10 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit10.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit10[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit10[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 2) {
+        {% endif %}
+        {% if lis11 %}
+            $('.nav-tabs li[id=11]').show();
+            if (tab == 11) {
             fixedRow = 1;
             fixedCol = 0;
             var theadRow = {
@@ -164,7 +172,10 @@
             var len = table.length;
             rowLight = [0];
         }
-        if (tab == 3) {
+        {% endif %}
+        {% if lis12 %}
+            $('.nav-tabs li[id=12]').show();
+            if (tab == 12) {
             fixedRow = 1;
             fixedCol = 0;
             var theadRow = {
@@ -200,295 +211,320 @@
             var len = table.length;
             rowLight = [0];
         }
-        if (tab == 4) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis13 | safe}};
-            var unit13 = {{ unit13 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit13.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit13[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit13[i];
+        {% endif %}
+        {% if lis13 %}
+            $('.nav-tabs li[id=13]').show();
+            if (tab == 13) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis13 | safe}};
+                var unit13 = {{ unit13 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit13.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit13[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit13[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 5) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis14 | safe}};
-            var unit14 = {{ unit14 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit14.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit14[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit14[i];
+        {% endif %}
+        {% if lis14 %}
+            $('.nav-tabs li[id=14]').show();
+            if (tab == 14) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis14 | safe}};
+                var unit14 = {{ unit14 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit14.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit14[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit14[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 6) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis15 | safe}};
-            var unit15 = {{ unit15 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit15.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit15[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit15[i];
+        {% endif %}
+        {% if lis15 %}
+            $('.nav-tabs li[id=15]').show();
+            if (tab == 15) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis15 | safe}};
+                var unit15 = {{ unit15 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit15.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit15[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit15[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 7) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis16 | safe}};
-            var unit16 = {{ unit16 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit16.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit16[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit16[i];
+        {% endif %}
+        {% if lis16 %}
+            $('.nav-tabs li[id=16]').show();
+            if (tab == 16) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis16 | safe}};
+                var unit16 = {{ unit16 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit16.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit16[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit16[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 8) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis17 | safe}};
-            var unit17 = {{ unit17 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit17.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit17[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit17[i];
+        {% endif %}
+        {% if lis17 %}
+            $('.nav-tabs li[id=17]').show();
+            if (tab == 17) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis17 | safe}};
+                var unit17 = {{ unit17 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit17.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit17[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit17[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 9) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis2 | safe}};
-            var unit2 = {{ unit2 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit2.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit2[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit2[i];
+        {% endif %}
+        {% if lis2 %}
+            $('.nav-tabs li[id=2]').show();
+            if (tab == 2) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis2 | safe}};
+                var unit2 = {{ unit2 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit2.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit2[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit2[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 10) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis3 | safe}};
-            var unit3 = {{ unit3 | safe }};
-            {#  循环单元格格式  #}
-            var j = 0;
-            for (var i = 0; i < unit3.length; i++) {
-                var cell = {};
-                cell['row'] = j + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = unit3[i];
-                cell['colspan'] = 1;
-                mergeCellsList.push(cell);
-                j += unit3[i];
+        {% endif %}
+        {% if lis3 %}
+            $('.nav-tabs li[id=3]').show();
+            if (tab == 3) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis3 | safe}};
+                var unit3 = {{ unit3 | safe }};
+                {#  循环单元格格式  #}
+                var j = 0;
+                for (var i = 0; i < unit3.length; i++) {
+                    var cell = {};
+                    cell['row'] = j + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = unit3[i];
+                    cell['colspan'] = 1;
+                    mergeCellsList.push(cell);
+                    j += unit3[i];
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = table.length;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = table.length;
-            rowLight = [0];
-        }
-        if (tab == 11) {
-            fixedRow = 1;
-            fixedCol = 0;
-            var theadRow = {
-                'shopid': '门店编码',
-                'paiming': '排名',
-                'goodsid': '商品编码',
-                'goodsname': '商品名称',
-                'SaleQty': '销售数量',
-                'SaleValue': '销售金额',
-                'SaleCost': '成本金额',
-                'gpvalue': '毛利',
-                'gprate': '毛利率',
-                'qty': '当前库存数量',
-                'costvalue': '当前库存金额',
-                'cprice': '成本价',
-                'price': '平均售价'
-            };
-            var tbody = {{lis4 | safe}};
-            var tempcell = {{ templist | safe }};
-            {#  循环单元格格式  #}
-            var x;
-            var cellLength = 0;
-            for (x in tempcell) {
-                var cell = {};
-                cell['row'] = cellLength + 1;
-                cell['col'] = 0;
-                cell['rowspan'] = tempcell[x];
-                cell['colspan'] = 1;
-                cellLength += parseInt(tempcell[x]);
-                mergeCellsList.push(cell);
+        {% endif %}
+        {% if lis4 %}
+            $('.nav-tabs li[id=4]').show();
+            if (tab == 4) {
+                fixedRow = 1;
+                fixedCol = 0;
+                var theadRow = {
+                    'shopid': '门店编码',
+                    'paiming': '排名',
+                    'goodsid': '商品编码',
+                    'goodsname': '商品名称',
+                    'SaleQty': '销售数量',
+                    'SaleValue': '销售金额',
+                    'SaleCost': '成本金额',
+                    'gpvalue': '毛利',
+                    'gprate': '毛利率',
+                    'qty': '当前库存数量',
+                    'costvalue': '当前库存金额',
+                    'cprice': '成本价',
+                    'price': '平均售价'
+                };
+                var tbody = {{lis4 | safe}};
+                var tempcell = {{ templist | safe }};
+                {#  循环单元格格式  #}
+                var x;
+                var cellLength = 0;
+                for (x in tempcell) {
+                    var cell = {};
+                    cell['row'] = cellLength + 1;
+                    cell['col'] = 0;
+                    cell['rowspan'] = tempcell[x];
+                    cell['colspan'] = 1;
+                    cellLength += parseInt(tempcell[x]);
+                    mergeCellsList.push(cell);
+                }
+                table.push(theadRow);
+                table = table.concat(tbody);
+                var len = cellLength;
+                rowLight = [0];
             }
-            table.push(theadRow);
-            table = table.concat(tbody);
-            var len = cellLength;
-            rowLight = [0];
-        }
+        {% endif %}
         initTable(tab, table, fixedRow, fixedCol, mergeCellsList, rowLight)
     }
 
@@ -520,14 +556,50 @@
         creatTable(tab, tableSetting)
     }
 
-    var hot1, hot2, hot3, hot4, hot5, hot6, hot7, hot8, hot9, hot10, hot11;
+    var hot10, hot11, hot12, hot13, hot14, hot15, hot16, hot17, hot2, hot3, hot4;
     function creatTable(tab, tableSetting) {
         var container = document.getElementById('tableReport' + tab);
-        if (tab == 1) {
-            if (!hot1) {
-                hot1 = new Handsontable(container, tableSetting);
+        if (tab == 10) {
+            if (!hot10) {
+                hot10 = new Handsontable(container, tableSetting);
             }
         }
+        if (tab == 11) {
+            if (!hot11) {
+                hot11 = new Handsontable(container, tableSetting);
+            }
+        }
+        if (tab == 12) {
+            if (!hot12) {
+                hot12 = new Handsontable(container, tableSetting);
+            }
+        }
+        if (tab == 13) {
+            if (!hot13) {
+                hot13 = new Handsontable(container, tableSetting);
+            }
+        }
+        if (tab == 14) {
+            if (!hot14) {
+                hot14 = new Handsontable(container, tableSetting);
+            }
+        }
+        if (tab == 15) {
+            if (!hot15) {
+                hot15 = new Handsontable(container, tableSetting);
+            }
+        }
+        if (tab == 16) {
+            if (!hot16) {
+                hot16 = new Handsontable(container, tableSetting);
+            }
+        }
+        if (tab == 17) {
+            if (!hot17) {
+                hot17 = new Handsontable(container, tableSetting);
+            }
+        }
+
         if (tab == 2) {
             if (!hot2) {
                 hot2 = new Handsontable(container, tableSetting);
@@ -541,41 +613,6 @@
         if (tab == 4) {
             if (!hot4) {
                 hot4 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 5) {
-            if (!hot5) {
-                hot5 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 6) {
-            if (!hot6) {
-                hot6 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 7) {
-            if (!hot7) {
-                hot7 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 8) {
-            if (!hot8) {
-                hot8 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 9) {
-            if (!hot9) {
-                hot9 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 10) {
-            if (!hot10) {
-                hot10 = new Handsontable(container, tableSetting);
-            }
-        }
-        if (tab == 11) {
-            if (!hot11) {
-                hot11 = new Handsontable(container, tableSetting);
             }
         }
     }

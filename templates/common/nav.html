@@ -13,61 +13,76 @@
                 <a id="nav_shouye" href="{{ request.session.homeurl }}">首页</a>
             </li>
             {% if not request.session.s_fee or request.session.s_fee.status == 'Y' %}
-                 {% if request.session.menu_type == "2" %}
+                {% if request.session.menu_type == "2" %}
                     {% for item in  request.session.s_umenu.supplier %}
                         <li class="nav-list-item">
-                            <a id="nav_{{item.2}}" >{{ item.0|cutNum }}
-                            {% if item.1 %}
-                                <span class="nav-item-icon">∨</span></a>
-                                <ul class="nav-list2" id="nav_list_{{ item.2 }}">
-                                    {% for itm in item.1 %}
-                                        <li>
-                                            <a href="{{ itm.bmoudule|default_if_none:"javascript:void(0);" }}">{{ itm.nm }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                </a>
-                            {% endif %}
+                            <a id="nav_{{ item.2 }}">{{ item.0|cutNum }}
+                                {% if item.1 %}
+                                    <span class="nav-item-icon">∨</span></a>
+                                    <ul class="nav-list2" id="nav_list_{{ item.2 }}">
+                                        {% for itm in item.1 %}
+                                            <li>
+                                                <a href="{{ itm.bmoudule|default_if_none:"javascript:void(0);" }}">{{ itm.nm }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    </a>
+                                {% endif %}
                         </li>
                     {% endfor %}
-                {% elif request.session.menu_type == "1"%}
-                      {% for item in  request.session.s_umenu.retailer %}
-                         <li class="nav-list-item">
-                            <a id="nav_{{item.2}}" >{{ item.0|cutNum }}
-                            {% if item.1 %}
-                                <span class="nav-item-icon">∨</span></a>
-                                 <ul class="nav-list2" id="nav_list_{{ item.2 }}">
-                                    {% for itm in item.1 %}
-                                        <li>
-                                            <a href="{{ itm.bmoudule|default_if_none:"javascript:void(0);" }}">{{ itm.nm }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                </a>
-                            {% endif %}
+                {% elif request.session.menu_type == "1" %}
+                    {% for item in  request.session.s_umenu.retailer %}
+                        <li class="nav-list-item">
+                            <a id="nav_{{ item.2 }}">{{ item.0|cutNum }}
+                                {% if item.1 %}
+                                    <span class="nav-item-icon">∨</span></a>
+                                    <ul class="nav-list2" id="nav_list_{{ item.2 }}">
+                                        {% for itm in item.1 %}
+                                            <li>
+                                                <a href="{{ itm.bmoudule|default_if_none:"javascript:void(0);" }}">{{ itm.nm }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    </a>
+                                {% endif %}
                         </li>
                     {% endfor %}
                 {% elif request.session.menu_type == "0" %}
-                     {% for item in  request.session.s_umenu.system %}
-                         <li class="nav-list-item" style="width: 128px;">
-                            <a id="nav_{{item.2}}" >{{ item.0|cutNum }}
-                            {% if item.1 %}
-                                <span class="nav-item-icon">∨</span></a>
-                                <ul class="nav-list2" id="nav_list_{{ item.2 }}"  style="width: 128px;">
-                                    {% for itm in item.1 %}
-                                        <li>
-                                            <a href="{{ itm.bmoudule|default_if_none:"javascript:void(0);" }}">{{ itm.nm }}</a>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                </a>
-                            {% endif %}
+                    {% for item in  request.session.s_umenu.system %}
+                        <li class="nav-list-item" style="width: 128px;">
+                            <a id="nav_{{ item.2 }}">{{ item.0|cutNum }}
+                                {% if item.1 %}
+                                    <span class="nav-item-icon">∨</span></a>
+                                    <ul class="nav-list2" id="nav_list_{{ item.2 }}" style="width: 128px;">
+                                        {% for itm in item.1 %}
+                                            <li>
+                                                <a href="{{ itm.bmoudule|default_if_none:"javascript:void(0);" }}">{{ itm.nm }}</a>
+                                            </li>
+                                        {% endfor %}
+                                    </ul>
+                                {% else %}
+                                    </a>
+                                {% endif %}
                         </li>
                     {% endfor %}
-                {% else %}
+                {% elif request.session.menu_type == "3" %}
+                    {% for item in request.session.rbac_menu %}
+                        <li class="nav-list-item" style="width: 128px;">
+                            <a id="nav_{{ item.m_id }}" {% if item.m_url != '' %}href="{{ item.m_url }}" {% endif %}>
+                                {{ item.m_name }}
+                                {% if item.m_ulr == '' %}<span class="nav-item-icon">∨</span>{% endif %}
+                            </a>
+                            <ul class="nav-list2" id="nav_list_" style="width: 128px;">
+                                {% for sub in item.sub %}
+                                    <li>
+                                        <a {% if sub.m_url != '' %}href="{{ sub.m_url }}"{% endif %}>{{ sub.m_name }}</a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </li>
+                    {% endfor %}
                 {% endif %}
             {% endif %}
             <li class="nav-list-item">

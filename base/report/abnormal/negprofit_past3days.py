@@ -9,18 +9,25 @@ from django.http import HttpResponse
 import datetime,calendar,decimal,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
+from base.report.common import Method as reportMth
 
 def query(date):
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+    rbacClassList, rbacClass = reportMth.getRbacClass()
+
     karrs = {}
     karrs.setdefault("bbdate", "{start}".format(start=date))
-    rlist = Kgprofit.objects.values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
-                                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
-        .filter(**karrs).exclude(shopid='C009').order_by("bbdate", "shopid", "goodsid", "sdate")
+    karrs.setdefault("shopid__in",rbacDepartList)
+    karrs.setdefault("deptid__in",rbacClassList)
+    rlist = Kgprofit.objects\
+            .values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
+                   "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
+            .filter(**karrs).order_by("bbdate", "shopid", "goodsid", "sdate")
     formate_data(rlist)
     return rlist
 
 
-@cache_page(60 * 2 ,key_prefix='abnormal_negprofit_past_3days')
+# @cache_page(60 * 2 ,key_prefix='abnormal_negprofit_past_3days')
 @csrf_exempt
 def index(request):
      yesterday = DateUtil.get_day_of_day(-1)

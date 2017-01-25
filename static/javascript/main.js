@@ -70,6 +70,8 @@ $(".shopList-cnt .enter").click(function(){
     $(".shopList-cnt").hide();
 });
 
+
+
 $(".shopList-cnt .close").click(function(){
     $(".shopList-cnt").hide();
 });
@@ -200,7 +202,7 @@ function getYestodayDate(date){
     return yesterday;
 }
  //当前日期前一天
- function getYestoday(date){
+function getYestoday(date){
     var yesterday = getYestodayDate(date);
     var strYear = yesterday.getFullYear();
     var strDay = yesterday.getDate();

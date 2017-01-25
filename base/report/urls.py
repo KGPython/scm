@@ -4,6 +4,8 @@ __author__ = 'liubf'
 from django.conf.urls import url
 from django.views.decorators.cache import cache_page
 urlpatterns = [
+    url(r'^report/index/','base.report.index.index',name='reportHome'),
+
     #########################################  日报 start   ##############################################
     #负库存排名
     url(r'^report/daily/negativestock/index/','base.report.daily.negativestocktop.index',name='negativeStockTopIndex'),
