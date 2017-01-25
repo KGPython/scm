@@ -9,26 +9,18 @@ from base.models import BasPurLog
 import datetime, calendar, decimal,json
 import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
+from base.report.common import Method as reportMth
 
-def query(yesterday):
-    yearandmon = DateUtil.getyearandmonth()
-    # 当前月份第一天
-    monfirstday = DateUtil.get_firstday_of_month(yearandmon[0], yearandmon[1])
-    # 当前月份最后一天
-    monlastday = DateUtil.get_lastday_month()
-    # 今天
-    today = DateUtil.todaystr()
-    # 昨天
+def initDepartData(id,yesterday):
+    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
+
+    # 连接数据库
+    conn = mtu.getMysqlConn()
 
     # 获取部类编码
     classcode = getclasscode()
-
     # 获取所有商品的类别编码
     allcode = getallcode()
-
-    # 获取门店编码
-    shopsid = getshopid()
-
     # 查询某个部类下的子类编码
     subcate = {}
     # 将部类编码与子类编码组成dict
@@ -42,435 +34,119 @@ def query(yesterday):
                 l.append(y)
         subcate.setdefault(x, l)
 
-    subcate10 = subcate.get('10')
-    subcate11 = subcate.get('11')
-    subcate12 = subcate.get('12')
-    subcate13 = subcate.get('13')
-    subcate14 = subcate.get('14')
-    subcate15 = subcate.get('15')
-    subcate16 = subcate.get('16')
-    subcate17 = subcate.get('17')
-    subcate2 = subcate.get('2')
-    subcate3 = subcate.get('3')
-    subcate4 = subcate.get('4')
-    sqlsubcate10 = ','.join(subcate10)
-    sqlsubcate11 = ','.join(subcate11)
-    sqlsubcate12 = ','.join(subcate12)
-    sqlsubcate13 = ','.join(subcate13)
-    sqlsubcate14 = ','.join(subcate14)
-    sqlsubcate15 = ','.join(subcate15)
-    sqlsubcate16 = ','.join(subcate16)
-    sqlsubcate17 = ','.join(subcate17)
-    sqlsubcate2 = ','.join(subcate2)
-    sqlsubcate3 = ','.join(subcate3)
-    sqlsubcate4 = ','.join(subcate4)
-
-    sql10 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
+    subcate = subcate.get(id)
+    sqlsubcate = ','.join(subcate)
+    sql = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
             "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate10 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql11 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate11 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql12 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate12 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql13 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate13 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql14 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate14 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql15 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate15 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql16 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate16 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql17 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-            "from `kwsaletop10` " \
-            "where deptid in (" + sqlsubcate17 + ") " \
-                                                 "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
+            "where deptid in ({sqlsubcate}) and sdate='{yesterday}' and shopid in ({rbacDepart}) " \
+            "order by shopid, SaleValue desc" \
+        .format(sqlsubcate=sqlsubcate, yesterday=str(yesterday), rbacDepart=rbacDepart)
+    cur = conn.cursor()
+    cur.execute(sql)
+    rows = cur.fetchall()
 
-    sql2 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-           "from `kwsaletop10` " \
-           "where deptid in (" + sqlsubcate2 + ") " \
-                                               "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql3 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-           "from `kwsaletop10` " \
-           "where deptid in (" + sqlsubcate3 + ") " \
-                                               "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-    sql4 = "select shopid, goodsid, goodsname, SaleQty, SaleValue, SaleCost, gpvalue, gprate, qty, costvalue, cprice, price " \
-           "from `kwsaletop10` " \
-           "where deptid in (" + sqlsubcate4 + ") " \
-                                               "and sdate='" + str(yesterday) + "' order by shopid, SaleValue desc"
-
-    # 连接数据库
-    conn = mtu.getMysqlConn()
-    cur10 = conn.cursor()
-    cur11 = conn.cursor()
-    cur12 = conn.cursor()
-    cur13 = conn.cursor()
-    cur14 = conn.cursor()
-    cur15 = conn.cursor()
-    cur16 = conn.cursor()
-    cur17 = conn.cursor()
-    cur2 = conn.cursor()
-    cur3 = conn.cursor()
-    cur4 = conn.cursor()
-    cur10.execute(sql10)
-    cur11.execute(sql11)
-    cur12.execute(sql12)
-    cur13.execute(sql13)
-    cur14.execute(sql14)
-    cur15.execute(sql15)
-    cur16.execute(sql16)
-    cur17.execute(sql17)
-    cur2.execute(sql2)
-    cur3.execute(sql3)
-    cur4.execute(sql4)
-    # 获取各部类下的销售数据
-    rows10 = cur10.fetchall()
-    rows11 = cur11.fetchall()
-    rows12 = cur12.fetchall()
-    rows13 = cur13.fetchall()
-    rows14 = cur14.fetchall()
-    rows15 = cur15.fetchall()
-    rows16 = cur16.fetchall()
-    rows17 = cur17.fetchall()
-    rows2 = cur2.fetchall()
-    rows3 = cur3.fetchall()
-    rows4 = cur4.fetchall()
 
     # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows10)):
-        for key in rows10[i].keys():
-            row = rows10[i][key]
+    for i in range(0, len(rows)):
+        for key in rows[i].keys():
+            row = rows[i][key]
             if row is None:
-                rows10[i][key] = ''
+                rows[i][key] = ''
             else:
                 if isinstance(row, int):
-                    rows10[i][key] = str(rows10[i][key])
+                    rows[i][key] = str(rows[i][key])
                 elif isinstance(row, decimal.Decimal):
-                    rows10[i][key] = "%0.2f" % float(rows10[i][key])
-
-    # 10 熟食部类
-    lis10 = []
-    unit10 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows10:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis10.append(row)
-                i += 1
-            else:
-                continue
-        unit10.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows11)):
-        for key in rows11[i].keys():
-            row = rows11[i][key]
-            if row is None:
-                rows11[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows11[i][key] = str(rows11[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows11[i][key] = "%0.2f" % float(rows11[i][key])
-    # 11 水产部类
-    lis11 = []
-    unit11 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows11:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis11.append(row)
-                i += 1
-            else:
-                continue
-        unit11.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows12)):
-        for key in rows12[i].keys():
-            row = rows12[i][key]
-            if row is None:
-                rows12[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows12[i][key] = str(rows12[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows12[i][key] = "%0.2f" % float(rows12[i][key])
-    # 12 蔬菜部类
-    lis12 = []
-    unit12 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows12:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis12.append(row)
-                i += 1
-            else:
-                continue
-        unit12.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows13)):
-        for key in rows13[i].keys():
-            row = rows13[i][key]
-            if row is None:
-                rows13[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows13[i][key] = str(rows13[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows13[i][key] = "%0.2f" % float(rows13[i][key])
-    # 13 烘烤部类
-    lis13 = []
-    unit13 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows13:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis13.append(row)
-                i += 1
-            else:
-                continue
-        unit13.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows14)):
-        for key in rows14[i].keys():
-            row = rows14[i][key]
-            if row is None:
-                rows14[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows14[i][key] = str(rows14[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows14[i][key] = "%0.2f" % float(rows14[i][key])
-    # 14 鲜肉部类
-    lis14 = []
-    unit14 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows14:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis14.append(row)
-                i += 1
-            else:
-                continue
-        unit14.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows15)):
-        for key in rows15[i].keys():
-            row = rows15[i][key]
-            if row is None:
-                rows15[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows15[i][key] = str(rows15[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows15[i][key] = "%0.2f" % float(rows15[i][key])
-    # 15 干鲜干果部类
-    lis15 = []
-    unit15 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows15:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis15.append(row)
-                i += 1
-            else:
-                continue
-        unit15.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows16)):
-        for key in rows16[i].keys():
-            row = rows16[i][key]
-            if row is None:
-                rows16[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows16[i][key] = str(rows16[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows16[i][key] = "%0.2f" % float(rows16[i][key])
-    # 16 主食厨房部类
-    lis16 = []
-    unit16 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows16:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis16.append(row)
-                i += 1
-            else:
-                continue
-        unit16.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows17)):
-        for key in rows17[i].keys():
-            row = rows17[i][key]
-            if row is None:
-                rows17[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows17[i][key] = str(rows17[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows17[i][key] = "%0.2f" % float(rows17[i][key])
-    # 17 水果部类
-    lis17 = []
-    unit17 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows17:
-            if sid['ShopID'] == row['shopid'] and i < 10:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis17.append(row)
-                i += 1
-            else:
-                continue
-        unit17.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows2)):
-        for key in rows2[i].keys():
-            row = rows2[i][key]
-            if row is None:
-                rows2[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows2[i][key] = str(rows2[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows2[i][key] = "%0.2f" % float(rows2[i][key])
-    # 2 食品部类
-    lis2 = []
-    unit2 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows2:
-            if sid['ShopID'] == row['shopid'] and i < 20:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis2.append(row)
-                i += 1
-            else:
-                continue
-        unit2.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for i in range(0, len(rows3)):
-        for key in rows3[i].keys():
-            row = rows3[i][key]
-            if row is None:
-                rows3[i][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows3[i][key] = str(rows3[i][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows3[i][key] = "%0.2f" % float(rows3[i][key])
-    # 3 用品部类
-    lis3 = []
-    unit3 = []
-
-    for sid in shopsid:
-        i = 0
-        for row in rows3:
-            if sid['ShopID'] == row['shopid'] and i < 20:
-                row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
-                row['paiming'] = i + 1
-                lis3.append(row)
-                i += 1
-            else:
-                continue
-        unit3.append(i)
-
-    # 判断当天是否有数据，同时转换数据类型 int 转 string, decimal 转 float
-    for x in range(0, len(rows4)):
-        for key in rows4[x].keys():
-            row = rows4[x][key]
-            if row is None:
-                rows4[x][key] = ''
-            else:
-                if isinstance(row, int):
-                    rows4[x][key] = str(rows4[x][key])
-                elif isinstance(row, decimal.Decimal):
-                    rows4[x][key] = "%0.2f" % float(rows4[x][key])
-
+                    rows[i][key] = "%0.2f" % float(rows[i][key])
     # 将退货数据过滤，值为负
-    rows4filter = []
-    for i in range(0, len(rows4)):
-        if float(rows4[i]['SaleQty']) < 0:
+    rowsfilter = []
+    for i in range(0, len(rows)):
+        if float(rows[i]['SaleQty']) < 0:
             continue
         else:
-            rows4filter.append(rows4[i])
+            rowsfilter.append(rows[i])
 
-    # 4 家电部类
-    lis4 = []
-    templist = []
 
+    lis = []
+    unit = []
+    # 获取门店编码
+    shopsid = getshopid()
     for sid in shopsid:
         i = 0
-        for row in rows4filter:
-            if sid['ShopID'] == row['shopid'] and i < 20:
+        for row in rows:
+            if sid['ShopID'] == row['shopid'] and i < 10:
                 row['shopid'] = sid['ShopName'].strip() + sid['ShopID']
                 row['paiming'] = i + 1
-                lis4.append(row)
+                lis.append(row)
                 i += 1
             else:
                 continue
-        templist.append(i)
+        unit.append(i)
 
-    # 关闭数据库
-    mtu.close(conn, cur10)
-    mtu.close(conn, cur11)
-    mtu.close(conn, cur12)
-    mtu.close(conn, cur13)
-    mtu.close(conn, cur14)
-    mtu.close(conn, cur15)
-    mtu.close(conn, cur16)
-    mtu.close(conn, cur17)
-    mtu.close(conn, cur2)
-    mtu.close(conn, cur3)
-    mtu.close(conn, cur4)
+    return lis,unit
+
+
+def query(yesterday):
+    rbac = caches['redis2'].get('rbac_role')
+
+    rbacDepart = rbac['depart']
+    if len(rbacDepart):
+        rbacDepart = json.loads(rbacDepart)
+        rbacDepart = rbacDepart['sub'][0:len(rbacDepart['sub']) - 1]
+        rbacDepartList = rbacDepart.split(',')
+        rbacDepart = '"' + '","'.join(rbacDepartList) + '"'
+
+    rbacClassList = []
+    rbacClass = ''
+    rbacCategory = rbac['category']
+    if len(rbacCategory):
+        rbacCategory = rbacCategory.replace('},', '}$')
+        rbacCategoryList = rbacCategory.split('$')
+        for category in rbacCategoryList:
+            category = json.loads(category)
+            ClassStr = category['sub'][0:len(category['sub']) - 1]
+            ClassList = ClassStr.split(',')
+            ClassStr = '"' + '","'.join(ClassList) + '"'
+
+            rbacClassList += ClassList
+            rbacClass += ClassStr + ','
+
+    rbacClass = rbacClass[0:len(rbacClass) - 1]
+
+    yearandmon = DateUtil.getyearandmonth()
+    # 当前月份第一天
+    monfirstday = DateUtil.get_firstday_of_month(yearandmon[0], yearandmon[1])
+    # 当前月份最后一天
+    monlastday = DateUtil.get_lastday_month()
+    # 今天
+    today = DateUtil.todaystr()
+
+    for C in rbacClassList:
+        if C == '10':
+            lis10, unit10 = initDepartData('10',yesterday)
+        elif C == '11':
+            lis11, unit11 = initDepartData('11', yesterday)
+        elif C == '12':
+            lis12, unit12 = initDepartData('12', yesterday)
+        elif C == '13':
+            lis13, unit13 = initDepartData('13', yesterday)
+        elif C == '14':
+            lis14, unit14 = initDepartData('14', yesterday)
+        elif C == '15':
+            lis15, unit15 = initDepartData('15', yesterday)
+        elif C == '16':
+            lis16, unit16 = initDepartData('16', yesterday)
+        elif C == '17':
+            lis17, unit17 = initDepartData('17', yesterday)
+        elif C == '2':
+            lis2, unit2 = initDepartData('2', yesterday)
+        elif C == '3':
+            lis3, unit3 = initDepartData('3', yesterday)
+        elif C == '4':
+            lis4, unit4 = initDepartData('4', yesterday)
 
     return locals()
 
-@cache_page(60*60*4,key_prefix='daily_sale_top10')
+# @cache_page(60*60*4,key_prefix='daily_sale_top10')
 @csrf_exempt
 def index(request):
     exceltype = mtu.getReqVal(request, "exceltype", "2")
@@ -812,7 +488,6 @@ def writeDataToSheet8(wb, lis17):
     mtu.insertCell2(sheet17, 3, lis17, keylist, None)
     titlesLen = len(titles)
     listTopLen = len(lis17)
-
 
 def writeDataToSheet9(wb, lis2):
     date = DateUtil.get_day_of_day(-1)
