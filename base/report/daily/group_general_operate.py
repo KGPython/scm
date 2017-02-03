@@ -730,10 +730,12 @@ def mergeData2(item,edict,rlist2,sumList2,yestoday):
 def findMonthEstimate(shopids):
     date = DateUtil.get_day_of_day(-1)
     month = date.month
+    year = date.year
     edict = {}
     karrs = {}
     karrs.setdefault("shopid__in", shopids)
     karrs.setdefault("dateid__month", "{month}".format(month=month))
+    karrs.setdefault("dateid__year", "{year}".format(year=year))
     elist = Estimate.objects.values("shopid") \
         .filter(**karrs) \
         .annotate(y_salevalue=Sum('salevalue'), y_salegain=Sum('salegain'))
