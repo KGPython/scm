@@ -1,13 +1,16 @@
-from django.shortcuts import render
-from django.http import HttpResponse
-import datetime,decimal
-import xlwt3 as xlwt
-from base.models import Kglossrate,BasPurLog
-from base.utils import MethodUtil as mth
-from base.utils import DateUtil
+import datetime
+import decimal
 import json
+
+import xlwt3 as xlwt
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.decorators.cache import cache_page
+
+from base.models import Kglossrate,BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil
+from base.utils import MethodUtil as mth
 
 
 def query(timeStart,timeEnd):
@@ -56,9 +59,8 @@ def index(request):
         return export(fname,timeStart,timeEnd)
 
 
-import base.report.Excel as excel
 def export(fname,timeStart,timeEnd):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         res = query(timeStart,timeEnd)
         data = res['data']
         createExcel(fname, data)
@@ -69,7 +71,7 @@ def export(fname,timeStart,timeEnd):
 def createExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     writeDataToSheet2(wb, data)
-    excel.saveToExcel(fname, wb)
+    Excel.saveToExcel(fname, wb)
 
 def writeDataToSheet2(wb,data):
     date = DateUtil.get_day_of_day(-1)

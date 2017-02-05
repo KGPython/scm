@@ -1,14 +1,18 @@
 # -*- coding:utf-8 -*-
 __author__ = 'admin'
 
-from django.shortcuts import render
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
-from base.utils import MethodUtil as mtu,DateUtil
 from django.http import HttpResponse
-from base.models import KgNegStock,BasPurLog
-import decimal,datetime,json
-from django.views.decorators.cache import cache_page
+from django.shortcuts import render
+
+from base.models import BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import MethodUtil as mtu,DateUtil
+
 
 def query(sgroupid,date):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -72,9 +76,9 @@ def formate_data(rlist):
             if not item:
                 rows[k] = ''
 
-import base.report.Excel as excel
+
 def export(fname,sgroupid,yesterday):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(sgroupid,yesterday)
         createExcel(fname, data)
     res = {}
@@ -84,7 +88,7 @@ def export(fname,sgroupid,yesterday):
 def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     writeDataToSheet2(wb,data['resList'],data['title'])
-    excel.saveToExcel(fname, wb)
+    Excel.saveToExcel(fname, wb)
 
 def writeDataToSheet2(wb,resList,title):
     date = DateUtil.get_day_of_day(-1)

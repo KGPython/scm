@@ -1,16 +1,20 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-from django.shortcuts import render
-from base.utils import DateUtil,MethodUtil as mtu
-from base.models import BasPurLog
-from django.http import HttpResponse
-import datetime,decimal,json
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
-from django.core.cache import caches
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
+
+from base.models import BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil,MethodUtil as mtu
+
 
 def query(date):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -135,9 +139,9 @@ def index(request):
          fname = date.strftime("%m.%d") + "_daily_group_sale.xls"
          return export(fname,date)
 
-import base.report.Excel as excel
+
 def export(fname,date):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(date)
         createExcel(fname, data)
     res = {}
@@ -149,7 +153,7 @@ def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1 月累计销售报表
     writeDataToSheet1(wb,data['gslist'],data['sumDict'])
-    excel.saveToExcel(fname,wb)
+    Excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb,rlist,sumDict):

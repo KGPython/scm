@@ -1,13 +1,17 @@
 # -*- coding:utf-8 -*-
+import datetime
+import decimal
+import json
+
+import xlwt3 as xlwt
+from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil, MethodUtil as mtu
-from base.models import Kglistnoret, Kggoodsret, BasPurLog
-from django.http import HttpResponse
-import datetime, decimal,json
-import xlwt3 as xlwt
-from django.views.decorators.cache import cache_page
+
+from base.models import Kglistnoret, BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil, MethodUtil as mtu
+
 
 def query(date):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -60,9 +64,9 @@ def index(request):
         fname = yesterday.strftime("%m.%d") + "_abnormal_ret_shopping_rec_300.xls"
         return export(fname,yesterday)
 
-import base.report.Excel as excel
+
 def export(fname,yesterday):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(yesterday)
         createExcel(fname,data)
     res = {}
@@ -75,7 +79,7 @@ def createExcel(fname,data):
     writeDataToSheet1(wb, data['rlist'])
     # 写入sheet2
     writeDataToSheet2(wb, data['dlist'])
-    excel.saveToExcel(fname,wb)
+    Excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb, rlist):

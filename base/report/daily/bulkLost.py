@@ -1,15 +1,19 @@
 # -*- coding:utf-8 -*-
 __author__ = 'chen'
 
-from django.shortcuts import render
-from django.http import HttpResponse
-from base.utils import DateUtil,MethodUtil as mtu
-from base.models import BasPurLog
-import datetime,decimal,calendar,json
+import calendar
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
-from django.views.decorators.cache import cache_page
-from django.core.cache import caches
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from base.models import BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil,MethodUtil as mtu
+
 
 def query():
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -110,9 +114,9 @@ def inidex(request):
         fname = yesterday.strftime("%m.%d") + "_daily_bulkLost.xls"
         return export(fname)
 
-import base.report.Excel as excel
+
 def export(fname):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query()
         createExcel(fname,data)
     res = {}
@@ -123,7 +127,7 @@ def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1
     writeDataToSheet1(wb,data['shopTop'],data['TotalDict'])
-    excel.saveToExcel(fname,wb)
+    Excel.saveToExcel(fname, wb)
 
 def writeDataToSheet1(wb,shopTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)

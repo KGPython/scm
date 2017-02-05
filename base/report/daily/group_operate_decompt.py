@@ -1,18 +1,19 @@
 # -*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil, MethodUtil as mtu
-from base.models import BasShopRegion, BasPurLog,BasOrg
-from django.http import HttpResponse
-import datetime, calendar, decimal, time
-import xlwt3 as xlwt
-from django.views.decorators.cache import cache_page
-from django.core.cache import caches
-import base.report.Excel as excel
+import calendar
+import datetime
+import decimal
 import json
+
+import xlwt3 as xlwt
+from django.core.cache import caches
+from django.http import HttpResponse
+from django.shortcuts import render
+
+from base.models import BasShopRegion, BasPurLog,BasOrg
 from base.report.common import Method as reportMth
+from base.utils import DateUtil, MethodUtil as mtu
 
 
 def query(date,start,end,yesterday,lastDay):
@@ -151,7 +152,7 @@ def index(request):
 
 
 def export(fname,date,start,end,yesterday,lastDay):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(date, start, end, yesterday, lastDay)
         createExcel(fname, date, data['rlist'], data['shoplist'], data['grslist'], data['srslist'])
     res = {}
@@ -166,7 +167,7 @@ def createExcel(fname,date,rslist, shoplist, grslist, srslist):
     writeDataToSheet2(wb, grslist, date)
     # 写入sheet4 各个门店类别
     writeDataToSheetN(wb, shoplist, srslist, date)
-    excel.saveToExcel(fname, wb)
+    Excel.saveToExcel(fname, wb)
 
 def writeDataToSheet1(wb, rlist, date):
     year = date.year

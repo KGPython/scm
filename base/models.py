@@ -1746,3 +1746,39 @@ class Kggoodsret(models.Model):
         db_table = 'kggoodsret'
 
 
+class RbacRole(models.Model):
+    role_id = models.CharField(max_length=12)
+    role_name = models.CharField(max_length=12)
+    status = models.CharField(max_length=1)
+    system_id = models.IntegerField(blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_role'
+
+
+class RbacRoleInfo(models.Model):
+    role_id = models.CharField(unique=True, max_length=12)
+    depart = models.TextField()
+    category = models.TextField()
+    module = models.TextField()
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_role_info'
+
+
+class RbacShop(models.Model):
+    grpcode = models.CharField(db_column='Grpcode', max_length=10)  # Field name made lowercase.
+    shopcode = models.CharField(db_column='Shopcode', max_length=20)  # Field name made lowercase.
+    shopnm = models.CharField(db_column='Shopnm', max_length=40)  # Field name made lowercase.
+    address = models.CharField(db_column='Address', max_length=80, blank=True, null=True)  # Field name made lowercase.
+    manager = models.CharField(db_column='Manager', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    tel = models.CharField(db_column='Tel', max_length=32, blank=True, null=True)  # Field name made lowercase.
+    shoptype = models.CharField(db_column='Shoptype', max_length=20, blank=True, null=True)  # Field name made lowercase.
+    enable = models.IntegerField(db_column='Enable', blank=True, null=True)  # Field name made lowercase.
+
+    class Meta:
+        managed = False
+        db_table = 'rbac_shop'
+        unique_together = (('grpcode', 'shopcode'),)

@@ -1,16 +1,21 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-from django.shortcuts import render
-from django.db.models import Sum,Avg
-from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
-from django.http import HttpResponse
-import datetime,calendar,decimal,json
+import calendar
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
-from django.views.decorators.cache import cache_page
+from django.db.models import Sum,Avg
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil,MethodUtil as mtu
+
 
 def query(date):
     rbacDepartList,rbacDepart = reportMth.getRbacDepart(13)
@@ -1191,9 +1196,9 @@ def initYitem(item):
     eitem.setdefault("y_salevalue",0.00)
     return eitem
 
-import base.report.Excel as excel
+
 def export(fname,date):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(date)
         createExcel(fname, data)
     res = {}
@@ -1208,7 +1213,7 @@ def createExcel(fname,data):
     writeDataToSheet2(wb,data['erlist'],data['esumlist'])
     #写入sheet4 年累计销售报表
     writeDataToSheet3(wb,data['yearlist'],data['yearSum'])
-    excel.saveToExcel(fname,wb)
+    Excel.saveToExcel(fname, wb)
 
 def writeDataToSheet1(wb,rlist,sumDict):
     date = DateUtil.get_day_of_day(-1)

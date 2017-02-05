@@ -41,5 +41,5 @@ urlpatterns = [
     #########################################   异常数据 end  ##############################################
 
     #########################################   报表下载 end  ##############################################
-    url(r'^report/downloadExcel/$', 'base.report.Excel.downloadReportExcel', name='downloadReportExcel')
+    url(r'^report/downloadExcel/$', 'base.report.common.Excel.downloadReportExcel', name='downloadReportExcel')
 ]

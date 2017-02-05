@@ -1,15 +1,20 @@
 # -*- coding:utf-8 -*-
 __author__ = 'end-e 20160602'
 
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil, MethodUtil as mtu
-from base.models import BasPurLog
-import datetime, calendar, decimal,json
+import calendar
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
-from django.views.decorators.cache import cache_page
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+from base.models import BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil, MethodUtil as mtu
+
 
 def initDepartData(id,yesterday):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -236,9 +241,9 @@ def getallcode():
 
     return lis
 
-import base.report.Excel as excel
+
 def export(fname,yesterday):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(yesterday)
         createExcel(fname, data)
     res = {}
@@ -271,7 +276,7 @@ def createExcel(fname, data):
     # 写入sheet11
     writeDataToSheet11(wb, data['lis4'])
 
-    excel.saveToExcel(fname,wb)
+    Excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb, lis10):

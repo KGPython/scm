@@ -1,15 +1,20 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-from django.shortcuts import render
-from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil,MethodUtil as mtu
-from base.models import Kgprofit,BasPurLog
-from django.http import HttpResponse
-import datetime,calendar,decimal,json
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
+
+from base.models import Kgprofit,BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil,MethodUtil as mtu
+
 
 def query(date):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -53,10 +58,9 @@ def index(request):
          fname = yesterday.strftime("%m.%d") + "_abnormal_negprofit_lte200.xls"
          return export(fname,yesterday)
 
-import base.report.Excel as excel
 
 def export(fname,yesterday):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(yesterday)
         createExcel(fname, data['rlist'])
     res = {}
@@ -66,7 +70,7 @@ def export(fname,yesterday):
 def createExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     writeDataToSheet1(wb,data)
-    excel.saveToExcel(fname, wb)
+    Excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb,data):

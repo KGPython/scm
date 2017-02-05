@@ -1,17 +1,21 @@
 # -*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-from django.shortcuts import render
-from django.db.models import Sum, Avg
-from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil, MethodUtil as mtu
-from base.models import Kshopsale, BasShopRegion, Estimate, EstimateYear, BasPurLog
-from django.http import HttpResponse
-import datetime, calendar, decimal, json
+import calendar
+import datetime
+import decimal
+import json
+
 import xlwt3 as xlwt
+from django.db.models import Sum, Avg
+from django.http import HttpResponse
+from django.shortcuts import render
 from django.views.decorators.cache import cache_page
-from django.core.cache import caches
+from django.views.decorators.csrf import csrf_exempt
+
+from base.models import Kshopsale, BasShopRegion, Estimate, EstimateYear, BasPurLog
 from base.report.common import Method as reportMth
+from base.utils import DateUtil, MethodUtil as mtu
 
 
 def query(date):
@@ -33,7 +37,7 @@ def query(date):
     # slist = BasShopRegion.objects.values("shopid", "shopname", "region", "opentime", "type")\
     #         .filter(shoptype=11).exclude(shopid='C009').order_by("region", "shopid")
     slist = BasShopRegion.objects.values("shopid", "shopname", "region", "opentime", "type")\
-            .filter(shoptype=11,shopid__in=rbacDepart).exclude(shopid='C009').order_by("region", "shopid")
+            .filter(shoptype=11,shopid__in=rbacDepartList).order_by("region", "shopid")
     shopids = [shop["shopid"] for shop in slist]
 
     karrs = {}
@@ -242,8 +246,8 @@ def query(date):
     return data
 
 
-@cache_page(60 * 60 * 4, cache='default',key_prefix='daily_group_operate')
-@csrf_exempt
+# @cache_page(60 * 10, cache='default',key_prefix='daily_group_operate')
+# @csrf_exempt
 def index(request):
     qtype = mtu.getReqVal(request, "qtype", "1")
     if not qtype:
@@ -1242,8 +1246,8 @@ def findYearEstimate(shopids):
     karrs.setdefault("shopid__in", shopids)
     karrs.setdefault("dateid__year", year)
     elist = EstimateYear.objects.values("shopid") \
-        .filter(**karrs).order_by("shopid").exclude(shopid='C009') \
-        .annotate(y_salevalue=Sum('salevalue'), y_salegain=Sum('salegain'))
+            .filter(**karrs).order_by("shopid") \
+            .annotate(y_salevalue=Sum('salevalue'), y_salegain=Sum('salegain'))
 
     for item in elist:
         edict.setdefault(str(item["shopid"]), item)
@@ -1315,9 +1319,9 @@ def initYitem(item):
     eitem.setdefault("y_salevalue", 0.00)
     return eitem
 
-import base.report.Excel as excel
+
 def export(fname, date):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query(date)
         createExcel(fname, data)
     res = {}
@@ -1333,7 +1337,7 @@ def createExcel(fname, data):
     writeDataToSheet2(wb, data['erlist'], data['esumlist'])
     # 写入sheet4 年累计销售报表
     writeDataToSheet3(wb, data['yearlist'], data['yearSum'])
-    excel.saveToExcel(fname, wb)
+    Excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb, rlist, sumDict):

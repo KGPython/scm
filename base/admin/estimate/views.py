@@ -25,12 +25,12 @@ def impt(request):
             nrows = sheet.nrows  # 行总数
             ncols = sheet.ncols  # 列总数
 
-            for i in range(1,nrows):
+            for i in range(0,nrows):
                 shopid = sheet.cell(i, 0).value
-                for j in range(2,ncols):
+                for j in range(1,ncols):
                     salevalue = sheet.cell(i,j).value
                     salegain = sheet1.cell(i,j).value
-                    dateid = datetime.date(year=today.year,month=j-1,day=1).strftime("%Y-%m-%d")
+                    dateid = datetime.date(year=today.year,month=j,day=1).strftime("%Y-%m-%d")
                     # 3.写入数据库
                     try:
                         #已存在则删除

@@ -1,15 +1,18 @@
 #-*- coding:utf-8 -*-
 __author__ = 'CHEN'
-from django.shortcuts import render
-from django.http import HttpResponse
-from django.views.decorators.csrf import csrf_exempt
-from base.utils import DateUtil,MethodUtil as mtu
-from base.models import BasPurLog
-import datetime,calendar,decimal,json
-import xlwt3 as xlwt
-from django.views.decorators.cache import cache_page
-from base.report.common import Method as reportMth
+import calendar
+import datetime
+import json
 
+import xlwt3 as xlwt
+from django.http import HttpResponse
+from django.shortcuts import render
+from django.views.decorators.cache import cache_page
+from django.views.decorators.csrf import csrf_exempt
+
+from base.models import BasPurLog
+from base.report.common import Method as reportMth
+from base.utils import DateUtil,MethodUtil as mtu
 
 
 def query():
@@ -234,9 +237,9 @@ def ranking(lis,key,name):
             a[name]= j
     return lis
 
-import base.report.Excel as excel
+
 def export(fname):
-    if not excel.isExist(fname):
+    if not Excel.isExist(fname):
         data = query()
         createExcel(fname, data)
     res = {}
@@ -250,7 +253,7 @@ def createExcel(fname, data):
     writeDataToSheet1(wb,data['listTop'],data['TotalDict'])
     #写入sheet2,sheet3
     writeDataToSheet2(wb,data['listShops'],data['listShopTotal'],data['listDept'])
-    excel.saveToExcel(fname,wb)
+    Excel.saveToExcel(fname, wb)
 
 def writeDataToSheet1(wb,listTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)
