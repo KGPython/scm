@@ -9,39 +9,7 @@
         <div class="query comWidth">
             <form class="query-list" id="queryForm" name="queryForm" method="post">
                 {% csrf_token %}
-                <div class="shopList input">
-                    <label>门店：</label>
-                    {{ form.shopCode }}
-                    <span class="shopList-icon"></span>
-                    <div class="shopList-cnt">
-                        <p class="shopList-cnt-tit">
-                           {% comment %} <span>门店：</span>{% endcomment %}
-                            <input type="checkbox" name="" id="" class="all"><label for="" style="display: inline">全选/全不选</label>
-                            <input class="enter" type="button" value="确定">
-                            <input class="close" type="button" value="放弃">
-                        </p>
-                        <table border="0" cellpadding="3" cellspacing="1" width="100%" align="center" style="background-color: #999;">
-                            <thead>
-                                <tr>
-                                    <th>选择</th>
-                                    <th>门店编码</th>
-                                    <th>门店名称</th>
-                                  {% comment %}  <th>经营方式</th>{% endcomment %}
-                                </tr>
-                            </thead>
-                            <tbody>
-                            {% for shop in shopList %}
-                                <tr>
-                                    <td><input type="checkbox" name="" id="" value="{{ shop.shopcode }}" title="{{ shop.shopnm }}"></td>
-                                    <td >{{ shop.shopcode }}</td>
-                                    <td class="shopNm">{{ shop.shopnm }}</td>
-                                   {% comment %} <td></td>{% endcomment %}
-                                </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
+
                 <p class="input">
                     <label>商品条码：</label>
                     {{ form.barcode }}
@@ -69,14 +37,21 @@
 
                 </p>
                 <p class="input">
+                    <label>订单状态</label>
+                    {{ form.status }}
+                </p>
+                <div class="form-row right">
+                    <p class="input">
                     <input class="query-enter" id="queryOut" type="submit" value="查询" onclick="outQuery()">
-                </p>
-                <p class="input">
-                    <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
-                </p>
-                <p class="input">
-                    <input class="query-enter" type="button" value="返回" onclick="window.history.back();return false;">
-                </p>
+                    </p>
+                    <p class="input">
+                        <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
+                    </p>
+                    <p class="input">
+                        <input class="query-enter" type="button" value="返回" onclick="window.history.back();return false;">
+                    </p>
+                </div>
+
             </form>
 
         </div>

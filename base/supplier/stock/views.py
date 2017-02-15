@@ -33,6 +33,7 @@ def supplierStock(request):
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
             orderStyle = form.cleaned_data['orderStyle']
+            status = form.cleaned_data['status']
 
             kwargs = {}
             if len(shopCode):
@@ -45,6 +46,9 @@ def supplierStock(request):
                 kwargs.setdefault("sccode__contains",scCode.strip())
             if proName:
                 kwargs.setdefault("proname__contains",proName.strip())
+            if status:
+                kwargs.setdefault("clearflag",status)
+
 
             kwargs.setdefault("num__gte",num1)
             kwargs.setdefault("num__lte",num2)
@@ -107,6 +111,7 @@ def stockArticle(request):
             num2 = form.cleaned_data['num2']
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
+            status = form.cleaned_data['status']
             orderStyle = form.cleaned_data['orderStyle']
 
             kwargs = {}
@@ -116,6 +121,8 @@ def stockArticle(request):
                 kwargs.setdefault("sccode__contains",scCode.strip())
             if proName:
                 kwargs.setdefault("proname__contains",proName.strip())
+            if status:
+                kwargs.setdefault("clearflag",status)
             kwargs.setdefault("shopcode",shopCode)
             kwargs.setdefault("suppcode",suppCode)
             kwargs.setdefault("grpcode",grpCode)

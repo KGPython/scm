@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <title>商业供应链系统</title>
-
     </head>
     <body>       
        {% include "common/nav.html" %}
@@ -64,17 +63,20 @@
                     {{ form.proName }}
 
                 </p>
-                <p class="input">
-                    <label>排序条件：</label>
-                    {{ form.orderStyle }}
 
-                </p>
                 <p class="input">
-                    <input class="query-enter" id="queryOut" type="submit" value="查询" onclick="outQuery()">
+                    <label>订单状态</label>
+                    {{ form.status }}
                 </p>
-                <p class="input">
-                    <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
-                </p>
+                <div class="from-row pull-right">
+                    <p class="input">
+                        <input class="query-enter" id="queryOut" type="submit" value="查询" onclick="outQuery()">
+                    </p>
+                    <p class="input">
+                        <input class="query-enter" id="excelOut" type="submit" value="导出到EXCEL" onclick="outQxcel()">
+                    </p>
+                </div>
+
             </form>
 
         </div>

@@ -18,3 +18,16 @@ class StockForm(forms.Form):
         ('num', u'库存数量'),
     )
     orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"name":"orderStyle",}),choices=ORDER_CHOICES)
+
+    STATUS_CHOICES=(
+        ('',u"全部"),
+        ("0",u"正常"),
+        ("1", "暂停订货"),
+        ("2", "暂停销售"),
+        ("3", "已清退"),
+        ("5", "暂停经营"),
+        ("6", "待清退"),
+        ("7", "待启用"),
+        ("8", "新品"),
+    )
+    status = forms.ChoiceField(widget=forms.Select(attrs={"name":"status",}),choices=STATUS_CHOICES,required=False)
