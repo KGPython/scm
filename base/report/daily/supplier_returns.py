@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from base.models import BasPurLog
 from base.report.common import Method as reportMth
 from base.utils import DateUtil, MethodUtil as mtu
-
+from base.report.common import Excel
 
 def query(yesterday):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)

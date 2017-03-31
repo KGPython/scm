@@ -1,4 +1,6 @@
 #-*- coding:utf-8 -*-
+from django.views.decorators.http import condition,last_modified
+
 __author__ = 'liubf'
 
 import calendar
@@ -15,6 +17,7 @@ from django.views.decorators.csrf import csrf_exempt
 from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
 from base.report.common import Method as reportMth
 from base.utils import DateUtil,MethodUtil as mtu
+from base.report.common import Excel
 
 
 def query(date):

@@ -1168,7 +1168,7 @@ class RbacRoleInfo(models.Model):
 
 class RbacUserRole(models.Model):
     user_id = models.CharField(max_length=12)
-    role = models.TextField()
+    role = models.CharField(max_length=12)
 
     class Meta:
         managed = False

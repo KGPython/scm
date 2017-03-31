@@ -40,7 +40,7 @@ def global_setting(request):
     userStatus = Constants.USER_STATUS
     #经营方式
     contractTypeDict = Constants.CONTRACT_TYPE_DICT
-	#结算方式
+    #结算方式
     payTypeList = findPayType(1)
     payTypeDict = findPayType(2)
 

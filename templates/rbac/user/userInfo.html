@@ -1,0 +1,60 @@
+{% extends 'common/hui/base.html' %}
+{% block content %}
+    <style>
+        .form-horizontal .checkbox-inline{padding: 0;}
+        .checkbox-inline{margin-right: 0}
+    </style>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>自动报表系统 <small>用户角色分配</small></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <form  method="post" class="form-horizontal" action="{% url 'rbacUserInfo' %}" id="form">
+                            <div class="form-horizontal module-box">
+                            <div class="form-group">
+                                <label class="col-sm-2 control-label">用户角色</label>
+                                <div class="col-sm-10">
+                                    <select class="form-control m-b" name="role">
+                                        {% for role in roles %}
+                                        <option value="{{ role.role_id }}">{{ role.role_name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="hr-line-dashed"></div>
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="ucode" value="{{ ucode }}">
+                                    <button class="btn btn-primary" type="button" onclick="setAction()">创建</button>
+                                </div>
+                            </div>
+                        </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+<script src="{{ static }}/js/plugins/layer/layer.min.js"></script>
+<script>
+    function setAction() {
+        $('#form').submit();
+    }
+    var res = {{ res | safe }};
+    if(res.msg==0){
+        alert('数据保存成功');
+        window.location.href='{% url 'rbacUser' %}'
+    }else if(res.msg==1){
+        alert('保存失败');
+    }
+</script>
+{% endblock %}

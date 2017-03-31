@@ -17,7 +17,7 @@ class StockForm(forms.Form):
         ('proname', u'商品名称'),
         ('num', u'库存数量'),
     )
-    orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"name":"orderStyle",}),choices=ORDER_CHOICES)
+    orderStyle = forms.ChoiceField(widget=forms.Select(attrs={"name":"orderStyle",}),choices=ORDER_CHOICES,required=False)
 
     STATUS_CHOICES=(
         ('',u"全部"),

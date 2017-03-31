@@ -11,7 +11,7 @@ from base.models import Kglossrate,BasPurLog
 from base.report.common import Method as reportMth
 from base.utils import DateUtil
 from base.utils import MethodUtil as mth
-
+from base.report.common import Excel
 
 def query(timeStart,timeEnd):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)

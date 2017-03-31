@@ -13,10 +13,10 @@
     <meta http-equiv="refresh" content="0;ie.html" />
     <![endif]-->
 
-    <link href="{{ static }}/css/hui/bootstrap.min.css?v=3.3.5" rel="stylesheet">
-    <link href="{{ static }}/css/hui/font-awesome.min.css?v=4.4.0" rel="stylesheet">
-    <link href="{{ static }}/css/hui/animate.min.css" rel="stylesheet">
-    <link href="{{ static }}/css/hui/style.min.css?v=4.0.0" rel="stylesheet">
+    <link href="{{ static }}/css/bootstrap.min.css?v=3.3.5" rel="stylesheet">
+    <link href="{{ static }}/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="{{ static }}/css/animate.min.css" rel="stylesheet">
+    <link href="{{ static }}/css/style.min.css?v=4.0.0" rel="stylesheet">
 </head>
 
 <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
@@ -43,15 +43,15 @@
                     <li>
                         <a href="#">
                             <i class="fa fa fa-bar-chart-o"></i>
-                            <span class="nav-label">角色管理</span>
+                            <span class="nav-label">报表权限管理</span>
                             <span class="fa arrow"></span>
                         </a>
                         <ul class="nav nav-second-level">
                              <li>
-                                <a class="J_menuItem" href="/scm/base/rbac/role/index/">列表</a>
+                                <a class="J_menuItem" href="{% url 'rbacRole' %}">角色管理</a>
                             </li>
                             <li>
-                                <a class="J_menuItem" href="/scm/base/rbac/role/create/">创建</a>
+                                <a class="J_menuItem" href="{% url 'rbacUser' %}">人员管理</a>
                             </li>
 
                         </ul>
@@ -104,7 +104,7 @@
                         </li>
                     </ul>
                 </div>
-                <a href="login.html" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
+                <a href="/scm/base/logout/" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i> 退出</a>
             </div>
             <div class="row J_mainContent" id="content-main">
                 <iframe class="J_iframe" name="iframe0" width="100%" height="100%" src="" frameborder="0" data-id="" seamless></iframe>
@@ -117,14 +117,14 @@
 
 
     </div>
-    <script src="{{ static }}/js/hui/jquery.min.js?v=2.1.4"></script>
-    <script src="{{ static }}/js/hui/bootstrap.min.js?v=3.3.5"></script>
-    <script src="{{ static }}/js/hui/plugins/metisMenu/jquery.metisMenu.js"></script>
-    <script src="{{ static }}/js/hui/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-    <script src="{{ static }}/js/hui/plugins/layer/layer.min.js"></script>
-    <script src="{{ static }}/js/hui/hplus.min.js?v=4.0.0"></script>
-    <script src="{{ static }}/js/hui/contabs.min.js"></script>
-    <script src="{{ static }}/js/hui/plugins/pace/pace.min.js"></script>
+    <script src="{{ static }}/js/jquery.min.js?v=2.1.4"></script>
+    <script src="{{ static }}/js/bootstrap.min.js?v=3.3.5"></script>
+    <script src="{{ static }}/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+    <script src="{{ static }}/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+    <script src="{{ static }}/js/plugins/layer/layer.min.js"></script>
+    <script src="{{ static }}/js/hplus.min.js?v=4.0.0"></script>
+    <script src="{{ static }}/js/contabs.min.js"></script>
+    <script src="{{ static }}/js/plugins/pace/pace.min.js"></script>
 </body>
 
 </html>

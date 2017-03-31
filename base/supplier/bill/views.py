@@ -160,7 +160,13 @@ def billAdjust(request):
             shopCode +=str(item)
             shopCode +="','"
         shopCode = shopCode[0:len(shopCode)-2]
-        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum from adprice,adpriced where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+orderStyle+" desc"
+        sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname," \
+              "sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum " \
+              "from adprice,adpriced " \
+              "where adprice.shopcode in ("+shopCode+") and adprice.code like '%"+code+"%' " \
+            "and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" " \
+            "group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 " \
+            "order by "+orderStyle+" desc"
     else:
         sql = "select * from ( select adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,sum((adpriced.dqhsjj-adpriced.cprice_notax)*adpriced.anum) inprice_tax,seenum,cstyle,csname,bdate,edate,remark,status,sum(anum) anum from adprice,adpriced where adprice.code like '%"+code+"%' and adprice.chdate>='"+start+"' and adprice.chdate<='"+end+" 23:59:59' and adprice.code=adpriced.code and  adprice.spercode="+sperCode+" and adprice.grpcode="+grpCode+" group by adprice.adpriceclass,adprice.code,adprice.chdate,adprice.spercode,spername,shopcode,shopname,cstyle,csname,bdate,edate,remark,status,seenum ) as t1 order by "+orderStyle+" desc"
 

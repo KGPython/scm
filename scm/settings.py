@@ -37,8 +37,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = '959pnv02y=9dyry1k0mypr8&m)a^pv7-x7cx3rtogleb4w*ty5'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-DEBUG = False
+DEBUG = True
+# DEBUG = False
 # ALLOWED_HOSTS = ['*']
 ALLOWED_HOSTS = ['218.11.132.35','127.0.0.1','localhost','.ikuanguang.com']
 
@@ -59,6 +59,8 @@ INSTALLED_APPS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.http.ConditionalGetMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -70,7 +72,8 @@ MIDDLEWARE_CLASSES = (
 )
 
 ROOT_URLCONF = 'scm.urls'
-
+#CommonMiddleware相关
+USE_ETAG=True
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -102,10 +105,6 @@ SESSION_COOKIE_AGE=60*30  #30 minute
 # https://docs.djangoproject.com/en/1.8/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.sqlite3',
-    #     'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    # }
    'default': {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': Constants.SCM_DB_MYSQL_DATABASE,
@@ -146,7 +145,6 @@ CACHES = {
         "KEY_PREFIX":'scm',
     },
 }
-
 # REDIS_TIMEOUT=7*24*60*60
 # CUBES_REDIS_TIMEOUT=60*60
 # NEVER_REDIS_TIMEOUT=365*24*60*60

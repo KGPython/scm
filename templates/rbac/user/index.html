@@ -5,11 +5,11 @@
             <div class="col-sm-12">
                 <div class="ibox float-e-margins">
                     <div class="ibox-title">
-                        <h5>角色列表</h5>
+                        <h5>人员列表</h5>
                     </div>
                     <div class="ibox-content">
                         <div class="">
-                            <a href="{% url 'rbacRoleCreate' %}" class="btn btn-primary ">添加行</a>
+                            <a href="{% url 'rbacUserCreate' %}" class="btn btn-primary ">添加行</a>
                         </div>
                         <table class="table table-striped table-bordered table-hover ">
                             <thead>
@@ -17,18 +17,20 @@
                                 <th>ID</th>
                                 <th>名称</th>
                                 <th>状态</th>
+                                <th>失效日期</th>
                                 <th>操作</th>
                             </tr>
                             </thead>
                             <tbody>
-                                {% for role in roles %}
+                                {% for user in users %}
                                     <tr class="">
-                                        <td><a href="{% url 'rbacRoleInfo' %}?id={{ role.role_id }}">{{ role.role_id }}</a></td>
-                                        <td>{{ role.role_name }}</td>
-                                        <td>{{ role.status }}</td>
+                                        <td><a href="{% url 'rbacUserInfo' %}?id={{ user.ucode }}">{{ user.ucode }}</a></td>
+                                        <td>{{ user.nm }}</td>
+                                        <td>{{ user.status }}</td>
+                                        <td>{{ user.budate }}</td>
                                         <td>
-                                            <a href="{% url 'rbacRoleDel' %}?id={{ role.role_id }}" class="btn-sm btn-warning ">删除</a>
-                                            <a href="{% url 'rbacRoleCreate' %}?id={{ role.role_id }}" class="btn-sm btn-primary ">编辑</a>
+                                            <a href="{% url 'rbacUserDel' %}?id={{ user.ucode }}" class="btn-sm btn-warning ">删除</a>
+                                            <a href="{% url 'rbacUserCreate' %}?id={{ user.ucode }}" class="btn-sm btn-primary ">编辑</a>
                                         </td>
                                     </tr>
                                 {% endfor %}

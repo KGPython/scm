@@ -13,7 +13,7 @@ from django.shortcuts import render
 from base.models import BasPurLog
 from base.report.common import Method as reportMth
 from base.utils import DateUtil,MethodUtil as mtu
-
+from base.report.common import Excel
 
 def query():
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)

@@ -2,8 +2,6 @@
 __author__ = 'liubf'
 
 import datetime,decimal
-import xlrd,xlwt3 as xlwt
-
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.db import connection

@@ -767,7 +767,7 @@ def findAdvance(conn,venderid):
 
 
 def findBillItem(conn,venderid,pstart,pend,cstart,cend,refsheetidList=None,contracttype=None):
-    #创建结算明细
+    #创建结算明细临时表
     createTempheaditemTable(conn)
 
     if contracttype=="g":

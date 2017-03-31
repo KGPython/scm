@@ -1,21 +1,33 @@
 # -*- coding:utf-8 -*-
-__author__ = 'liubf'
 
-import calendar
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
+import calendar,datetime,decimal,json,xlwt3 as xlwt
 from django.db.models import Sum, Avg
 from django.http import HttpResponse
 from django.shortcuts import render
+from django.template.loader import render_to_string
 from django.views.decorators.cache import cache_page
-from django.views.decorators.csrf import csrf_exempt
-
+from django.core.cache import caches
 from base.models import Kshopsale, BasShopRegion, Estimate, EstimateYear, BasPurLog
 from base.report.common import Method as reportMth
 from base.utils import DateUtil, MethodUtil as mtu
+from base.report.common import Excel
+from django.views.decorators.http import condition
+from base.common.decorators import d_table_check_sum
+
+def get_colour_checksum(request):
+    sql = "CHECKSUM TABLE Kshopsale"
+    conn = mtu.getMysqlConn()
+    cur = conn.cursor()
+    cur.execute(sql)
+    res = cur.fetchone()
+    return  str(res['Checksum'])
+
+def getFileModifyTime(request, *args, **kwargs):
+    import os,datetime
+    filePath = __file__
+    stinfo = os.stat(filePath)
+    time_local = datetime.datetime.utcfromtimestamp(stinfo.st_mtime)
+    return  time_local
 
 
 def query(date):
@@ -41,36 +53,47 @@ def query(date):
     shopids = [shop["shopid"] for shop in slist]
 
     karrs = {}
-    # 查询当月销售
-    karrs.setdefault("sdate__gte", "{start} 00:00:00".format(start=start))
-    karrs.setdefault("sdate__lte", "{end} 23:59:59".format(end=yesterday))
-    karrs.setdefault("shopid__in", shopids)
-    baselist = Kshopsale.objects.values('shopid', 'sdate', 'salevalue', 'salegain', 'tradenumber', 'tradeprice',
-                      'salevalueesti', 'salegainesti','tradenumberold', 'tradepriceold', 'salevalueold', 'salegainold')\
-                .filter(**karrs).order_by("shopid")
-
     # 查询当年销售（单位：万元）
-    karrs.clear()
     karrs.setdefault("sdate__year", "{year}".format(year=year))
     karrs.setdefault("shopid__in", shopids)
-    yearlist =  Kshopsale.objects.values("shopid") \
-                .filter(**karrs).order_by("shopid") \
-                .annotate(salevalue=Sum('salevalue') / 10000, salegain=Sum('salegain') / 10000, tradenumber=Sum('tradenumber')
-                  , tradeprice=Sum('tradeprice'), salevalueesti=Sum('salevalueesti') / 10000
-                  , salegainesti=Sum('salegainesti') / 10000
-                  , tradenumberold=Sum('tradenumberold'), tradepriceold=Sum('tradepriceold')
-                  , salevalueold=Sum('salevalueold') / 10000, salegainold=Sum('salegainold') / 10000)
+    shopSaleYearData = Kshopsale.objects.values("shopid").filter(**karrs).order_by("shopid")
+    yearlist = shopSaleYearData \
+               .annotate(
+                    salevalue=Sum('salevalue') / 10000,
+                    salegain=Sum('salegain') / 10000,
+                    tradenumber=Sum('tradenumber'),
+                    tradeprice=Sum('tradeprice'),
+                    salevalueesti=Sum('salevalueesti') / 10000,
+                    salegainesti=Sum('salegainesti') / 10000,
+                    tradenumberold=Sum('tradenumberold'),
+                    tradepriceold=Sum('tradepriceold'),
+                    salevalueold=Sum('salevalueold') / 10000,
+                    salegainold=Sum('salegainold') / 10000
+               )
 
-    #查询当年平均客单数
-    avglist = Kshopsale.objects.values("shopid").filter(**karrs).order_by("shopid").annotate(tradenumber_avg=Avg('tradenumber'))
+    # 查询当年平均客单数
+    avglist = shopSaleYearData.annotate(tradenumber_avg=Avg('tradenumber'))
     avgdict = {aitem["shopid"]: aitem["tradenumber_avg"] for aitem in avglist}
+
+    # 查询当月销售
+    karrs.clear()
+    karrs.setdefault("sdate__gte", "{start} 00:00:00".format(start=start))
+    karrs.setdefault("sdate__lte", "{end} 23:59:59".format(end=yesterday))
+    # karrs.setdefault("shopid__in", shopids)
+    # baselist = Kshopsale.objects.values('shopid', 'sdate', 'salevalue', 'salegain', 'tradenumber', 'tradeprice',
+    #                   'salevalueesti', 'salegainesti','tradenumberold', 'tradepriceold', 'salevalueold', 'salegainold')\
+    #             .filter(**karrs).order_by("shopid")
+    baselist = shopSaleYearData.values('shopid','sdate', 'salevalue', 'salegain', 'tradenumber', 'tradeprice',
+                      'salevalueesti', 'salegainesti','tradenumberold', 'tradepriceold', 'salevalueold', 'salegainold').filter(**karrs)
+
 
     #查询去年同期平均客单数
     karrs.clear()
     karrs.setdefault("sdateold__gte", "{start} 00:00:00".format(start=oldstart))
     karrs.setdefault("sdateold__lte", "{end} 23:59:59".format(end=oldyesterday))
     karrs.setdefault("shopid__in", shopids)
-    oldavglist = Kshopsale.objects.values("shopid").filter(**karrs).order_by("shopid").annotate(tradenumberold_avg=Avg('tradenumberold'))
+    oldavglist = Kshopsale.objects.values("shopid").filter(**karrs).order_by("shopid")\
+                .annotate(tradenumberold_avg=Avg('tradenumberold'))
     oldavgdict = {aitem["shopid"]: aitem["tradenumberold_avg"] for aitem in oldavglist}
 
     #
@@ -246,8 +269,19 @@ def query(date):
     return data
 
 
+def use_cache(key):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            print("%s is running" % func.__name__)
+            return func(*args)
+        return wrapper
+    return decorator
+
+
+
+# @condition(etag_func=get_colour_checksum,last_modified_func=getFileModifyTime)
 # @cache_page(60 * 10, cache='default',key_prefix='daily_group_operate')
-# @csrf_exempt
+# @use_cache('group_operate')
 def index(request):
     qtype = mtu.getReqVal(request, "qtype", "1")
     if not qtype:
@@ -266,7 +300,13 @@ def index(request):
     date = DateUtil.get_day_of_day(-1)
     if qtype == "1":
         data = query(date)
-        return render(request, "report/daily/group_operate.html", data)
+        tempalte = caches['default'].get('group_operate')
+        if not tempalte:
+            content = render_to_string("report/daily/group_operate.html", data)
+            caches['default'].set('group_operate',content,10*60)
+            return render(request, "report/daily/group_operate.html", data)
+        else:
+            return HttpResponse(tempalte)
     else:
         fname = date.strftime("%m.%d") + "_daily_grp_shop_opt.xls"
         return export(fname,date)
@@ -441,19 +481,18 @@ def countSum(sumList, days):
             sum["month_salegain_accomratio"] = str("0.00%")
 
         # 月毛利-月预算进度
-        if float(sum["month_salegain_estimate"]) > 0:
-            sum["month_salegain_complet_progress"] = str(
-                "%0.2f" % (float(sum["month_salegain"]) * 100 / float(sum["month_salegain_estimate"]))) + "%"
+        if float(sum["month_salegain_estimate"]) > 0:sum["month_salegain_complet_progress"] = str("%0.2f" % (float(sum["month_salegain"]) * 100 / float(sum["month_salegain_estimate"]))) + "%"
         else:
             sum["month_salegain_complet_progress"] = str("0.00%")
 
         # 月毛利-同比增长
-        if float(sum["month_salevalueold"]) > 0:
+        if float(sum["month_salegainold"]) > 0:
             sum["month_salegain_ynygrowth"] = str("%0.2f" % (
-            (float(sum["month_salevalue"]) - float(sum["month_salevalueold"])) * 100.0 / float(
-                sum["month_salevalueold"]))) + "%"
+            (float(sum["month_salegain"]) - float(sum["month_salegainold"])) * 100.0 / float(
+                sum["month_salegainold"]))) + "%"
         else:
             sum["month_salegain_ynygrowth"] = str("0.00%")
+
 
             # 月毛利-毛利率
         if float(sum["month_salevalue"]) > 0:

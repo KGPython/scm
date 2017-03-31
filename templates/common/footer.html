@@ -1,6 +1,3 @@
-{#<div id="loading" style="position: absolute;top: 45%;left: 45%;display: none;">#}
-{#    <img src="{{ static }}/image/loading3.gif" style="width:200px;height:200px;">#}
-{#</div>#}
 <!--[if IE]>
 <script type="text/javascript" src="{{ static }}/js/jquery-1.9.1.js"></script><![endif]-->
 <![if !IE]>
@@ -21,18 +18,18 @@
     soft_key_validator.loadSoftKey();
 
     function pub_export(curUrl){
-{#        $("#loading").show();#}
+        $('#btnExport').val('正在导出，请稍后...').attr('disabled',true);
+
         soft_key_validator.callService_1(export_bar,curUrl);
+{#        export_bar(curUrl);#}
     }
     function export_bar(url){
         $.get(url,function (data) {
             var data = JSON.parse(data);
             var fname = data.fname;
-{#            if(fname){#}
-{#                $("#loading").hide();#}
-{#            }#}
             downloadExcel(fname);
         });
+        $("#btnExport").val('导出Excel').removeAttr('disabled');
     }
     function downloadExcel(fname) {
         window.location.href='{% url 'downloadReportExcel' %}'+'?fname='+fname;
@@ -75,20 +72,20 @@
         });
     }
 
-function setSeeNum(see_num,urlCur){
-    $.ajax({
-        url:'{% url 'setSeeNum' %}',
-        method:'post',
-        dataType:'json',
-        async : false,
-        data:{
-            'urlCur':urlCur,
-            'seeNum':see_num
-        },
-        success: function (data) {
+    function setSeeNum(see_num,urlCur){
+        $.ajax({
+            url:'{% url 'setSeeNum' %}',
+            method:'post',
+            dataType:'json',
+            async : false,
+            data:{
+                'urlCur':urlCur,
+                'seeNum':see_num
+            },
+            success: function (data) {
 
-        }
-    })
-}
+            }
+        })
+    }
 
 </script>

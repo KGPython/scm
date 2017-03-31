@@ -1,8 +1,8 @@
 from django.core.cache import caches
 import json
+from base.utils import MethodUtil as mth
 def getRbacDepart(p_id=None):
     rbac = caches['redis2'].get('rbac_role')
-
     rbacDepartList = []
     rbacDepart = ''
     departs = rbac['depart']
@@ -30,10 +30,6 @@ def getRbacDepart(p_id=None):
 
     return rbacDepartList,rbacDepart
 
-
-
-
-
 def getRbacClass():
     rbac = caches['redis2'].get('rbac_role')
     rbacClassList = []
@@ -53,3 +49,12 @@ def getRbacClass():
     rbacClass = rbacClass[0:len(rbacClass) - 1]
 
     return rbacClassList,rbacClass
+
+def get_colour_checksum(request):
+    sql = "CHECKSUM TABLE bas_user"
+    conn = mth.getMysqlConn()
+    cur = conn.cursor()
+    cur.execute(sql)
+    res = cur.fetchone()
+    print(res)
+    return  str(res['Checksum'])

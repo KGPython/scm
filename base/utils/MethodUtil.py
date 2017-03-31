@@ -502,6 +502,10 @@ def rmbupper(arg):
     unit = ["分","角","元","拾","佰","仟","万","拾","佰","仟","亿",
             "拾","佰","仟","万","拾","佰","仟","兆"]
     nums = []   #取出每一位数字，整数用字符方式转换避大数出现误差
+    prefix = ''
+    if arg<0:
+        prefix = '负'
+        arg = abs(arg)
     if type(arg) is float:
         for i in range(len(unit)-3, -3, -1):
             if arg >= 10**i or i < 1:
@@ -527,7 +531,7 @@ def rmbupper(arg):
 
     if words[-1] != unit[0]:    #结尾非‘分’补整字
         words.append("整")
-    return ''.join(words)
+    return prefix+''.join(words)
 
 class PinYin(object):
     def __init__(self, dict_file=Constants.WORD_DATA):

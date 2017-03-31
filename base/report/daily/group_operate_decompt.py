@@ -14,7 +14,7 @@ from django.shortcuts import render
 from base.models import BasShopRegion, BasPurLog,BasOrg
 from base.report.common import Method as reportMth
 from base.utils import DateUtil, MethodUtil as mtu
-
+from base.report.common import Excel
 
 def query(date,start,end,yesterday,lastDay):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)

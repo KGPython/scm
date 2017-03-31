@@ -1,0 +1,177 @@
+{% extends 'common/hui/base.html' %}
+{% block content %}
+    <style>
+        .form-horizontal .checkbox-inline{padding: 0;}
+        .checkbox-inline{margin-right: 0}
+    </style>
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>自动报表系统 <small>业态授权</small></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="form-horizontal depart-box">
+                            {% for company in departs %}
+                                <div class="form-group dl">
+                                    {{ form.chaoShi }}
+                                    <div class="col-sm-1 dt">
+                                        <input type="checkbox" class="all" value="{{ company.p_item.c_id }}">
+                                        <label class="control-label checkbox-inline">
+                                            {% if company.p_item.c_id == '11' %}
+                                                超市
+                                            {% elif company.p_item.c_id == '12' %}
+                                                百货
+                                            {% elif company.p_item.c_id == '13' %}
+                                                便利店
+                                            {% endif %}：
+                                        </label>
+                                    </div>
+                                    <div class="col-sm-11 dd">
+                                        {% for depart in company.sub %}
+                                            <div class="col-sm-3">
+                                                <input type="checkbox" value="{{ depart.depart_id }}">
+                                                <label  class="checkbox-inline">{{ depart.depart_name }}</label>
+                                            </div>
+
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>自动报表系统 <small>部类授权</small></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="form-horizontal category-box">
+                            {% for cate in classes %}
+                                <div class="form-group dl">
+                                    <div class="col-sm-1 dt">
+                                        <input type="checkbox" class="all" value="{{ cate.p_item.c_id }}">
+                                        <label class="control-label checkbox-inline">{{ cate.p_item.c_name }}：</label>
+                                    </div>
+                                    <div class="col-sm-11 dd">
+                                        {% for class in cate.sub %}
+                                            <div class="col-sm-3">
+                                                <input type="checkbox" value="{{ class.class_id }}">
+                                                <label  class="checkbox-inline">{{ class.class_name }}</label>
+                                            </div>
+
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                            {% endfor %}
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>自动报表系统 <small>模块授权</small></h5>
+                    </div>
+                    <div class="ibox-content">
+                        <div class="form-horizontal module-box">
+                            {% for module in modules %}
+                                <div class="form-group dl">
+                                    <div class="col-sm-1 dt">
+                                        <input type="checkbox" class="all" value="{{ module.p_item.m_id }}">
+                                        <label class="control-label checkbox-inline">{{ module.p_item.m_name }}：</label>
+                                    </div>
+                                    <div class="col-sm-11 dd">
+                                        {% for m in module.sub %}
+                                            <div class="col-sm-3">
+                                                <input type="checkbox" value="{{ m.m_id }}">
+                                                <label  class="checkbox-inline">{{ m.m_name }}</label>
+                                            </div>
+
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                                <div class="hr-line-dashed"></div>
+                            {% endfor %}
+                            <div class="form-group">
+                                <div class="col-sm-4 col-sm-offset-2">
+                                    <button class="btn btn-primary" type="button" onclick="setAction('save')">创建</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+{% endblock %}
+
+{% block js %}
+<script src="{{ static }}/js/plugins/layer/layer.min.js"></script>
+<script>
+    $(".all").click(function(){
+        var check_status=$(this).prop('checked');
+        if(check_status){
+            $(this).parent().siblings().find("input").prop('checked',true);
+        }else{
+            $(this).parent().siblings().find("input").prop('checked',false);
+        }
+    });
+
+    function getMyList(boxClass) {
+        var data = [];
+        $('.'+boxClass+' .dl').each(function () {
+            var item = {};
+            var p_id  = $(this).find('.dt input').val();
+
+            var checkList='';
+            $(this).find('.dd input').each(function(){
+                var check_status=$(this).prop('checked');
+                if(check_status){
+                    item['p_id'] = p_id;
+                    checkList += $(this).attr('value');
+                    checkList += ',';
+                }
+            });
+            if(checkList.length>0){
+                item['sub'] = checkList;
+                data.push(JSON.stringify(item));
+            }
+        });
+        return data;
+
+    }
+    function setAction(action) {
+        var departs = getMyList('depart-box');
+        var categories = getMyList('category-box');
+        var modules = getMyList('module-box');
+        var data = {
+            csrfmiddlewaretoken: '{{ csrf_token }}',
+            'action': action,
+            'id':{{ roleID | safe }},
+            'departs': departs.join(','),
+            'categories': categories.join(','),
+            'modules': modules.join(',')
+        };
+        $.ajax({
+            url:"{% url 'rbacSave' %}",
+            type:'post',
+            dataType:'json',
+            data:data,
+            success:function(data){
+                if(data.msg == 0){
+                    alert('保存成功');
+                    window.location.href = '{% url 'rbacRole' %}'
+                }else{
+                    alert('保存失败');
+                }
+            }
+        });
+    }
+</script>
+{% endblock %}

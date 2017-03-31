@@ -13,7 +13,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from base.models import Kgprofit,BasPurLog
 from base.utils import DateUtil,MethodUtil as mtu
-
+from base.report.common import Excel
 
 def query(date):
     karrs = {}

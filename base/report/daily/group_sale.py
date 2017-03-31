@@ -14,7 +14,7 @@ from django.views.decorators.csrf import csrf_exempt
 from base.models import BasPurLog
 from base.report.common import Method as reportMth
 from base.utils import DateUtil,MethodUtil as mtu
-
+from base.report.common import Excel
 
 def query(date):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -113,7 +113,7 @@ def query(date):
     data = {"gslist":rlist,"sumDict":sumDict}
     return data
 
-@cache_page(60*60*4,cache='default',key_prefix='daily_group_sale')
+# @cache_page(60*60*4,cache='default',key_prefix='daily_group_sale')
 @csrf_exempt
 def index(request):
      qtype = mtu.getReqVal(request,"qtype","1")

@@ -367,33 +367,35 @@ def welcome(request):
 from base.models import RbacUserRole,RbacRoleInfo,RbacMoudle
 def getRbacRole(request,ucode):
     role_id = RbacUserRole.objects.values('role').filter(user_id=ucode)
-    role = RbacRoleInfo.objects.values('depart', 'category', 'module').filter(role_id=role_id)[0]
-    caches['redis2'].set('rbac_role', role,60*60*24)
-    request.session['rbac_role'] = role
-    # 业态
-    departStr = role['depart'].replace('},', '}$')
-    departList = departStr.split('$', )
-    companyIdList = []
-    for depart in departList:
-        depart = json.loads(depart)
-        companyIdList.append(depart['p_id'])
-    # 部类
-    categoryStr = role['category'].replace('},', '}$')
-    categoryList = categoryStr.split('$')
-    # 模块
-    moduleStr = role['module'].replace('},', '}$')
-    moduleList = moduleStr.split('$', )
-    moduleIdList = []
-    for module in moduleList:
-        module = json.loads(module)
-        moduleIdList.append(module['p_id'])
-        subModules = module['sub'][0:len(module['sub']) - 1].split(',')
-        moduleIdList = moduleIdList + subModules
+    role = RbacRoleInfo.objects.values('depart', 'category', 'module').filter(role_id=role_id).first()
+    rbac = []
+    if role:
+        caches['redis2'].set('rbac_role', role,60*60*24)
+        request.session['rbac_role'] = role
+        # 业态
+        departStr = role['depart'].replace('},', '}$')
+        departList = departStr.split('$', )
+        companyIdList = []
+        for depart in departList:
+            depart = json.loads(depart)
+            companyIdList.append(depart['p_id'])
+        # 部类
+        categoryStr = role['category'].replace('},', '}$')
+        categoryList = categoryStr.split('$')
+        # 模块
+        moduleStr = role['module'].replace('},', '}$')
+        moduleList = moduleStr.split('$', )
+        moduleIdList = []
+        for module in moduleList:
+            module = json.loads(module)
+            moduleIdList.append(module['p_id'])
+            subModules = module['sub'][0:len(module['sub']) - 1].split(',')
+            moduleIdList = moduleIdList + subModules
 
-    menuList = RbacMoudle.objects.values('m_name', 'm_id', 'm_url', 'p_id').filter(m_type__in=companyIdList,m_id__in=moduleIdList)
-    menuList = createBbacMenu(menuList)
+        menuList = RbacMoudle.objects.values('m_name', 'm_id', 'm_url', 'p_id').filter(m_type__in=companyIdList,m_id__in=moduleIdList)
+        rbac = createBbacMenu(menuList)
 
-    request.session['rbac_menu'] = menuList
+    request.session['rbac_menu'] = rbac
 
 def createBbacMenu(menuList):
     data = []
