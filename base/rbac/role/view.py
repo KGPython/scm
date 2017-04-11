@@ -7,7 +7,7 @@ from .froms import *
 
 
 def index(request):
-    roles = RbacRole.objects.values('role_id','role_name','status').filter(status='0')
+    roles = RbacRole.objects.values('role_id','role_name','status').order_by('status')
     return render(request,'rbac/role/index.html',locals())
 
 def create(request):
@@ -21,11 +21,13 @@ def create(request):
         status = request.POST.get('status')
         res = {}
         try:
-            role = RbacRole()
-            role.role_id = id
-            role.role_name = name
-            role.status = status
-            role.save()
+            if id:
+                role = RbacRole.objects.filter(role_id=id).update(role_name=name,status=status)
+            else:
+                role = RbacRole()
+                role.role_name = name
+                role.status = status
+                role.save()
             res['msg'] = 0
         except Exception as e:
             print(e)

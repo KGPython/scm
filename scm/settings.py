@@ -128,7 +128,7 @@ CACHES = {
             "CLIENT_CLASS": "redis_cache.client.DefaultClient",
         },
         "KEY_PREFIX":'scm',
-        # "TIMEOUT":480,
+        "TIMEOUT":480,
 
     },
     'redis2': {

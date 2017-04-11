@@ -9,6 +9,7 @@ import xlwt3 as xlwt
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.cache import cache_page
 
 from base.models import Kgprofit,BasPurLog
 from base.report.common import Method as reportMth
@@ -31,7 +32,7 @@ def query(date):
     return rlist
 
 
-# @cache_page(60 * 2 ,key_prefix='abnormal_negprofit_past_3days')
+@cache_page(60 * 2 ,key_prefix='abnormal_negprofit_past_3days')
 @csrf_exempt
 def index(request):
      yesterday = DateUtil.get_day_of_day(-1)

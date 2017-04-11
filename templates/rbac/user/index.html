@@ -26,10 +26,10 @@
                                     <tr class="">
                                         <td><a href="{% url 'rbacUserInfo' %}?id={{ user.ucode }}">{{ user.ucode }}</a></td>
                                         <td>{{ user.nm }}</td>
-                                        <td>{{ user.status }}</td>
+                                        <td>{% if user.status == '1' %}启用{% else %}停用{% endif %}</td>
                                         <td>{{ user.budate }}</td>
                                         <td>
-                                            <a href="{% url 'rbacUserDel' %}?id={{ user.ucode }}" class="btn-sm btn-warning ">删除</a>
+                                            <a href="javascript:void(0) " id="{{ user.ucode }}" class="btn-sm btn-warning btn-del">删除</a>
                                             <a href="{% url 'rbacUserCreate' %}?id={{ user.ucode }}" class="btn-sm btn-primary ">编辑</a>
                                         </td>
                                     </tr>
@@ -54,10 +54,16 @@
         $(document).ready(function () {
             $(".dataTables-example").dataTable();
         });
-        function fnClickAddRow() {
-            $("#editable").dataTable().fnAddData(["Custom row", "New row", "New row", "New row", "New row"])
-        }
-        ;
+        $('.btn-del').click(function () {
+            var _id = $(this).attr('id');
+            $.get('{% url 'rbacUserDel' %}',{'id':_id},function(res){
+                alert(res['msg']);
+                if(res['msg']==0){
+                    alert('提交成功');
+                    window.location.reload();
+                }
+            },'json')
+        })
     </script>
     <script type="text/javascript" src="http://tajs.qq.com/stats?sId=9051096" charset="UTF-8"></script>
 {% endblock %}

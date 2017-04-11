@@ -12,6 +12,6 @@ urlpatterns = [
 
     url(r'^user/index/$','base.rbac.user.view.index',name='rbacUser'),
     url(r'^user/create/$','base.rbac.user.view.create',name='rbacUserCreate'),
-    url(r'^user/create/$','base.rbac.user.view.delete',name='rbacUserDel'),
+    url(r'^user/del/$','base.rbac.user.view.delete',name='rbacUserDel'),
     url(r'^user/info/$','base.rbac.user.view.info',name='rbacUserInfo'),
 ]

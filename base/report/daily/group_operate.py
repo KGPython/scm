@@ -11,24 +11,26 @@ from base.models import Kshopsale, BasShopRegion, Estimate, EstimateYear, BasPur
 from base.report.common import Method as reportMth
 from base.utils import DateUtil, MethodUtil as mtu
 from base.report.common import Excel
-from django.views.decorators.http import condition
-from base.common.decorators import d_table_check_sum
+from base.utils import cache as c
 
-def get_colour_checksum(request):
-    sql = "CHECKSUM TABLE Kshopsale"
+
+def get_table_checksum(table):
+    sql = "CHECKSUM TABLE {table}".format(table=table)
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
     cur.execute(sql)
     res = cur.fetchone()
-    return  str(res['Checksum'])
+    Checksum = res['Checksum'] if res['Checksum'] else 1
+    return  Checksum
 
-def getFileModifyTime(request, *args, **kwargs):
+def getFileModifyTime(path):
     import os,datetime
-    filePath = __file__
+    # filePath = __file__
+    filePath = os.getcwd()+'/templates/'+path
     stinfo = os.stat(filePath)
-    time_local = datetime.datetime.utcfromtimestamp(stinfo.st_mtime)
-    return  time_local
-
+    file_time = stinfo.st_mtime
+    # time_local = datetime.datetime.utcfromtimestamp(stinfo.st_mtime)
+    return  file_time
 
 def query(date):
     rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
@@ -269,19 +271,6 @@ def query(date):
     return data
 
 
-def use_cache(key):
-    def decorator(func):
-        def wrapper(*args, **kwargs):
-            print("%s is running" % func.__name__)
-            return func(*args)
-        return wrapper
-    return decorator
-
-
-
-# @condition(etag_func=get_colour_checksum,last_modified_func=getFileModifyTime)
-# @cache_page(60 * 10, cache='default',key_prefix='daily_group_operate')
-# @use_cache('group_operate')
 def index(request):
     qtype = mtu.getReqVal(request, "qtype", "1")
     if not qtype:
@@ -300,13 +289,16 @@ def index(request):
     date = DateUtil.get_day_of_day(-1)
     if qtype == "1":
         data = query(date)
-        tempalte = caches['default'].get('group_operate')
-        if not tempalte:
-            content = render_to_string("report/daily/group_operate.html", data)
-            caches['default'].set('group_operate',content,10*60)
+        check_num = get_table_checksum('kshopsale')
+        modifyTime = getFileModifyTime('report/daily/group_operate.html')
+        cache_key = c.make_key('res_data','group_operate',check_num * modifyTime)
+        cache_val = caches['default'].get(cache_key,'')
+        if not cache_val:
+            cache_val = render_to_string("report/daily/group_operate.html", data)
+            caches['default'].set(cache_key,cache_val,10*60)
             return render(request, "report/daily/group_operate.html", data)
         else:
-            return HttpResponse(tempalte)
+            return HttpResponse(cache_val)
     else:
         fname = date.strftime("%m.%d") + "_daily_grp_shop_opt.xls"
         return export(fname,date)
@@ -374,6 +366,7 @@ def mergeData(item, ddict, mdict, ydict, rlist, sumList):
 
     ritem["region"] = region
     rlist.append(ritem)
+
 
 def countSum(sumList, days):
     """合计运算"""
@@ -543,6 +536,7 @@ def countSum(sumList, days):
     sumList["sum3"].setdefault("region", "市区合计")
     sumList["sum4"].setdefault("region", "外埠区合计")
 
+
 def setShopInfo(ritem, item):
     """设置门店信息"""
     ritem.setdefault("region", item["region"])
@@ -553,6 +547,7 @@ def setShopInfo(ritem, item):
     else:
         ritem.setdefault("opentime", "")
     ritem.setdefault("type", item["type"])
+
 
 def setDaiySale(ritem, dayItem):
     """设置日运营"""
@@ -620,6 +615,7 @@ def setDaiySale(ritem, dayItem):
     else:
         ritem.setdefault('day_grossmargin', "0.00")
 
+
 def setSumValue(sumList, ritem):
     """ 计算合计 """
     # 集团合计
@@ -634,6 +630,7 @@ def setSumValue(sumList, ritem):
     else:
         # 外埠区合计
         setValue(sumList["sum4"], ritem)
+
 
 def setValue(sum1, ritem):
     if "day_salevalue" in sum1:
@@ -721,6 +718,7 @@ def setValue(sum1, ritem):
         sum1["month_tradenumberold"] = sum1["month_tradenumberold"] + ritem["month_tradenumberold"]
     else:
         sum1["month_tradenumberold"] = ritem["month_tradenumberold"]
+
 
 def setMonthSale(ritem, monthItem, yitem):
     """设置月运营"""
@@ -817,6 +815,7 @@ def setMonthSale(ritem, monthItem, yitem):
     else:
         ritem.setdefault('month_tradeprice_ynygrowth', "0.00")
 
+
 def mergeData2(item, edict, rlist2, sumList2, yestoday):
     year = yestoday.year
     month = yestoday.month
@@ -851,6 +850,7 @@ def mergeData2(item, edict, rlist2, sumList2, yestoday):
     ritem["region"] = region
     rlist2.append(ritem)
 
+
 def findMonthEstimate(shopids):
     date = DateUtil.get_day_of_day(-1)
     month = date.month
@@ -869,6 +869,7 @@ def findMonthEstimate(shopids):
 
     return edict
 
+
 def setSumValue2(sumList, ritem, year, month, lastDay):
     """ 计算合计 """
     # 集团合计
@@ -879,6 +880,7 @@ def setSumValue2(sumList, ritem, year, month, lastDay):
     else:
         # 外埠区合计
         setValue2(sumList["sum4"], ritem, year, month, lastDay)
+
 
 def setValue2(sum1, ritem, year, month, lastDay):
     if "m_salevalue" in sum1:
@@ -927,6 +929,7 @@ def setValue2(sum1, ritem, year, month, lastDay):
         else:
             sum1[salegainesti] = str(float(ritem[salegainesti]))
 
+
 def countSum2(sumList):
     date = DateUtil.get_day_of_day(-1)
     year = date.year
@@ -972,6 +975,7 @@ def countSum2(sumList):
     sumList["sum3"].setdefault("region", "市区合计")
     sumList["sum4"].setdefault("region", "外埠区合计")
 
+
 def mergeData3(item, yeardict, yearlist, yearSum, yydict, yearavgdict):
     ritem = {}
     setShopInfo(ritem, item)
@@ -1001,6 +1005,7 @@ def mergeData3(item, yeardict, yearlist, yearSum, yydict, yearavgdict):
 
     ritem["region"] = region
     yearlist.append(ritem)
+
 
 def setYearSale(ritem, yearavgdict):
     ritem['salevalue'] = mtu.convertToStr(ritem['salevalue'], "0.00", 1)
@@ -1110,6 +1115,7 @@ def setYearSale(ritem, yearavgdict):
         # ritem["tradenumber"] = "%0.0f" % numitem['tradenumber_avg']
         # ritem["tradenumberold"] = "%0.0f" % numitem['tradenumberold_avg']
 
+
 def setSumValue3(sumList, ritem):
     """ 计算合计 """
     # 集团合计
@@ -1124,6 +1130,7 @@ def setSumValue3(sumList, ritem):
     else:
         # 外埠区合计
         setValue3(sumList["sum4"], ritem)
+
 
 def setValue3(sum1, ritem):
     if "salevalue" in sum1:
@@ -1185,6 +1192,7 @@ def setValue3(sum1, ritem):
         sum1["y_salegain"] = str(float(sum1["y_salegain"]) + float(ritem["y_salegain"]))
     else:
         sum1["y_salegain"] = str(float(ritem["y_salegain"]))
+
 
 def countSum3(sumList):
     """合计运算"""
@@ -1277,6 +1285,7 @@ def countSum3(sumList):
     sumList["sum3"].setdefault("region", "市区合计")
     sumList["sum4"].setdefault("region", "外埠区合计")
 
+
 def findYearEstimate(shopids):
     edict = {}
     date = DateUtil.get_day_of_day(-1)
@@ -1292,6 +1301,7 @@ def findYearEstimate(shopids):
         edict.setdefault(str(item["shopid"]), item)
 
     return edict
+
 
 def initEitem(item, year, month, lastDay):
     eitem = {}
@@ -1320,6 +1330,7 @@ def initEitem(item, year, month, lastDay):
         eitem.setdefault(salegainaccomratio, "0.0%")
     return eitem
 
+
 def initDayItem(item):
     dayItem = {}
     dayItem.setdefault("shopid", item["shopid"])
@@ -1336,6 +1347,7 @@ def initDayItem(item):
     # dayItem.setdefault('sdateold',"")
     return dayItem
 
+
 def initMonthItem(item):
     monthItem = {}
     monthItem.setdefault("shopid", item["shopid"])
@@ -1350,6 +1362,7 @@ def initMonthItem(item):
     monthItem.setdefault("m_tradeprice", decimal.Decimal("0.00"))
     monthItem.setdefault("m_tradepriceold", decimal.Decimal("0.00"))
     return monthItem
+
 
 def initYitem(item):
     eitem = {}

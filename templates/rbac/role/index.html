@@ -25,9 +25,9 @@
                                     <tr class="">
                                         <td><a href="{% url 'rbacRoleInfo' %}?id={{ role.role_id }}">{{ role.role_id }}</a></td>
                                         <td>{{ role.role_name }}</td>
-                                        <td>{{ role.status }}</td>
+                                        <td>{% if role.status == '0' %}启用{% else %}停用{% endif %}</td>
                                         <td>
-                                            <a href="{% url 'rbacRoleDel' %}?id={{ role.role_id }}" class="btn-sm btn-warning ">删除</a>
+{#                                            <a href="{% url 'rbacRoleDel' %}?id={{ role.role_id }}" class="btn-sm btn-warning ">删除</a>#}
                                             <a href="{% url 'rbacRoleCreate' %}?id={{ role.role_id }}" class="btn-sm btn-primary ">编辑</a>
                                         </td>
                                     </tr>

@@ -9,11 +9,11 @@
                         <h5>自动报表系统 <small>角色创建</small></h5>
                     </div>
                     <div class="ibox-content">
-                        <form method="post" class="form-horizontal" action="{% url 'rbacRoleCreate' %}">
+                        <form method="post" class="form-horizontal" action="{% url 'rbacUserCreate' %}">
                             <div class="form-group">
                                 <label class="col-sm-2 control-label">ID</label>
                                 <div class="col-sm-10">
-                                    <input type="text" class="form-control" name="id" value="{{ user.ucode }}">
+                                    <input type="text" class="form-control" name="ucode" value="{{ user.ucode }}" {% if user.ucode %}readonly="readonly"{% endif %}>
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
@@ -29,7 +29,7 @@
                                 <label class="col-sm-2 control-label">失效日期</label>
                                 <div class="col-sm-10 input-group date">
                                     <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
-                                    <input type="text" class="form-control" value="{{ user.budate }}">
+                                    <input type="text" class="form-control" name="budate" value="{{ user.budate | date:'Y-m-d'}}">
                                 </div>
                             </div>
                             <div class="hr-line-dashed"></div>
@@ -37,8 +37,8 @@
                                 <label class="col-sm-2 control-label">状态</label>
                                 <div class="col-sm-10">
                                     <select class="form-control m-b" name="status">
-                                        <option value="1" {% if role.status == '1' %}selected="selected"{% endif %}>启用</option>
-                                        <option value="0" {% if role.status == '0' %}selected="selected"{% endif %}>停用</option>
+                                        <option value="1" {% if user.status == '1' %}selected="selected"{% endif %}>启用</option>
+                                        <option value="0" {% if user.status == '0' %}selected="selected"{% endif %}>停用</option>
                                     </select>
                                 </div>
                             </div>
@@ -47,6 +47,7 @@
                             <div class="form-group">
                                 <div class="col-sm-4 col-sm-offset-2">
                                     {% csrf_token %}
+                                    <input type="hidden" name="action" value="{% if user.ucode %}edit{% else %}create{% endif %}">
                                     <button class="btn btn-primary" type="submit">保存</button>
                                 </div>
                             </div>
@@ -74,8 +75,8 @@
     <script>
         var msg = {{ res.msg | safe }};
         if(msg == 0) {
-            alert('创建成功');
-            window.location.href = '{% url 'rbacRole' %}'
+            alert('数据保存成功');
+            window.location.href = '{% url 'rbacUser' %}'
         }
     </script>
 
