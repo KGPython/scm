@@ -861,7 +861,7 @@ def findMonthEstimate(shopids):
     karrs.setdefault("dateid__month", "{month}".format(month=month))
     karrs.setdefault("dateid__year", "{year}".format(year=year))
     elist = Estimate.objects.values("shopid") \
-        .filter(**karrs).exclude(shopid='C009') \
+        .filter(**karrs).exclude(shopid='C009',groupid='75') \
         .annotate(y_salevalue=Sum('salevalue'), y_salegain=Sum('salegain'))
 
     for item in elist:

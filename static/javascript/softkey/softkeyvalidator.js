@@ -401,31 +401,30 @@ function SoftKeyValidator(call,check_url){
             async : false,
             success:function(result){
                 var succ = result.msg;
-                if(succ == 1){
-                    alert('加密锁未启用');
-                    return false;
-                }else if(succ == 2){
+                if(succ == 2){
                     if(curUrl){
                         curUrl += "&key_state="+succ;
-
                         func(curUrl);
                     }else{
                         func();
                     }
-                }else if(succ == 3){
-                    alert('加密锁已冻结');
-                    return false;
-                }else if(succ == 4){
-                    alert('加密锁已失效');
-                    return false;
-                }else if(succ == 5){
-                    alert('加密锁已过期');
-                    return false;
-                }else if(succ == 6){
-                    alert('加密锁验授权信息错误');
-                    return false;
-                }else{
-                    alert("请求错误，验证失败");
+                }else {
+                    if(succ == 1){
+                        alert('加密锁未启用');
+                    }else if(succ == 3){
+                        alert('加密锁已冻结');
+                    }else if(succ == 4){
+                        alert('加密锁已失效');
+                    }else if(succ == 5){
+                        alert('加密锁已过期');
+                    }else if(succ == 6){
+                        alert('加密锁验授权信息错误');
+                    }else if(succ == 7){
+                        alert('用户验证失败');
+                    }else{
+                        alert("请求错误，验证失败");
+                    }
+                    $("#btnExport").text('导出Excel');
                     return false;
                 }
             }

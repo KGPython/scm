@@ -19,6 +19,7 @@ def index(request):
         response = HttpResponse(json.dumps(res))
         response.set_cookie("randNum",randNum,expires=dt)
     else:
+        user = request.session.get('s_ucode','')
         signClient = request.POST.get('signClient')
 
         randNum = request.COOKIES["randNum"]
@@ -26,25 +27,29 @@ def index(request):
         timeStr = request.POST.get('time')
 
         conn = mth.getSoftKeySql()
-        sql = 'SELECT username,status FROM bas_softkey WHERE KeyID = "{keyId}"'.format(keyId=keyId)
+        sql = 'SELECT username,status FROM bas_softkey WHERE KeyID = "{keyId}" AND username="{user}"'\
+            .format(keyId=keyId,user=user)
         cur = conn.cursor()
         cur.execute(sql)
         softKey = cur.fetchone()
-        userName = (softKey['username']).encode(encoding='UTF-8')
-        m = hashlib.md5()
-        m.update(userName)
-        userName = m.hexdigest()
-
-        signList = [keyId,userName,randNum,timeStr]
-        signList.sort()
-        signStr = ''.join(signList)
-        signStr = signStr.encode(encoding='UTF-8')
-        signServer = hashlib.sha1(signStr).hexdigest()
-
         res = {}
-        if signClient == signServer:
-            res['msg'] = softKey['status']
+        if softKey:
+            userName = (softKey['username']).encode(encoding='UTF-8')
+            m = hashlib.md5()
+            m.update(userName)
+            userName = m.hexdigest()
 
-        response = HttpResponse(json.dumps(res))
+            signList = [keyId,userName,randNum,timeStr]
+            signList.sort()
+            signStr = ''.join(signList)
+            signStr = signStr.encode(encoding='UTF-8')
+            signServer = hashlib.sha1(signStr).hexdigest()
+
+            if signClient == signServer:
+                res['msg'] = softKey['status']
+        else:
+            res['msg'] = '7'
+
+    response = HttpResponse(json.dumps(res))
 
     return response

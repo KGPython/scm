@@ -98,7 +98,7 @@ WSGI_APPLICATION = 'scm.wsgi.application'
 #set session expire
 SESSION_SAVE_EVERY_REQUEST = True
 SESSION_EXPIRE_AT_BROWSER_CLOSE = False
-SESSION_COOKIE_AGE=60*30  #30 minute
+SESSION_COOKIE_AGE=60*60*2
 
 
 # Database

@@ -23,7 +23,7 @@
                             </thead>
                             <tbody>
                                 {% for user in users %}
-                                    <tr class="">
+                                    <tr>
                                         <td><a href="{% url 'rbacUserInfo' %}?id={{ user.ucode }}">{{ user.ucode }}</a></td>
                                         <td>{{ user.nm }}</td>
                                         <td>{% if user.status == '1' %}启用{% else %}停用{% endif %}</td>

@@ -14,14 +14,14 @@
 <script type="text/javascript" src="{{ static }}/js/softkey/Syunew3.js"></script>
 <script type="text/javascript" src="{{ static }}/js/softkey/softkeyvalidator.js" charset="utf-8"></script>
 <script type="text/javascript">
-    var soft_key_validator = new SoftKeyValidator('','{% url 'keyCheck' %}');
+    var soft_key_validator = new SoftKeyValidator('',"{% url 'keyCheck' %}");
     soft_key_validator.loadSoftKey();
 
     function pub_export(curUrl){
-        $('#btnExport').val('正在导出，请稍后...').attr('disabled',true);
+        $('#btnExport').text('正在导出，请稍后...');
 
         soft_key_validator.callService_1(export_bar,curUrl);
-{#        export_bar(curUrl);#}
+        // export_bar(curUrl);
     }
     function export_bar(url){
         $.get(url,function (data) {
@@ -29,7 +29,7 @@
             var fname = data.fname;
             downloadExcel(fname);
         });
-        $("#btnExport").val('导出Excel').removeAttr('disabled');
+        $("#btnExport").text('导出Excel');
     }
     function downloadExcel(fname) {
         window.location.href='{% url 'downloadReportExcel' %}'+'?fname='+fname;
