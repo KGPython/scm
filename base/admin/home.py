@@ -6,6 +6,7 @@ from django.core.paginator import Paginator
 from base.message.views import findPubInfoAllByCon
 
 __EACH_PAGE_SHOW_NUMBER = 10
+
 def index(request):
     user = request.session.get("s_user",None)
     if user:

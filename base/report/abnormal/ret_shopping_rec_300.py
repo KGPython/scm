@@ -1,48 +1,30 @@
 # -*- coding:utf-8 -*-
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-
-from base.models import Kglistnoret, BasPurLog
-from base.report.common import Method as reportMth
 from base.utils import DateUtil, MethodUtil as mtu
-from base.report.common import Excel
+from base.models import Kglistnoret, Kggoodsret, BasPurLog
+from django.http import HttpResponse
+import datetime, decimal,json
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(date):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
-    rlist = Kglistnoret.objects\
-            .values("shopid", "sdate", "stime", "listno", "posid", "cashierid",
-                    "name", "payreson","paytype", "payvalue")\
-            .filter(sdate=date,shopid__in=rbacDepartList)
+    rlist = Kglistnoret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "payreson", \
+                                       "paytype", "payvalue").filter(sdate=date).exclude(shopid='C009')
 
     formate_data(rlist)
 
     # 商品退货明细
-    conn= mtu.getMysqlConn()
-    sql = "SELECT shopid, sdate, stime, listno, posid, cashierid, name, DeptID, DeptName, goodsid, goodsname, xAmount," \
-          "salevalue, DiscValue, truevalue, SaleType, Price, DiscType " \
-          "FROM `kggoodsret` " \
-          "WHERE (`shopid` IN ({rbacDepart}) AND `sdate` = '{date}' " \
-          "AND LEFT(`DeptID`,2) IN ({rbacClass}))"\
-          .format(rbacDepart=rbacDepart,date=date,rbacClass=rbacClass)
-    cur = conn.cursor()
-    cur.execute(sql)
-    dlist = cur.fetchall()
-    cur.close()
-    conn.close()
+    dlist = Kggoodsret.objects.values("shopid", "sdate", "stime", "listno", "posid", "cashierid", "name", "deptid", \
+                                      "deptname", "goodsid", "goodsname", "xamount", "salevalue", "discvalue", \
+                                      "truevalue", "saletype", "price", "disctype").filter(sdate=date).exclude(
+        shopid='C009')
     formate_data(dlist)
     data = {"rlist": list(rlist), 'dlist': list(dlist)}
     return data
 
 
-# @cache_page(60*2 ,key_prefix='abnormal_ret_shopping_rec_300')
+@cache_page(60*2 ,key_prefix='abnormal_ret_shopping_rec_300')
 @csrf_exempt
 def index(request):
     yesterday = DateUtil.get_day_of_day(-1)
@@ -64,9 +46,9 @@ def index(request):
         fname = yesterday.strftime("%m.%d") + "_abnormal_ret_shopping_rec_300.xls"
         return export(fname,yesterday)
 
-
+import base.report.Excel as excel
 def export(fname,yesterday):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(yesterday)
         createExcel(fname,data)
     res = {}
@@ -79,7 +61,7 @@ def createExcel(fname,data):
     writeDataToSheet1(wb, data['rlist'])
     # 写入sheet2
     writeDataToSheet2(wb, data['dlist'])
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb, rlist):

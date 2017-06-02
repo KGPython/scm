@@ -1,58 +1,26 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
+from django.db.models import Sum
 from django.views.decorators.csrf import csrf_exempt
-
-from base.models import BasPurLog
-from base.report.common import Method as reportMth
 from base.utils import DateUtil,MethodUtil as mtu
-from base.report.common import Excel
+from base.models import Kshopsale,BasShopRegion,Estimate,BasPurLog
+from django.db import connection
+from django.http import HttpResponse
+import datetime,calendar,decimal,json
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(date):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-
     yesterday = date.strftime("%Y-%m-%d")
     # 查询当月销售
     try:
+        sql = "CALL k_d_wholesale ('{start}','{end}') ".format(start=yesterday, end=yesterday)
         conn = mtu.getMysqlConn()
         cur = conn.cursor()
-
-        sqlKwholesale = '''
-            select sdate,shopid,sum(salevalue) wsalevalue,sum(costvalue) wcostvalue,sum(salevalue-costvalue) wsalegain,sum(salevalue-costvalue)/sum(salevalue)*100 wgaintx from kwholesale where
-             sdate between '{start}' and '{end}' and shopid in ({rbacDepart})
-            group by sdate,shopid
-        '''.format(start=yesterday, end=yesterday,rbacDepart=rbacDepart)
-
-        cur.execute(sqlKwholesale)
-        listKwholesale = cur.fetchall()
-
-        sqlShopData = '''
-              select sdate,shopid,b.Shopnm,tradeprice,TradeNumber,SaleValue,DiscValue,(SaleValue-DiscValue) sale,costvalue, (SaleValue-DiscValue-costvalue) salegain,
-            (SaleValue-DiscValue-costvalue)/(SaleValue-DiscValue)*100 gaintx
-            from RPT_SaleShop a,bas_shop b where  sdate between '{start}' and '{end}' and shopid in ({rbacDepart})
-            and a.shopid=b.Shopcode and b.khbank='超市店 ';
-        '''.format(start=yesterday, end=yesterday,rbacDepart=rbacDepart)
-
-        cur.execute(sqlShopData)
-        listShopData = cur.fetchall()
-
-        for shop in listShopData :
-            shopId = shop['shopid']
-            for Kwholesale in listKwholesale :
-                if Kwholesale['shopid'] == shopId:
-                    shop['wsalevalue'] = Kwholesale['wsalevalue']
-                    shop['wcostvalue'] = Kwholesale['wcostvalue']
-                    shop['wsalegain'] = Kwholesale['wsalegain']
-                    shop['wgaintx'] = Kwholesale['wgaintx']
-
+        cur.execute(sql)
+        list = cur.fetchall()
         rlist = []
         sumDict = {}
         sum = {"shopid": "合计", "shopnm": "", "tradeprice": 0.0, "tradenumber": 0, "salevalue": 0.0, "discvalue": 0.0,
@@ -62,7 +30,7 @@ def query(date):
         sumDict.setdefault("sum1", sum)
 
         unsumkey = ["gaintx", "wgaintx"]
-        for obj in listShopData:
+        for obj in list:
             if obj['shopid'] != 'C009':
                 row = {}
                 for key in obj.keys():
@@ -113,7 +81,7 @@ def query(date):
     data = {"gslist":rlist,"sumDict":sumDict}
     return data
 
-# @cache_page(60*60*4,cache='default',key_prefix='daily_group_sale')
+@cache_page(60*60*4,key_prefix='daily_group_sale')
 @csrf_exempt
 def index(request):
      qtype = mtu.getReqVal(request,"qtype","1")
@@ -139,9 +107,9 @@ def index(request):
          fname = date.strftime("%m.%d") + "_daily_group_sale.xls"
          return export(fname,date)
 
-
+import base.report.Excel as excel
 def export(fname,date):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(date)
         createExcel(fname, data)
     res = {}
@@ -153,7 +121,7 @@ def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1 月累计销售报表
     writeDataToSheet1(wb,data['gslist'],data['sumDict'])
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb,rlist,sumDict):

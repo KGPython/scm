@@ -1,2 +1,2 @@
-# scm供应链系统
+# scm
 python项目

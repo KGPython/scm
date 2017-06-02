@@ -22,7 +22,7 @@
                 <li role="presentation"><a href="#">广场店</a></li>
                 <li role="presentation"><a href="#">购物店</a></li>
                 <li role="presentation"><a href="#">围场店</a></li>
-{#                <li role="presentation"><a href="#">丰润店</a></li>#}
+                <li role="presentation"><a href="#">丰润店</a></li>
                 <li role="presentation"><a href="#">丰百店</a></li>
                 <li role="presentation"><a href="#">平泉店</a></li>
                 <li role="presentation"><a href="#">滦平店</a></li>
@@ -105,6 +105,9 @@
                 <div class="table">
                     <div id="tableReport22" style="height:750px;width:1050px;overflow: auto;margin: 0 auto" > </div>
                 </div>
+                <div class="table">
+                    <div id="tableReport23" style="height:750px;width:1050px;overflow: auto;margin: 0 auto" > </div>
+                </div>
             </div>
         </div>
     </div>
@@ -127,7 +130,7 @@
 <script>
     $(function(){
          initDate(1);
-    });
+     });
     function initDate(tab){
         var fixedRow,fixedCol;
         var mergeCellsList=[];
@@ -138,8 +141,9 @@
 
         lenShops = listShops.length;
         if(tab==1){
-            var tody = new Date().getDate();
-
+            var tody = new Date();
+            var yesterday = getYestodayDate(tody);
+            yesterday = yesterday.getDate();
             fixedRow = 2;
             fixedCol = 6;
             var theadRow1 = {'ShopID':'门店编码','shopname':'门店名称','qtyzSum':'月累计排名（不含联营）','qtylSum':'','zhonbiSum':'','mingciSum':''};
@@ -170,7 +174,7 @@
                 i+=4;//每日单元格数量
                 j+=1;//日期
                 k+=4;//每次合并单元格数量
-            }while(i<tody*4);
+            }while(i<yesterday*4);
             table.push(theadRow1);
             table.push(theadRow2);
             //拼接tbody数据

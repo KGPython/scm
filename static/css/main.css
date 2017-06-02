@@ -147,16 +147,12 @@ input[type="submit"],
 }
 .nav-list2 li a{
 	line-height: 45px;
-	font-size: 12px;
+	font-size: 14px;
 }
 
 /*
 ***************************************查询表单模块****************************************
 */
-.from-row{
-    overflow: hidden;
-    clear: both;
-}
 .query{
 	margin-bottom:20px;
 	overflow: unset;
@@ -1023,45 +1019,6 @@ tbody a{
 
 
 
-.common_load{
-	width:200px;
-	hieght:120px;
-	display:none;
-	position:absolute;
-	background: #FFFFFF;
-	z-index:999;
-	-moz-box-shadow: 3px 3px 6px #000;
-	-webkit-box-shadow: 3px 3px 6px #000;
-	box-shadow: 3px 3px 6px #000;
-}
-
-.shelter{
-	background:#D5D5D5;
-	-moz-opacity: 0.6;
-	opacity:.6;
-	filter: alpha(opacity=60);
-	display:none;
-	position:absolute;
-	z-index:999;
-	left:0;
-	top:0;
-}
-.load_descript{
-	text-align:center;
-	padding-left:20px;
-	font-weight:bold;
-	font-size:14px;
-	color:#A40000;
-	display:block;
-	padding-bottom:10px;
-}
-
-.noticeTemplate{
-	border: 1px solid #666;
-	width: 85%;
-	margin-left: auto;
-	margin-right: auto;
-}
 
 
 
@@ -1072,7 +1029,8 @@ tbody a{
 
 
 
-@media screen and (min-width: 1200px) and ( max-width: 1399px) {
+
+@media screen and (max-width: 1601px) and (min-width: 1206px){
 
 	body{
 		font-size: 12px;
@@ -1182,7 +1140,7 @@ tbody a{
 		width: 280px;
 	}
 }
-@media screen and (min-width: 992px) and ( max-width: 1199px){
+@media screen and (max-width: 1205px){
 	body{
 		font-size: 10px;
 	}
@@ -1201,9 +1159,6 @@ tbody a{
 	.query{
 		width: 1000px;
 	}
-    .query .query-list .input{
-        margin-right: 12px;
-    }
 	.query .query-list p input[type="text"],
 	.query .query-list p input[type="password"] {
 		height: 25px;
@@ -1356,3 +1311,42 @@ tbody a{
 	}
 }
 
+.common_load{
+	width:200px;
+	hieght:120px;
+	display:none;
+	position:absolute;
+	background: #FFFFFF;
+	z-index:999;
+	-moz-box-shadow: 3px 3px 6px #000;
+	-webkit-box-shadow: 3px 3px 6px #000;
+	box-shadow: 3px 3px 6px #000;
+}
+
+.shelter{
+	background:#D5D5D5;
+	-moz-opacity: 0.6;
+	opacity:.6;
+	filter: alpha(opacity=60);
+	display:none;
+	position:absolute;
+	z-index:999;
+	left:0;
+	top:0;
+}
+.load_descript{
+	text-align:center;
+	padding-left:20px;
+	font-weight:bold;
+	font-size:14px;
+	color:#A40000;
+	display:block;
+	padding-bottom:10px;
+}
+
+.noticeTemplate{
+	border: 1px solid #666;
+	width: 85%;
+	margin-left: auto;
+	margin-right: auto;
+}

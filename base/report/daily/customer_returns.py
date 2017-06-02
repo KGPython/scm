@@ -1,25 +1,16 @@
 # -*- coding:utf-8 -*-
 __author__ = 'end-e'
 
-import calendar
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
-from base.models import BasPurLog
-from base.report.common import Method as reportMth
 from base.utils import DateUtil, MethodUtil as mtu
-from base.report.common import Excel
+from base.models import BasPurLog
+import datetime, calendar, decimal,json
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(yesterday):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
     yearandmon = DateUtil.getyearandmonth()
     # 当前月份第一天
     monfirstday = DateUtil.get_firstday_of_month(yearandmon[0], yearandmon[1])
@@ -34,9 +25,9 @@ def query(yesterday):
     conn = mtu.getMysqlConn()
     sqltop = "select shopid, sum(shopsale) as shopsalesum, sum(ret) as retsum, (sum(ret) / sum(shopsale)) as retrate " \
              "from `KGshopretsale` " \
-             "where sdate between '{monfirstday}' and '{yesterday}' and shopid in ({rbacDepart})" \
-             "group by shopid order by shopid"\
-             .format(monfirstday=monfirstday,yesterday=yesterday,rbacDepart=rbacDepart)
+             "where ShopID!='C009' AND sdate between '" + monfirstday + "' and '" + yesterday + "' " \
+                                                                                                "group by shopid " \
+                                                                                                "order by shopid"
 
     cur = conn.cursor()
     cur.execute(sqltop)
@@ -75,8 +66,8 @@ def query(yesterday):
 
         sql = "select sdate, shopid, shopsale, ret, ret / shopsale as retc " \
               "from `KGshopretsale` " \
-              "where shopid='{shopID}' and sdate between '{monfirstday}' and '{yesterday}'"\
-              .format(shopID=listtop[i]['shopid'],monfirstday=monfirstday,yesterday=yesterday)
+              "where shopid='" + listtop[i]['shopid'] + "' " \
+                                                        "and sdate between '" + monfirstday + "' and '" + yesterday + "'"
 
         cur = conn.cursor()
         cur.execute(sql)
@@ -132,9 +123,7 @@ def query(yesterday):
     # 退货明细
     sqldetail = "select shopid, shopname, sdate, stime, listno, posid, cashierid, goodsid, goodsname, deptid, amount, sale " \
                 "from `KGshopretsaleitem` " \
-                "where sdate='{yesterday}' and shopid in ({rbacDepart}) and LEFT(deptid,2) in ({rbacClass})" \
-                "order by shopid"\
-                .format(yesterday=yesterday,rbacDepart=rbacDepart,rbacClass=rbacClass)
+                "where sdate='" + yesterday + "' order by shopid"
     cur = conn.cursor()
     cur.execute(sqldetail)
     retdetail = cur.fetchall()
@@ -155,7 +144,7 @@ def query(yesterday):
     mtu.close(conn, cur)
     return locals()
 
-# @cache_page(60*60*4,key_prefix='daily_customer_return')
+@cache_page(60*60*4,key_prefix='daily_customer_return')
 @csrf_exempt
 def index(request):
     exceltype = mtu.getReqVal(request, "exceltype", "2")
@@ -198,9 +187,9 @@ def getshopid():
     mtu.close(conn, cur)
     return res
 
-
+import base.report.Excel as excel
 def export(fname,yesterday):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(yesterday)
         createExcel(fname, data)
     res = {}
@@ -214,7 +203,7 @@ def createExcel(fname, data):
     writeDataToSheet1(wb, data['listtop'],data['TotalDict'])
     # 写入sheet2
     writeDataToSheet2(wb, data['retdetail'])
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname,wb)
 
 
 def writeDataToSheet1(wb, listtop, TotalDict):

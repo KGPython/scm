@@ -1,24 +1,15 @@
 #-*- coding:utf-8 -*-
 __author__ = 'CHEN'
-import calendar
-import datetime
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
+from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
-
-from base.models import BasPurLog
-from base.report.common import Method as reportMth
 from base.utils import DateUtil,MethodUtil as mtu
-from base.report.common import Excel
+from base.models import BasPurLog
+import datetime,calendar,decimal,json
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query():
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
     ###门店排名###
     monthFirst = datetime.date.today().replace(day=1)
     today = datetime.datetime.today()
@@ -40,9 +31,7 @@ def query():
     # 月份汇总数据
     sqlTop = 'SElECT ShopID,shopname, SUM(qtyz) AS qtyzSum,SUM(qtyl) AS qtylSum,(sum(qtyl) / sum(qtyz)) AS zhonbiSum ' \
              'FROM Kzerostock ' \
-             'WHERE sdate BETWEEN "{monthFirstStr}" AND "{todayStr}" AND ShopID IN ({rbacDepart})' \
-             'GROUP BY ShopID ORDER BY ShopID'\
-             .format(monthFirstStr=monthFirstStr,todayStr=todayStr,rbacDepart=rbacDepart)
+             'WHERE ShopID!="C009" AND sdate BETWEEN "' + monthFirstStr + '" AND "' + todayStr + '" GROUP BY ShopID ORDER BY ShopID'
     cur.execute(sqlTop)
     listTop = cur.fetchall()
     # 门店排名合计
@@ -85,9 +74,7 @@ def query():
 
         sql = "SELECT b.sdate,SUM(b.qtyz) qtyz , SUM(b.qtyl) qtyl, (SUM(b.qtyl)/SUM(b.qtyz)) zhonbi, (SELECT COUNT(DISTINCT zhonbi) FROM Kzerostock a WHERE a.zhonbi <= b.zhonbi) AS mingci " \
               "FROM Kzerostock AS b " \
-              "WHERE ShopID ='{ShopID}' AND sdate BETWEEN '{monthFirstStr}' AND '{todayStr}' " \
-              "GROUP BY sdate"\
-              .format(ShopID=listTop[i]['ShopID'],monthFirstStr=monthFirstStr,todayStr=todayStr)
+              "WHERE ShopID ='" + listTop[i]['ShopID'] +"' AND sdate BETWEEN '"+monthFirstStr+"' AND '"+todayStr+"' GROUP BY sdate"
         cur.execute(sql)
         listDetail = cur.fetchall()
         for item in listDetail:
@@ -123,8 +110,7 @@ def query():
         # 各个门店的sheet数据
         sqlShop = "SELECT ShopID,shopname,deptid,deptidname,qtyz,qtyl,zhonbi " \
                   "FROM Kzerostock " \
-                  "WHERE ShopID ='{ShopID}' AND sdate = '{todayStr}' AND deptid IN ({rbacClass})" \
-                  .format(ShopID=listTop[i]['ShopID'],todayStr=todayStr, rbacClass=rbacClass)
+                  "WHERE ShopID ='" + listTop[i]['ShopID'] + "' AND sdate = '" + todayStr + "'"
         cur.execute(sqlShop)
         listShop = cur.fetchall()
         # 门店合计、转换数据格式
@@ -168,10 +154,8 @@ def query():
     listTop.sort(key=lambda x: x['ShopID'])
 
     ###课组汇总###
-    sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from Kzerostock ' \
-              'where sdate="{todayStr}" and deptid in ({rbacClass})' \
-              'group by deptid,deptidname order by deptid'\
-              .format(todayStr=todayStr,rbacClass=rbacClass)
+    sqlDept = 'select deptid,deptidname,sum(qtyz) qtyz,sum(qtyl) qtyl,(sum(qtyl)/sum(qtyz)) zhonbi from Kzerostock' \
+              ' where ShopID!="C009" AND sdate="' + todayStr + '" group by deptid,deptidname order by deptid'
 
     cur.execute(sqlDept)
     listDept = cur.fetchall()
@@ -237,9 +221,9 @@ def ranking(lis,key,name):
             a[name]= j
     return lis
 
-
+import base.report.Excel as excel
 def export(fname):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query()
         createExcel(fname, data)
     res = {}
@@ -253,7 +237,7 @@ def createExcel(fname, data):
     writeDataToSheet1(wb,data['listTop'],data['TotalDict'])
     #写入sheet2,sheet3
     writeDataToSheet2(wb,data['listShops'],data['listShopTotal'],data['listDept'])
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname,wb)
 
 def writeDataToSheet1(wb,listTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)

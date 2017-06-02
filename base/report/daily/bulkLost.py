@@ -1,23 +1,16 @@
 # -*- coding:utf-8 -*-
 __author__ = 'chen'
 
-import calendar
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
-
-from base.models import BasPurLog
-from base.report.common import Method as reportMth
+from django.http import HttpResponse
 from base.utils import DateUtil,MethodUtil as mtu
-from base.report.common import Excel
+from base.models import BasPurLog
+import datetime,decimal,calendar,json
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
+
 
 def query():
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-
     today = datetime.date.today()
     monthFirst = datetime.date.today().replace(day=1)
     if (str(today)[8:10] == '01'):
@@ -34,18 +27,16 @@ def query():
     # 月累计报损
     sqlMonthTotal = 'select shopid,shopname,sum(costvalue) costvalueSum,sum(lostvalue) lostvalueSum,(sum(lostvalue)/sum(costvalue)) lrateSum ' \
                     'from KGshop15lost ' \
-                    'where sdate between "{monthFirstStr}" and "{todayStr}" and shopid in ({rbacDepart})' \
-                    'group by shopid order by shopid '\
-                    .format(monthFirstStr=monthFirstStr,todayStr=todayStr,rbacDepart=rbacDepart)
+                    'where ShopID!="C009" AND sdate between "' + monthFirstStr + '" and "' + todayStr + '" ' \
+                                                                                                        'group by shopid order by shopid '
     cur.execute(sqlMonthTotal)
     shopTop = cur.fetchall()
 
     # 每日报损
     sqlDaily = 'select sdate,shopid,costvalue,lostvalue,lrate ' \
                'from KGshop15lost ' \
-               'where sdate between "{monthFirstStr}" and "{todayStr}" and shopid in ({rbacDepart})' \
-               'order by sdate '\
-               .format(monthFirstStr=monthFirstStr,todayStr=todayStr,rbacDepart=rbacDepart)
+               'where ShopID!="C009" AND sdate between "' + monthFirstStr + '" and "' + todayStr + '" ' \
+                                                                                                   'order by sdate '
     cur.execute(sqlDaily)
     listDaily = cur.fetchall()
     # 计算纵向合计、格式化数据、拼接月累计报损和每日报损
@@ -90,7 +81,7 @@ def query():
 
     return locals()
 
-# @cache_page(60*60*4,key_prefix='daily_bulk_lost')
+@cache_page(60*60*4,key_prefix='daily_bulk_lost')
 def inidex(request):
     yesterday = datetime.date.today() - datetime.timedelta(days=1)
     qtype = mtu.getReqVal(request,"qtype","1")
@@ -114,9 +105,9 @@ def inidex(request):
         fname = yesterday.strftime("%m.%d") + "_daily_bulkLost.xls"
         return export(fname)
 
-
+import base.report.Excel as excel
 def export(fname):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query()
         createExcel(fname,data)
     res = {}
@@ -127,7 +118,7 @@ def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     #写入sheet1
     writeDataToSheet1(wb,data['shopTop'],data['TotalDict'])
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname,wb)
 
 def writeDataToSheet1(wb,shopTop,TotalDict):
     date = DateUtil.get_day_of_day(-1)

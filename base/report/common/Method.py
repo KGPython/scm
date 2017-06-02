@@ -1,8 +1,8 @@
 from django.core.cache import caches
 import json
-from base.utils import MethodUtil as mth
 def getRbacDepart(p_id=None):
     rbac = caches['redis2'].get('rbac_role')
+
     rbacDepartList = []
     rbacDepart = ''
     departs = rbac['depart']
@@ -50,11 +50,10 @@ def getRbacClass():
 
     return rbacClassList,rbacClass
 
-def get_colour_checksum(request):
-    sql = "CHECKSUM TABLE bas_user"
-    conn = mth.getMysqlConn()
-    cur = conn.cursor()
-    cur.execute(sql)
-    res = cur.fetchone()
-    print(res)
-    return  str(res['Checksum'])
+def getFileModifyTime(filePath=None):
+    import sys, os,time
+    if not filePath:
+        filePath = sys.argv[0]
+    stinfo = os.stat(filePath)
+    time_local = time.localtime(stinfo.st_mtime)
+    return time.strftime("%Y-%m-%d %H:%M:%S",time_local)

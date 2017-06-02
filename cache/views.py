@@ -12,11 +12,6 @@ def read_from_cache(self, key):
     else:
         data = json.loads(value)
     return data
-
 #write cache key,value
 def write_to_cache(self,key,value):
     cache.set(key, json.dumps(value), settings.NEVER_REDIS_TIMEOUT)
-
-#create cache key
-def make_key(key, key_prefix, version):
-    return ':'.join([key_prefix, str(version), key])

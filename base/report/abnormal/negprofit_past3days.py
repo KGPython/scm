@@ -1,33 +1,21 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
+from base.utils import DateUtil,MethodUtil as mtu
+from base.models import Kgprofit,BasPurLog
+from django.http import HttpResponse
+import datetime,calendar,decimal,json
+import xlwt3 as xlwt
 from django.views.decorators.cache import cache_page
 
-from base.models import Kgprofit,BasPurLog
-from base.report.common import Method as reportMth
-from base.utils import DateUtil,MethodUtil as mtu
-from base.report.common import Excel
-
 def query(date):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
     karrs = {}
     karrs.setdefault("bbdate", "{start}".format(start=date))
-    karrs.setdefault("shopid__in",rbacDepartList)
-    karrs.setdefault("deptid__in",rbacClassList)
-    rlist = Kgprofit.objects\
-            .values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
-                   "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
-            .filter(**karrs).order_by("bbdate", "shopid", "goodsid", "sdate")
+    rlist = Kgprofit.objects.values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
+                                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
+        .filter(**karrs).exclude(shopid='C009').order_by("bbdate", "shopid", "goodsid", "sdate")
     formate_data(rlist)
     return rlist
 
@@ -54,9 +42,9 @@ def index(request):
          fname = yesterday.strftime("%m.%d") + "_abnormal_negprofit_past3day.xls"
          return export(fname,yesterday)
 
-
+import base.report.Excel as excel
 def export(fname,yesterday):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(yesterday)
         creatExcel(fname,data)
     res = {}
@@ -66,7 +54,7 @@ def export(fname,yesterday):
 def creatExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     writeDataToSheet1(wb,data)
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname,wb)
 
 def writeDataToSheet1(wb,rlist):
     sheet = wb.add_sheet("连续三天负毛利明细",cell_overwrite_ok=True)

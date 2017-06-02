@@ -209,6 +209,9 @@
                             打印次数
                         </th>
                         <th class="col1">
+                            同步日期
+                        </th>
+                        <th class="col1">
                             备注
                         </th>
                     </tr>
@@ -250,6 +253,7 @@
                             <td class="col1">{{ shopDict|key:row.shopcode }}</td>
                             <td class="col1">{{ row.seenum | default_if_none:"0"}}</td>
                             <td class="col1">{{ row.printnum | default_if_none:"0"}}</td>
+                            <td class="col1">{{ row.bbdate | date:"Y-m-d H:m" }}</td>
                             <td class="col1">{{ row.remark }}</td>
                         </tr>
                     {% endfor %}

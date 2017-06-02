@@ -1,36 +1,23 @@
 #-*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
-from django.views.decorators.cache import cache_page
 from django.views.decorators.csrf import csrf_exempt
-
-from base.models import Kgprofit,BasPurLog
-from base.report.common import Method as reportMth
 from base.utils import DateUtil,MethodUtil as mtu
-from base.report.common import Excel
+from base.models import Kgprofit,BasPurLog
+from django.http import HttpResponse
+import datetime,calendar,decimal,json
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 
 def query(date):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
     karrs = {}
     karrs.setdefault("bbdate", "{start}".format(start=date))
     karrs.setdefault("profit__lte", "{profit}".format(profit=-200))
-    karrs.setdefault("shopid__in", rbacDepartList)
-    karrs.setdefault("deptid__in", rbacClassList)
-
-    rlist = Kgprofit.objects\
-            .values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
-                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
-            .filter(**karrs).order_by("bbdate", "shopid", "goodsid", "sdate")
+    rlist = Kgprofit.objects.values("bbdate", "sdate", "shopid", "shopname", "goodsid", "goodsname", "deptid",
+                                    "deptname", "qty", "profit", "stockqty", "truevalue", "costvalue") \
+        .filter(**karrs).exclude(shopid='C009').order_by("bbdate", "shopid", "goodsid", "sdate")
 
     formate_data(rlist)
     data = {"rlist": list(rlist)}
@@ -59,9 +46,10 @@ def index(request):
          fname = yesterday.strftime("%m.%d") + "_abnormal_negprofit_lte200.xls"
          return export(fname,yesterday)
 
+import base.report.Excel as excel
 
 def export(fname,yesterday):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(yesterday)
         createExcel(fname, data['rlist'])
     res = {}
@@ -71,7 +59,7 @@ def export(fname,yesterday):
 def createExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8',style_compression=0)
     writeDataToSheet1(wb,data)
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname, wb)
 
 
 def writeDataToSheet1(wb,data):

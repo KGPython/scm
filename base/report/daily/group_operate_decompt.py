@@ -1,56 +1,48 @@
 # -*- coding:utf-8 -*-
 __author__ = 'liubf'
 
-import calendar
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.core.cache import caches
-from django.http import HttpResponse
 from django.shortcuts import render
-
-from base.models import BasShopRegion, BasPurLog,BasOrg
-from base.report.common import Method as reportMth
+from django.db.models import Sum
+from django.views.decorators.csrf import csrf_exempt
 from base.utils import DateUtil, MethodUtil as mtu
-from base.report.common import Excel
+from base.models import BasShopRegion, BasPurLog
+from django.http import HttpResponse
+import datetime, calendar, decimal, time
+import xlwt3 as xlwt
+from django.views.decorators.cache import cache_page
 
 def query(date,start,end,yesterday,lastDay):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
     # 查询所有超市门店
     slist = BasShopRegion.objects.values("shopid", "shopname") \
-        .filter(shopid__in=rbacDepartList,shoptype=11).order_by("shopid")
+        .filter(shoptype=11).exclude(shopid='C009').order_by("shopid")
     shopids = "','".join([shop["shopid"] for shop in slist])
 
     conn = mtu.getMysqlConn()
     cur = conn.cursor()
-    # 查询全月预算 groupid
+    groupids = "'10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','29','30'," \
+               "'31','32','33','34','35','36','37','38','39','40','41','43','62','63','64','65','66'"
+    # 查询全月预算
     ysql = "SELECT dateid saledate,groupid,shopid shopcode,SUM(salevalue)/10000 sale,SUM(salegain)/10000 gain FROM Estimate " \
            " WHERE dateid BETWEEN '" + start + " 00:00:00' AND '" + end + " 23:59:59.999' AND deptlevelid=2   AND shopid IN ('" + shopids + "')  " \
-           "and shopid in ({rbacDepart}) and groupid in ({rbacClass}) " \
-           "GROUP BY dateid,shopid,groupid ORDER BY shopid,groupid,dateid ".format(rbacDepart=rbacDepart,rbacClass=rbacClass)
+            "and groupid in ("+groupids+") GROUP BY dateid,shopid,groupid ORDER BY shopid,groupid,dateid "
     cur.execute(ysql)
     ylist = cur.fetchall()
     yshopdict, ygrpdict, ys_grplist = queryData(ylist, lastDay, date.day)
 
-    # 查询全月销售实际 groupid
-    sale_sql = "SELECT * FROM (SELECT sdate saledate,shopcode,LEFT(sccode,2) groupid,SUM(svalue-discount)/10000 sale,SUM(svalue-discount-scost)/10000 gain   " \
-               " FROM sales_pro WHERE sdate BETWEEN '" + start + " 00:00:00' AND '" + yesterday + " 23:59:59' AND shopcode IN ('" + shopids + "') " \
-               "and shopcode in ({rbacDepart}) " \
-               "GROUP BY shopcode,LEFT(sccode,2),DATE_FORMAT(sdate,'%Y-%m-%d')) AS a WHERE  a.groupid IN ({rbacClass})".format(rbacDepart=rbacDepart,rbacClass=rbacClass)
+    # 查询全月销售实际
+    sale_sql = "SELECT sdate saledate,shopcode,LEFT(sccode,2) groupid,SUM(svalue-discount)/10000 sale,SUM(svalue-discount-scost)/10000 gain " \
+               " FROM sales_pro " \
+               " WHERE sdate BETWEEN '" + start + " 00:00:00' AND '" + yesterday + " 23:59:59.999' AND shopcode IN ('" + shopids + "') and LEFT(sccode,2) in ("+groupids+") " \
+               "GROUP BY shopcode,LEFT(sccode,2),DATE_FORMAT(sdate,'%Y-%m-%d') "
     cur.execute(sale_sql)
     sale_list = cur.fetchall()
     sshopdict, sgrpdict, ss_grplist = queryData(sale_list, lastDay, date.day)
 
-    # 查询批发销售单 groupid
-    pf_sale_sql = "SELECT * FROM (SELECT sdate saledate,shopid shopcode,LEFT(deptid,2) groupid,SUM(salevalue)/10000 sale,SUM(salevalue-costvalue)/10000 gain " \
+    # 查询批发销售单
+    pf_sale_sql = "SELECT sdate saledate,shopid shopcode,LEFT(deptid,2) groupid,SUM(salevalue)/10000 sale,SUM(salevalue-costvalue)/10000 gain " \
                   " FROM kwholesale WHERE sdate BETWEEN '" + start + " 00:00:00' AND '" + yesterday + " 23:59:59.999' " \
-                  "and shopid in ({rbacDepart})  " \
-                  "GROUP BY DATE_FORMAT(sdate,'%Y-%m-%d'),shopid,LEFT(deptid,2) " \
-                  "ORDER BY shopid,LEFT(deptid,2),DATE_FORMAT(sdate,'%Y-%m-%d')) AS a WHERE  a.groupid IN ({rbacClass}) ".format(rbacDepart=rbacDepart,rbacClass=rbacClass)
+                  "and LEFT(deptid,2) in ("+groupids+")  GROUP BY DATE_FORMAT(sdate,'%Y-%m-%d'),shopid,LEFT(deptid,2) " \
+                  "ORDER BY shopid,LEFT(deptid,2),DATE_FORMAT(sdate,'%Y-%m-%d') "
     cur.execute(pf_sale_sql)
     pf_sale_list = cur.fetchall()
     pfshopdict, pfgrpdict, pfs_grplist = queryData(pf_sale_list, lastDay, date.day)
@@ -120,8 +112,8 @@ def query(date,start,end,yesterday,lastDay):
     data  = {"rlist": rslist, "shoplist": shoplist, "grslist": grslist, "srslist": srslist}
     return data
 
-# @cache_page(60*60*4,cache='default',key_prefix='daily_group_operate_decompt')
-# @csrf_exempt
+# @cache_page(60*10,key_prefix='daily_group_operate_decompt')
+@csrf_exempt
 def index(request):
     date = DateUtil.get_day_of_day(-1)
     start = (date.replace(day=1)).strftime("%Y-%m-%d")
@@ -151,8 +143,11 @@ def index(request):
         return export(fname,date,start,end,yesterday,lastDay)
 
 
+
+import base.report.Excel as excel
+import json
 def export(fname,date,start,end,yesterday,lastDay):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(date, start, end, yesterday, lastDay)
         createExcel(fname, date, data['rlist'], data['shoplist'], data['grslist'], data['srslist'])
     res = {}
@@ -167,7 +162,8 @@ def createExcel(fname,date,rslist, shoplist, grslist, srslist):
     writeDataToSheet2(wb, grslist, date)
     # 写入sheet4 各个门店类别
     writeDataToSheetN(wb, shoplist, srslist, date)
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname, wb)
+
 
 def writeDataToSheet1(wb, rlist, date):
     year = date.year
@@ -188,6 +184,7 @@ def writeDataToSheet1(wb, rlist, date):
     mtu.insertTitle2(sheet, titles, keylist, widthlist)
     mtu.insertCell2(sheet, 4, rlist, keylist, None)
 
+
 def writeDataToSheet2(wb, rlist, date):
     year = date.year
     month = date.month
@@ -206,6 +203,7 @@ def writeDataToSheet2(wb, rlist, date):
     initExport(titles, keylist, widthlist, date)
     mtu.insertTitle2(sheet, titles, keylist, widthlist)
     mtu.insertCell2(sheet, 4, rlist, keylist, None)
+
 
 def writeDataToSheetN(wb, shoplist, rlist, date):
     year = date.year
@@ -228,6 +226,7 @@ def writeDataToSheetN(wb, shoplist, rlist, date):
         initExport(titles, keylist, widthlist, date)
         mtu.insertTitle2(sheet, titles, keylist, widthlist)
         mtu.insertCell2(sheet, 4, rlist[i], keylist, None)
+
 
 def initExport(titles, keylist, widthlist, date):
     year = date.year
@@ -261,6 +260,7 @@ def initExport(titles, keylist, widthlist, date):
 
         n += 2
 
+
 def countSumZb(rlist):
     if len(rlist) > 1:
         sumdict = {}
@@ -287,6 +287,7 @@ def countSumZb(rlist):
         sitem.setdefault("codelable", "实际达成")
         sumdict.setdefault("codelable", "达成率")
         rlist.append(sumdict)
+
 
 def mergeData(rlist, slist, ydict, saledict, zbdict, lastDay):
     for shop in slist:
@@ -328,77 +329,35 @@ def mergeData(rlist, slist, ydict, saledict, zbdict, lastDay):
             if isinstance(item, decimal.Decimal):
                 rows[k] = "%0.2f" % float(item)
 
-# def mergeGroupData(grslist, ydict, saledict, zbdict, lastDay):
-#     # 生鲜
-#     sx = [{"id": 10, "name": "熟食"}, {"id": 11, "name": "水产"}, {"id": 12, "name": "蔬菜"}, {"id": 13, "name": "烘烤类"},
-#           {"id": 14, "name": "鲜肉"},
-#           {"id": 15, "name": "干果干货"}, {"id": 16, "name": "主食厨房"}, {"id": 17, "name": "水果"}, {"id": 18, "name": "蛋品"},
-#           {"id": 19, "name": "家禽"}]
-#     # 食品
-#     sp = [{"id": 20, "name": "酒"}, {"id": 21, "name": "饮料"}, {"id": 22, "name": "休闲食品"}, {"id": 23, "name": "冷冻冷藏"},
-#           {"id": 24, "name": "冲调保健品"}, {"id": 25, "name": "粮油副食"}, {"id": 29, "name": "香烟"}]
-#     # 非食
-#     yp = [{"id": 30, "name": "厨房用品类"}, {"id": 31, "name": "居家用品"}, {"id": 32, "name": "文化用品"},
-#           {"id": 33, "name": "休闲用品"},
-#           {"id": 34, "name": "清洁用品"}, {"id": 35, "name": "纸品"}, {"id": 36, "name": "非季节性服饰"},
-#           {"id": 37, "name": "季节性服饰"}, {"id": 38, "name": "鞋"}]
-#     # 家电
-#     jd = [{"id": 40, "name": "3C"}, {"id": 41, "name": "大家电"}, {"id": 43, "name": "小家电"}]
-#     # 孕婴童
-#     yyt = [{"id": 39, "name": "孕婴童"}]
-#
-#     mergeBranchData(grslist, sx, ydict, saledict, zbdict, lastDay, "生鲜汇总")
-#     mergeBranchData(grslist, sp, ydict, saledict, zbdict, lastDay, "食品/杂货汇总")
-#     mergeBranchData(grslist, yp, ydict, saledict, zbdict, lastDay, "非食汇总")
-#     mergeBranchData(grslist, jd, ydict, saledict, zbdict, lastDay, "家电汇总")
-#     mergeBranchData(grslist, yyt, ydict, saledict, zbdict, lastDay, "孕婴童汇总")
-
 
 def mergeGroupData(grslist, ydict, saledict, zbdict, lastDay):
-    rbac = caches['redis2'].get('rbac_role')
-    rbacCategory = rbac['category']
-    jd=[]
-    fs=[]
-    sp=[]
-    sx=[]
-    yyt=[]
-    if len(rbacCategory):
-        rbacCategory = rbacCategory.replace('},', '}$')
-        rbacCategoryList = rbacCategory.split('$')
-        for category in rbacCategoryList:
-            category = json.loads(category)
-            Sub = category['sub'][0:len(category['sub']) - 1].split(',')
-            if category['p_id'] == '4':#jd
-                jd = initClasses(Sub)
-            elif category['p_id']  == '3':#fs
-                fs = initClasses(Sub)
-            elif category['p_id']  == '2':#sp
-                sp = initClasses(Sub)
-            elif category['p_id']  == '1':#sx
-                sx = initClasses(Sub)
-            elif category['p_id']  == '6':#yyt
-                yyt = initClasses(Sub)
+    # 生鲜
+    sx = [{"id": 10, "name": "熟食"}, {"id": 11, "name": "水产"}, {"id": 12, "name": "蔬菜"}, {"id": 13, "name": "烘烤类"},
+          {"id": 14, "name": "鲜肉"},
+          {"id": 15, "name": "干果干货"}, {"id": 16, "name": "主食厨房"}, {"id": 17, "name": "水果"}, {"id": 18, "name": "蛋品"},
+          {"id": 19, "name": "家禽"}]
+    # 食品
+    sp = [{"id": 20, "name": "酒"}, {"id": 21, "name": "饮料"}, {"id": 22, "name": "休闲食品"},
+          {"id": 23, "name": "冷冻冷藏"},
+          {"id": 24, "name": "冲调保健品"}, {"id": 25, "name": "副食调味"}, {"id": 26, "name": "粮油"},
+          {"id": 27, "name": "冷冻冷藏"},{"id": 29, "name": "香烟"}]
+    # 非食
+    yp = [{"id": 30, "name": "厨房用品类"}, {"id": 31, "name": "居家用品"}, {"id": 32, "name": "文化用品"},
+          {"id": 33, "name": "休闲用品"},
+          {"id": 34, "name": "清洁用品"}, {"id": 35, "name": "纸品"}, {"id": 36, "name": "非季节性服饰"},
+          {"id": 37, "name": "季节性服饰"}, {"id": 38, "name": "鞋"}, {"id": 39, "name": "购物袋"}]
+    # 家电
+    jd = [{"id": 40, "name": "3C"}, {"id": 41, "name": "大家电"}, {"id": 43, "name": "小家电"}]
+    # 孕婴童
+    yyt = [{"id": 62, "name": "食品"},{"id": 63, "name": "用品"},{"id": 64, "name": "服饰"},
+           {"id": 65, "name": "玩具/车"},{"id": 66, "name": "孕产"}]
 
-    if len(jd)>0:
-        mergeBranchData(grslist, jd, ydict, saledict, zbdict, lastDay, "家电汇总")
-    if len(fs)>0:
-        mergeBranchData(grslist, fs, ydict, saledict, zbdict, lastDay, "非食汇总")
-    if len(sp)>0:
-        mergeBranchData(grslist, sp, ydict, saledict, zbdict, lastDay, "食品/杂货汇总")
-    if len(sx)>0:
-        mergeBranchData(grslist, sx, ydict, saledict, zbdict, lastDay, "生鲜汇总")
-    if len(yyt)>0:
-        mergeBranchData(grslist, yyt, ydict, saledict, zbdict, lastDay, "孕婴童汇总")
+    mergeBranchData(grslist, sx, ydict, saledict, zbdict, lastDay, "生鲜汇总")
+    mergeBranchData(grslist, sp, ydict, saledict, zbdict, lastDay, "食品/杂货汇总")
+    mergeBranchData(grslist, yp, ydict, saledict, zbdict, lastDay, "非食汇总")
+    mergeBranchData(grslist, jd, ydict, saledict, zbdict, lastDay, "家电汇总")
+    mergeBranchData(grslist, yyt, ydict, saledict, zbdict, lastDay, "孕婴童汇总")
 
-
-def initClasses(Sub):
-    list = []
-    for sub in Sub:
-        item = {}
-        item['id'] = sub
-        item['name'] = BasOrg.objects.values('orgname').filter(orgcode=sub)[0]['orgname'].strip()
-        list.append(item)
-    return list
 
 def mergeBranchData(rslist, glist, ydict, saledict, zbdict, lastDay, sumname):
     sum1 = initItem(lastDay)
@@ -406,7 +365,7 @@ def mergeBranchData(rslist, glist, ydict, saledict, zbdict, lastDay, sumname):
     sumlist = []
     for group in glist:
         id = str(group["id"])
-        # 预算
+        # 计划达成
         row = {}
         row.setdefault("idname", "{id}{name}".format(id=id, name=group["name"]))
         if id in ydict:
@@ -415,7 +374,7 @@ def mergeBranchData(rslist, glist, ydict, saledict, zbdict, lastDay, sumname):
             yitem = initItem(lastDay)
         row = dict(row, **yitem)
         rslist.append(row)
-        # 实际
+        # 实际达成
         row1 = {}
         row1.setdefault("idname", "{id}{name}".format(id=id, name=group["name"]))
         if id in saledict:
@@ -481,7 +440,7 @@ def countSale(ydict, sdict1, sdict2, lastDay):
     ssumdict, ysumdict = {}, {}
     sumlist.append(ysumdict)  # 计划
     sumlist.append(ssumdict)  # 实际
-
+    aaa = 0
     for key in sdict1.keys():
         sitem = sdict1[key]
         if key in ydict:
@@ -531,9 +490,11 @@ def countSale(ydict, sdict1, sdict2, lastDay):
 
         newitem.setdefault("codelable", "实际达成")
         zbitem.setdefault("codelable", "达成率")
+        print(newitem['m_all_sale'])
+        aaa += newitem['m_all_sale']
         rsdict.setdefault(key, newitem)
         zbdict.setdefault(key, zbitem)
-
+    print(aaa)
     # 计划合计
     for ykey in ydict.keys():
         yitem = ydict[ykey]

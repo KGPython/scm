@@ -1,50 +1,33 @@
 # -*- coding:utf-8 -*-
 __author__ = 'admin'
 
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
-
-from base.models import BasPurLog
-from base.report.common import Method as reportMth
+import xlwt3 as xlwt
 from base.utils import MethodUtil as mtu,DateUtil
-from base.report.common import Excel
+from django.http import HttpResponse
+from base.models import KgNegStock,BasPurLog
+import decimal,datetime,json
+from django.views.decorators.cache import cache_page
 
 def query(sgroupid,date):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-    rbacClassList, rbacClass = reportMth.getRbacClass()
-
     title = ''
     if sgroupid == '2':
         title = '食品'
     if sgroupid == '3':
         title = '非食'
 
-    conn = mtu.getMysqlConn()
-    sql= "SELECT `KGnegstock`.`shopid`, `KGnegstock`.`shopname`, `KGnegstock`.`sGroupID`, `KGnegstock`.`sGroupName`, " \
-         "`KGnegstock`.`GoodsID`, `KGnegstock`.`GoodsName`, `KGnegstock`.`qty`, `KGnegstock`.`CostValue`, `KGnegstock`." \
-         "`Spec`, `KGnegstock`.`UnitName`, `KGnegstock`.`deptid`, `KGnegstock`.`deptname`, `KGnegstock`.`Venderid`, " \
-         "`KGnegstock`.`VenderName`, `KGnegstock`.`Promflag`, `KGnegstock`.`OpenQty`, `KGnegstock`.`ReceiptDate`, " \
-         "`KGnegstock`.`OnReceiptQty`, `KGnegstock`.`SaleDate` " \
-         "FROM `KGnegstock` " \
-         "WHERE (`KGnegstock`.`shopid` IN ({rbacDepart}) AND `KGnegstock`.`SaleDate` = '{date}' " \
-         "AND LEFT(`KGnegstock`.`deptid`,2) IN ({rbacClass}) AND `KGnegstock`.`sGroupID` = {sgroupid}) " \
-         "ORDER BY `KGnegstock`.`shopid` ASC"\
-        .format(rbacDepart=rbacDepart,rbacClass=rbacClass,date=date,sgroupid=sgroupid)
-    cur = conn.cursor()
-    cur.execute(sql)
-    resList = cur.fetchall()
-    cur.close()
-    conn.close()
+    kwargs = {}
+    kwargs.setdefault('saledate', date)
+    kwargs.setdefault('sgroupid', sgroupid)
+    resList = KgNegStock.objects.values('shopid', 'shopname', 'sgroupid', 'sgroupname', 'goodsid', 'goodsname', 'qty',
+                                        'costvalue', 'spec', 'unitname', 'deptid', 'deptname', 'venderid', 'vendername',
+                                        'promflag', 'openqty', 'receiptdate', 'onreceiptqty', 'saledate') \
+        .filter(**kwargs).exclude(shopid='C009').order_by('shopid')
     formate_data(resList)
 
     return  locals()
 
-# @cache_page(60 * 2 ,key_prefix='abnormal_negstock')
+@cache_page(60 * 2 ,key_prefix='abnormal_negstock')
 def index(request):
     sgroupid = request.REQUEST.get('sgroupid')
     yesterday = DateUtil.get_day_of_day(-1)
@@ -60,6 +43,7 @@ def index(request):
     BasPurLog.objects.create(name="商品连续3天负毛利",url=path,qtype=qtype,ucode=ucode,uname=uname,createtime=today)
     if qtype == "1":
         data = query(sgroupid,yesterday)
+        print(data)
         return render(request,'report/abnormal/negStock.html',data)
     else:
         fname = yesterday.strftime('%m.%d') + "_abnormal_negStock.xls"
@@ -76,9 +60,9 @@ def formate_data(rlist):
             if not item:
                 rows[k] = ''
 
-
+import base.report.Excel as excel
 def export(fname,sgroupid,yesterday):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         data = query(sgroupid,yesterday)
         createExcel(fname, data)
     res = {}
@@ -88,7 +72,7 @@ def export(fname,sgroupid,yesterday):
 def createExcel(fname, data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     writeDataToSheet2(wb,data['resList'],data['title'])
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname, wb)
 
 def writeDataToSheet2(wb,resList,title):
     date = DateUtil.get_day_of_day(-1)

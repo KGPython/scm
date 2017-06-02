@@ -1,29 +1,21 @@
-import datetime
-import decimal
-import json
-
-import xlwt3 as xlwt
-from django.http import HttpResponse
 from django.shortcuts import render
+from django.http import HttpResponse
+import datetime,decimal
+import xlwt3 as xlwt
+from base.models import Kglossrate,BasPurLog
+from base.utils import MethodUtil as mth
+from base.utils import DateUtil
+import json
 from django.views.decorators.cache import cache_page
 
-from base.models import Kglossrate,BasPurLog
-from base.report.common import Method as reportMth
-from base.utils import DateUtil
-from base.utils import MethodUtil as mth
-from base.report.common import Excel
-
 def query(timeStart,timeEnd):
-    rbacDepartList, rbacDepart = reportMth.getRbacDepart(11)
-
     karrs = {}
     karrs.setdefault('checkdate__lte', timeEnd)
     karrs.setdefault('checkdate__gte', timeStart)
-    karrs.setdefault('shopid__in', rbacDepartList)
-    data = Kglossrate.objects\
-           .values('shopid', 'shopname', 'sheetid', 'goodsid', 'goodsname', 'deptid', 'deptname',
-                  'askqty', 'checkqty', 'qty', 'costvalue') \
-           .filter(**karrs).order_by('shopid')
+    data = Kglossrate.objects.\
+                values('shopid', 'shopname', 'sheetid', 'goodsid', 'goodsname', 'deptid', 'deptname',
+                                     'askqty', 'checkqty', 'qty', 'costvalue') \
+                .filter(**karrs).exclude(shopid='C009').order_by('shopid')
     for item in data:
         for key in item.keys():
             if isinstance(item[key], decimal.Decimal):
@@ -59,8 +51,9 @@ def index(request):
         return export(fname,timeStart,timeEnd)
 
 
+import base.report.Excel as excel
 def export(fname,timeStart,timeEnd):
-    if not Excel.isExist(fname):
+    if not excel.isExist(fname):
         res = query(timeStart,timeEnd)
         data = res['data']
         createExcel(fname, data)
@@ -71,7 +64,7 @@ def export(fname,timeStart,timeEnd):
 def createExcel(fname,data):
     wb = xlwt.Workbook(encoding='utf-8', style_compression=0)
     writeDataToSheet2(wb, data)
-    Excel.saveToExcel(fname, wb)
+    excel.saveToExcel(fname, wb)
 
 def writeDataToSheet2(wb,data):
     date = DateUtil.get_day_of_day(-1)
