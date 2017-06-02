@@ -66,7 +66,7 @@ def query(request):
     sum3 = decimal.Decimal('0.0')
     sum4 = decimal.Decimal('0.0')
     try:
-        sql1 = "select sum(scost) from sales_pro where grpcode='"+grpcode+"' "
+        sql1 = "select sum(scost) from sales_pro3 where grpcode='"+grpcode+"' "
         sql1 += "and supercode='"+spercode+"' and ("+codes+") and sstyle<>'' and "
         sql1 += "date_format(sdate,'%Y-%m-%d')>='"+start+"' and date_format(sdate,'%Y-%m-%d')<='"+end+"' and ("+ccodes+") "
 
@@ -79,7 +79,7 @@ def query(request):
 
         sql2 = "select tb1.sccode,tb1.scname,sum(tb1.num) as num,sum(tb1.svalue) as svalue,sum(tb1.discount) as discount,sum(tb1.scost) as scost "
         sql2 += " from( "
-        sql2 += "     select sccode,scname,svalue,discount,scost,num from sales_pro "
+        sql2 += "     select sccode,scname,svalue,discount,scost,num from sales_pro3 "
         sql2 += "	  where grpcode='"+grpcode+"' "
         sql2 += "    and supercode='"+spercode+"' and ("+codes+") and sstyle<>'' and "
         sql2 += "    date_format(sdate,'%Y-%m-%d')>='"+start+"' and date_format(sdate,'%Y-%m-%d')<='"+end+"' and ("+ccodes+")  "
@@ -165,7 +165,8 @@ def detail(request):
 
      #当月1号
     if not start:
-        start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        # start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        start = (datetime.date.today() + datetime.timedelta(-1)).strftime("%Y-%m-%d")
     #当日
     if not end:
         end = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -205,7 +206,7 @@ def detail(request):
     sum3 = decimal.Decimal('0.0')
     sum4 = decimal.Decimal('0.0')
     try:
-        sql1 = "select sum(scost) from sales_pro where grpcode='"+grpcode+"' "
+        sql1 = "select sum(scost) from sales_pro3 where grpcode='"+grpcode+"' "
         sql1 += "and supercode='"+spercode+"' and ("+codes+") and sstyle<>'' and "
         sql1 += "date_format(sdate,'%Y-%m-%d')>='"+start+"' and date_format(sdate,'%Y-%m-%d')<='"+end+"' and ("+ccodes+") "
 
@@ -218,7 +219,7 @@ def detail(request):
 
         sql2 = "select tb1.sccode,tb1.scname,sum(tb1.num) as num,sum(tb1.svalue) as svalue,sum(tb1.discount) as discount,sum(tb1.scost) as scost "
         sql2 += ",tb1.sdate from( "
-        sql2 += "     select sdate,sccode,scname,svalue,discount,scost,num from sales_pro "
+        sql2 += "     select sdate,sccode,scname,svalue,discount,scost,num from sales_pro3 "
         sql2 += "	  where grpcode='"+grpcode+"' "
         sql2 += "    and supercode='"+spercode+"' and ("+codes+") and sstyle<>'' and "
         sql2 += "    date_format(sdate,'%Y-%m-%d')>='"+start+"' and date_format(sdate,'%Y-%m-%d')<='"+end+"' and ("+ccodes+")  "

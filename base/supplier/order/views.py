@@ -107,7 +107,7 @@ def query(request):
         .filter(**karrs) \
         .order_by("inflag","-"+orderby) \
         .values("remark","logistics","inflag","ordercode","checkdate","concode","style","spercode","spername","status","sdate",
-                "shopcode","inprice_tax","printnum","seenum","purday","spsum","sjshsum","ssspzb")
+                "shopcode","inprice_tax","printnum","seenum","purday","spsum","sjshsum","ssspzb","bbdate")
 
     for item in pubList:
         slist = OrdStatus.objects.filter(ordercode=item["ordercode"]).values("status")

@@ -55,12 +55,19 @@ def saveInvioce(request):
 
     ############接收表头相关数据（CustReceive0） ############
     planPayDate = request.POST.get('PlanPayDate')
-    timeNow = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    Now = datetime.datetime.now()
+    timeNow = Now.strftime("%Y-%m-%d %H:%M:%S")
     payDate =  request.POST.get('payDate',timeNow)
     shopId = request.POST.get('shopId')
     refSheetId = request.POST.get('refSheetId','')
     beginDate = request.POST.get("begindate",'')
+
     endDate = request.POST.get("enddate",'')
+    if not endDate:
+        endDate = timeNow
+    if not beginDate:
+        beginDate = Now + datetime.timedelta(days=-30)
+        beginDate = beginDate.strftime("%Y-%m-%d %H:%M:%S")
     jsonStr = request.POST.get('jsonStr','')
 
     res = {}

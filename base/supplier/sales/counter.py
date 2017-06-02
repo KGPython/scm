@@ -2,6 +2,8 @@
 __author__ = 'liubf'
 
 import datetime,decimal
+import xlrd,xlwt3 as xlwt
+
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.db import connection
@@ -30,7 +32,9 @@ def query(request):
 
     #当月1号
     if not start:
-        start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        # start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        start = (datetime.date.today() + datetime.timedelta(-1)).strftime("%Y-%m-%d")
+
     #当日
     if not end:
         end = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -55,10 +59,10 @@ def query(request):
     #门店编号、总折扣、供应商折扣、销售金额、销售成本金额、销售数量
     sql = "SELECT tb1.shopcode,IFNULL(tb1.num,0),IFNULL(tb1.svalue,0),IFNULL(tb1.discount,0),IFNULL(tb1.scost,0),IFNULL(tb1.zzk,0) "
     sql += "FROM(SELECT a.shopcode,b.svalue,b.scost,b.num,b.discount,b.zzk "
-    sql += "FROM(SELECT DISTINCT shopcode FROM sales_pro "
+    sql += "FROM(SELECT DISTINCT shopcode FROM sales_pro3 "
     sql += "WHERE grpcode='"+grpcode+"' AND ("+codes+") AND supercode='"+spercode+"'  and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' ) a "     #
     sql += "LEFT JOIN(SELECT tb2.shopcode,SUM(tb2.svalue) svalue,SUM(tb2.scost)scost,SUM(tb2.num)num, "
-    sql += "SUM(tb2.discount) discount, SUM(tb2.zzk) zzk FROM (SELECT shopcode,svalue,scost,num,discount,zzk FROM sales_pro "
+    sql += "SUM(tb2.discount) discount, SUM(tb2.zzk) zzk FROM (SELECT shopcode,svalue,scost,num,discount,zzk FROM sales_pro3 "
     sql += "WHERE grpcode='"+grpcode+"' AND DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"' AND DATE_FORMAT(sdate,'%Y-%m-%d')<='"+end+"'  and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' "
     sql += "AND ("+codes+") AND (sstyle is not null and sstyle<>'' ) AND supercode='"+spercode+"' "   #
     sql += ") tb2 GROUP BY tb2.shopcode)b ON a.shopcode=b.shopcode) tb1 "
@@ -148,7 +152,8 @@ def detail(request):
 
     #当月1号
     if not start:
-        start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        # start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        start = (datetime.date.today()+datetime.timedelta(-1)).strftime("%Y-%m-%d")
     #当日
     if not end:
         end = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -167,7 +172,7 @@ def detail(request):
     try:
         #销售成本总和
         sql = "select sum(IFNULL(scost,0)) scost "
-        sql += " from sales_pro where grpcode = '"+grpcode+"' and ("+codes+") and sstyle<>''"
+        sql += " from sales_pro3 where grpcode = '"+grpcode+"' and ("+codes+") and sstyle<>''"
         sql += " and DATE_FORMAT(sdate,'%Y-%m-%d') >= '"+start+"' and DATE_FORMAT(sdate,'%Y-%m-%d') <= '"+end+"' and teamcode like '%"+teamcode.strip()+"%'"
         sql += " and supercode='"+spercode+"' and teamname like '%"+teamname.strip()+"%' "
 
@@ -184,7 +189,7 @@ def detail(request):
         sql2 += "    from(select sum(tb1.zzk) as zzk,sum(tb1.discount) as discount,sum(tb1.svalue) as svalue,sum(tb1.num) as num,"
         sql2 += "    sum(tb1.scost) as scost,tb1.bccode,date_format(tb1.sdate,'%Y-%m-%d') as sdate from("
         sql2 += "        select zzk,discount,svalue,num,scost,bccode,sdate "
-        sql2 += "            from sales_pro  where grpcode='"+grpcode+"' and ("+codes+") and sstyle<>'' and DATE_FORMAT(sdate,'%Y-%m-%d') >= '"+start+"' "
+        sql2 += "            from sales_pro3  where grpcode='"+grpcode+"' and ("+codes+") and sstyle<>'' and DATE_FORMAT(sdate,'%Y-%m-%d') >= '"+start+"' "
         sql2 += "            and DATE_FORMAT(sdate,'%Y-%m-%d') <= '"+end+"' and teamcode like  '%"+teamcode.strip()+"%' and teamname like  '%"+teamname.strip()+"%' "
         sql2 += "            and supercode='"+spercode+"' and bccode is not null"
         sql2 += "     ) tb1  "

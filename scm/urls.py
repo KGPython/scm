@@ -23,8 +23,6 @@ urlpatterns = [
     url(r'^css/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root_path+'/static/css'}),
     url(r'^js/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root_path+'/static/javascript'}),
     url(r'^image/(?P<path>.*)$', 'django.views.static.serve', {'document_root':root_path+ '/static/image'}),
-    url(r'^fonts/(?P<path>.*)$', 'django.views.static.serve', {'document_root': root_path + '/static/fonts'}),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^scm/',include("base.urls")),
 ]
-

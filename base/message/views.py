@@ -12,6 +12,7 @@ from .forms import *
 import time,datetime
 import os
 from django.core.paginator import Paginator,Page
+from django.conf import settings
 
 #读取文件
 def readFile(filePath, buf_size=262144):

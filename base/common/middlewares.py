@@ -12,6 +12,7 @@ if hasattr(settings,'LOGIN_EXEMPT_URLS'):
 	EXEMPT_URLS += [compile(expr) for expr in settings.LOGIN_EXEMPT_URLS]
 
 class LoginMiddleware(object):
+
     def process_request(self, request):
         #此用户没有登陆，判断请求的路径是否合法：
         path = request.path_info.lstrip('/')

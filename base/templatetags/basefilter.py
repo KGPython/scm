@@ -187,7 +187,6 @@ def toInt(val):
     else:
         return ""
 
-@register.filter
-def isExist(val):
-    print(val)
-    return val
+# register.filter('key',key)
+# register.filter('dtsub',dtsub)
+# register.filter('expired',expired)

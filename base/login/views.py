@@ -45,7 +45,7 @@ def login(request):
         if not olduser:
             if vcode==vcode2:
                 #查询用户信息
-                user = BasUser.objects.get(ucode=ucode)
+                user = BasUser.objects.get(ucode=ucode,status='1')
                 if user:
                     upwd = user.password
                     password = mtu.md5(password)

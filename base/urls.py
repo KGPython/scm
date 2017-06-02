@@ -15,10 +15,9 @@ Including another URLconf
 """
 #-*- coding:utf-8 -*-
 from django.conf.urls import include,url
-
 urlpatterns = [
 	url(r'^base/index/','base.views.index'),
-    url(r'^base/loginpage/', 'base.login.views.loginPage',name='loginPage'),
+    url(r'^base/loginpage/', 'base.login.views.loginPage'),
     url(r'^base/login/', 'base.login.views.login'),
     url(r'^base/logout/', 'base.login.views.logout'),
     url(r'^base/vcode/', 'base.login.views.vcode'),
@@ -111,9 +110,6 @@ urlpatterns = [
 
     #报表中心
     url(r'^base/',include('base.report.urls')),
-    #rbac
-    url(r'^base/rbac/',include('base.rbac.urls')),
-
 
     #欢迎页面（临时）
     url(r'^welcome/$','base.login.views.welcome'),

@@ -50,6 +50,6 @@ def index(request):
         else:
             res['msg'] = '7'
 
-    response = HttpResponse(json.dumps(res))
+        response = HttpResponse(json.dumps(res))
 
     return response

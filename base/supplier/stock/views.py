@@ -26,9 +26,9 @@ def supplierStock(request):
             num1 = form.cleaned_data['num1']
             num2 = form.cleaned_data['num2']
             if num1 >= 0:
-                num1 = num1
+                num1 = str(int(num1))
             if num2:
-                num2 = num2
+                num2 = str(int(num2))
 
             scCode = form.cleaned_data['scCode']
             proName = form.cleaned_data['proName']
@@ -206,6 +206,7 @@ def stockDetail(request):
                     shopCode +="','"
                 shopCode = shopCode[0:len(shopCode)-2]
 
+                #shopcode,
                 sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where shopcode in ("+shopCode+") and barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle
             else:
                 sql ="select * from (select '',(select name from BRAND,bas_product  where pcode=tb1.procode and id=prodmark) brandnm,sccode,scname,procode,proname,classes,unit,fprocode,sum(num) num,sum(sums_intax) sums_intax,barcode from(select shopcode,sccode,scname,procode,proname,classes,unit,num,sums_intax,barcode,fprocode from stock where barcode like '%"+barcode.strip()+"%' and sccode like '%"+scCode.strip()+"%' and proname like '%"+proName.strip()+"%' and suppcode='"+suppCode+"' and grpcode='"+grpCode+"') as tb1 group by brandnm,sccode,scname,procode,proname,fprocode,classes,unit,barcode) as tb2 where num>="+num1+" and num<="+num2+" order by "+orderStyle

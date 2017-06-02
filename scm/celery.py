@@ -1,13 +1,15 @@
 #!/bin/python
 from __future__ import absolute_import
+ 
 import os
+ 
 from celery import Celery
-from django.conf import settings
-
+ 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE","scm.settings")
 #Specifying the settings here means the celery command line program will know where your Django project is. 
 #This statement must always appear before the app instance is created, which is what we do next: 
-
+from django.conf import settings
+ 
 app = Celery("scm")
  
 app.config_from_object("django.conf:settings")

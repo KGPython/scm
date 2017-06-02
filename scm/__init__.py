@@ -9,5 +9,3 @@ from .celery import app as celery_app
 #load pymysql
 import pymysql
 pymysql.install_as_MySQLdb()
-
-

@@ -1087,6 +1087,7 @@ class Ord(models.Model):
     crreceiptflag = models.IntegerField(db_column='CRReceiptFlag')  # Field name made lowercase.
     refsheetid = models.CharField(db_column='RefSheetID', max_length=16, blank=True, null=True)  # Field name made lowercase.
     receiptsheetid = models.CharField(db_column='ReceiptSheetID', max_length=16, blank=True, null=True)  # Field name made lowercase.
+    bbdate = models.DateTimeField(db_column='bbdate', blank=True, null=True)
 
     class Meta:
         managed = False

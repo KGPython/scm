@@ -30,7 +30,8 @@ def query(request):
 
      #当月1号
     if not start:
-        start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        # start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        start = (datetime.date.today() + datetime.timedelta(-1)).strftime("%Y-%m-%d")
     #当日
     if not end:
         end = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -80,7 +81,7 @@ def query(request):
         sql += "	sum(num) num,sum(svalue) svalue,sum(discount) discount  "
         sql += "	,sum(scost) scost,sdate,      "
         sql += "	sstyle from(                         "
-        sql += "		select * from sales_pro where                      "
+        sql += "		select * from sales_pro3 where                      "
         sql += "           grpcode='"+grpcode+"' and ("+codes+") "
         sql += "           and ("+ccodes+") "
         sql += "           and date_format(sdate,'%Y-%m-%d')>='"+start+"' "

@@ -30,7 +30,8 @@ def query(request):
 
      #当月1号
     if not start:
-        start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        # start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+        start = (datetime.date.today() + datetime.timedelta(-1)).strftime("%Y-%m-%d")
     #当日
     if not end:
         end = datetime.datetime.today().strftime("%Y-%m-%d")
@@ -58,7 +59,7 @@ def query(request):
     sum3 = decimal.Decimal('0.0')
     sum4 = decimal.Decimal('0.0')
     try:
-        sql1 = "select sum(ifnull(tb1.svalue,0)) from (select svalue from sales_pro " \
+        sql1 = "select sum(ifnull(tb1.svalue,0)) from (select svalue from sales_pro3 " \
                " where grpcode='"+grpcode+"'  and ("+codes+") and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"'  and DATE_FORMAT(sdate,'%Y-%m-%d')<= '"+end+"' " \
                " and (sstyle <> '') and supercode='"+spercode+"' ) tb1"
 
@@ -71,7 +72,7 @@ def query(request):
 
         sql2 = "select date_format(tb1.sdate,'%Y-%m-%d') AS sdate,sum(tb1.svalue) AS svalue,sum(tb1.scost) AS scost," \
                "sum(tb1.num) AS num,sum(tb1.discount) AS discount " \
-               "from (select * from sales_pro " \
+               "from (select * from sales_pro3 " \
                " where grpcode='"+grpcode+"'  and ("+codes+") and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"'  and DATE_FORMAT(sdate,'%Y-%m-%d')<= '"+end+"' "\
                " and (sstyle <> '') and supercode='"+spercode+"' )tb1 group by tb1.sdate order by tb1.sdate desc"
 
@@ -250,7 +251,7 @@ def detail1(request):
 
     sql ="SELECT t1.scost,t1.svalue,t1.num,t1.shopcode,t2.shopnm,t1.discount FROM(             "
     sql +="	SELECT SUM(scost) scost,SUM(svalue) svalue,SUM(num) num,shopcode,SUM(discount) discount FROM ( "
-    sql +="		SELECT * FROM sales_pro WHERE grpcode='"+grpcode+"' AND sstyle<>''        "
+    sql +="		SELECT * FROM sales_pro3 WHERE grpcode='"+grpcode+"' AND sstyle<>''        "
     sql +="	        AND ("+codes+") AND   "
     sql +="		DATE_FORMAT(sdate,'%Y-%m-%d')>= '"+start+"' AND "
     sql +="		DATE_FORMAT(sdate,'%Y-%m-%d')<= '"+end+"' "
@@ -366,7 +367,7 @@ def detail2(request):
     sum2 = decimal.Decimal('0.0')
     sum3 = decimal.Decimal('0.0')
     try:
-        sql ="select sum(tb1.scost) scost from(select * from sales_pro where "
+        sql ="select sum(tb1.scost) scost from(select * from sales_pro3 where "
         sql +="grpcode='"+grpcode+"' and ("+codes+") "
         sql +="and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"' "
         sql+="and DATE_FORMAT(sdate,'%Y-%m-%d')<='"+end+"' "
@@ -381,7 +382,7 @@ def detail2(request):
 
         sql2 = "select tb1.pcode,tb1.pname,max(tb1.barcode) as  barcode,tb1.classes,tb1.unit,sum(tb1.num) as num,"
         sql2 += "sum(tb1.svalue) as svalue,sum(tb1.discount) as discount,sum(tb1.scost) as scost,tb1.tax,tb1.sstyle "
-        sql2 += "from(select * from sales_pro where "
+        sql2 += "from(select * from sales_pro3 where "
         sql2 += "grpcode='"+grpcode+"' and ("+codes+") "
         sql2 += "and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"' "
         sql2 += "and DATE_FORMAT(sdate,'%Y-%m-%d')<='"+end+"' "
@@ -500,7 +501,7 @@ def detail3(request):
     try:
         sql = "select tb1.teamcode,tb1.teamname,sum(tb1.num) as num ,sum(tb1.svalue) as svalue,sum(tb1.discount) as discount "
         sql += ",sum(tb1.scost) as scost,sum(tb1.zzk) as zzk from "
-        sql += "(select * from sales_pro where "
+        sql += "(select * from sales_pro3 where "
         sql += "grpcode='"+grpcode+"' and ("+codes+") and ( "
         sql += "sstyle<>'' ) and DATE_FORMAT(sdate,'%Y-%m-%d')>='"+start+"' "
         sql += "and DATE_FORMAT(sdate,'%Y-%m-%d')<='"+end+"' "

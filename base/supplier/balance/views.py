@@ -1,26 +1,27 @@
 # -*- coding:utf-8 -*-
 
 import logging
-import time,datetime,decimal,json
+import time, datetime, decimal, json
 from .forms import *
 from django.http import HttpResponse
 from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
-from django.core.paginator import Paginator  #分页查询
+from django.core.paginator import Paginator  # 分页查询
 
-from base.models import Billhead0,Billheaditem0,BasOrg,BillInd,\
-    Adpriced,ReconcilItem,Reconcil,Updpayable,Updpayableitem,Billhead0Status
-from base.utils import MethodUtil as mtu,Constants,DateUtil
+from base.models import Billhead0, Billheaditem0, BasOrg, BillInd, \
+    Adpriced, ReconcilItem, Reconcil, Updpayable, Updpayableitem, Billhead0Status
+from base.utils import MethodUtil as mtu, Constants, DateUtil
 from base.views import findPayType
 
 # Create your views here.
-logger=logging.getLogger('base.supplier.stock.views')
+logger = logging.getLogger('base.supplier.stock.views')
 
-#time = datetime.datetime.today().strftime("%Y-%m-%d")
-#monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
 
-#add by liubf at 2016/01/12
-#查询单据明细
+# time = datetime.datetime.today().strftime("%Y-%m-%d")
+# monthFrist = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
+
+# add by liubf at 2016/01/12
+# 查询单据明细
 def findSheet(request):
     """
     code = prefix+sheetID
@@ -35,9 +36,9 @@ def findSheet(request):
     code = prefix+sheetID
     select * from adpriced where code={code} and spercode={spercode}
     """
-    grpName = request.session.get('s_grpname')     #用户所属单位
-    sheetid = mtu.getReqVal(request,"sheetId")
-    sheettype = mtu.getReqVal(request,"sheetType")
+    grpName = request.session.get('s_grpname')  # 用户所属单位
+    sheetid = mtu.getReqVal(request, "sheetId")
+    sheettype = mtu.getReqVal(request, "sheetType")
     venderid = request.session.get("s_suppcode")
     targetPage = ""
     result = {}
@@ -52,13 +53,15 @@ def findSheet(request):
     sum8 = decimal.Decimal(0)
 
     result["sheettype"] = sheettype
-    if sheettype in ["2301","2323"]:
+    if sheettype in ["2301", "2323"]:
         prefix = Constants.SCM_SHEET_TYPE[sheettype]
-        code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=sheetid)
+        code = "{prefix}{sheetid}".format(prefix=prefix, sheetid=sheetid)
 
-        #"classes",
-        slist = BillInd.objects.filter(code=code).values("code", "rid","procode","salebn","pname","unit","num","innums","denums",
-                                                         "giftnum","taxrate","price_intax","chdate","prnum","sum_tax","sum","rowno","grpcode","orderstyle","classes")
+        # "classes",
+        slist = BillInd.objects.filter(code=code).values("code", "rid", "procode", "salebn", "pname", "unit", "num",
+                                                         "innums", "denums",
+                                                         "giftnum", "taxrate", "price_intax", "chdate", "prnum",
+                                                         "sum_tax", "sum", "rowno", "grpcode", "orderstyle", "classes")
         for item in slist:
             if item["num"]:
                 sum1 += item["num"]
@@ -90,24 +93,27 @@ def findSheet(request):
         targetPage = "user_settle_article_g_detail1.html"
     elif sheettype in ["5205"]:
         prefix = sheetid[0:2:]
-        if prefix in ["CM","cM","cm","Cm",]:
-            slist3 = Updpayable.objects.filter(sheetid=sheetid).values("sheetid","refsheetid","refsheettype","shopid","venderid","refcheckdate","note","flag","checkdate");
+        if prefix in ["CM", "cM", "cm", "Cm", ]:
+            slist3 = Updpayable.objects.filter(sheetid=sheetid)\
+                .values("sheetid", "refsheetid", "refsheettype","shopid", "venderid",
+                        "refcheckdate", "note","flag", "checkdate")
             result["itemList"] = slist3
             targetPage = "user_settle_article_g_detail3.html"
         else:
-            srow = findRefSheetId(sheetid,venderid)
+            srow = findRefSheetId(sheetid, venderid)
             if srow:
                 refsheetid = srow["refsheetid"]
                 refsheettype = srow["refsheettype"]
                 if refsheettype in Constants.SCM_SHEET_TYPE_KEY:
                     prefix = Constants.SCM_SHEET_TYPE[str(refsheettype)]
-                    code = "{prefix}{sheetid}".format(prefix=prefix,sheetid=refsheetid)
+                    code = "{prefix}{sheetid}".format(prefix=prefix, sheetid=refsheetid)
 
-                    slist2 = Adpriced.objects.filter(code=code,spercode=venderid).values( "code","grpcode","pcode","barcode","pname","spec","unit","newtax","dqhsjj",
-                                                                                          "adbatchseq","mll","tzje","spercode","cprice_notax","sprice","anum",
-                                                                                          "anum_notax","anum_intax","anum_stock","anum_stock_intax",
-                                                                                          "anum_stock_notax","anum_sale","anum_sale_intax","anum_sale_notax",
-                                                                                          "anum_other","anum_other_iitax","anum_other_notax","chdate",)
+                    slist2 = Adpriced.objects.filter(code=code, spercode=venderid) \
+                        .values("code", "grpcode", "pcode", "barcode", "pname", "spec", "unit", "newtax", "dqhsjj",
+                                "adbatchseq", "mll", "tzje", "spercode", "cprice_notax", "sprice", "anum",
+                                "anum_notax", "anum_intax", "anum_stock", "anum_stock_intax",
+                                "anum_stock_notax", "anum_sale", "anum_sale_intax", "anum_sale_notax",
+                                "anum_other", "anum_other_iitax", "anum_other_notax", "chdate", )
                     for item in slist2:
                         sum1 += item["anum"]
                         sum2 += item["cprice_notax"]
@@ -125,33 +131,34 @@ def findSheet(request):
             result["refsheettype"] = refsheettype
             targetPage = "user_settle_article_g_detail2.html"
 
+    return render(request, targetPage, result)
 
 
-
-    return render(request,targetPage,result)
-
-def findRefSheetId(sheetid,venderid):
+def findRefSheetId(sheetid, venderid):
     try:
         conn = mtu.getMssqlConn()
         cur = conn.cursor()
-        sql = "select refsheetid,refsheettype from UpdPayableTemp where sheetid='{sheetid}' and venderid='{venderid}'".format(sheetid=sheetid,venderid=venderid)
+        sql = "select refsheetid,refsheettype from UpdPayableTemp where sheetid='{sheetid}' and venderid='{venderid}'".format(
+            sheetid=sheetid, venderid=venderid)
         cur.execute(sql)
         item = cur.fetchone()
     except Exception as e:
         print(e)
     return item
 
+
 def findKxlist(request):
     venderid = request.session.get("s_suppcode")
-    pend = mtu.getReqVal(request,"pend")
+    pend = mtu.getReqVal(request, "pend")
 
-    rlist = findKxListData(venderid,pend,1)
+    rlist = findKxListData(venderid, pend, 1)
     sum = decimal.Decimal(0.0)
     for row in rlist:
         sum += row["kmoney"]
-    return render(request,"user_settle_kx.html",{"rlist":rlist,"sum":sum})
+    return render(request, "user_settle_kx.html", {"rlist": rlist, "sum": sum})
 
-def findKxListData(venderid,pend,flag):
+
+def findKxListData(venderid, pend, flag):
     conn = mtu.getMssqlConn()
     cursor = conn.cursor()
     sql = """select a.SerialID,a.shopid as inshopid,a.managedeptid,a.kno,b.kname,a.ktype,a.kmoney,a.kkflag, a.style,a.monthid,
@@ -161,10 +168,11 @@ def findKxListData(venderid,pend,flag):
                  and a.stoppay=0 and a.shopid *= c.id
                  and  a.kno = b.kno and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
                  and a.flag=0 and kkflag={kkflag} order by a.kno
-                 """.format(venderid=venderid,pend=pend,kkflag=flag)
+                 """.format(venderid=venderid, pend=pend, kkflag=flag)
     cursor.execute(sql)
     rlist = cursor.fetchall()
     return rlist
+
 
 ##编辑结算申请单
 def applyEdit(request):
@@ -177,46 +185,46 @@ def applyEdit(request):
     kxinvoice = decimal.Decimal(0)
     try:
         conn = mtu.get_MssqlConn()
-        #供应商结算方式
+        # 供应商结算方式
         pdict = findPayType(2)
         if pdict and paytypeid:
             payTypeName = pdict[str(int(paytypeid))]
         else:
             payTypeName = ""
 
-        #g-购销 l-联营 d-代销  z-租赁
-        pstart,pend,cstart,cend = getStartAndEndDate(contracttype,payTypeName)
+        # g-购销 l-联营 d-代销  z-租赁
+        pstart, pend, cstart, cend = getStartAndEndDate(contracttype, payTypeName)
 
-        #查询单据信息（动态查询）
-        rdict = findBillItem(conn,venderid,pstart,pend,cstart,cend,None,contracttype)
+        # 查询单据信息（动态查询）
+        rdict = findBillItem(conn, venderid, pstart, pend, cstart, cend, None, contracttype)
         blist = rdict["blist"]
         itemList = []
         for row in blist:
             item = {}
-            for k,v in row.items():
-                if isinstance(v,datetime.datetime):
+            for k, v in row.items():
+                if isinstance(v, datetime.datetime):
                     v = v.strftime("%Y-%m-%d")
-                elif isinstance(v,decimal.Decimal):
+                elif isinstance(v, decimal.Decimal):
                     v = str(v)
-                item.setdefault(k,v)
+                item.setdefault(k, v)
             itemList.append(item)
-        kxinvoice = findKxInvoice(conn,venderid,pend)
+        kxinvoice = findKxInvoice(conn, venderid, pend)
         conn.close()
 
-        kxlist = findKxListData(venderid,pend,0)
+        kxlist = findKxListData(venderid, pend, 0)
         jxsum = decimal.Decimal(0.0)
         for kx in kxlist:
             kkflag = kx["kkflag"]
             if kkflag == 0:
-                jxsum+= kx["kmoney"]
+                jxsum += kx["kmoney"]
 
     except Exception as e:
         print(e)
 
-    result["paytypeid"] = paytypeid   #结算方式ID
-    result["payTypeName"] = payTypeName   #结算方式名称
-    result["balancePlaceName"] = Constants.SCM_BALANCE_NAME     #结算地名称
-    result["balancePlaceId"] = Constants.SCM_BALANCE_ID         #结算地ID
+    result["paytypeid"] = paytypeid  # 结算方式ID
+    result["payTypeName"] = payTypeName  # 结算方式名称
+    result["balancePlaceName"] = Constants.SCM_BALANCE_NAME  # 结算地名称
+    result["balancePlaceId"] = Constants.SCM_BALANCE_ID  # 结算地ID
     result["cstart"] = cstart
     result["cend"] = cend
     result["pstart"] = pstart
@@ -226,11 +234,12 @@ def applyEdit(request):
     result["sum2"] = rdict["sum2"]
     result["sum3"] = rdict["sum3"]
     result["sum4"] = rdict["sum4"]
-    result["kxinvoice"] =  "%0.2f" % kxinvoice
+    result["kxinvoice"] = "%0.2f" % kxinvoice
     result["zkinvoice"] = "%0.2f" % kxinvoice
     result["jxsum"] = "%0.2f" % jxsum
 
-    return render(request,"user_settleApply.html",result)
+    return render(request, "user_settleApply.html", result)
+
 
 @csrf_exempt
 def applySave(request):
@@ -238,32 +247,32 @@ def applySave(request):
     paytypeid = request.session.get("s_paytypeid")
     s_ucode = request.session.get("s_ucode")
     venderid = request.session.get("s_suppcode")
-    pstart = mtu.getReqVal(request,"pstart",None)
-    pend = mtu.getReqVal(request,"pend",None)
-    cstart = mtu.getReqVal(request,"cstart",None)
-    cend = mtu.getReqVal(request,"cend",None)
-    refsheetids = mtu.getReqList(request,"refsheetid",None)
-    balancePlaceId = mtu.getReqVal(request,"balancePlaceId")
+    pstart = mtu.getReqVal(request, "pstart", None)
+    pend = mtu.getReqVal(request, "pend", None)
+    cstart = mtu.getReqVal(request, "cstart", None)
+    cend = mtu.getReqVal(request, "cend", None)
+    refsheetids = mtu.getReqList(request, "refsheetid", None)
+    balancePlaceId = mtu.getReqVal(request, "balancePlaceId")
 
     params = {}
     result = {}
 
-    #判断是否可以提交结算单
-    islimit = mtu.getProperties(Constants.SCM_CONFIG_MODULE,Constants.SCM_CONFIG_BILL_ISLIMIT)
+    # 判断是否可以提交结算单
+    islimit = mtu.getProperties(Constants.SCM_CONFIG_MODULE, Constants.SCM_CONFIG_BILL_ISLIMIT)
     if islimit == 'True':
-        sequence = allowCommit(paytypeid,venderid)
+        sequence = allowCommit(paytypeid, venderid)
     else:
         sequence = "0"
 
-    if sequence=="0":
+    if sequence == "0":
         planpaydate = datetime.date.today().strftime("%Y-%m-%d")
-        params["pstart"]=pstart
-        params["pend"]=pend
-        params["cstart"]=cstart
-        params["cend"]=cend
-        params["planpaydate"]=planpaydate
-        params["editor"]=s_ucode
-        params["editdate"]=datetime.date.today().strftime("%Y-%m-%d")
+        params["pstart"] = pstart
+        params["pend"] = pend
+        params["cstart"] = cstart
+        params["cend"] = cend
+        params["planpaydate"] = planpaydate
+        params["editor"] = s_ucode
+        params["editdate"] = datetime.date.today().strftime("%Y-%m-%d")
         # params["sheetid"] = sheetId
         params["venderid"] = venderid
         try:
@@ -275,23 +284,23 @@ def applySave(request):
                     ric = eval(row)
                     blist.append(ric)
 
-                payableamt = findPayableCostValue(conn2,balancePlaceId,venderid)
+                payableamt = findPayableCostValue(conn2, balancePlaceId, venderid)
                 if not payableamt:
                     payableamt = decimal.Decimal(0.0)
 
-                costvalue = findCostValue(conn2,venderid)
+                costvalue = findCostValue(conn2, venderid)
                 if not costvalue:
                     costvalue = decimal.Decimal(0.0)
 
-                unjsvalue = unbalancedCostValue(conn2,venderid,pstart)
+                unjsvalue = unbalancedCostValue(conn2, venderid, pstart)
                 if not unjsvalue:
                     unjsvalue = decimal.Decimal(0.0)
 
-                undqvalue = undueCostValue(conn2,venderid,pend)
+                undqvalue = undueCostValue(conn2, venderid, pend)
                 if not undqvalue:
                     undqvalue = decimal.Decimal(0.0)
 
-                advance = findAdvance(conn2,venderid)
+                advance = findAdvance(conn2, venderid)
                 if not advance:
                     advance = decimal.Decimal(0.0)
 
@@ -299,28 +308,28 @@ def applySave(request):
                 if not payablemoney:
                     payablemoney = decimal.Decimal(0.0)
 
-                params["payablemoney"]=float(payablemoney)   #应付金额
-                params["advance"]=float(advance)        #预付款余额，预付款应扣金额(promoney)默认0 （写表billhead0）
-                params["costvalue"]=float(costvalue)    #库存金额 （写表billhead0）
-                params["undqvalue"]=float(undqvalue)    #未到期金额 （写表billhead0） 取不为空数据
-                params["payableamt"]=float(payableamt)  #应付账款金额 （写表billhead0）
-                params["unjsvalue"]=float(unjsvalue)    #应结未结金额 （写表billhead0） 取不为空数据
+                params["payablemoney"] = float(payablemoney)  # 应付金额
+                params["advance"] = float(advance)  # 预付款余额，预付款应扣金额(promoney)默认0 （写表billhead0）
+                params["costvalue"] = float(costvalue)  # 库存金额 （写表billhead0）
+                params["undqvalue"] = float(undqvalue)  # 未到期金额 （写表billhead0） 取不为空数据
+                params["payableamt"] = float(payableamt)  # 应付账款金额 （写表billhead0）
+                params["unjsvalue"] = float(unjsvalue)  # 应结未结金额 （写表billhead0） 取不为空数据
 
-                #新增
-                type=0
+                # 新增
+                type = 0
                 typeStr = "新增"
                 sheetId = getSheetId(conn2)
 
                 conn = mtu.getMssqlConn()
                 conn.autocommit(False)
 
-                klist = findKxsum(conn,venderid,pend)
+                klist = findKxsum(conn, venderid, pend)
                 kxmoney = sum([row["kmoney"] for row in klist])
                 if not kxmoney:
                     kxmoney = decimal.Decimal(0.0)
 
-                cashlist = filter(lambda row:row["kkflag"]==0,[row for row in klist])
-                invoicelist =  filter(lambda row:row["kkflag"]==1,[row for row in klist])
+                cashlist = filter(lambda row: row["kkflag"] == 0, [row for row in klist])
+                invoicelist = filter(lambda row: row["kkflag"] == 1, [row for row in klist])
 
                 kxcash = sum([row["kmoney"] for row in cashlist])
                 if not kxcash:
@@ -330,26 +339,27 @@ def applySave(request):
                 if not kxinvoice:
                     kxinvoice = decimal.Decimal(0.0)
 
-                #应付金额=实付金额+帐扣金额
-                #应开票金额=实付金额
-                params["kxmoney"]=float(kxmoney)    #扣项金额合计
-                params["kxcash"]=float(kxcash)      #扣项交款金额
-                params["kxinvoice"]=float(kxinvoice)  #帐扣发票金额 (帐扣金额)
+                # 应付金额=实付金额+帐扣金额
+                # 应开票金额=实付金额
+                params["kxmoney"] = float(kxmoney)  # 扣项金额合计
+                params["kxcash"] = float(kxcash)  # 扣项交款金额
+                params["kxinvoice"] = float(kxinvoice)  # 帐扣发票金额 (帐扣金额)
                 params["sheetid"] = sheetId
 
-                #保存单据信息
-                saveBillHead0(conn,params)
+                # 保存单据信息
+                saveBillHead0(conn, params)
 
-                #保存单据明细
-                saveBillHeadItem(conn,blist,sheetId)
+                # 保存单据明细
+                saveBillHeadItem(conn, blist, sheetId)
 
-                #保存扣项明细
-                saveKxItem(conn,klist,sheetId)
+                # 保存扣项明细
+                saveKxItem(conn, klist, sheetId)
 
                 cursor = conn.cursor()
                 sqlFlow = "insert into sheetflow(sheetid,sheettype,flag,operflag,checker,checkno,checkdate,checkdatetime) " \
-                          "values('{sheetId}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())"\
-                          .format(sheetId=sheetId,shType=5203,flag=0,operFlag=0,checker=Constants.SCM_ACCOUNT_LOGINID,chNo=Constants.SCM_ACCOUNT_LOGINNO)
+                          "values('{sheetId}',{shType},{flag},{operFlag},'{checker}',{chNo},convert(char(10),getdate(),120),getdate())" \
+                    .format(sheetId=sheetId, shType=5203, flag=0, operFlag=0, checker=Constants.SCM_ACCOUNT_LOGINID,
+                            chNo=Constants.SCM_ACCOUNT_LOGINNO)
                 cursor.execute(sqlFlow)
                 conn.commit()
                 cursor.close()
@@ -361,15 +371,17 @@ def applySave(request):
                 conn.close()
 
             if errors <= 0:
-                #执行保存存储过程
+                # 执行保存存储过程
                 sql = """declare @Result int
                        exec @Result=st_billheadsave '{sheetId}',{type},'{cname}','A001'
-                       select @Result""".format(sheetId=sheetId,type=type,cname = Constants.SCM_ACCOUNT_USER_NAME)
+                       select @Result""".format(sheetId=sheetId, type=type, cname=Constants.SCM_ACCOUNT_USER_NAME)
                 conn2.execute_scalar(sql)
 
-                #保存日志记录
-                note = "[SCM]操作员:[{operator}]{typeStr}单据[{sheetId}]".format(sheetId=sheetId,typeStr=typeStr,operator=s_ucode)
-                mtu.insertSysLog(conn2,Constants.SCM_ACCOUNT_LOGINID,Constants.SCM_ACCOUNT_WORKSTATIONID,Constants.SCM_ACCOUNT_MODULEID,Constants.SCM_ACCOUNT_EVENTID[type],note)
+                # 保存日志记录
+                note = "[SCM]操作员:[{operator}]{typeStr}单据[{sheetId}]".format(sheetId=sheetId, typeStr=typeStr,
+                                                                            operator=s_ucode)
+                mtu.insertSysLog(conn2, Constants.SCM_ACCOUNT_LOGINID, Constants.SCM_ACCOUNT_WORKSTATIONID,
+                                 Constants.SCM_ACCOUNT_MODULEID, Constants.SCM_ACCOUNT_EVENTID[type], note)
                 result["status"] = "0"
                 result["sheetId"] = sheetId
                 conn2.close()
@@ -383,7 +395,7 @@ def applySave(request):
     return HttpResponse(json.dumps(result))
 
 
-def saveBillHead0(conn,params):
+def saveBillHead0(conn, params):
     try:
         cursor = conn.cursor()
         sql = """insert into billhead0
@@ -439,18 +451,24 @@ def saveBillHead0(conn,params):
                       )values('{sheetid}','{shopid}',{venderid},{payablemoney},{kxmoney},{kxcash},{kxinvoice},{payableamt},{costvalue},{unjsvalue},
                        {undqvalue},0,0,1,'{pstart}', '{pend}','{planpaydate}','{editor}','{editdate}','{operator}',NULL,NULL,NULL,NULL,NULL,NULL,
                        NULL,NULL, 0.0,0.0,0.0,0.0,0.0,0,0,NULL,0,0,0,NULL,'{cstart}','{cend}',0,0,0,0,{advance},NULL,NULL)
-            """.format(sheetid=params["sheetid"],shopid="CM01",venderid=params["venderid"],payablemoney=params["payablemoney"],
-                       kxmoney=params["kxmoney"],kxcash=params["kxcash"], kxinvoice=params["kxinvoice"],payableamt=params["payableamt"],
-                       costvalue=params["costvalue"],unjsvalue=params["unjsvalue"],undqvalue=params["undqvalue"],pstart=params["pstart"],
-                       pend=params["pend"],planpaydate=params["planpaydate"],editor=params["editor"],editdate=params["editdate"],
-                       operator=params["editor"],cstart=params["cstart"],cend=params["cend"],advance=params["advance"])
+            """.format(sheetid=params["sheetid"], shopid="CM01", venderid=params["venderid"],
+                       payablemoney=params["payablemoney"],
+                       kxmoney=params["kxmoney"], kxcash=params["kxcash"], kxinvoice=params["kxinvoice"],
+                       payableamt=params["payableamt"],
+                       costvalue=params["costvalue"], unjsvalue=params["unjsvalue"], undqvalue=params["undqvalue"],
+                       pstart=params["pstart"],
+                       pend=params["pend"], planpaydate=params["planpaydate"], editor=params["editor"],
+                       editdate=params["editdate"],
+                       operator=params["editor"], cstart=params["cstart"], cend=params["cend"],
+                       advance=params["advance"])
         cursor.execute(sql)
         conn.commit()
         cursor.close()
     except Exception as e:
-        print(">>>>>>saveBillHead0()",e)
+        print(">>>>>>saveBillHead0()", e)
 
-def saveBillHeadItem(conn,dlist,sheetId):
+
+def saveBillHeadItem(conn, dlist, sheetId):
     cursor = conn.cursor()
     for row in dlist:
         fshopid = row["fromshopid"]
@@ -475,16 +493,22 @@ def saveBillHeadItem(conn,dlist,sheetId):
               DKRate           --15倒扣率
               )values('{sheetid}','{paytypesortid}','{payabledate}','{refsheetid}',{refsheettype},{managedeptid},'{FromShopID}','{inshopid}',{costvalue},
                {costtaxvalue},{costtaxrate},{agroflag},{salevalue},'{invoicesheetid}','{dkrate}')
-              """.format(sheetid=sheetId,paytypesortid=row["paytypesortid"],payabledate=row["payabledate"],refsheetid=row["refsheetid"],
-                         refsheettype=row["refsheettype"],managedeptid=row["managedeptid"],FromShopID=str(fshopid),inshopid=str(ishopid),
-                         costvalue=float(row["costvalue"]),costtaxvalue=float(row["costtaxvalue"]),costtaxrate=float(row["costtaxrate"]),
-                         agroflag=row["agroflag"],salevalue=float(row["salevalue"]),invoicesheetid=row["invoicesheetid"],dkrate=row["Dkrate"])
+              """.format(sheetid=sheetId, paytypesortid=row["paytypesortid"], payabledate=row["payabledate"],
+                         refsheetid=row["refsheetid"],
+                         refsheettype=row["refsheettype"], managedeptid=row["managedeptid"], FromShopID=str(fshopid),
+                         inshopid=str(ishopid),
+                         costvalue=float(row["costvalue"]), costtaxvalue=float(row["costtaxvalue"]),
+                         costtaxrate=float(row["costtaxrate"]),
+                         agroflag=row["agroflag"], salevalue=float(row["salevalue"]),
+                         invoicesheetid=row["invoicesheetid"], dkrate=row["Dkrate"])
         cursor.execute(sql)
     conn.commit()
     cursor.close()
 
- #保存扣项费用信息
-def saveKxItem(conn,rlist,sheetid):
+    # 保存扣项费用信息
+
+
+def saveKxItem(conn, rlist, sheetid):
     try:
         cursor = conn.cursor()
         for row in rlist:
@@ -506,18 +530,19 @@ def saveKxItem(conn,rlist,sheetid):
                       )
                     values({serialid},'{sheetid}',{kno},{ktype},'{payabledate}','{fromshopid}','{inshopid}',
                     {managedeptid},{kmoney},{kkflag},{style},{monthid},NULL,'{note}')
-                    """.format(serialid=row["SerialID"],sheetid=sheetid,kno=row["kno"],ktype=row["ktype"],
-                               payabledate=row["receivabledate"],fromshopid=row["fromshopid"],inshopid=row["inshopid"],
-                               managedeptid=row["managedeptid"],kmoney=float(row["kmoney"]),kkflag=row["kkflag"],
-                               style=row["style"],monthid=row["monthid"],note=row["note"])
+                    """.format(serialid=row["SerialID"], sheetid=sheetid, kno=row["kno"], ktype=row["ktype"],
+                               payabledate=row["receivabledate"], fromshopid=row["fromshopid"],
+                               inshopid=row["inshopid"],
+                               managedeptid=row["managedeptid"], kmoney=float(row["kmoney"]), kkflag=row["kkflag"],
+                               style=row["style"], monthid=row["monthid"], note=row["note"])
             cursor.execute(sql)
         conn.commit()
         cursor.close()
     except Exception as e:
-        print(">>>>>>saveKxItem()",e)
+        print(">>>>>>saveKxItem()", e)
 
 
-def allowCommit(paytypeid,venderid):
+def allowCommit(paytypeid, venderid):
     """
     计算当月内供应商提交单据次数
     根据结算方式限制供应商提交结算申请单的次数
@@ -526,17 +551,17 @@ def allowCommit(paytypeid,venderid):
     日结：不限制
     提供未结算账单信息，及明细查看
     """
-    #限制提交次数
+    # 限制提交次数
     try:
         rlist = findReconcil(paytypeid)
         if rlist:
             type = rlist[0]
             reconcil = rlist[1]
-            if type==0:
-                status=0
+            if type == 0:
+                status = 0
             else:
                 begin = reconcil["beginday"]
-                karrs = {"venderid":venderid}
+                karrs = {"venderid": venderid}
 
                 if begin < 15:
                     n = 1
@@ -545,16 +570,16 @@ def allowCommit(paytypeid,venderid):
 
                 start = datetime.date.today().replace(day=n).strftime("%Y-%m-%d")
                 start += " 00:00:00"
-                karrs.setdefault("editdate__gte",start)
+                karrs.setdefault("editdate__gte", start)
 
                 end = datetime.date.today().replace(day=begin).strftime("%Y-%m-%d")
                 end += " 23:59:59"
 
-                karrs.setdefault("editdate__lte",end)
+                karrs.setdefault("editdate__lte", end)
 
                 bitem = Billhead0.objects.filter(**karrs).count()
                 if bitem:
-                    status = 1    #单据已经存在，无法再次提交
+                    status = 1  # 单据已经存在，无法再次提交
                 else:
                     status = 0
         else:
@@ -565,50 +590,54 @@ def allowCommit(paytypeid,venderid):
 
     return status
 
+
 def findReconcil(paytypeid):
     reconcilItem = ReconcilItem.objects.filter(pid=paytypeid).values("rid")
     rid = reconcilItem[0]["rid"]
-    rlist = Reconcil.objects.filter(id=rid,status=1).values("beginday","endday")
+    rlist = Reconcil.objects.filter(id=rid, status=1).values("beginday", "endday")
     for row in rlist:
         now = datetime.date.today()
         begin = row["beginday"]
-        end =  row["endday"]
+        end = row["endday"]
         num = end - begin
 
-        if num<30:
-            if begin<=15:
+        if num < 30:
+            if begin <= 15:
                 if now.day < begin:
-                    return (1,row)
+                    return (1, row)
                 else:
                     return None
             else:
                 if now.day < begin and now.day > 15:
-                    return (1,row)
+                    return (1, row)
                 else:
                     return None
         else:
-           #随时结账
-           return (0,row)
+            # 随时结账
+            return (0, row)
+
 
 def getSheetId(conn):
-    #1.取单据号
+    # 1.取单据号
     sql = """declare @i int,@SheetID char(16)
            exec @i=TL_GetNewSheetID 5203,@SheetID out
            select @SheetID"""
     sheetId = conn.execute_scalar(sql)
     return sheetId
 
-def findKxInvoice(conn,venderid,pend):
+
+def findKxInvoice(conn, venderid, pend):
     sql = """select ISNULL(sum(a.kmoney),0) from kxsum0 a
                  where a.venderid in ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
                  and a.flag=0 and a.stoppay=0 and a.kkflag = 1
                  and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
-                 """.format(venderid=venderid,pend=pend)
+                 """.format(venderid=venderid, pend=pend)
     sum = conn.execute_scalar(sql)
     return sum
 
-#取费用数据 (次表体)（写表billheadkxitem0）
-def findKxsum(conn,venderid,pend):
+
+# 取费用数据 (次表体)（写表billheadkxitem0）
+def findKxsum(conn, venderid, pend):
     try:
         cursor = conn.cursor()
         sql = """select a.SerialID,a.shopid as inshopid,a.managedeptid,a.kno,b.kname,a.ktype,a.kmoney,a.kkflag, a.style,a.monthid,
@@ -618,52 +647,52 @@ def findKxsum(conn,venderid,pend):
                      and a.stoppay=0 and a.shopid *= c.id
                      and  a.kno = b.kno and ( (a.ktype=1 and ReceivableDate<='{pend}') or (a.ktype=0 and a.style<>0 ))
                      and a.flag=0 order by a.kno
-                     """.format(venderid=venderid,pend=pend)   #
+                     """.format(venderid=venderid, pend=pend)  #
         cursor.execute(sql)
         rlist = cursor.fetchall()
         conn.commit()
         cursor.close()
     except Exception as e:
-        print(">>>>>findKxsum()",e)
+        print(">>>>>findKxsum()", e)
     return rlist
 
-#根据经营方式获得结算日期、单据日期
-def getStartAndEndDate(contracttype,payTypeName):
+
+# 根据经营方式获得结算日期、单据日期
+def getStartAndEndDate(contracttype, payTypeName):
     stime = Constants.ERP_START_TIME
 
-    #结算日期
-    #erp系统使用的开始时间
-    pstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
+    # 结算日期
+    # erp系统使用的开始时间
+    pstart = datetime.date(stime[0], stime[1], stime[2]).strftime("%Y-%m-%d")
 
     # if contracttype == "d":
     #     #上月底
     #     pend = (datetime.date.today().replace(day=1) - datetime.timedelta(1)).strftime("%Y-%m-%d")
     # else:
-    #当前日期
+    # 当前日期
     pend = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    if contracttype == "g":   #购销
-        #单据日期
-        cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
+    if contracttype == "g":  # 购销
+        # 单据日期
+        cstart = datetime.date(stime[0], stime[1], stime[2]).strftime("%Y-%m-%d")
         cend = datetime.datetime.now().strftime("%Y-%m-%d")
     else:
-        #单据日期
+        # 单据日期
         if "月" in payTypeName and "半月结" not in payTypeName:
             if "月结30天" in payTypeName or "月结45天" in payTypeName:
-                n = -2   #前两个月一整月
+                n = -2  # 前两个月一整月
             elif "月结60天" in payTypeName:
-                n = -3   #前三个月一整月
+                n = -3  # 前三个月一整月
             else:
-                n = -1   #前一个月一整月
-
+                n = -1  # 前一个月一整月
 
             cstart = DateUtil.get_firstday_month(n)
             cend = DateUtil.get_lastday_month(n)
         else:
-            cstart = datetime.date(stime[0],stime[1],stime[2]).strftime("%Y-%m-%d")
+            cstart = datetime.date(stime[0], stime[1], stime[2]).strftime("%Y-%m-%d")
             cend = datetime.datetime.now().strftime("%Y-%m-%d")
 
-    return pstart,pend,cstart,cend
+    return pstart, pend, cstart, cend
 
 
 def findBalancePlace(conn):
@@ -671,13 +700,15 @@ def findBalancePlace(conn):
     rs = conn.execute_row(sql)
     return rs
 
-def findPayableCostValue(conn,balanceId,venderid):
-   sql = """
+
+def findPayableCostValue(conn, balanceId, venderid):
+    sql = """
         declare @shopid char(4),@vendreid int ,@payvalue dec(12,2)
         exec TL_venderpayable  {balanceId},{venderid},@payvalue
-        output  select @payvalue""".format(balanceId=balanceId,venderid=venderid)
-   payvalue = conn.execute_scalar(sql)  #获得一个返回参数
-   return payvalue
+        output  select @payvalue""".format(balanceId=balanceId, venderid=venderid)
+    payvalue = conn.execute_scalar(sql)  # 获得一个返回参数
+    return payvalue
+
 
 #  上月销售信息
 # def findLastMonthSaleInfo(conn,venderid):
@@ -688,7 +719,7 @@ def findPayableCostValue(conn,balanceId,venderid):
 #     rs = conn.execute_row(sql)
 #     return rs
 
-def findCostValue(conn,venderid):
+def findCostValue(conn, venderid):
     sql = """
        if object_id('tempdb..#520311Vender') is not null
             drop table #520311Vender
@@ -699,7 +730,8 @@ def findCostValue(conn,venderid):
     conn.execute_non_query(sql)
 
     sql = """insert into #520311Vender select distinct VenderID from VenderCard
-              where VenderID={venderid} Or MasterVenderID={mastervenderid}""".format(venderid=venderid,mastervenderid=venderid)
+              where VenderID={venderid} Or MasterVenderID={mastervenderid}""".format(venderid=venderid,
+                                                                                     mastervenderid=venderid)
     conn.execute_non_query(sql)
 
     sql = """
@@ -716,7 +748,7 @@ def findCostValue(conn,venderid):
     sql = """insert into #520311Cost select GoodsID,ShopID,VenderID from Cost where VenderID in (select VenderID from #520311Vender)"""
     conn.execute_non_query(sql)
 
-    #库存金额
+    # 库存金额
     sql = """
          select sum(a.costvalue)  from shopsstock a,cost b,goods c
          where a.goodsid=b.goodsid  and a.shopid=b.shopid and b.flag=0 and a.goodsid=c.goodsid
@@ -724,7 +756,7 @@ def findCostValue(conn,venderid):
        """
     costvalue = conn.execute_scalar(sql)
 
-    #删除临时表
+    # 删除临时表
     sql = """
         if object_id('tempdb..#520311Vender') is not null drop table #520311Vender
         if object_id('tempdb..#520311Cost') is not null drop table #520311Cost
@@ -732,32 +764,39 @@ def findCostValue(conn,venderid):
     conn.execute_non_query(sql)
     return costvalue
 
-def unbalancedCostValue(conn,venderid,payabledate):
-    sql = """select sum(costvalue)  from balancebook0 a,paytype b
-                  where  a.payabledate <'{payabledate}' and  a.paytypeid=b.id and a.payflag=0 and a.venderid={venderid}""".format(venderid=venderid,payabledate=payabledate)
-    item = conn.execute_row(sql)
-    costvalue = item[0]
-    if not costvalue:
-         sql = """select sum(costvalue) costvalue  from unpaidsheet0 a,paytype b  where  a.venderid = {venderid} and a.payabledate <'{payabledate}' and
-                     a.paytypeid=b.id and (a.costvalue<>0 or a.salevalue<>0) and a.payflag=0""".format(venderid=venderid,payabledate=payabledate)
-         item = conn.execute_row(sql)
-         costvalue = item[0]
-    return costvalue
 
-def undueCostValue(conn,venderid,payabledate):
-    sql = """select sum(costvalue)  from balancebook0 a,paytype b where  a.payabledate >'{payabledate}' and  a.paytypeid=b.id
-                  and a.payflag=0 and a.venderid={venderid}""".format(venderid=venderid,payabledate=payabledate)
+def unbalancedCostValue(conn, venderid, payabledate):
+    sql = """select sum(costvalue)  from balancebook0 a,paytype b
+                  where  a.payabledate <'{payabledate}' and  a.paytypeid=b.id and a.payflag=0 and a.venderid={venderid}""".format(
+        venderid=venderid, payabledate=payabledate)
     item = conn.execute_row(sql)
     costvalue = item[0]
     if not costvalue:
-        sql = """select sum(costvalue) costvalue  from unpaidsheet0 a,paytype b  where  a.venderid = {venderid} and a.payabledate >'{payabledate}' and
-                      a.paytypeid=b.id and (a.costvalue<>0 or a.salevalue<>0) and a.payflag=0""".format(venderid=venderid,payabledate=payabledate)
+        sql = """select sum(costvalue) costvalue  from unpaidsheet0 a,paytype b  where  a.venderid = {venderid} and a.payabledate <'{payabledate}' and
+                     a.paytypeid=b.id and (a.costvalue<>0 or a.salevalue<>0) and a.payflag=0""".format(
+            venderid=venderid, payabledate=payabledate)
         item = conn.execute_row(sql)
         costvalue = item[0]
     return costvalue
 
-def findAdvance(conn,venderid):
-    sql = "select ShopID,VenderID,PreMoney,AccFlag,sDate,BillheadSheetID from PreMoney where venderid='{venderid}'".format(venderid=venderid)
+
+def undueCostValue(conn, venderid, payabledate):
+    sql = """select sum(costvalue)  from balancebook0 a,paytype b where  a.payabledate >'{payabledate}' and  a.paytypeid=b.id
+                  and a.payflag=0 and a.venderid={venderid}""".format(venderid=venderid, payabledate=payabledate)
+    item = conn.execute_row(sql)
+    costvalue = item[0]
+    if not costvalue:
+        sql = """select sum(costvalue) costvalue  from unpaidsheet0 a,paytype b  where  a.venderid = {venderid} and a.payabledate >'{payabledate}' and
+                      a.paytypeid=b.id and (a.costvalue<>0 or a.salevalue<>0) and a.payflag=0""".format(
+            venderid=venderid, payabledate=payabledate)
+        item = conn.execute_row(sql)
+        costvalue = item[0]
+    return costvalue
+
+
+def findAdvance(conn, venderid):
+    sql = "select ShopID,VenderID,PreMoney,AccFlag,sDate,BillheadSheetID from PreMoney where venderid='{venderid}'".format(
+        venderid=venderid)
     item = conn.execute_row(sql)
     if item:
         advance = item[2]
@@ -766,27 +805,28 @@ def findAdvance(conn,venderid):
     return advance
 
 
-def findBillItem(conn,venderid,pstart,pend,cstart,cend,refsheetidList=None,contracttype=None):
-    #创建结算明细临时表
+def findBillItem(conn, venderid, pstart, pend, cstart, cend, refsheetidList=None, contracttype=None):
+    # 创建结算明细
     createTempheaditemTable(conn)
 
-    if contracttype=="g":
-        #1.购销结算单据:验收单、退货单、往来单据调整单
-        for i in range(1,5):
-            insertBillSheet(conn,venderid,pstart,pend,cstart,cend,i)
+    if contracttype == "g":
+        # 1.购销结算单据:验收单、退货单、往来单据调整单
+        for i in range(1, 5):
+            insertBillSheet(conn, venderid, pstart, pend, cstart, cend, i)
     else:
-        #5.联营\代销\租赁结算流水  101=销售流水\ 102=分摊流水 \104=促销折扣流水\2413=报损单\2423=行政领用单\2451=批发通知单/批发单
-        insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend)
+        # 5.联营\代销\租赁结算流水  101=销售流水\ 102=分摊流水 \104=促销折扣流水\2413=报损单\2423=行政领用单\2451=批发通知单/批发单
+        insertAssociatedToTempheaditem(conn, venderid, pstart, pend, cstart, cend)
 
-    #6.删除赠品入库
+    # 6.删除赠品入库
     deleteGiftInStorage(conn)
 
-    #7.查询单据明细
-    rdict = findBillItemList(conn,refsheetidList)
+    # 7.查询单据明细
+    rdict = findBillItemList(conn, refsheetidList)
 
     return rdict
 
-#创建临时表存储待结算单据信息
+
+# 创建临时表存储待结算单据信息
 def createTempheaditemTable(conn):
     sql = """
         if object_id('tempdb..#Tempheaditem') is not null
@@ -813,26 +853,26 @@ def createTempheaditemTable(conn):
         """
     conn.execute_non_query(sql)
 
-#查询验收单
-def insertBillSheet(conn,venderid,pstart,pend,cstart,cend,type):
 
+# 查询验收单
+def insertBillSheet(conn, venderid, pstart, pend, cstart, cend, type):
     condition = "and 1=1 "
-    if type==1:      #1.验收单据
+    if type == 1:  # 1.验收单据
         condition = """and convert(char(10),a.payabledate,120) between '{pstart}' and '{pend}'
                     and convert(char(10),a.CheckDate,120) between '{cstart}' and '{cend}'
                     and  a.sheettype<>2323 and a.sheettype<>5205
-                    """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
-    elif type==2:    #2.退货单
+                    """.format(pstart=pstart, pend=pend, cstart=cstart, cend=cend)
+    elif type == 2:  # 2.退货单
         condition = """and  convert(char(10),a.payabledate,120) <= '{pend}'
                     and  convert(char(10),a.CheckDate,120) <= '{cend}'
                     and  a.sheettype=2323
-                    """.format(pend=pend,cend=cend)
-    elif type==3:    #3.供应商往来单据金额调整单  单据金额>=0
+                    """.format(pend=pend, cend=cend)
+    elif type == 3:  # 3.供应商往来单据金额调整单  单据金额>=0
         condition = """and convert(char(10),a.payabledate,120)  between '{pstart}' and '{pend}'
                     and convert(char(10),a.CheckDate,120) between '{cstart}' and '{cend}'
                     and  a.sheettype=5205 and a.costvalue > 0
-                    """.format(pstart=pstart,pend=pend,cstart=cstart,cend=cend)
-    elif type==4:    #4.供应商往来单据金额调整单  单据金额<=0
+                    """.format(pstart=pstart, pend=pend, cstart=cstart, cend=cend)
+    elif type == 4:  # 4.供应商往来单据金额调整单  单据金额<=0
         condition = """and  a.sheettype=5205 and a.costvalue <= 0  """
 
     sql = """
@@ -850,11 +890,12 @@ def insertBillSheet(conn,venderid,pstart,pend,cstart,cend,type):
             group by b.paytypesortid,a.sheetid,a.sheettype,c.name,
             a.managedeptid,a.shopid,a.agroflag,a.payabledate,a.costtaxrate,a.invoicesheetid
             order by sheettype,payabledate,sheetid
-            """.format(venderid=venderid,condition=condition)
+            """.format(venderid=venderid, condition=condition)
     conn.execute_non_query(sql)
 
-#查询联营\代销结算流水  101=销售流水\ 102=分摊流水 \104=促销折扣流水\2413=报损单\2423=行政领用单\2451=批发通知单/批发单
-def insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend):
+
+# 查询联营\代销结算流水  101=销售流水\ 102=分摊流水 \104=促销折扣流水\2413=报损单\2423=行政领用单\2451=批发通知单/批发单
+def insertAssociatedToTempheaditem(conn, venderid, pstart, pend, cstart, cend):
     sql = """insert into #Tempheaditem
              (paytypesortid,payabledate,refsheetid,refsheettype,sheetname,managedeptid, inshopid,costvalue,notaxvalue,costtaxvalue,
              salevalue,agroflag,costtaxrate,fromshopid,invoicesheetid,Dkrate)
@@ -867,16 +908,18 @@ def insertAssociatedToTempheaditem(conn,venderid,pstart,pend,cstart,cend):
              and a.venderid in ( select venderid from vendercard where venderid={venderid}  or mastervenderid={venderid})
              group by b.paytypesortid,a.refsheettype,c.name,a.managedeptid,a.shopid,a.agroflag,a.costtaxrate,a.fromshopid,a.invoicesheetid,a.Dkrate
              order by shopid,PayableDate
-            """.format(venderid=venderid,pstart=pstart,pend=pend,cstart=cstart,cend=cend)
+            """.format(venderid=venderid, pstart=pstart, pend=pend, cstart=cstart, cend=cend)
     conn.execute_non_query(sql)
 
-#删除赠品入库
+
+# 删除赠品入库
 def deleteGiftInStorage(conn):
     sql = """ delete from #Tempheaditem where RefSheettype=2301 and CostValue = 0 """
     conn.execute_non_query(sql)
 
-#查询单据明细
-def findBillItemList(conn,refsheetidList=None):
+
+# 查询单据明细
+def findBillItemList(conn, refsheetidList=None):
     condition = "where {cond1}"
     cond1 = "1=1"
     if refsheetidList:
@@ -917,11 +960,12 @@ def findBillItemList(conn,refsheetidList=None):
 
     return rs
 
-#end by liubf at 2016/01/12
+
+# end by liubf at 2016/01/12
 
 def balance(request):
-    sperCode = request.session.get('s_suppcode')   #用户所属单位
-    grpCode = request.session.get('s_grpcode')   #用户所属单位
+    sperCode = request.session.get('s_suppcode')  # 用户所属单位
+    grpCode = request.session.get('s_grpcode')  # 用户所属单位
     grpName = request.session.get('s_grpname')
 
     start = (datetime.date.today().replace(day=1)).strftime("%Y-%m-%d")
@@ -930,8 +974,8 @@ def balance(request):
     sheetId = ''
     flag = ''
     orderStyle = '-editdate'
-    page = request.GET.get('page',1)
-    if request.method== 'POST':
+    page = request.GET.get('page', 1)
+    if request.method == 'POST':
         form = BillInForm(request.POST)
         if form.is_valid():
             shopId = form.cleaned_data['shopid']
@@ -941,52 +985,54 @@ def balance(request):
             flag = form.cleaned_data['flag']
             orderStyle = form.cleaned_data['orderStyle']
     else:
-        shopId = request.GET.get('shopcode','')
-        start = request.GET.get('start',start)
-        end = request.GET.get('end',end)
-        sheetId = request.GET.get('sheetid','')
-        flag = request.GET.get('flag','')
-        orderStyle = request.GET.get('orderstyle','-editdate')
-        data = {'shopid':shopId,'start':start,'end':end,'sheetId':sheetId,'flag':flag,'orderStyle':orderStyle}
+        shopId = request.GET.get('shopcode', '')
+        start = request.GET.get('start', start)
+        end = request.GET.get('end', end)
+        sheetId = request.GET.get('sheetid', '')
+        flag = request.GET.get('flag', '')
+        orderStyle = request.GET.get('orderstyle', '-editdate')
+        data = {'shopid': shopId, 'start': start, 'end': end, 'sheetId': sheetId, 'flag': flag,
+                'orderStyle': orderStyle}
         form = BillInForm(data)
 
     kwargs = {}
     if flag:
         flags = flag.split(",")
-        kwargs.setdefault('flag__in',flags)
+        kwargs.setdefault('flag__in', flags)
 
     if sheetId:
-        kwargs.setdefault('sheetid__contains',sheetId)
+        kwargs.setdefault('sheetid__contains', sheetId)
 
     if len(shopId):
-        shopId = shopId[0:(len(shopId)-1)]
-        shopId =shopId.split(',')
-        kwargs.setdefault('shopid__in',shopId)
+        shopId = shopId[0:(len(shopId) - 1)]
+        shopId = shopId.split(',')
+        kwargs.setdefault('shopid__in', shopId)
 
-    kwargs.setdefault('editdate__gte',start)
-    kwargs.setdefault('editdate__lte',"{end} 23:59:59".format(end=end))
-    kwargs.setdefault('venderid',sperCode)
-    kwargs.setdefault('grpcode',grpCode)
+    kwargs.setdefault('editdate__gte', start)
+    kwargs.setdefault('editdate__lte', "{end} 23:59:59".format(end=end))
+    kwargs.setdefault('venderid', sperCode)
+    kwargs.setdefault('grpcode', grpCode)
 
-    balanceList = Billhead0.objects.values("shopid","venderid","vendername","sheetid","begindate","enddate","editdate","flag","status","seenum","contracttype")\
-                                   .filter(**kwargs).order_by(orderStyle)
+    balanceList = Billhead0.objects.values("shopid", "venderid", "vendername", "sheetid", "begindate", "enddate",
+                                           "editdate", "flag", "status", "seenum", "contracttype") \
+        .filter(**kwargs).order_by(orderStyle)
 
-    statuslist = Billhead0Status.objects.values("sheetid","inviocestatus").filter(**kwargs).order_by(orderStyle)
+    statuslist = Billhead0Status.objects.values("sheetid", "inviocestatus").filter(**kwargs).order_by(orderStyle)
 
     statusDict = {}
     for item in statuslist:
-        statusDict.setdefault(item["sheetid"],item)
+        statusDict.setdefault(item["sheetid"], item)
 
     for item in balanceList:
         if item["sheetid"] in statusDict:
             sitem = statusDict[item["sheetid"]]
-            item.setdefault("inviocestatus",sitem["inviocestatus"])
+            item.setdefault("inviocestatus", sitem["inviocestatus"])
         else:
-            item.setdefault("inviocestatus",0)
+            item.setdefault("inviocestatus", 0)
 
-    paginator=Paginator(balanceList,20)
+    paginator = Paginator(balanceList, 20)
     try:
-        balanceList=paginator.page(page)
+        balanceList = paginator.page(page)
     except Exception as e:
         print(e)
 
@@ -995,52 +1041,55 @@ def balance(request):
     #     if balance.get('shopid') not in shopCodedistinct:
     #         shopCodedistinct.append(balance.get('shopid'))
 
-    shopCodeStr = ''    #返回给pageFrom内部的shopcode表单
+    shopCodeStr = ''  # 返回给pageFrom内部的shopcode表单
     for shop in shopId:
-        shopCodeStr += shop+','
+        shopCodeStr += shop + ','
 
     return render(request,
                   'user_settle.html',
-                  {"form":form,
-                   "shopId":shopId,
-                   "start":str(start),
-                   "end":str(end),
-                   "sheetId":sheetId,
-                   "shopCodeStr":shopCodeStr,
+                  {"form": form,
+                   "shopId": shopId,
+                   "start": str(start),
+                   "end": str(end),
+                   "sheetId": sheetId,
+                   "shopCodeStr": shopCodeStr,
                    # "shopCodedistinct":shopCodedistinct,
-                   "flag":flag,
-                   "vendername":request.session.get("s_suppname"),
-                   "orderStyle":orderStyle,
-                   "balanceList":balanceList,
-                   "page":page,
-                   "grpName":grpName
+                   "flag": flag,
+                   "vendername": request.session.get("s_suppname"),
+                   "orderStyle": orderStyle,
+                   "balanceList": balanceList,
+                   "page": page,
+                   "grpName": grpName
                    })
 
-def balanceArticle(request):
-    grpCode = request.session.get('s_grpcode')       #用户所属单位
-    s_suppname = request.session.get('s_suppname')   #用户所属单
-    grpName = Constants.SCM_UNIT[grpCode]
-    contracttype = request.session.get("s_contracttype")   #经营方式
-    paytypeid = str(int(request.session.get("s_paytypeid")))   #经营方式
 
-    sheetId = request.GET.get('sheetid','')
-    queryAction = request.POST.get('actionTxt','')
-    #更新确认状态
+def balanceArticle(request):
+    grpCode = request.session.get('s_grpcode')  # 用户所属单位
+    s_suppname = request.session.get('s_suppname')  # 用户所属单
+    grpName = Constants.SCM_UNIT[grpCode]
+    contracttype = request.session.get("s_contracttype")  # 经营方式
+    paytypeid = str(int(request.session.get("s_paytypeid")))  # 经营方式
+
+    sheetId = request.GET.get('sheetid', '')
+    queryAction = request.POST.get('actionTxt', '')
+    # 更新确认状态
     if queryAction == 'check':
-        balanceObj = Billhead0.objects.get(sheetid__contains=sheetId,grpcode=grpCode)
-        balanceObj.status='Y'
+        balanceObj = Billhead0.objects.get(sheetid__contains=sheetId, grpcode=grpCode)
+        balanceObj.status = 'Y'
         balanceObj.save()
 
-    #结算通知单汇总      ,beginsdate,endsdate
-    balance = Billhead0.objects.values("shopid","venderid","vendername","sheetid","paytype","begindate","enddate"
-                                               ,"editdate","curdxvalue","payablemoney","kxinvoice","kxmoney","kxcash",
-                                               "premoney","editor","checker","paychecker","contracttype","beginsdate","endsdate","advance")\
-                                       .get(sheetid__contains=sheetId)
-    #结算通知明细
-    balanceItems = Billheaditem0.objects.values("inshopid","refsheettype","refsheetid","managedeptid","payabledate",
-                                                "costvalue","costtaxvalue","costtaxrate","salevalue","dkrate","invoicesheetid")\
-                                        .filter(sheetid__contains=sheetId).exclude(costvalue=0)\
-                                        .order_by("inshopid","refsheettype","refsheetid")
+    # 结算通知单汇总      ,beginsdate,endsdate
+    balance = Billhead0.objects.values("shopid", "venderid", "vendername", "sheetid", "paytype", "begindate", "enddate"
+                                       , "editdate", "curdxvalue", "payablemoney", "kxinvoice", "kxmoney", "kxcash",
+                                       "premoney", "editor", "checker", "paychecker", "contracttype", "beginsdate",
+                                       "endsdate", "advance") \
+        .get(sheetid__contains=sheetId)
+    # 结算通知明细
+    balanceItems = Billheaditem0.objects.values("inshopid", "refsheettype", "refsheetid", "managedeptid", "payabledate",
+                                                "costvalue", "costtaxvalue", "costtaxrate", "salevalue", "dkrate",
+                                                "invoicesheetid") \
+        .filter(sheetid__contains=sheetId).exclude(costvalue=0) \
+        .order_by("inshopid", "refsheettype", "refsheetid")
 
     itemList = []
     itemShopId = None
@@ -1048,23 +1097,23 @@ def balanceArticle(request):
         shopid = item["inshopid"]
         if itemShopId != shopid:
             vlist = []
-            itemList.append([shopid,vlist])
+            itemList.append([shopid, vlist])
 
         vlist.append(item)
         itemShopId = item["inshopid"]
 
     itemList = sorted(itemList)
 
-    #本期帐扣发票金额
+    # 本期帐扣发票金额
     if balance.get('kxinvoice'):
         cfpkx = balance.get('kxinvoice')
     else:
         cfpkx = decimal.Decimal(0.0)
 
-    #帐扣扣项 帐扣金额
-    zkkx = balance.get('kxmoney')-balance.get('kxcash')
+    # 帐扣扣项 帐扣金额
+    zkkx = balance.get('kxmoney') - balance.get('kxcash')
 
-     #本期应付金额
+    # 本期应付金额
     if balance.get('curdxvalue'):
         curdxValue = balance.get('curdxvalue')
     else:
@@ -1073,24 +1122,24 @@ def balanceArticle(request):
     if balance.get('payablemoney'):
         payableMoney = balance.get('payablemoney')
     else:
-        payableMoney= decimal.Decimal(0.0)
+        payableMoney = decimal.Decimal(0.0)
 
-    #预付款余额
+    # 预付款余额
     if balance.get('premoney'):
         premoney = balance.get('premoney')
     else:
         premoney = decimal.Decimal(0.0)
 
     if curdxValue == 0:
-        invoicePay =payableMoney-cfpkx#应开票金额
-        realPay = payableMoney-zkkx-premoney#实付金额
+        invoicePay = payableMoney - cfpkx  # 应开票金额
+        realPay = payableMoney - zkkx - premoney  # 实付金额
     else:
-        invoicePay = curdxValue-cfpkx
-        realPay = curdxValue-zkkx-premoney
+        invoicePay = curdxValue - cfpkx
+        realPay = curdxValue - zkkx - premoney
 
-    #实付金额大写
-    realPayUpper = mtu.rmbupper(float(round(realPay,2)))
-    #打印日期
+    # 实付金额大写
+    realPayUpper = mtu.rmbupper(float(round(realPay, 2)))
+    # 打印日期
     printDate = datetime.date.today()
     ssum1 = decimal.Decimal(0.0)
     ssum2 = decimal.Decimal(0.0)
@@ -1105,30 +1154,30 @@ def balanceArticle(request):
         sdict = {}
         for row in slist:
             ssum1 += row["CostValue"]
-            ssum2 += (row["CostValue"]-row["CostTaxValue"])
+            ssum2 += (row["CostValue"] - row["CostTaxValue"])
             ssum3 += row["SaleValue"]
-            sdict[row["InShopID"]] = [ row["CostValue"],(row["CostValue"]-row["CostTaxValue"]),row["SaleValue"]]
+            sdict[row["InShopID"]] = [row["CostValue"], (row["CostValue"] - row["CostTaxValue"]), row["SaleValue"]]
     except Exception as e:
         print(e)
 
-    #应结金额总额
+    # 应结金额总额
     totalCostValue = decimal.Decimal(0.0)
-    #税金总额
+    # 税金总额
     totalCostTax = decimal.Decimal(0.0)
     mdept = []
     for item in balanceItems:
-        totalCostValue += item.get('costvalue',0)
-        totalCostTax += item.get('costtaxvalue',0)
-        item['managedeptid'] = str(item.get('managedeptid',0))
+        totalCostValue += item.get('costvalue', 0)
+        totalCostTax += item.get('costtaxvalue', 0)
+        item['managedeptid'] = str(item.get('managedeptid', 0))
         mdept.append(item["managedeptid"])
 
-    #查询管理部类：多个用逗号分隔
+    # 查询管理部类：多个用逗号分隔
     mdept = list(set(mdept))
     orgList = BasOrg.objects.all().values("orgname", "orgcode")
     mdeptNames = [x["orgname"] for x in orgList if x["orgcode"] in mdept]
     mdeptName = ",".join(mdeptNames)
 
-    #查询帐扣明细
+    # 查询帐扣明细
     kxlist = findKxListBySheetId(sheetId)
     kxsum = decimal.Decimal(0.0)
     for item in kxlist:
@@ -1139,7 +1188,8 @@ def balanceArticle(request):
     for item2 in jxList:
         jxsum += item2["kmoney"]
 
-    return render(request,'user_settle_article_{ctype}.html'.format(ctype=contracttype),locals())
+    return render(request, 'user_settle_article_{ctype}.html'.format(ctype=contracttype), locals())
+
 
 def findJxListBySheetId(sheetId):
     try:
@@ -1159,6 +1209,7 @@ def findJxListBySheetId(sheetId):
         conn.close()
     return jxlist
 
+
 def findKxListBySheetId(sheetId):
     try:
         conn = mtu.getMysqlConn()
@@ -1166,7 +1217,7 @@ def findKxListBySheetId(sheetId):
         sql = """SELECT b.inshopid,b.kno,k.kname,b.kmoney,'扣款(从货款扣)' as kkflag,b.note,k.prtflag
                   FROM  billheadkxitem0 b LEFT JOIN kxd k ON k.kno = b.kno
                   WHERE b.kkflag=1 and b.sheetid='{sheetId}' order by b.inshopid
-              """.format(sheetId=sheetId)      #
+              """.format(sheetId=sheetId)  #
         cur.execute(sql)
         kxlist = cur.fetchall()
     except Exception as e:
